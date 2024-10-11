@@ -1,14 +1,19 @@
 'use client';
 
-import { createPost, State } from '@/app/lib/actions';
-import { Category, getCategoryInKorean } from '@/app/lib/definitions';
+import { Category, translateCategory } from '@/app/lib/definitions';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, CSSProperties, useRef } from 'react';
 import { useFormState } from 'react-dom';
 import { useDropzone } from 'react-dropzone';
 import { excludeFileExtension, formatBytes } from '@/app/utils/utils';
-import { POST_TITLE_MAX_LENGTH } from '@/app/constants';
+import {
+  FILE_NAME_MAX_LENGTH,
+  POST_DESCRIPTION_MAX_LENGTH,
+  POST_TITLE_MAX_LENGTH,
+  POST_TITLE_MIN_LENGTH,
+} from '@/app/constants';
+import { createPost, CreatePostFormState } from '@/app/lib/actions/posts';
 
 const thumbsContainer: CSSProperties = {
   display: 'flex',
@@ -42,14 +47,16 @@ interface Props {
 export default function CreatePostForm({ categories }: Props) {
   const [publicity, setPublicity] = useState<Publicity>('public');
   const [files, setFiles] = useState<(File & { preview: string })[]>([]);
-  const initialState: State = { message: null, errors: {} };
-  const [state, formAction] = useFormState(createPost, initialState);
+  const initialState: CreatePostFormState = { message: null, errors: {} };
+  const [state, submitCreatePostForm] = useFormState(createPost, initialState);
   const [thumbnails, setThumbnails] = useState<string[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, fileRejections } = useDropzone({
     accept: {
       'image/*': [],
     },
+    validator: nameLengthValidator,
+
     onDrop: (acceptedFiles: any) => {
       const dataTransfer = new DataTransfer();
 
@@ -73,17 +80,27 @@ export default function CreatePostForm({ categories }: Props) {
     },
   });
 
+  function nameLengthValidator(file: any) {
+    if (file.name.length > FILE_NAME_MAX_LENGTH) {
+      return {
+        code: 'name-too-large',
+        message: `파일 ${file.name}의 이름이 ${FILE_NAME_MAX_LENGTH}자를 넘어 추가되지 않습니다.`,
+      };
+    }
+    for (const eachFile of files) {
+      if (eachFile.name === file.name && eachFile.size === file.size) {
+        return {
+          code: 'duplicate.file',
+          message: `파일 ${file.name}이 중복되어 추가되지 않았습니다.`,
+        };
+      }
+    }
+    return null;
+  }
+
   const thumbs = files.map((file: any, i: number) => {
     const namePlaceholder = excludeFileExtension(file.name);
     const fileSize = formatBytes(file.size, 1);
-
-    // const thumb: CSSProperties = {
-    //   overflow: 'hidden',
-    //   backgroundColor: 'black',
-    //   width: 224,
-    //   height: 144,
-    //   position: 'relative',
-    // };
 
     return (
       <div key={file.name}>
@@ -156,7 +173,7 @@ export default function CreatePostForm({ categories }: Props) {
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
   }, []);
 
-  function handleFormSubmit(formData: FormData) {
+  function handleCreatePostFormSubmit(formData: FormData) {
     if (formRef.current) {
       const input: HTMLInputElement | null =
         formRef.current.querySelector('input[type=file]');
@@ -166,14 +183,13 @@ export default function CreatePostForm({ categories }: Props) {
         );
       }
     }
-    console.log(Object.fromEntries(formData));
     formData.append('numberOfCandidates', String(files.length));
     formData.append('thumbnails', JSON.stringify(thumbnails));
-    formAction(formData);
+    submitCreatePostForm(formData);
   }
 
   return (
-    <form action={handleFormSubmit} ref={formRef}>
+    <form action={handleCreatePostFormSubmit} ref={formRef}>
       <div className='rounded-md bg-gray-50 p-6'>
         <label htmlFor='title' className='ml-2 mb-2 block font-semibold'>
           제목
@@ -182,24 +198,48 @@ export default function CreatePostForm({ categories }: Props) {
           id='title'
           name='title'
           type='text'
-          className='block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500'
-          placeholder='이상형 월드컵 제목을 입력해주세요. (최대 100자)'
-          maxLength={POST_TITLE_MAX_LENGTH}
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 ${
+            state.errors?.title && 'outline outline-1 outline-red-500'
+          }`}
+          placeholder={`이상형 월드컵 제목을 입력해주세요. (최소 ${POST_TITLE_MIN_LENGTH}, 최대 ${POST_TITLE_MAX_LENGTH}자)`}
+          aria-describedby='title-error'
           autoFocus
-          required
         />
+        <div id='title-error' aria-live='polite' aria-atomic='true'>
+          {state.errors?.title &&
+            state.errors.title.map((error: string) => (
+              <p className='m-2 mb-4 text-red-500' key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
         <label htmlFor='description' className='ml-2 mb-2 block font-semibold'>
           설명
         </label>
         <input
           id='description'
           name='description'
-          className='block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500'
-          placeholder='이상형 월드컵에 대한 설명을 입력해주세요.'
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 ${
+            state.errors?.description && 'outline outline-1 outline-red-500'
+          }`}
+          placeholder={`이상형 월드컵에 대한 설명을 입력해주세요. (최대 ${POST_DESCRIPTION_MAX_LENGTH}자)`}
+          aria-describedby='description-error'
         />
+        <div id='description-error' aria-live='polite' aria-atomic='true'>
+          {state.errors?.description &&
+            state.errors.description.map((error: string) => (
+              <p className='m-2 mb-4 text-red-500' key={error}>
+                {error}
+              </p>
+            ))}
+        </div>
         <fieldset className='mb-4'>
           <legend className='ml-2 mb-2 block font-semibold'>공개 범위</legend>
-          <div className='rounded-md border border-gray-200 bg-white'>
+          <div
+            className={`rounded-md border border-gray-200 bg-white ${
+              state.errors?.publicity && 'outline outline-1 outline-red-500'
+            }`}
+          >
             <div className='flex items-center gap-4 p-4 pb-2'>
               <div className='flex items-center'>
                 <input
@@ -209,7 +249,7 @@ export default function CreatePostForm({ categories }: Props) {
                   value='public'
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
                   onClick={() => setPublicity('public')}
-                  required
+                  aria-describedby='publicity-error'
                 />
                 <label htmlFor='public' className='ml-2 cursor-pointer'>
                   전체 공개
@@ -223,7 +263,7 @@ export default function CreatePostForm({ categories }: Props) {
                   value='unlisted'
                   onClick={() => setPublicity('unlisted')}
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
-                  required
+                  aria-describedby='publicity-error'
                 />
                 <label htmlFor='unlisted' className='ml-2 cursor-pointer'>
                   미등록
@@ -237,7 +277,7 @@ export default function CreatePostForm({ categories }: Props) {
                   value='private'
                   onClick={() => setPublicity('private')}
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
-                  required
+                  aria-describedby='publicity-error'
                 />
                 <label htmlFor='private' className='ml-2 cursor-pointer'>
                   비공개
@@ -247,6 +287,14 @@ export default function CreatePostForm({ categories }: Props) {
             <div className='py-2 px-4 text-gray-600'>
               {publicityMessage[publicity]}
             </div>
+          </div>
+          <div id='publicity-error' aria-live='polite' aria-atomic='true'>
+            {state.errors?.publicity &&
+              state.errors.publicity.map((error: string) => (
+                <p className='m-2 text-red-500' key={error}>
+                  공개 범위를 선택해주세요.
+                </p>
+              ))}
           </div>
         </fieldset>
         <div className='mb-4'>
@@ -259,19 +307,29 @@ export default function CreatePostForm({ categories }: Props) {
           <select
             id='categoryId'
             name='categoryId'
-            className='peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 mb-4'
+            className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 mb-4 ${
+              state.errors?.categoryId && 'outline outline-1 outline-red-500'
+            }`}
             defaultValue=''
-            required
+            aria-describedby='categoryId-error'
           >
             <option value='' disabled>
               카테고리를 선택해주세요.
             </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {getCategoryInKorean(category.name)}
+                {translateCategory(category.name)}
               </option>
             ))}
           </select>
+        </div>
+        <div id='categoryId-error' aria-live='polite' aria-atomic='true'>
+          {state.errors?.categoryId &&
+            state.errors.categoryId.map((error: string) => (
+              <p className='m-2 mb-4 text-red-500' key={error}>
+                카테고리를 선택해주세요.
+              </p>
+            ))}
         </div>
 
         <section>
@@ -281,7 +339,12 @@ export default function CreatePostForm({ categories }: Props) {
           >
             후보 추가하기
           </label>
-          <div className='border rounded-md mb-2 p-4 cursor-pointer bg-white hover:bg-gray-50'>
+          <div
+            className={`border rounded-md mb-2 p-4 cursor-pointer bg-white hover:bg-gray-50 ${
+              state.errors?.numberOfCandidates &&
+              'outline outline-1 outline-red-500'
+            }`}
+          >
             <div {...getRootProps({ className: 'dropzone' })}>
               <input {...getInputProps({ id: 'dropzoneInput' })} />
               <p className='text-gray-600'>
@@ -289,12 +352,50 @@ export default function CreatePostForm({ categories }: Props) {
               </p>
             </div>
           </div>
+          <div
+            id='numberOfCandidates-error'
+            aria-live='polite'
+            aria-atomic='true'
+          >
+            {state.errors?.numberOfCandidates &&
+              state.errors.numberOfCandidates.map((error: string) => (
+                <p className='m-2 text-red-500' key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+          <div id='thumbnails-error' aria-live='polite' aria-atomic='true'>
+            {state.errors?.thumbnails &&
+              state.errors.thumbnails.map((error: string) => (
+                <p className='m-2 text-red-500' key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+          {fileRejections &&
+            fileRejections.map(({ file, errors }) => (
+              <>
+                {errors.map((e, i) => (
+                  <p className='m-2 text-red-500' key={i}>
+                    {e.message}
+                  </p>
+                ))}
+              </>
+            ))}
           <div className='ml-2 mb-2 mt-4 font-semibold'>
             {files.length > 0 && `총 ${files.length}명의 후보`}
           </div>
           <aside style={thumbsContainer}>{thumbs}</aside>
         </section>
       </div>
+      {state.message && (
+        <div
+          className='flex justify-center text-red-500 p-4'
+          key={state.message}
+        >
+          {state.message}
+        </div>
+      )}
       <div className='flex gap-4 m-4 justify-end '>
         <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
           만들기

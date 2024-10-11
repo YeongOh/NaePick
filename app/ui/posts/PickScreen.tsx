@@ -1,54 +1,67 @@
 'use client';
 
+import { getNumberOfRoundsAvailable } from '@/app/constants';
+import { sendStats } from '@/app/lib/actions/ranks';
+import { Post } from '@/app/lib/definitions';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface Props {
   defaultCandidates: any;
-  totalRounds: any;
-  title: any;
+  post: Post;
+  postId: string;
+  round: number;
 }
 
 export default function PickScreen({
   defaultCandidates,
-  totalRounds,
-  title,
+  post,
+  postId,
+  round: paramRound,
 }: Props) {
-  const [round, setRound] = useState<number>(totalRounds);
+  const { title } = post;
+  const maxRound = post.numberOfCandidates;
+  const [round, setRound] = useState<number>(
+    paramRound === 0 ? maxRound : paramRound > maxRound ? maxRound : paramRound
+  );
   const [candidates, setCandidates] = useState(defaultCandidates);
+  const [winners, setWinners] = useState<any>([]);
+  const [losers, setLosers] = useState<any>([]);
+  const [spentTime, setSpentTime] = useState<number[]>([]);
+  const [finalWinner, setFinalWinner] = useState<any>(null);
   const [picked, setPicked] = useState<'left' | 'right' | null>(null);
-  console.log(defaultCandidates);
-  console.log(totalRounds);
-
   const { url: leftUrl, name: leftAlt } = candidates[round - 2];
   const { url: rightUrl, name: rightAlt } = candidates[round - 1];
-  const currentRound = totalRounds - round;
+  const startedAt = Date.now();
 
-  useEffect(
-    () => localStorage.setItem('default', JSON.stringify(defaultCandidates)),
-    [defaultCandidates]
-  );
-
-  useEffect(() => {
-    let stored, metaData, winner, progress;
-    if (picked === 'left') winner = { url: leftUrl, name: leftAlt };
-    else if (picked === 'right') winner = { url: rightUrl, name: rightAlt };
-    else return;
-
-    if (!(stored = localStorage.getItem('progress'))) {
-      progress = [{ totalRounds, round }, winner];
-    } else {
-      stored = JSON.parse(stored);
-      metaData = stored[0];
-      progress = [{ ...metaData, round }, ...stored.slice(1), winner];
-    }
-    localStorage.setItem('progress', JSON.stringify(progress));
-  }, [picked]);
+  function resetProgress() {
+    setWinners([]);
+    setLosers([]);
+    setSpentTime([]);
+    setFinalWinner(null);
+    setPicked(null);
+  }
 
   function handlePick(target: 'left' | 'right') {
+    const winner =
+      target === 'left' ? candidates[round - 2] : candidates[round - 1];
+    const loser =
+      target === 'left' ? candidates[round - 1] : candidates[round - 2];
     setPicked(target);
+    const finishedAt = Date.now();
+    const duration = Math.ceil((finishedAt - startedAt) / 1000);
+
+    // 우승
     if (round === 2) {
-      return; // 우승
+      setFinalWinner(winner);
+      setSpentTime([...spentTime, duration]);
+      sendStats(postId, [...winners, winner], [...losers, loser], winner, [
+        ...spentTime,
+        duration,
+      ]);
+      // 랭킹창, 댓글 보여주기
+
+      return;
     }
 
     setTimeout(() => {
@@ -59,42 +72,61 @@ export default function PickScreen({
       ];
       nextCandidates.unshift(nextCandidates.pop()!);
       setCandidates(nextCandidates);
+      setWinners([...winners, winner]);
+      setLosers([...losers, loser]);
+      setSpentTime([...spentTime, duration]);
 
       setRound((round) => round - 1);
       setPicked(null);
-      console.log(candidates);
     }, 2000);
   }
 
+  const handleRoundChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.preventDefault();
+    const targetRound = Number(e.target.value);
+    setRound(targetRound);
+    resetProgress();
+  };
+
   return (
     <>
-      <div className='relative flex bg-black h-[90vh]'>
-        <div className='absolute left-1/2 top-4 -translate-x-1/2 bg-black text-xl'>
-          <h2 className='flex justify-center items-center text-white'>
-            {title} {getRoundsDescription(round)} - {currentRound + 1} /{' '}
-            {totalRounds}
+      <section className='relative flex bg-black h-[95vh]'>
+        <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-50 z-50'>
+          <h2 className='flex justify-center items-center text-white text-5xl p-2 font-bold'>
+            {title} {getRoundsDescription(round)}
           </h2>
         </div>
+        {finalWinner && (
+          <div className='absolute left-1/2 top-20 -translate-x-1/2 bg-black bg-opacity-50 z-50 w-full'>
+            <h2 className='flex justify-center items-center text-white text-4xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+              {finalWinner.name} 우승!
+            </h2>
+          </div>
+        )}
         <figure
-          className={`relative w-1/2 flex items-center justify-end h-auto cursor-pointer ${
-            picked === 'left' && 'animate-pickLeft'
+          onClick={() => handlePick('left')}
+          className={`w-1/2 flex items-center justify-end h-auto cursor-pointer ${
+            picked === 'left' && 'animate-pickLeft justify-center'
           } ${picked === 'right' && 'animate-moveLeft'}`}
         >
-          <Image
-            className='w-fit'
-            onClick={() => handlePick('left')}
-            src={leftUrl}
-            alt={leftAlt}
-            priority={true}
-            width={0}
-            height={0}
-            sizes='100vw'
-          />
-          <figcaption className='text-white absolute left-1/2 -translate-x-1/2 bottom-[20px] text-xl'>
-            {leftAlt}
-          </figcaption>
+          <div className='relative'>
+            <Image
+              className='w-fit'
+              src={leftUrl}
+              alt={leftAlt}
+              priority={true}
+              width={0}
+              height={0}
+              sizes='100vw'
+            />
+            {!finalWinner && (
+              <figcaption className='text-white absolute text-center bottom-[20px] text-2xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
+                {leftAlt}
+              </figcaption>
+            )}
+          </div>
           <span
-            className={`absolute translate-x-1/2 bg-black text-white z-10 ${
+            className={`absolute translate-x-1/2 text-teal-500 text-5xl font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
               picked && 'hidden'
             }`}
           >
@@ -102,24 +134,52 @@ export default function PickScreen({
           </span>
         </figure>
         <figure
-          className={`relative w-1/2 flex items-center justify-start cursor-pointer ${
+          onClick={() => handlePick('right')}
+          className={`w-1/2 flex items-center justify-start cursor-pointer max-h-full ${
             picked === 'left' && 'animate-moveRight'
-          } ${picked === 'right' && 'animate-pickRight'}`}
+          } ${picked === 'right' && 'animate-pickRight justify-center'}`}
         >
-          <Image
-            onClick={() => handlePick('right')}
-            className='w-fit'
-            src={rightUrl}
-            alt={rightAlt}
-            priority={true}
-            width={0}
-            height={0}
-            sizes='100vw'
-          />
-          <figcaption className='text-white absolute left-1/2 -translate-x-1/2 bottom-[20px] text-xl'>
-            {rightAlt}
-          </figcaption>
+          <div className='relative'>
+            <Image
+              className='w-fit'
+              src={rightUrl}
+              alt={rightAlt}
+              priority={true}
+              width={0}
+              height={0}
+              sizes='100vw'
+            />
+            {!finalWinner && (
+              <figcaption className='text-white absolute text-center bottom-[20px] text-2xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
+                {rightAlt}
+              </figcaption>
+            )}
+          </div>
         </figure>
+      </section>
+      <div className='m-4'>
+        <select
+          id='round'
+          name='round'
+          className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 mb-4`}
+          defaultValue={''}
+          onChange={handleRoundChange}
+        >
+          <option value='' disabled>
+            강 바꾸기 (현재 {`${round}강`} - 바꿀 시 진행 초기화)
+          </option>
+          {getNumberOfRoundsAvailable(post.numberOfCandidates).map(
+            (availableRound) => (
+              <option
+                key={availableRound}
+                value={availableRound}
+                disabled={round === availableRound}
+              >
+                {`${availableRound}강`}
+              </option>
+            )
+          )}
+        </select>
       </div>
     </>
   );

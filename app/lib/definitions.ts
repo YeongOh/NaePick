@@ -1,42 +1,87 @@
-export type Post = {
+import { RowDataPacket } from 'mysql2';
+
+export interface User extends RowDataPacket {
+  id: string;
+  username: string;
+  nickname: string;
+  role: 'user' | 'admin';
+  email: string;
+  emailConfirmedAt: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Post extends RowDataPacket {
   id: string;
   title: string;
   description: string;
   publicity: 'public' | 'unlisted' | 'private';
-  userId: string; // userName
-  categoryId: number; // categoryName
+  userId: string;
+  categoryId: number;
   numberOfCandidates: number;
-  numberOfLikes: number;
-  numberOfComments: number;
-  numberOfGames: number;
   createdAt: string;
   updatedAt: string;
-};
+}
 
-export type Candidate = {
+export interface PostCard extends Post {
+  username: string;
+  nickname: string;
+  categoryName: string;
+  leftCandidateName: string;
+  rightCandidateName: string;
+}
+
+export interface PostInfo extends Post {
+  username: string;
+  nickname: string;
+  categoryName: string;
+}
+
+export interface PostStat extends PostInfo {
+  numberOfMatches: number;
+  numberOfGames: number;
+  totalSpentTime: number;
+}
+
+export interface Candidate extends RowDataPacket {
   id: string;
+  postId: string;
   name: string;
   url: string;
-  postId: string;
-  numberOfWins: number;
+  numberOfMatches: number;
+  numberOfMatchesWon: number;
   numberOfGames: number;
+  numberOfGamesWon: number;
+  spentTime: number;
   createdAt: string;
   updatedAt: string;
-};
+}
 
-export type Category = {
-  id: string;
+export interface Category extends RowDataPacket {
+  id: number;
   name: string;
-};
+}
 
-export type Thumbnail = {
+export interface Thumbnail extends RowDataPacket {
   id: string;
   postId: string;
   leftCandidateId: string;
   rightCandidateId: string;
-};
+}
 
-export function getCategoryInKorean(categoryName: string): string {
+export interface Comment extends RowDataPacket {
+  id: string;
+  postId: string;
+  parentId: string;
+  userId: string;
+  nickname: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function translateCategory(categoryName: string): string {
   switch (categoryName) {
     case 'animations':
       return '애니메이션';
