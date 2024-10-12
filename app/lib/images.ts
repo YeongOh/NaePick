@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 
 const Bucket = process.env.AWS_S3_BUCKET;
 const s3 = new S3Client({
@@ -13,7 +17,7 @@ export async function uploadImage(file: File, fileName: string) {
   const Body = (await file.arrayBuffer()) as Buffer;
 
   try {
-    s3.send(
+    await s3.send(
       new PutObjectCommand({
         Bucket,
         Key: fileName,
@@ -27,3 +31,18 @@ export async function uploadImage(file: File, fileName: string) {
 
 export const BASE_IMAGE_URL =
   'https://yopick-s3.s3.ap-northeast-2.amazonaws.com/';
+
+export async function deleteImage(candidateId: string) {
+  try {
+    // S3 삭제에 사용되는 key에는 path도 포함됨
+    console.log(`deleteing ${candidateId}`);
+    await s3.send(
+      new DeleteObjectCommand({
+        Bucket,
+        Key: candidateId,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}

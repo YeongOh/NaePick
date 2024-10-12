@@ -36,6 +36,35 @@ export async function fetchAllPosts() {
   }
 }
 
+export async function fetchUserAllPosts(userId: string) {
+  try {
+    const connection = await getConnection();
+
+    const [result, meta]: [PostCard[] & Thumbnail[], FieldPacket[]] =
+      await connection.execute(
+        `SELECT p.*, c1.name as leftCandidateName, c2.name as rightCandidateName, 
+              c1.url as leftCandidateUrl, c2.url as rightCandidateUrl,
+              u.nickname as nickname, u.username as username,
+              ct.name as categoryName
+      FROM Posts p 
+      LEFT JOIN Thumbnails t ON p.id = t.postId
+      LEFT JOIN Candidates c1 ON t.leftCandidateId = c1.id
+      LEFT JOIN Candidates c2 ON t.rightCandidateId = c2.id
+      LEFT JOIN Categories ct ON p.categoryId = ct.id
+      LEFT JOIN Users u ON p.userId = u.id
+      WHERE p.userId = ?
+      ORDER BY p.createdAt DESC 
+      LIMIT 12;`,
+        [userId]
+      );
+    console.log(result);
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function fetchAllCategories() {
   try {
     const connection = await getConnection();

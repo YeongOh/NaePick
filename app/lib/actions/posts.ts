@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { writeFile } from 'fs/promises';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -13,7 +12,9 @@ import {
 } from '../../constants';
 import getConnection from '../db';
 import { getSession } from './session';
-import { uploadImage } from '../images';
+import { deleteImage, uploadImage } from '../images';
+import { Candidate } from '../definitions';
+import { FieldPacket } from 'mysql2';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -157,8 +158,8 @@ export async function createPost(
         rightCandidateId = candidateId;
       }
 
-      const promises = [];
-      promises.push(await uploadImage(file, url));
+      const promises: Promise<void>[] = [];
+      promises.push(uploadImage(file, url));
 
       const result = await Promise.all(promises);
     }
@@ -190,4 +191,65 @@ export async function createPost(
 
   revalidatePath('/');
   redirect('/');
+}
+
+export async function deleteUserPost(postId: string, userId: string) {
+  try {
+    const session = await getSession();
+    if (session.id !== userId) {
+      console.log('권한 없음');
+      return;
+    }
+    const connection = await getConnection();
+
+    const [result, meta] = await connection.execute(
+      `DELETE FROM Posts
+        WHERE id = ?`,
+      [postId]
+    );
+
+    await connection.execute(
+      `DELETE FROM PostStats
+        WHERE postid = ?`,
+      [postId]
+    );
+
+    const [candidates, candidatesMeta]: [Candidate[], FieldPacket[]] =
+      await connection.execute(
+        `SELECT * FROM Candidates
+        WHERE postid = ?`,
+        [postId]
+      );
+
+    if (candidates) {
+      const promises: Promise<void>[] = [];
+      candidates.forEach(async (candidate: Candidate) =>
+        promises.push(deleteImage(candidate.url))
+      );
+      const imageDeleteResult = await Promise.all(promises);
+      console.log(imageDeleteResult);
+    }
+
+    await connection.execute(
+      `DELETE FROM Candidates
+        WHERE postid = ?`,
+      [postId]
+    );
+
+    await connection.execute(
+      `DELETE FROM Thumbnails
+        WHERE postid = ?`,
+      [postId]
+    );
+
+    await connection.execute(
+      `DELETE FROM Comments
+        WHERE postid = ?`,
+      [postId]
+    );
+  } catch (err) {
+    console.log(err);
+  }
+  revalidatePath(`/${userId}`);
+  redirect(`/${userId}`);
 }

@@ -30,7 +30,10 @@ export default async function RootLayout({
             </Link>
             <Link href={`/posts/create`}>월드컵 만들기</Link>
             {session?.username ? (
-              <SignoutButtion />
+              <>
+                <SignoutButtion />
+                <Link href={`/${session.id}`}>내 월드컵 관리</Link>
+              </>
             ) : (
               <Link href={`/auth/signin`}>로그인</Link>
             )}
