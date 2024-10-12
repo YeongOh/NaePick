@@ -4,6 +4,7 @@ import { Candidate, PostStat } from '@/app/lib/definitions';
 import Image from 'next/image';
 import { useState } from 'react';
 import 'dayjs/locale/ko';
+import { BASE_IMAGE_URL } from '@/app/lib/images';
 
 interface Props {
   candidates: Candidate[];
@@ -133,7 +134,7 @@ export default function RankScreen({ candidates, postStat }: Props) {
                 <div>
                   <div className='relative w-[180px] h-[180px] overflow-hidden'>
                     <Image
-                      src={candidate.url}
+                      src={`${BASE_IMAGE_URL}${candidate.url}`}
                       alt={candidate.name}
                       fill
                       objectFit='cover'

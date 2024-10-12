@@ -3,6 +3,7 @@
 import { getNumberOfRoundsAvailable } from '@/app/constants';
 import { sendStats } from '@/app/lib/actions/ranks';
 import { Post } from '@/app/lib/definitions';
+import { BASE_IMAGE_URL } from '@/app/lib/images';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -112,7 +113,7 @@ export default function PickScreen({
           <div className='relative'>
             <Image
               className='w-fit'
-              src={leftUrl}
+              src={`${BASE_IMAGE_URL}${leftUrl}`}
               alt={leftAlt}
               priority={true}
               width={0}
@@ -142,7 +143,7 @@ export default function PickScreen({
           <div className='relative'>
             <Image
               className='w-fit'
-              src={rightUrl}
+              src={`${BASE_IMAGE_URL}${rightUrl}`}
               alt={rightAlt}
               priority={true}
               width={0}

@@ -13,6 +13,7 @@ import {
 } from '../../constants';
 import getConnection from '../db';
 import { getSession } from './session';
+import { uploadImage } from '../images';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -157,7 +158,7 @@ export async function createPost(
       }
 
       const promises = [];
-      promises.push(await uploadImageFile(file, url));
+      promises.push(await uploadImage(file, url));
 
       const result = await Promise.all(promises);
     }
@@ -189,9 +190,4 @@ export async function createPost(
 
   revalidatePath('/');
   redirect('/');
-}
-
-async function uploadImageFile(file: File, filename: string) {
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(process.cwd(), 'public/' + filename), buffer);
 }

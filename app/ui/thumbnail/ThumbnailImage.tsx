@@ -1,4 +1,5 @@
 import { Thumbnail } from '@/app/lib/definitions';
+import { BASE_IMAGE_URL } from '@/app/lib/images';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -28,7 +29,7 @@ export default function ThumbnailImage({
             <div className='relative w-1/2'>
               <Image
                 className='object-cover'
-                src={leftCandidateUrl}
+                src={`${BASE_IMAGE_URL}${leftCandidateUrl}`}
                 alt={leftCandidateName}
                 fill={true}
                 sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
@@ -46,7 +47,7 @@ export default function ThumbnailImage({
           <div className='relative w-1/2'>
             <Image
               className='object-cover'
-              src={rightCandidateUrl}
+              src={`${BASE_IMAGE_URL}${rightCandidateUrl}`}
               alt={rightCandidateName}
               fill={true}
               sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'

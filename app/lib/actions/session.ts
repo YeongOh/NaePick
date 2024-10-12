@@ -24,13 +24,3 @@ export async function deleteSession() {
   const session = await getSession();
   session.destroy();
 }
-
-// export const verifySession = cache(async () => {
-//   const session = await getSession();
-
-//   if (!session?.id) {
-//     redirect('/auth/signin');
-//   }
-
-//   return session;
-// });

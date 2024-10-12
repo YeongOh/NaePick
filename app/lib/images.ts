@@ -1,0 +1,29 @@
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+
+const Bucket = process.env.AWS_S3_BUCKET;
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY as string,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+  },
+});
+
+export async function uploadImage(file: File, fileName: string) {
+  const Body = (await file.arrayBuffer()) as Buffer;
+
+  try {
+    s3.send(
+      new PutObjectCommand({
+        Bucket,
+        Key: fileName,
+        Body,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const BASE_IMAGE_URL =
+  'https://yopick-s3.s3.ap-northeast-2.amazonaws.com/';

@@ -110,8 +110,7 @@ async function seedThumbnails() {
         postId VARCHAR(255) NOT NULL,
         leftCandidateId VARCHAR(255) NOT NULL,
         rightCandidateId VARCHAR(255) NOT NULL,
-        PRIMARY KEY (id),
-        FOREIGN KEY (postId) REFERENCES POSTS (id) ON DELETE CASCADE
+        PRIMARY KEY (id)
       );`
     );
 
