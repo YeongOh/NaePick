@@ -1,6 +1,7 @@
 'use client';
 
-import { deleteUserPost } from '@/app/lib/actions/posts';
+import { deleteUserPost } from '@/app/lib/actions/posts/delete';
+import Link from 'next/link';
 
 interface Props {
   postId: string;
@@ -17,7 +18,7 @@ export default function CardForm({ postId, userId }: Props) {
     <div className='mt-4 flex'>
       <div className='flex h-12 w-full gap-4'>
         <button onClick={handleDeleteClick}>삭제</button>
-        <button>수정</button>
+        <Link href={`posts/${postId}/update`}>수정</Link>
       </div>
     </div>
   );

@@ -1,6 +1,11 @@
 'use client';
 
-import { Category, translateCategory } from '@/app/lib/definitions';
+import {
+  Candidate,
+  Category,
+  PostInfo,
+  translateCategory,
+} from '@/app/lib/definitions';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState, CSSProperties, useRef } from 'react';
@@ -14,9 +19,10 @@ import {
   POST_TITLE_MIN_LENGTH,
 } from '@/app/constants';
 import {
-  createPost,
-  CreatePostFormState,
-} from '@/app/lib/actions/posts/create';
+  updatePost,
+  UpdatePostFormState,
+} from '@/app/lib/actions/posts/update';
+import { BASE_IMAGE_URL } from '@/app/lib/images';
 
 const thumbsContainer: CSSProperties = {
   display: 'flex',
@@ -45,15 +51,28 @@ const publicityMessage: { [key in Publicity]: string } = {
 
 interface Props {
   categories: Category[];
+  post: PostInfo;
+  candidates: Candidate[];
 }
 
-export default function CreatePostForm({ categories }: Props) {
-  const [publicity, setPublicity] = useState<Publicity>('public');
+export default function UpdatePostForm({
+  post,
+  candidates,
+  categories,
+}: Props) {
+  const [publicity, setPublicity] = useState<Publicity>(post.publicity);
+  const [description, setDescription] = useState<string>(post.description);
+  const [oldCandidates, setOldCandidates] = useState<Candidate[]>(candidates);
+  const [category, setCategory] = useState<string>(String(post.categoryId));
   const [files, setFiles] = useState<(File & { preview: string })[]>([]);
-  const initialState: CreatePostFormState = { message: null, errors: {} };
-  const [state, submitCreatePostForm] = useFormState(createPost, initialState);
-  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const initialState: UpdatePostFormState = { message: null, errors: {} };
+  const [state, submitUpdatePostForm] = useFormState(updatePost, initialState);
+  const [thumbnails, setThumbnails] = useState<string[]>([
+    post.leftCandidateId,
+    post.rightCandidateId,
+  ]);
   const formRef = useRef<HTMLFormElement>(null);
+  const [title, setTitle] = useState<string>(post.title);
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     accept: {
       'image/*': [],
@@ -82,6 +101,7 @@ export default function CreatePostForm({ categories }: Props) {
       }
     },
   });
+  console.log(thumbnails);
 
   function nameLengthValidator(file: any) {
     if (file.name.length > FILE_NAME_MAX_LENGTH) {
@@ -100,6 +120,89 @@ export default function CreatePostForm({ categories }: Props) {
     }
     return null;
   }
+
+  function removeOldCandidate(candidate: Candidate) {
+    setOldCandidates(
+      oldCandidates.filter((oldCandidate) => oldCandidate.id !== candidate.id)
+    );
+  }
+
+  function handleOldCandidateNameChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    currentCandidate: Candidate
+  ) {
+    setOldCandidates(
+      oldCandidates.map((candidate: Candidate) =>
+        candidate.id === currentCandidate.id
+          ? { ...candidate, name: e.target.value }
+          : candidate
+      )
+    );
+  }
+
+  const oldCandidatesThumbs = oldCandidates.map(
+    (candidate: Candidate, i: number) => {
+      return (
+        <div key={candidate.id}>
+          <div
+            style={thumb}
+            onClick={() => {
+              if (thumbnails.includes(candidate.id)) {
+                setThumbnails(
+                  thumbnails.filter((thumbnail) => thumbnail != candidate.id)
+                );
+              } else if (thumbnails.length >= 2) {
+                setThumbnails([...thumbnails.slice(1), candidate.id]);
+              } else {
+                setThumbnails([...thumbnails, candidate.id]);
+              }
+            }}
+          >
+            <Image
+              title={`${candidate.name}`}
+              src={`${BASE_IMAGE_URL}${candidate.url}`}
+              alt={candidate.name}
+              sizes='100vw'
+              className='object-cover'
+              fill={true}
+            />
+            {thumbnails.findIndex((id) => id === candidate.id) == 0 && (
+              <div className='absolute top-1 left-1 rounded-md bg-teal-500 font-semibold text-white'>
+                왼쪽 썸네일
+              </div>
+            )}
+            {thumbnails.findIndex((id) => id === candidate.id) == 1 && (
+              <div className='absolute top-1 left-1 rounded-md bg-teal-500 font-semibold text-white'>
+                오른쪽 썸네일
+              </div>
+            )}
+          </div>
+          <div className='flex justify-between items-center my-2'>
+            <label
+              htmlFor={`candidateNames[${i}]`}
+              className='block font-semibold text-sm'
+            >
+              후보 {i + 1}
+            </label>
+            <button
+              onClick={() => removeOldCandidate(candidate)}
+              className='bg-white border border-grey-700 px-3 flex h-8 items-center rounded-lg text-red-500 font-semibold text-sm'
+            >
+              삭제
+            </button>
+          </div>
+          <input
+            className='block w-full border rounded-md mb-2 p-2 text-sm placeholder:text-gray-500 focus:outline-teal-500'
+            id={candidate.id}
+            name={candidate.name}
+            placeholder={candidate.name}
+            value={candidate.name}
+            onChange={(e) => handleOldCandidateNameChange(e, candidate)}
+          />
+        </div>
+      );
+    }
+  );
 
   const thumbs = files.map((file: any, i: number) => {
     const namePlaceholder = excludeFileExtension(file.name);
@@ -148,7 +251,7 @@ export default function CreatePostForm({ categories }: Props) {
             htmlFor={`candidateNames[${i}]`}
             className='block font-semibold text-sm'
           >
-            후보 {i + 1}
+            후보 {oldCandidates.length + i + 1}
           </label>
           <button
             onClick={() => removeCandidate(i)}
@@ -176,7 +279,7 @@ export default function CreatePostForm({ categories }: Props) {
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
   }, []);
 
-  function handleCreatePostFormSubmit(formData: FormData) {
+  function handleUpdatePostFormSubmit(formData: FormData) {
     if (formRef.current) {
       const input: HTMLInputElement | null =
         formRef.current.querySelector('input[type=file]');
@@ -186,13 +289,18 @@ export default function CreatePostForm({ categories }: Props) {
         );
       }
     }
-    formData.append('numberOfCandidates', String(files.length));
+    formData.append(
+      'numberOfCandidates',
+      String(files.length + oldCandidates.length)
+    );
     formData.append('thumbnails', JSON.stringify(thumbnails));
-    submitCreatePostForm(formData);
+    formData.append('oldCandidates', JSON.stringify(oldCandidates));
+    formData.append('id', post.id);
+    submitUpdatePostForm(formData);
   }
 
   return (
-    <form action={handleCreatePostFormSubmit} ref={formRef}>
+    <form action={handleUpdatePostFormSubmit} ref={formRef}>
       <div className='rounded-md bg-gray-50 p-6'>
         <label htmlFor='title' className='ml-2 mb-2 block font-semibold'>
           제목
@@ -205,8 +313,9 @@ export default function CreatePostForm({ categories }: Props) {
             state.errors?.title && 'outline outline-1 outline-red-500'
           }`}
           placeholder={`이상형 월드컵 제목을 입력해주세요. (최소 ${POST_TITLE_MIN_LENGTH}, 최대 ${POST_TITLE_MAX_LENGTH}자)`}
+          value={title}
           aria-describedby='title-error'
-          autoFocus
+          onChange={(e) => setTitle(e.target.value)}
         />
         <div id='title-error' aria-live='polite' aria-atomic='true'>
           {state.errors?.title &&
@@ -227,6 +336,8 @@ export default function CreatePostForm({ categories }: Props) {
           }`}
           placeholder={`이상형 월드컵에 대한 설명을 입력해주세요. (최대 ${POST_DESCRIPTION_MAX_LENGTH}자)`}
           aria-describedby='description-error'
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <div id='description-error' aria-live='polite' aria-atomic='true'>
           {state.errors?.description &&
@@ -251,8 +362,9 @@ export default function CreatePostForm({ categories }: Props) {
                   type='radio'
                   value='public'
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
-                  onClick={() => setPublicity('public')}
+                  onChange={() => setPublicity('public')}
                   aria-describedby='publicity-error'
+                  defaultChecked={publicity === 'public'}
                 />
                 <label htmlFor='public' className='ml-2 cursor-pointer'>
                   전체 공개
@@ -264,9 +376,10 @@ export default function CreatePostForm({ categories }: Props) {
                   name='publicity'
                   type='radio'
                   value='unlisted'
-                  onClick={() => setPublicity('unlisted')}
+                  onChange={() => setPublicity('unlisted')}
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
                   aria-describedby='publicity-error'
+                  defaultChecked={publicity === 'unlisted'}
                 />
                 <label htmlFor='unlisted' className='ml-2 cursor-pointer'>
                   미등록
@@ -281,6 +394,7 @@ export default function CreatePostForm({ categories }: Props) {
                   onClick={() => setPublicity('private')}
                   className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
                   aria-describedby='publicity-error'
+                  defaultChecked={publicity === 'private'}
                 />
                 <label htmlFor='private' className='ml-2 cursor-pointer'>
                   비공개
@@ -313,7 +427,8 @@ export default function CreatePostForm({ categories }: Props) {
             className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 mb-4 ${
               state.errors?.categoryId && 'outline outline-1 outline-red-500'
             }`}
-            defaultValue=''
+            defaultValue={post.categoryId}
+            onChange={(e) => setCategory(e.target.value)}
             aria-describedby='categoryId-error'
           >
             <option value='' disabled>
@@ -386,10 +501,12 @@ export default function CreatePostForm({ categories }: Props) {
               </>
             ))}
           <div className='ml-2 mb-2 mt-4 font-semibold'>
-            {files.length > 0
-              ? `총 ${files.length}명의 후보`
+            {files.length > 0 || oldCandidates.length > 0
+              ? `총 ${oldCandidates.length + files.length}명의 후보`
               : '최소 2명의 후보가 필요합니다.'}
           </div>
+          <div>이전 후보는 현재 이름 수정, 혹은 후보 삭제만 지원합니다.</div>
+          <aside style={thumbsContainer}>{oldCandidatesThumbs}</aside>
           <aside style={thumbsContainer}>{thumbs}</aside>
         </section>
       </div>
@@ -403,7 +520,7 @@ export default function CreatePostForm({ categories }: Props) {
       )}
       <div className='flex gap-4 m-4 justify-end '>
         <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
-          만들기
+          수정하기
         </button>
         <Link
           href={'/posts/'}

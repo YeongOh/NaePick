@@ -103,6 +103,34 @@ export async function fetchPostByPostId(id: string) {
   }
 }
 
+export async function fetchPostThumbnailByPostId(id: string) {
+  try {
+    const connection = await getConnection();
+
+    const [result, meta]: [
+      PostInfo[] & { leftCandidateId: string; rightCandidateId: string },
+      FieldPacket[]
+    ] = await connection.execute(
+      `SELECT p.*, c.name AS categoryName,
+            u.nickname as nickname,
+            t.leftCandidateId as leftCandidateId,
+            t.rightCandidateId as rightCandidateId,
+            u.username as username 
+       FROM Posts p
+       LEFT JOIN Thumbnails t ON p.id = t.postId
+       LEFT JOIN Categories c ON p.categoryId = c.id
+       LEFT JOIN Users u ON p.userId = u.id
+       WHERE p.id = ?;`,
+      [id]
+    );
+    console.log(result);
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function fetchPostStatById(id: string) {
   try {
     const connection = await getConnection();

@@ -9,14 +9,12 @@ import {
   POST_DESCRIPTION_MAX_LENGTH,
   POST_TITLE_MAX_LENGTH,
   POST_TITLE_MIN_LENGTH,
-} from '../../constants';
-import getConnection from '../db';
-import { getSession } from './session';
-import { deleteImage, uploadImage } from '../images';
-import { Candidate } from '../definitions';
-import { FieldPacket } from 'mysql2';
+} from '../../../constants';
+import getConnection from '../../db';
+import { getSession } from '../session';
+import { uploadImage } from '../../images';
 
-const FormSchema = z.object({
+const CreatePostFormSchema = z.object({
   id: z.string(),
   title: z
     .string()
@@ -56,7 +54,7 @@ export type CreatePostFormState = {
   message?: string | null;
 };
 
-const CreateInvoice = FormSchema.omit({ id: true });
+const CreateInvoice = CreatePostFormSchema.omit({ id: true });
 
 export async function createPost(
   prevState: CreatePostFormState,
@@ -191,65 +189,4 @@ export async function createPost(
 
   revalidatePath('/');
   redirect('/');
-}
-
-export async function deleteUserPost(postId: string, userId: string) {
-  try {
-    const session = await getSession();
-    if (session.id !== userId) {
-      console.log('권한 없음');
-      return;
-    }
-    const connection = await getConnection();
-
-    const [result, meta] = await connection.execute(
-      `DELETE FROM Posts
-        WHERE id = ?`,
-      [postId]
-    );
-
-    await connection.execute(
-      `DELETE FROM PostStats
-        WHERE postid = ?`,
-      [postId]
-    );
-
-    const [candidates, candidatesMeta]: [Candidate[], FieldPacket[]] =
-      await connection.execute(
-        `SELECT * FROM Candidates
-        WHERE postid = ?`,
-        [postId]
-      );
-
-    if (candidates) {
-      const promises: Promise<void>[] = [];
-      candidates.forEach(async (candidate: Candidate) =>
-        promises.push(deleteImage(candidate.url))
-      );
-      const imageDeleteResult = await Promise.all(promises);
-      console.log(imageDeleteResult);
-    }
-
-    await connection.execute(
-      `DELETE FROM Candidates
-        WHERE postid = ?`,
-      [postId]
-    );
-
-    await connection.execute(
-      `DELETE FROM Thumbnails
-        WHERE postid = ?`,
-      [postId]
-    );
-
-    await connection.execute(
-      `DELETE FROM Comments
-        WHERE postid = ?`,
-      [postId]
-    );
-  } catch (err) {
-    console.log(err);
-  }
-  revalidatePath(`/${userId}`);
-  redirect(`/${userId}`);
 }

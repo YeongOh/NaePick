@@ -3,8 +3,6 @@ import 'server-only';
 import { getIronSession } from 'iron-session';
 import { SessionData, sessionOptions } from '../auth';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { cache } from 'react';
 
 export async function getSession() {
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);
