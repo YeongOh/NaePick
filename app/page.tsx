@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { fetchAllPosts } from './lib/data';
+import { fetchPublicPosts } from './lib/data';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import ThumbnailImage from './ui/thumbnail/ThumbnailImage';
@@ -7,7 +7,7 @@ import CardLink from './ui/cardLink/CardLink';
 import { getNumberOfRoundsAvailable } from './constants';
 
 export default async function Home() {
-  const allPosts = await fetchAllPosts();
+  const allPosts = await fetchPublicPosts();
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 

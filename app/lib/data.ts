@@ -9,7 +9,7 @@ import {
 } from './definitions';
 import getConnection from './db';
 
-export async function fetchAllPosts() {
+export async function fetchPublicPosts() {
   try {
     const connection = await getConnection();
 
@@ -25,7 +25,8 @@ export async function fetchAllPosts() {
       LEFT JOIN Candidates c2 ON t.rightCandidateId = c2.id
       LEFT JOIN Categories ct ON p.categoryId = ct.id
       LEFT JOIN Users u ON p.userId = u.id
-      ORDER BY p.createdAt DESC 
+      WHERE p.publicity = 'public'
+      ORDER BY p.createdAt DESC
       LIMIT 12;`
       );
     console.log(result);

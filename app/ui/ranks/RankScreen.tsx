@@ -18,8 +18,6 @@ type sortOptions =
   | 'decreasingMatchWinRate';
 
 export default function RankScreen({ candidates, postStat }: Props) {
-  const [limit, setLimit] = useState(2);
-  const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<sortOptions>('increasingGameWinRate');
   const [winRateDetails, setWinRateDetails] = useState(false);
 
@@ -46,7 +44,6 @@ export default function RankScreen({ candidates, postStat }: Props) {
     }
   });
 
-  const totalPages = Math.ceil(candidates.length / limit);
   const spentTimePerGame =
     postStat.totalSpentTime === 0
       ? 0
@@ -218,20 +215,6 @@ export default function RankScreen({ candidates, postStat }: Props) {
             );
           })}
         </ul>
-        <div className='flex justify-center items-center space-x-1 m-4'>
-          {[...new Array(totalPages)].map((_, i) => (
-            <button
-              key={`button for page${i + 1}`}
-              className={`${
-                page === i + 1
-                  ? `bg-teal-600 border-teal-600 text-white`
-                  : 'text-slate-600 hover:shadow-lg'
-              } min-w-9 rounded-md border border-slate-300 py-2 px-3 text-center text-sm shadow-sm`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
       </div>
     </>
   );

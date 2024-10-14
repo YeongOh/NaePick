@@ -11,14 +11,24 @@ interface Props {
 export default function CardForm({ postId, userId }: Props) {
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!confirm('정말로 삭제하시겠습니까?')) {
+      return;
+    }
     deleteUserPost(postId, userId);
   };
 
   return (
     <div className='mt-4 flex'>
-      <div className='flex h-12 w-full gap-4'>
-        <button onClick={handleDeleteClick}>삭제</button>
-        <Link href={`posts/${postId}/update`}>수정</Link>
+      <div className='flex h-12 w-full items-center justify-between px-4'>
+        <Link
+          className='p-2 bg-teal-500 text-white rounded px-4'
+          href={`posts/${postId}/update`}
+        >
+          수정
+        </Link>
+        <button className='text-red-500' onClick={handleDeleteClick}>
+          삭제
+        </button>
       </div>
     </div>
   );
