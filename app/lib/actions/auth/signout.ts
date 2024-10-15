@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { deleteSession } from './session';
+import { deleteSession } from '../session';
 
 export async function signout() {
   await deleteSession();

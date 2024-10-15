@@ -16,6 +16,7 @@ export default async function Navbar() {
           {session?.username ? (
             <>
               <Link href={`/${session.id}`}>내 월드컵 관리</Link>
+              <Link href={'/auth/update'}>회원정보 수정</Link>
               <SignoutButtion />
             </>
           ) : (

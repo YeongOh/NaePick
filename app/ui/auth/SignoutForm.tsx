@@ -1,6 +1,6 @@
 'use client';
 
-import { signout } from '@/app/lib/actions/signout';
+import { signout } from '@/app/lib/actions/auth/signout';
 
 export default function SignoutForm() {
   return (

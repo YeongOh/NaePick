@@ -1,4 +1,5 @@
 import { RowDataPacket } from 'mysql2';
+import { SessionOptions } from 'iron-session';
 
 export interface User extends RowDataPacket {
   id: string;
@@ -96,4 +97,29 @@ export function translateCategory(categoryName: string): string {
     default:
       return '오류';
   }
+}
+
+// ex : https://supabase.com/docs/guides/auth/users
+
+export type SignupError = {
+  username?: string[];
+  email?: string[];
+  nickname?: string[];
+  password?: string[];
+  confirmPassword?: string[];
+};
+
+export const sessionOptions: SessionOptions = {
+  password: 'complex-password-for-cookiecomplex-password-for-cookie',
+  cookieName: 'test-example',
+  cookieOptions: {
+    secure: process.env.NODE_ENV === 'production',
+  },
+};
+
+export interface SessionData {
+  id: string;
+  email: string;
+  username: string;
+  nickname: string;
 }

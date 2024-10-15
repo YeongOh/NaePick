@@ -1,7 +1,6 @@
 'use client';
 
-import { signup } from '@/app/lib/actions/signup';
-import { SignupState } from '@/app/lib/auth';
+import { signup, SignupState } from '@/app/lib/actions/auth/signup';
 import Link from 'next/link';
 import { useFormState } from 'react-dom';
 

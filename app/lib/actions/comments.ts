@@ -68,6 +68,5 @@ export async function createComment(state: CommentState, formData: FormData) {
     };
   }
   revalidatePath(`/posts/${postId}`);
-  revalidatePath(`/ranks/${postId}`);
   return {};
 }

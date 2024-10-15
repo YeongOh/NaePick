@@ -1,7 +1,7 @@
 'use client';
 
-import { signin } from '@/app/lib/actions/signin';
-import { SigninState } from '@/app/lib/auth';
+import { signin } from '@/app/lib/actions/auth/signin';
+import { SigninState } from '@/app/lib/definitions';
 import Link from 'next/link';
 import { useFormState } from 'react-dom';
 

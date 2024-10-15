@@ -12,13 +12,12 @@ import {
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import getConnection from '../db';
-import { User } from '../definitions';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { SignupError, SignupState } from '../auth';
-import { createSession } from './session';
+import { User } from '../../definitions';
+import getConnection from '../../db';
+import { createSession } from '../session';
 
 const FormSchema = z
   .object({
@@ -68,6 +67,19 @@ const FormSchema = z
     path: ['confirmPassword'],
   });
 
+export type SignupState = {
+  errors?: SignupError;
+  message?: string | null;
+};
+
+export type SignupError = {
+  username?: string[];
+  email?: string[];
+  nickname?: string[];
+  password?: string[];
+  confirmPassword?: string[];
+};
+
 export async function signup(state: SignupState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
     username: formData.get('username'),
@@ -94,7 +106,7 @@ export async function signup(state: SignupState, formData: FormData) {
 
     // check if userid or email already exists in db
     const [duplicateResult, duplicateFields]: [
-      Pick<User, 'userId' | 'email'>[] & RowDataPacket[],
+      Pick<User, 'userId' | 'email' | 'nickname'>[] & RowDataPacket[],
       FieldPacket[]
     ] = await connection.execute(
       `SELECT username, email, nickname
@@ -106,37 +118,29 @@ export async function signup(state: SignupState, formData: FormData) {
     const duplicateUser = duplicateResult?.[0];
     if (duplicateUser) {
       const errors: SignupError = {};
-      let isDuplicated = false;
-      if (username === duplicateUser.username) {
+      if (username === duplicateUser.username)
         errors.username = ['이미 존재하는 아이디입니다.'];
-        isDuplicated = true;
-      }
-      if (nickname === duplicateUser.nickname) {
+      if (nickname === duplicateUser.nickname)
         errors.nickname = ['이미 존재하는 닉네임입니다.'];
-        isDuplicated = true;
-      }
-      if (email === duplicateUser.email) {
+      if (email === duplicateUser.email)
         errors.email = ['이미 존재하는 이메일입니다.'];
-        isDuplicated = true;
-      }
-      if (isDuplicated) {
-        return {
-          message: '회원가입에 실패했습니다. (e1)',
-          errors,
-        };
-      }
+
+      return {
+        message: '회원가입에 실패했습니다. (e1)',
+        errors,
+      };
     }
 
     const id = uuidv4();
     const role = 'user';
 
-    const [result, fields]: [User[], FieldPacket[]] = await connection.execute(
+    await connection.execute(
       `INSERT INTO Users (id, username, email, nickname, role, password)
       VALUES (?, ?, ?, ?, ?, ?)`,
       [id, username, email, nickname, role, hashedPassword]
     );
 
-    await createSession({ id, username, nickname });
+    await createSession({ id, username, nickname, email });
   } catch (error) {
     console.log(error);
     return {

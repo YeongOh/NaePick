@@ -8,13 +8,12 @@ import {
 } from '@/app/constants';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import getConnection from '../db';
-import { User } from '../definitions';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { SignupState } from '../auth';
-import { createSession } from './session';
+import { User } from '../../definitions';
+import getConnection from '../../db';
+import { createSession } from '../session';
 
 const FormSchema = z.object({
   username: z
@@ -46,7 +45,15 @@ const FormSchema = z.object({
     .trim(),
 });
 
-export async function signin(state: SignupState, formData: FormData) {
+export type SigninState = {
+  errors?: {
+    username?: string[];
+    password?: string[];
+  };
+  message?: string | null;
+};
+
+export async function signin(state: SigninState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
     username: formData.get('username'),
     password: formData.get('password'),
@@ -65,13 +72,14 @@ export async function signin(state: SignupState, formData: FormData) {
     const connection = await getConnection();
 
     const [result, fields]: [
-      Pick<User, 'username' | 'email'>[] & RowDataPacket[],
+      Pick<User, 'id' | 'username' | 'email' | 'password' | 'nickname'>[] &
+        RowDataPacket[],
       FieldPacket[]
     ] = await connection.execute(
-      `SELECT id, nickname, username, password
+      `SELECT id, nickname, username, password, email
       FROM Users
-      WHERE username = ? OR password = ?;`,
-      [username, password]
+      WHERE username = ?;`,
+      [username]
     );
 
     const user = result?.[0];
@@ -96,6 +104,7 @@ export async function signin(state: SignupState, formData: FormData) {
     const loginInfo = {
       id: user.id,
       nickname: user.nickname,
+      email: user.email,
       username,
     };
     await createSession(loginInfo);

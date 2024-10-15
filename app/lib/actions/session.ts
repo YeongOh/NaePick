@@ -1,8 +1,8 @@
 import 'server-only';
 
 import { getIronSession } from 'iron-session';
-import { SessionData, sessionOptions } from '../auth';
 import { cookies } from 'next/headers';
+import { SessionData, sessionOptions } from '../definitions';
 
 export async function getSession() {
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);
@@ -12,9 +12,7 @@ export async function getSession() {
 export async function createSession(data: SessionData, persistLogin = false) {
   const session = await getSession();
 
-  session.id = data.id;
-  session.username = data.username;
-  session.nickname = data.nickname;
+  Object.assign(session, data);
   await session.save();
 }
 
