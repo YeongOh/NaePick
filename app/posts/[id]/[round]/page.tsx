@@ -25,6 +25,13 @@ export default async function Page({ params }: Props) {
   ]);
 
   if (postResult && postResult[0]) {
+    if (
+      postResult[0].publicity === 'private' &&
+      session.id !== postResult[0].userId
+    ) {
+      return <div>비공개 이상형 월드컵입니다.</div>;
+    }
+
     return (
       <>
         <PickScreen
