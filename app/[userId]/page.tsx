@@ -4,7 +4,9 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import ThumbnailImage from '../ui/thumbnail/ThumbnailImage';
-import CardForm from '../ui/cardLink/CardForm';
+import CardUpdateForm from '../ui/cardLink/CardUpdateForm';
+import { getNumberOfRoundsAvailable } from '../constants';
+import CardLink from '../ui/cardLink/CardLink';
 
 interface Props {
   params: { userId: string };
@@ -52,24 +54,18 @@ export default async function Page({ params }: Props) {
                         {dayjs(post.createdAt).fromNow()}
                       </span>
                     </div>
-                    <div className='cursor-pointer'>
-                      <svg
-                        fill='#000000'
-                        width='32px'
-                        height='32px'
-                        viewBox='0 0 512 512'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <title>ionicons-v5-f</title>
-                        <circle cx='256' cy='256' r='48' />
-                        <circle cx='256' cy='416' r='48' />
-                        <circle cx='256' cy='96' r='48' />
-                      </svg>
-                    </div>
+                    <div className='cursor-pointer'></div>
                   </div>
                 </div>
               </div>
-              <CardForm postId={post.id} userId={userId} />
+              <CardLink
+                postId={post.id}
+                availableRounds={getNumberOfRoundsAvailable(
+                  post.numberOfCandidates
+                )}
+                title={post.title}
+              />
+              <CardUpdateForm postId={post.id} userId={userId} />
             </li>
           ))}
       </ul>

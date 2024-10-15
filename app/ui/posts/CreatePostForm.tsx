@@ -133,12 +133,12 @@ export default function CreatePostForm({ categories }: Props) {
             }}
           />
           {thumbnails.findIndex((name) => name == file.name) == 0 && (
-            <div className='absolute top-1 left-1 rounded-md bg-teal-500 font-semibold text-white'>
+            <div className='absolute top-1 left-1 rounded-md bg-primary-500 font-semibold text-white'>
               왼쪽 썸네일
             </div>
           )}
           {thumbnails.findIndex((name) => name == file.name) == 1 && (
-            <div className='absolute top-1 left-1 rounded-md bg-teal-500 font-semibold text-white'>
+            <div className='absolute top-1 left-1 rounded-md bg-primary-500 font-semibold text-white'>
               오른쪽 썸네일
             </div>
           )}
@@ -158,7 +158,7 @@ export default function CreatePostForm({ categories }: Props) {
           </button>
         </div>
         <input
-          className='block w-full border rounded-md mb-2 p-2 text-sm placeholder:text-gray-500 focus:outline-teal-500'
+          className='block w-full border rounded-md mb-2 p-2 text-sm placeholder:text-gray-500 focus:outline-primary-500'
           id={`candidateNames[${i}]`}
           name={`candidateNames[${i}]`}
           placeholder={namePlaceholder}
@@ -201,7 +201,7 @@ export default function CreatePostForm({ categories }: Props) {
           id='title'
           name='title'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 ${
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 ${
             state.errors?.title && 'outline outline-1 outline-red-500'
           }`}
           placeholder={`이상형 월드컵 제목을 입력해주세요. (최소 ${POST_TITLE_MIN_LENGTH}, 최대 ${POST_TITLE_MAX_LENGTH}자)`}
@@ -222,7 +222,7 @@ export default function CreatePostForm({ categories }: Props) {
         <input
           id='description'
           name='description'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 ${
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 ${
             state.errors?.description && 'outline outline-1 outline-red-500'
           }`}
           placeholder={`이상형 월드컵에 대한 설명을 입력해주세요. (최대 ${POST_DESCRIPTION_MAX_LENGTH}자)`}
@@ -310,7 +310,7 @@ export default function CreatePostForm({ categories }: Props) {
           <select
             id='categoryId'
             name='categoryId'
-            className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 mb-4 ${
+            className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-primary-500 mb-4 ${
               state.errors?.categoryId && 'outline outline-1 outline-red-500'
             }`}
             defaultValue=''
@@ -402,7 +402,7 @@ export default function CreatePostForm({ categories }: Props) {
         </div>
       )}
       <div className='flex gap-4 m-4 justify-end '>
-        <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
           만들기
         </button>
         <Link

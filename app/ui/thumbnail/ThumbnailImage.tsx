@@ -1,4 +1,3 @@
-import { Thumbnail } from '@/app/lib/definitions';
 import { BASE_IMAGE_URL } from '@/app/lib/images';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,10 +19,7 @@ export default function ThumbnailImage({
 }: Props) {
   return (
     <>
-      <Link
-        href={`/posts/${postId}`}
-        className='inline-flex bg-black w-full h-[150px] overflow-hidden rounded-xl'
-      >
+      <div className='inline-flex bg-black w-full h-[150px] overflow-hidden rounded-xl'>
         {leftCandidateUrl && (
           <>
             <div className='relative w-1/2'>
@@ -67,7 +63,7 @@ export default function ThumbnailImage({
         {!leftCandidateUrl && (
           <div className='relative w-1/2 text-white'>이미지 오류2</div>
         )}
-      </Link>
+      </div>
     </>
   );
 }

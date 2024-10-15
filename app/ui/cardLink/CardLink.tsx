@@ -25,7 +25,7 @@ export default function CardLink({ postId, availableRounds, title }: Props) {
         <select
           id={`${title} round`}
           name='round'
-          className={`h-full flex-1 peer block cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-teal-500 mb-4`}
+          className={`h-full flex-1 peer block cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-4`}
           defaultValue={round}
           onChange={handleRoundChange}
         >
@@ -37,7 +37,7 @@ export default function CardLink({ postId, availableRounds, title }: Props) {
         </select>
         <Link
           href={`/posts/${postId}/${round}`}
-          className='w-24 flex-1 flex items-center justify-center bg-teal-400 hover:bg-teal-500 font-semibold text-white rounded-md border'
+          className='w-24 flex-1 flex items-center justify-center bg-primary-400 hover:bg-primary-500 font-semibold text-white rounded-md border'
         >
           시작
         </Link>

@@ -8,7 +8,7 @@ interface Props {
   userId: string;
 }
 
-export default function CardForm({ postId, userId }: Props) {
+export default function CardUpdateForm({ postId, userId }: Props) {
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!confirm('정말로 삭제하시겠습니까?')) {
@@ -21,7 +21,7 @@ export default function CardForm({ postId, userId }: Props) {
     <div className='mt-4 flex'>
       <div className='flex h-12 w-full items-center justify-between px-4'>
         <Link
-          className='p-2 bg-teal-500 text-white rounded px-4'
+          className='p-2 bg-primary-500 text-white rounded px-4'
           href={`posts/${postId}/update`}
         >
           수정

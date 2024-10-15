@@ -41,7 +41,7 @@ export default function CommentSection({ session, postId, comments }: Props) {
           id='text'
           name='text'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.text && 'outline outline-1 outline-red-500'}`}
           placeholder={
             isAuth ? `댓글 추가... ` : '로그인이 필요한 서비스입니다.'
@@ -58,7 +58,7 @@ export default function CommentSection({ session, postId, comments }: Props) {
           ))}
         {isAuth && (
           <div className='flex gap-4 m-4 justify-end'>
-            <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+            <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
               댓글
             </button>
             <button

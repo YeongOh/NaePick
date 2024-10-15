@@ -76,21 +76,21 @@ export default function RankScreen({ candidates, postStat }: Props) {
         <select
           id='sortBy'
           name='sortBy'
-          className='peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 shadow-sm hover:shadow-lg'
+          className='peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-primary-500 shadow-sm hover:shadow-lg'
           onChange={handleSortChange}
           defaultValue={sortBy}
         >
           <option
             key='increasingGameWinRate'
             value='increasingGameWinRate'
-            className='text-teal-600'
+            className='text-primary-600'
           >
             ↑ 높은 게임 승률
           </option>
           <option
             key='decreasingGameWinRate'
             value='decreasingGameWinRate'
-            className='text-teal-600'
+            className='text-primary-600'
           >
             ↓ 낮은 게임 승률
           </option>
@@ -152,7 +152,7 @@ export default function RankScreen({ candidates, postStat }: Props) {
                     onMouseOut={() => setWinRateDetails(false)}
                   >
                     <div
-                      className={`flex flex-col justify-center bg-teal-600 text-s text-center whitespace-nowrap ${
+                      className={`flex flex-col justify-center bg-primary-600 text-s text-center whitespace-nowrap ${
                         gameWinRate === 0 ? 'text-transparent' : 'text-white'
                       }`}
                       style={{

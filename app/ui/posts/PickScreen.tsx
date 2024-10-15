@@ -127,7 +127,7 @@ export default function PickScreen({
             )}
           </div>
           <span
-            className={`absolute translate-x-1/2 text-teal-500 text-5xl font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+            className={`absolute translate-x-1/2 text-primary-500 text-5xl font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
               picked && 'hidden'
             }`}
           >
@@ -162,7 +162,7 @@ export default function PickScreen({
         <select
           id='round'
           name='round'
-          className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-teal-500 mb-4`}
+          className={`peer block w-full cursor-pointer rounded-md border border-gray-200 p-2 outline-2 placeholder:text-gray-500 focus:outline-primary-500 mb-4`}
           defaultValue={''}
           onChange={handleRoundChange}
         >

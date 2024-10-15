@@ -26,7 +26,7 @@ export default function SignupForm() {
           id='username'
           name='username'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.username && 'outline outline-1 outline-red-500'}`}
           placeholder={`로그인에 사용될 아이디를 입력해주세요. `}
           aria-describedby='username-error'
@@ -47,7 +47,7 @@ export default function SignupForm() {
           id='email'
           name='email'
           type='email'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.email && 'outline outline-1 outline-red-500'}`}
           placeholder={`example@google.com`}
           aria-describedby='email-error'
@@ -65,7 +65,7 @@ export default function SignupForm() {
           id='nickname'
           name='nickname'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.nickname && 'outline outline-1 outline-red-500'}`}
           placeholder={`다른 사람들에게 표시될 닉네임을 입력해주세요.`}
           aria-describedby='nickname-error'
@@ -83,7 +83,7 @@ export default function SignupForm() {
           id='password'
           name='password'
           type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.password && 'outline outline-1 outline-red-500'}`}
           placeholder={`비밀번호를 입력해주세요.`}
           aria-describedby='password-error'
@@ -104,7 +104,7 @@ export default function SignupForm() {
           id='confirmPassword'
           name='confirmPassword'
           type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${
                 state.errors?.confirmPassword &&
                 'outline outline-1 outline-red-500'
@@ -120,7 +120,7 @@ export default function SignupForm() {
           ))}
       </div>
       <div className='flex gap-4 m-4 justify-end'>
-        <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
           가입하기
         </button>
         <Link

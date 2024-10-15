@@ -10,7 +10,7 @@ export default function SignoutForm() {
       </div>
       <div className='text-center mb-4 text-lg'>로그아웃 하시겠습니까?</div>
       <div className='flex gap-4 m-4 items-center justify-center'>
-        <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
           돌아가기
         </button>
         <button

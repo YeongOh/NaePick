@@ -17,7 +17,7 @@ export default async function Home() {
         {allPosts &&
           allPosts.length > 0 &&
           allPosts.map((post, index: number) => (
-            <li key={post.id} className='p-4 group w-[340px] shadow-md'>
+            <li key={post.id} className='p-4 group w-[340px]'>
               <ThumbnailImage
                 postId={post.id}
                 leftCandidateUrl={post.leftCandidateUrl}
@@ -40,20 +40,6 @@ export default async function Home() {
                       >
                         {dayjs(post.createdAt).fromNow()}
                       </span>
-                    </div>
-                    <div className='cursor-pointer'>
-                      <svg
-                        fill='#000000'
-                        width='32px'
-                        height='32px'
-                        viewBox='0 0 512 512'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <title>ionicons-v5-f</title>
-                        <circle cx='256' cy='256' r='48' />
-                        <circle cx='256' cy='416' r='48' />
-                        <circle cx='256' cy='96' r='48' />
-                      </svg>
                     </div>
                   </div>
                 </div>

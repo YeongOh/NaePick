@@ -30,7 +30,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='username'
           name='username'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500`}
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500`}
           defaultValue={session.username}
           aria-describedby='username-error'
           disabled
@@ -42,7 +42,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='email'
           name='email'
           type='email'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500`}
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500`}
           defaultValue={session.email}
           disabled
         />
@@ -53,7 +53,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='nickname'
           name='nickname'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.nickname && 'outline outline-1 outline-red-500'}`}
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
@@ -72,7 +72,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='oldPassword'
           name='oldPassword'
           type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${
                 state.errors?.oldPassword && 'outline outline-1 outline-red-500'
               }`}
@@ -92,7 +92,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='newPassword'
           name='newPassword'
           type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${
                 state.errors?.newPassword && 'outline outline-1 outline-red-500'
               }`}
@@ -115,7 +115,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='confirmNewPassword'
           name='confirmNewPassword'
           type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${
                 state.errors?.confirmNewPassword &&
                 'outline outline-1 outline-red-500'
@@ -131,7 +131,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           ))}
       </div>
       <div className='flex gap-4 m-4 justify-end'>
-        <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
           가입하기
         </button>
         <Link

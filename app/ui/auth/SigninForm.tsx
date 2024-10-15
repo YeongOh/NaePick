@@ -1,7 +1,6 @@
 'use client';
 
-import { signin } from '@/app/lib/actions/auth/signin';
-import { SigninState } from '@/app/lib/definitions';
+import { signin, SigninState } from '@/app/lib/actions/auth/signin';
 import Link from 'next/link';
 import { useFormState } from 'react-dom';
 
@@ -20,7 +19,7 @@ export default function SigninForm() {
         </div>
         <div className='flex justify-center mb-4'>
           <Link
-            className='text-center text-teal-600 font-bold underline'
+            className='text-center text-primary-600 font-bold underline'
             href={'/auth/signup'}
           >
             가입하기
@@ -33,7 +32,7 @@ export default function SigninForm() {
           id='username'
           name='username'
           type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.username && 'outline outline-1 outline-red-500'}`}
           placeholder={`아이디를 입력해주세요. `}
           aria-describedby='username-error'
@@ -55,7 +54,7 @@ export default function SigninForm() {
           id='password'
           name='password'
           type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-teal-500 
+          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.password && 'outline outline-1 outline-red-500'}`}
           placeholder={`비밀번호를 입력해주세요.`}
           aria-describedby='password-error'
@@ -68,7 +67,7 @@ export default function SigninForm() {
           ))}
       </div>
       <div className='flex gap-4 m-4 justify-end '>
-        <button className='bg-teal-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
           로그인
         </button>
         <Link
