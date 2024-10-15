@@ -13,7 +13,7 @@ export default async function Home() {
 
   return (
     <>
-      <ul className='flex flex-wrap gap-4 m-4'>
+      <ul className='flex flex-wrap gap-4 max-w-screen-2xl m-auto'>
         {allPosts &&
           allPosts.length > 0 &&
           allPosts.map((post, index: number) => (

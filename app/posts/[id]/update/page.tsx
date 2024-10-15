@@ -27,10 +27,12 @@ export default async function Page({ params }: Props) {
     return <div>수정할 권한이 없습니다.</div>;
 
   return (
-    <UpdatePostForm
-      post={postResult[0]}
-      candidates={candidates}
-      categories={categories}
-    />
+    <div className='max-w-4xl m-auto'>
+      <UpdatePostForm
+        post={postResult[0]}
+        candidates={candidates}
+        categories={categories}
+      />
+    </div>
   );
 }
