@@ -29,8 +29,10 @@ export async function uploadFile(file: File, fileName: string) {
   }
 }
 
-export const BASE_IMAGE_URL =
-  'https://yopick-s3.s3.ap-northeast-2.amazonaws.com/';
+// export const BASE_IMAGE_URL =
+//   'https://yopick-s3.s3.ap-northeast-2.amazonaws.com/';
+
+export const BASE_IMAGE_URL = 'https://cdn.naepick.co.kr/';
 
 export async function deleteImage(candidateId: string) {
   try {

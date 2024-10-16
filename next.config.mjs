@@ -9,7 +9,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.naepick.co.kr',
+        port: '',
+        pathname: '/**',
+      },
     ],
+  },
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000'],
+    },
   },
 };
 
