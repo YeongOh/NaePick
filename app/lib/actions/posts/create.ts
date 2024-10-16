@@ -12,7 +12,7 @@ import {
 } from '../../../constants';
 import getConnection from '../../db';
 import { getSession } from '../session';
-import { uploadImage } from '../../images';
+import { uploadFile } from '../../images';
 
 const CreatePostFormSchema = z.object({
   id: z.string(),
@@ -157,7 +157,7 @@ export async function createPost(
       }
 
       const promises: Promise<void>[] = [];
-      promises.push(uploadImage(file, url));
+      promises.push(uploadFile(file, url));
 
       const result = await Promise.all(promises);
     }

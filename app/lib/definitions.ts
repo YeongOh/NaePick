@@ -110,8 +110,8 @@ export type SignupError = {
 };
 
 export const sessionOptions: SessionOptions = {
-  password: 'complex-password-for-cookiecomplex-password-for-cookie',
-  cookieName: 'test-example',
+  password: process.env.SESSION_PASSWORD as string,
+  cookieName: 'iron',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',
   },

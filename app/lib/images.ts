@@ -13,7 +13,7 @@ const s3 = new S3Client({
   },
 });
 
-export async function uploadImage(file: File, fileName: string) {
+export async function uploadFile(file: File, fileName: string) {
   const Body = (await file.arrayBuffer()) as Buffer;
 
   try {

@@ -1,8 +1,7 @@
 'use client';
 
 import { CommentState, createComment } from '@/app/lib/actions/comments';
-import { SessionData } from '@/app/lib/auth';
-import { Comment } from '@/app/lib/definitions';
+import { Comment, SessionData } from '@/app/lib/definitions';
 import { getRelativeDate, sortDate } from '@/app/utils/date';
 import { useFormState } from 'react-dom';
 

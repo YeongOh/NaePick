@@ -12,7 +12,7 @@ import {
 } from '../../../constants';
 import getConnection from '../../db';
 import { getSession } from '../session';
-import { uploadImage } from '../../images';
+import { uploadFile } from '../../images';
 import { Candidate } from '../../definitions';
 
 const UpdatePostFormSchema = z.object({
@@ -185,7 +185,7 @@ export async function updatePost(
       );
 
       const promises: Promise<void>[] = [];
-      promises.push(uploadImage(file, url));
+      promises.push(uploadFile(file, url));
 
       const result = await Promise.all(promises);
     }
