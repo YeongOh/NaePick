@@ -52,7 +52,7 @@ export default function CreatePostForm({ categories }: Props) {
   const [files, setFiles] = useState<(File & { preview: string })[]>([]);
   const initialState: CreatePostFormState = { message: null, errors: {} };
   const [state, submitCreatePostForm] = useFormState(createPost, initialState);
-  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const [thumbnails, setThumbnails] = useState<number[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
   const { getRootProps, getInputProps, fileRejections } = useDropzone({
     accept: {
@@ -110,14 +110,12 @@ export default function CreatePostForm({ categories }: Props) {
         <div
           style={thumb}
           onClick={() => {
-            if (thumbnails.includes(file.name)) {
-              setThumbnails(
-                thumbnails.filter((thumbnail) => thumbnail != file.name)
-              );
+            if (thumbnails.includes(i)) {
+              setThumbnails(thumbnails.filter((thumbI) => thumbI != i));
             } else if (thumbnails.length >= 2) {
-              setThumbnails([...thumbnails.slice(1), file.name]);
+              setThumbnails([...thumbnails.slice(1), i]);
             } else {
-              setThumbnails([...thumbnails, file.name]);
+              setThumbnails([...thumbnails, i]);
             }
           }}
         >
@@ -132,12 +130,12 @@ export default function CreatePostForm({ categories }: Props) {
               URL.revokeObjectURL(file.preview);
             }}
           />
-          {thumbnails.findIndex((name) => name == file.name) == 0 && (
+          {thumbnails.findIndex((thumbI) => thumbI == i) == 0 && (
             <div className='absolute top-1 left-1 rounded-md bg-primary-500 font-semibold text-white'>
               왼쪽 썸네일
             </div>
           )}
-          {thumbnails.findIndex((name) => name == file.name) == 1 && (
+          {thumbnails.findIndex((thumbI) => thumbI == i) == 1 && (
             <div className='absolute top-1 left-1 rounded-md bg-primary-500 font-semibold text-white'>
               오른쪽 썸네일
             </div>

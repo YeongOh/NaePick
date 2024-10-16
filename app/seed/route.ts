@@ -201,7 +201,7 @@ export async function GET() {
     await seedUsers();
     await seedPostStats();
     await seedComments();
-    // await seedCategoriesData();
+    await seedCategoriesData();
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {

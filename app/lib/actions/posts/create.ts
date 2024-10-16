@@ -37,7 +37,7 @@ const CreatePostFormSchema = z.object({
   numberOfCandidates: z.coerce
     .number()
     .gte(2, { message: '후보는 2명 이상이어야 합니다.' }),
-  thumbnails: z.array(z.string()).length(2, {
+  thumbnails: z.array(z.number()).length(2, {
     message: '후보 이미지를 클릭하여 썸네일을 2개 선택해주세요.',
   }),
 });
@@ -68,6 +68,7 @@ export async function createPost(
     numberOfCandidates: formData.get('numberOfCandidates'),
     thumbnails: JSON.parse(formData.get('thumbnails') as string),
   });
+  console.log('1');
 
   if (!validatedFields.success) {
     return {
@@ -76,6 +77,7 @@ export async function createPost(
     };
   }
 
+  console.log('2');
   const {
     title,
     description,
@@ -84,6 +86,8 @@ export async function createPost(
     numberOfCandidates,
     thumbnails,
   } = validatedFields.data;
+  console.log(thumbnails);
+  console.log('3');
 
   const candidateNames = [];
   const files = [];
@@ -117,6 +121,16 @@ export async function createPost(
     // 트랜잭션 시작
     await connection.beginTransaction();
 
+    console.log(
+      postId,
+      title,
+      description,
+      publicity,
+      userId,
+      categoryId,
+      numberOfCandidates
+    );
+
     await connection.execute(
       `INSERT INTO Posts (id, title, description, publicity, userId, categoryId, numberOfCandidates) 
       VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -140,15 +154,19 @@ export async function createPost(
       const candidateId = uuidv4();
       const url = `/${candidateId}${ext}`;
 
+      console.log(candidateId, postId, candidateName, url);
       await connection.execute(
         `INSERT INTO Candidates (id, postId, name, url) 
         VALUES (?, ?, ?, ?)`,
         [candidateId, postId, candidateName, url]
       );
       // check filename with thumbnail filenames
+      console.log('thumb');
+      console.log(thumbnails);
+      console.log(file.name);
 
       const thumbnailIndex = thumbnails.findIndex(
-        (filename) => filename === file.name
+        (thumbI) => Number(thumbI) === i
       );
       if (thumbnailIndex == 0) {
         leftCandidateId = candidateId;
@@ -164,6 +182,7 @@ export async function createPost(
 
     const thumbnailId = uuidv4();
 
+    console.log(thumbnailId, postId, leftCandidateId, rightCandidateId);
     await connection.execute(
       `INSERT INTO Thumbnails (id, postId, leftCandidateId, rightCandidateId) 
       VALUES (?, ?, ?, ?)`,

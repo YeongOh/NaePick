@@ -85,13 +85,9 @@ export async function updatePost(
     numberOfCandidates,
     thumbnails,
   } = validatedFields.data;
-  console.log(title, description);
-  console.log('%%%%%%%%%%');
-  console.log(postId);
 
   // 후보 이름 중복 확인
   const oldCandidates = JSON.parse(formData.get('oldCandidates') as string);
-  console.log(oldCandidates);
   const candidatesNameSet = new Set<string>();
   for (const { name } of oldCandidates) {
     candidatesNameSet.add(name);
@@ -102,9 +98,7 @@ export async function updatePost(
     newCandidateNames.push(candidateName);
     candidatesNameSet.add(candidateName);
   }
-  console.log(candidatesNameSet, numberOfCandidates);
   if (numberOfCandidates !== candidatesNameSet.size) {
-    console.log('1');
     return {
       message: '후보 이름에 중복이 있습니다.',
     };
@@ -201,7 +195,6 @@ export async function updatePost(
 
     await connection.commit();
   } catch (error) {
-    console.log(error);
     await connection.rollback();
     return {
       message: '이상형 월드컵 생성에 실패했습니다.',
