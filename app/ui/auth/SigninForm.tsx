@@ -12,7 +12,7 @@ export default function SigninForm() {
     <form action={action}>
       <div className='rounded-md bg-gray-50 p-6'>
         <div className='text-center font-semibold mb-4 text-lg'>
-          이상형 월드컵 Pick에 오신걸 환영합니다.
+          이상형 월드컵 NaePick에 오신걸 환영합니다!
         </div>
         <div className='text-center font-medium mb-2'>
           아직 아이디가 없으신가요?

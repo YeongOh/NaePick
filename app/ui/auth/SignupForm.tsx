@@ -12,7 +12,7 @@ export default function SignupForm() {
     <form action={action}>
       <div className='rounded-md bg-gray-50 p-6'>
         <div className='text-center font-semibold mb-4 text-lg'>
-          이상형 월드컵 Pick에 오신걸 환영합니다.
+          이상형 월드컵 NaePick에 오신걸 환영합니다!
         </div>
         <div className='text-center font-medium mb-4'>
           입력하신 이메일로 어떠한 메일도 발신되지 않으며

@@ -6,8 +6,8 @@ import Navbar from './ui/navbar/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: '이상형 월드컵 Pick',
-  description: '설명 준비중',
+  title: '이상형 월드컵 NaePick, 내픽!',
+  description: '오픈 준비중입니다!',
 };
 
 export default function RootLayout({

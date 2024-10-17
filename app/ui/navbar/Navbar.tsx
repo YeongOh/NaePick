@@ -10,7 +10,7 @@ export default async function Navbar() {
     <nav className='p-4 gap-4 border border-b-1'>
       <div className='flex items-center justify-between max-w-screen-2xl m-auto'>
         <Link href={'/'}>
-          <h1 className='font-bold text-2xl'>YoPick</h1>
+          <h1 className='font-bold text-2xl'>NaePick</h1>
         </Link>
         <div className='flex gap-4 items-center'>
           <NavbarLink href={`/posts/create`} pathToHighlight={`/posts/create`}>
