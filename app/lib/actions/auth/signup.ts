@@ -16,7 +16,7 @@ import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { User } from '../../definitions';
-import getConnection from '../../db';
+import { pool } from '../../db';
 import { createSession } from '../session';
 
 const FormSchema = z
@@ -102,13 +102,11 @@ export async function signup(state: SignupState, formData: FormData) {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   try {
-    const connection = await getConnection();
-
     // check if userid or email already exists in db
     const [duplicateResult, duplicateFields]: [
       Pick<User, 'userId' | 'email' | 'nickname'>[] & RowDataPacket[],
       FieldPacket[]
-    ] = await connection.execute(
+    ] = await pool.query(
       `SELECT username, email, nickname
       FROM Users
       WHERE username = ? OR email = ? OR nickname = ?;`,
@@ -134,7 +132,7 @@ export async function signup(state: SignupState, formData: FormData) {
     const id = uuidv4();
     const role = 'user';
 
-    await connection.execute(
+    await pool.query(
       `INSERT INTO Users (id, username, email, nickname, role, password)
       VALUES (?, ?, ?, ?, ?, ?)`,
       [id, username, email, nickname, role, hashedPassword]

@@ -1,10 +1,8 @@
-import getConnection from '../lib/db';
+import { pool } from '../lib/db';
 
 async function seedPosts() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS Posts (
 	      id VARCHAR(255) NOT NULL,
 	      title VARCHAR(100) NOT NULL,
@@ -29,9 +27,7 @@ async function seedPosts() {
 
 async function seedPostStats() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS PostStats (
 	      id VARCHAR(255) NOT NULL,
         postId VARCHAR(255) NOT NULL,
@@ -54,9 +50,7 @@ async function seedPostStats() {
 
 async function seedCandidates() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS Candidates (
           id VARCHAR(255) NOT NULL,
           postId VARCHAR(255) NOT NULL,
@@ -82,9 +76,7 @@ async function seedCandidates() {
 
 async function seedCategories() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS Categories (
         id INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(20) NOT NULL,
@@ -102,9 +94,7 @@ async function seedCategories() {
 
 async function seedThumbnails() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS Thumbnails (
         id VARCHAR(255) NOT NULL,
         postId VARCHAR(255) NOT NULL,
@@ -123,12 +113,10 @@ async function seedThumbnails() {
 
 async function seedCategoriesData() {
   try {
-    const connection = await getConnection();
-
     const insertedCategories = await Promise.all(
       ['animations', 'athletes', 'celebrities', 'idols', 'other'].map(
         (category) =>
-          connection.execute(
+          pool.query(
             `INSERT INTO Categories (name)
                   VALUES ('${category}');`
           )
@@ -143,9 +131,7 @@ async function seedCategoriesData() {
 
 async function seedUsers() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS Users (
         id VARCHAR(255) NOT NULL,
         username VARCHAR(40) NOT NULL,
@@ -170,9 +156,7 @@ async function seedUsers() {
 
 async function seedComments() {
   try {
-    const connection = await getConnection();
-
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS Comments (
         id VARCHAR(255) NOT NULL,
         postId VARCHAR(255) NOT NULL,

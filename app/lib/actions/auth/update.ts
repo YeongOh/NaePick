@@ -12,7 +12,7 @@ import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { User } from '../../definitions';
-import getConnection from '../../db';
+import { pool } from '../../db';
 import { createSession, getSession } from '../session';
 
 const FormSchema = z
@@ -99,7 +99,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   console.log(nickname, oldPassword, newPassword, confirmNewPassword);
 
   try {
-    const connection = await getConnection();
     const session = await getSession();
     if (!session?.id) {
       return {
@@ -110,7 +109,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     const [result, fields]: [
       Pick<User, 'username' | 'password'>[] & RowDataPacket[],
       FieldPacket[]
-    ] = await connection.execute(
+    ] = await pool.query(
       `SELECT username, password
         FROM Users
         WHERE id = ?;`,
@@ -135,7 +134,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
 
     if (nickname) {
       const [duplicatedUserResult, duplicatedFields]: [User[], FieldPacket[]] =
-        await connection.execute(
+        await pool.query(
           `SELECT * FROM Users
              WHERE nickname = ? AND id != ?;`,
           [nickname, session.id]
@@ -154,14 +153,14 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     if (newPassword) {
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-      await connection.execute(
+      await pool.query(
         `Update Users
         Set nickname = ?, password = ?
         WHERE id = ?;`,
         [nickname, hashedNewPassword, session.id]
       );
     } else {
-      await connection.execute(
+      await pool.query(
         `Update Users
                 Set nickname = ?
                 WHERE id = ?;`,

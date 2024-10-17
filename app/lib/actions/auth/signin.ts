@@ -12,7 +12,7 @@ import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { User } from '../../definitions';
-import getConnection from '../../db';
+import { pool } from '../../db';
 import { createSession } from '../session';
 
 const FormSchema = z.object({
@@ -69,13 +69,11 @@ export async function signin(state: SigninState, formData: FormData) {
   const { username, password } = validatedFields.data;
 
   try {
-    const connection = await getConnection();
-
     const [result, fields]: [
       Pick<User, 'id' | 'username' | 'email' | 'password' | 'nickname'>[] &
         RowDataPacket[],
       FieldPacket[]
-    ] = await connection.execute(
+    ] = await pool.query(
       `SELECT id, nickname, username, password, email
       FROM Users
       WHERE username = ?;`,

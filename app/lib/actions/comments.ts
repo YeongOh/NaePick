@@ -2,7 +2,7 @@
 
 import { COMMENT_MAX_LENGTH } from '@/app/constants';
 import { z } from 'zod';
-import getConnection from '../db';
+import { pool } from '../db';
 import { v4 as uuidv4 } from 'uuid';
 import { getSession } from './session';
 import { revalidatePath } from 'next/cache';
@@ -51,10 +51,9 @@ export async function createComment(state: CommentState, formData: FormData) {
   const { userId, text, postId } = validatedFields.data;
 
   try {
-    const connection = await getConnection();
     const commentId = uuidv4();
 
-    const [result, fields] = await connection.execute(
+    const [result, fields] = await pool.query(
       `INSERT INTO Comments (id, postId, userId, text) 
       VALUES (?, ?, ?, ?)`,
       [commentId, postId, userId, text]

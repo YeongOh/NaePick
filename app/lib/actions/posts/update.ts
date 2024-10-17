@@ -10,10 +10,9 @@ import {
   POST_TITLE_MAX_LENGTH,
   POST_TITLE_MIN_LENGTH,
 } from '../../../constants';
-import getConnection from '../../db';
+import { pool } from '../../db';
 import { getSession } from '../session';
 import { uploadFile } from '../../images';
-import { Candidate } from '../../definitions';
 
 const UpdatePostFormSchema = z.object({
   id: z.string(),
@@ -117,7 +116,7 @@ export async function updatePost(
     };
   }
 
-  const connection = await getConnection();
+  const connection = await pool.getConnection();
   try {
     let leftCandidateId;
     let rightCandidateId;
@@ -128,7 +127,7 @@ export async function updatePost(
     // 트랜잭션 시작
     await connection.beginTransaction();
 
-    await connection.execute(
+    await connection.query(
       `Update Posts 
         SET title = ?, description = ?, publicity = ?, categoryId = ?, numberOfCandidates = ?
         WHERE id = ? AND userID = ?`,
@@ -172,7 +171,7 @@ export async function updatePost(
       if (thumbnailIndex === 0) leftCandidateId = candidateId;
       else if (thumbnailIndex === 1) rightCandidateId = candidateId;
 
-      await connection.execute(
+      await connection.query(
         `INSERT INTO Candidates (id, postId, name, url)
           VALUES (?, ?, ?, ?)`,
         [candidateId, postId, candidateName, url]
@@ -186,7 +185,7 @@ export async function updatePost(
     console.log('undefined?');
     console.log(leftCandidateId, rightCandidateId, postId);
 
-    await connection.execute(
+    await connection.query(
       `Update Thumbnails
         SET leftCandidateId = ?, rightCandidateId = ?
         WHERE postId = ?`,

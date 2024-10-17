@@ -1,6 +1,6 @@
 'use server';
 
-import getConnection from '../db';
+import { pool } from '../db';
 
 export async function sendStats(
   postId: string,
@@ -10,13 +10,11 @@ export async function sendStats(
   spentTimes: number[]
 ) {
   try {
-    const connection = await getConnection();
-
     const visitedId = new Set();
 
     winners.forEach(async (winner: any, i: number) => {
       if (visitedId.has(winner.id)) {
-        const [results, fields] = await connection.execute(
+        const [results, fields] = await pool.query(
           `
             UPDATE Candidates
             SET numberOfMatches = numberOfMatches + 1,
@@ -28,7 +26,7 @@ export async function sendStats(
         );
       } else {
         visitedId.add(winner.id);
-        const [results, fields] = await connection.execute(
+        const [results, fields] = await pool.query(
           `
             UPDATE Candidates
             SET numberOfMatches = numberOfMatches + 1,
@@ -44,7 +42,7 @@ export async function sendStats(
 
     losers.forEach(async (loser: any, i: number) => {
       if (visitedId.has(loser.id)) {
-        const [results, fields] = await connection.execute(
+        const [results, fields] = await pool.query(
           `
             UPDATE Candidates
             SET numberOfMatches = numberOfMatches + 1,
@@ -55,7 +53,7 @@ export async function sendStats(
         );
       } else {
         visitedId.add(loser.id);
-        const [results, fields] = await connection.execute(
+        const [results, fields] = await pool.query(
           `
             UPDATE Candidates
             SET numberOfMatches = numberOfMatches + 1,
@@ -68,7 +66,7 @@ export async function sendStats(
       }
     });
 
-    const [results, fields] = await connection.execute(
+    const [results, fields] = await pool.query(
       `
           UPDATE Candidates
           SET numberOfGamesWon = numberOfGamesWon + 1
@@ -79,7 +77,7 @@ export async function sendStats(
 
     const totalSpentTime = spentTimes.reduce((prev, curr) => prev + curr, 0);
     const totalNumberOfMatches = winners.length;
-    const [postStatResult, postStatField] = await connection.execute(
+    const [postStatResult, postStatField] = await pool.query(
       `
           UPDATE PostStats
           SET numberOfMatches = numberOfMatches + ?,

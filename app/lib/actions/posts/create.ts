@@ -10,7 +10,7 @@ import {
   POST_TITLE_MAX_LENGTH,
   POST_TITLE_MIN_LENGTH,
 } from '../../../constants';
-import getConnection from '../../db';
+import { pool } from '../../db';
 import { getSession } from '../session';
 import { uploadFile } from '../../images';
 
@@ -108,8 +108,7 @@ export async function createPost(
       message: '후보 이름에 중복이 있습니다.',
     };
   }
-
-  const connection = await getConnection();
+  const connection = await pool.getConnection();
   try {
     const postId = uuidv4();
     let leftCandidateId;
@@ -131,7 +130,7 @@ export async function createPost(
       numberOfCandidates
     );
 
-    await connection.execute(
+    await connection.query(
       `INSERT INTO Posts (id, title, description, publicity, userId, categoryId, numberOfCandidates) 
       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
@@ -155,7 +154,7 @@ export async function createPost(
       const url = `/${candidateId}${ext}`;
 
       console.log(candidateId, postId, candidateName, url);
-      await connection.execute(
+      await connection.query(
         `INSERT INTO Candidates (id, postId, name, url) 
         VALUES (?, ?, ?, ?)`,
         [candidateId, postId, candidateName, url]
@@ -183,7 +182,7 @@ export async function createPost(
     const thumbnailId = uuidv4();
 
     console.log(thumbnailId, postId, leftCandidateId, rightCandidateId);
-    await connection.execute(
+    await connection.query(
       `INSERT INTO Thumbnails (id, postId, leftCandidateId, rightCandidateId) 
       VALUES (?, ?, ?, ?)`,
       [thumbnailId, postId, leftCandidateId, rightCandidateId]
@@ -191,7 +190,7 @@ export async function createPost(
 
     const postStatsId = uuidv4();
 
-    await connection.execute(
+    await connection.query(
       `INSERT INTO PostStats (id, postId) 
       VALUES (?, ?)`,
       [postStatsId, postId]

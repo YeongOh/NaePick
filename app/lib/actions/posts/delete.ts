@@ -5,32 +5,33 @@ import { deleteImage } from '../../images';
 import { Candidate } from '../../definitions';
 import { FieldPacket } from 'mysql2';
 import { getSession } from '../session';
-import getConnection from '../../db';
+import { pool } from '../../db';
 import { redirect } from 'next/navigation';
 
 export async function deleteUserPost(postId: string, userId: string) {
+  const connection = await pool.getConnection();
+
   try {
     const session = await getSession();
     if (session.id !== userId) {
       console.log('권한 없음');
       return;
     }
-    const connection = await getConnection();
 
-    const [result, meta] = await connection.execute(
+    const [result, meta] = await connection.query(
       `DELETE FROM Posts
           WHERE id = ?`,
       [postId]
     );
 
-    await connection.execute(
+    await connection.query(
       `DELETE FROM PostStats
           WHERE postid = ?`,
       [postId]
     );
 
     const [candidates, candidatesMeta]: [Candidate[], FieldPacket[]] =
-      await connection.execute(
+      await connection.query(
         `SELECT * FROM Candidates
           WHERE postid = ?`,
         [postId]
@@ -45,25 +46,28 @@ export async function deleteUserPost(postId: string, userId: string) {
       console.log(imageDeleteResult);
     }
 
-    await connection.execute(
+    await connection.query(
       `DELETE FROM Candidates
           WHERE postid = ?`,
       [postId]
     );
 
-    await connection.execute(
+    await connection.query(
       `DELETE FROM Thumbnails
           WHERE postid = ?`,
       [postId]
     );
 
-    await connection.execute(
+    await connection.query(
       `DELETE FROM Comments
           WHERE postid = ?`,
       [postId]
     );
+
+    connection.commit();
   } catch (err) {
     console.log(err);
+    connection.rollback();
   }
   revalidatePath(`/${userId}`);
   redirect(`/${userId}`);

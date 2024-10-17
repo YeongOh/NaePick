@@ -1,7 +1,7 @@
-import { RowDataPacket } from 'mysql2';
+import { RowDataPacket as QueryResult } from 'mysql2';
 import { SessionOptions } from 'iron-session';
 
-export interface User extends RowDataPacket {
+export interface User extends QueryResult {
   id: string;
   username: string;
   nickname: string;
@@ -13,7 +13,7 @@ export interface User extends RowDataPacket {
   updatedAt: string;
 }
 
-export interface Post extends RowDataPacket {
+export interface Post extends QueryResult {
   id: string;
   title: string;
   description: string;
@@ -45,7 +45,7 @@ export interface PostStat extends PostInfo {
   totalSpentTime: number;
 }
 
-export interface Candidate extends RowDataPacket {
+export interface Candidate extends QueryResult {
   id: string;
   postId: string;
   name: string;
@@ -59,19 +59,19 @@ export interface Candidate extends RowDataPacket {
   updatedAt: string;
 }
 
-export interface Category extends RowDataPacket {
+export interface Category extends QueryResult {
   id: number;
   name: string;
 }
 
-export interface Thumbnail extends RowDataPacket {
+export interface Thumbnail extends QueryResult {
   id: string;
   postId: string;
   leftCandidateId: string;
   rightCandidateId: string;
 }
 
-export interface Comment extends RowDataPacket {
+export interface Comment extends QueryResult {
   id: string;
   postId: string;
   parentId: string;
