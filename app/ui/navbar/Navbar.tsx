@@ -10,17 +10,17 @@ export default async function Navbar() {
     <nav className='p-4 gap-4 border border-b-1'>
       <div className='flex items-center justify-between max-w-screen-2xl m-auto'>
         <Link href={'/'}>
-          <h1 className='font-bold text-2xl'>NaePick</h1>
+          <h1 className='font-bold text-2xl text-primary-500'>NaePick</h1>
         </Link>
-        <div className='flex gap-4 items-center'>
+        <div className='flex gap-4 items-center text-base font-semibold text-slate-600'>
           <NavbarLink href={`/posts/create`} pathToHighlight={`/posts/create`}>
             월드컵 만들기
           </NavbarLink>
           {session?.username ? (
             <>
               <NavbarLink
-                href={`/${session.id}`}
-                pathToHighlight={`/${session.id}`}
+                href={`/user/${session.id}`}
+                pathToHighlight={`/user/${session.id}`}
               >
                 내 월드컵 관리
               </NavbarLink>

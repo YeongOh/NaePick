@@ -24,7 +24,7 @@ export default async function Page({ params }: Props) {
   if (postStatResult && postStatResult[0] && candidates) {
     const postStat = postStatResult[0];
     return (
-      <>
+      <div className='max-w-screen-xl m-auto'>
         <Fold postStat={postStat} />
         <div className='p-4'>
           <Link
@@ -36,7 +36,7 @@ export default async function Page({ params }: Props) {
         </div>
         <RankScreen candidates={candidates} postStat={postStat} />
         <CommentSection postId={postId} comments={comments} />
-      </>
+      </div>
     );
   } else {
     notFound();

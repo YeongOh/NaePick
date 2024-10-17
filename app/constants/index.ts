@@ -1,3 +1,6 @@
+// URLS
+export const DOMAIN = 'https://pick.co.kr';
+
 // Create Post Form Validation
 export const POST_TITLE_MIN_LENGTH = 4;
 export const POST_TITLE_MAX_LENGTH = 100;
@@ -27,11 +30,12 @@ export const PASSWORD_MAX_LENGTH = 40;
 export const COMMENT_MAX_LENGTH = 100;
 
 // number of rounds available
+export const DEFAULT_ROUNDS = 32;
+
 export function getNumberOfRoundsAvailable(
   numberOfCandidates: number
 ): number[] {
   const options = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
-
   const result = options.filter((option) => option <= numberOfCandidates);
   return result;
 }

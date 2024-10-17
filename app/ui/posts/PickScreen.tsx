@@ -91,67 +91,65 @@ export default function PickScreen({
 
   return (
     <>
-      <section className='relative flex bg-black h-[95vh]'>
-        <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-50 z-50'>
+      <section className='relative flex bg-black h-[90vh]'>
+        <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
           <h2 className='flex justify-center items-center text-white text-5xl p-2 font-bold'>
             {title} {getRoundsDescription(round)}
           </h2>
         </div>
         {finalWinner && (
-          <div className='absolute left-1/2 top-20 -translate-x-1/2 bg-black bg-opacity-50 z-50 w-full'>
-            <h2 className='flex justify-center items-center text-white text-4xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+          <div className='absolute left-1/2 bottom-[80px] -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
+            <h2 className='flex justify-center items-center text-white text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
               {finalWinner.name} 우승!
             </h2>
           </div>
         )}
         <figure
           onClick={() => handlePick('left')}
-          className={`w-1/2 flex items-center justify-end h-auto cursor-pointer ${
+          className={`w-1/2 cursor-pointer ${
             picked === 'left' && 'animate-pickLeft justify-center'
           } ${picked === 'right' && 'animate-moveLeft'}`}
         >
-          <div className='relative'>
+          <div className='relative w-full h-full flex'>
             <Image
-              className='w-fit'
+              className='object-contain'
               src={`${BASE_IMAGE_URL}${leftUrl}`}
               alt={leftAlt}
               priority={true}
-              width={0}
-              height={0}
-              sizes='100vw'
+              fill={true}
+              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
             />
             {!finalWinner && (
-              <figcaption className='text-white absolute text-center bottom-[20px] text-2xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
+              <figcaption className='text-white absolute text-center bottom-[60px] text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
                 {leftAlt}
               </figcaption>
             )}
           </div>
-          <span
-            className={`absolute translate-x-1/2 text-primary-500 text-5xl font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
-              picked && 'hidden'
-            }`}
-          >
-            VS
-          </span>
+          {/* <span
+              className={`absolute translate-x-1/2 text-primary-500 text-7xl font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+                picked && 'hidden'
+              }`}
+            >
+              VS
+            </span> */}
         </figure>
         <figure
           onClick={() => handlePick('right')}
-          className={`w-1/2 flex items-center justify-start cursor-pointer max-h-full ${
+          className={`w-1/2 flex items-center justify-start cursor-pointer ${
             picked === 'left' && 'animate-moveRight'
           } ${picked === 'right' && 'animate-pickRight justify-center'}`}
         >
-          <div className='relative'>
+          <div className='relative w-full h-full'>
             <Image
-              className='w-fit'
+              className='object-contain'
               src={`${BASE_IMAGE_URL}${rightUrl}`}
               alt={rightAlt}
               priority={true}
-              width={0}
-              height={0}
-              sizes='100vw'
+              fill={true}
+              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
             />
             {!finalWinner && (
-              <figcaption className='text-white absolute text-center bottom-[20px] text-2xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
+              <figcaption className='text-white absolute text-center bottom-[60px] text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
                 {rightAlt}
               </figcaption>
             )}

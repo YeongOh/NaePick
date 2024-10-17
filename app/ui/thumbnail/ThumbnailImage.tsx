@@ -1,6 +1,5 @@
 import { BASE_IMAGE_URL } from '@/app/lib/images';
 import Image from 'next/image';
-import Link from 'next/link';
 
 interface Props {
   postId: string;
@@ -11,7 +10,6 @@ interface Props {
 }
 
 export default function ThumbnailImage({
-  postId,
   leftCandidateUrl,
   leftCandidateName,
   rightCandidateUrl,
@@ -19,7 +17,9 @@ export default function ThumbnailImage({
 }: Props) {
   return (
     <>
-      <div className='inline-flex bg-black w-full h-[150px] overflow-hidden rounded-xl'>
+      <div
+        className={`inline-flex bg-black w-full h-[150px] overflow-hidden rounded-xl`}
+      >
         {leftCandidateUrl && (
           <>
             <div className='relative w-1/2'>
@@ -29,13 +29,16 @@ export default function ThumbnailImage({
                 alt={leftCandidateName}
                 fill={true}
                 sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
+                priority={true}
               />
-              <p
-                className='w-full absolute bottom-0 text-center text-white text-sm truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'
-                title={leftCandidateName}
-              >
-                {leftCandidateName}
-              </p>
+              <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
+                <p
+                  className='text-center text-white text-base truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'
+                  title={leftCandidateName}
+                >
+                  {leftCandidateName}
+                </p>
+              </div>
             </div>
           </>
         )}
@@ -47,21 +50,17 @@ export default function ThumbnailImage({
               alt={rightCandidateName}
               fill={true}
               sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
+              priority={true}
             />
-            <p
-              className='w-full absolute bottom-0 text-center text-white text-sm truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'
-              title={rightCandidateName}
-            >
-              {rightCandidateName}
-            </p>
+            <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
+              <p
+                className='text-center text-white text-base truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'
+                title={rightCandidateName}
+              >
+                {rightCandidateName}
+              </p>
+            </div>
           </div>
-        )}
-        {!rightCandidateUrl && (
-          <div className='relative w-1/2 text-white'>이미지 오류1</div>
-        )}
-
-        {!leftCandidateUrl && (
-          <div className='relative w-1/2 text-white'>이미지 오류2</div>
         )}
       </div>
     </>

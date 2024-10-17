@@ -14,7 +14,6 @@ export async function deleteUserPost(postId: string, userId: string) {
   try {
     const session = await getSession();
     if (session.id !== userId) {
-      console.log('권한 없음');
       return;
     }
 
@@ -43,7 +42,6 @@ export async function deleteUserPost(postId: string, userId: string) {
         promises.push(deleteImage(candidate.url))
       );
       const imageDeleteResult = await Promise.all(promises);
-      console.log(imageDeleteResult);
     }
 
     await connection.query(

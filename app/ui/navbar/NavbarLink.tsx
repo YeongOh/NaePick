@@ -15,7 +15,7 @@ export default function NavbarLink({ href, pathToHighlight, children }: Props) {
   return (
     <Link
       href={href}
-      className={`${
+      className={`relaitve ${
         pathname.startsWith(pathToHighlight || '') &&
         'font-semibold text-primary-500'
       }`}

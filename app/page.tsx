@@ -1,59 +1,19 @@
-import dayjs from 'dayjs';
-import { fetchPublicPosts } from './lib/data';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import { fetchPublicPostCards } from './lib/data';
 import 'dayjs/locale/ko';
-import ThumbnailImage from './ui/thumbnail/ThumbnailImage';
-import CardLink from './ui/cardLink/CardLink';
-import { getNumberOfRoundsAvailable } from './constants';
+import Card from './ui/card/Card';
 
 export default async function Home() {
-  const allPosts = await fetchPublicPosts();
-  dayjs.extend(relativeTime);
-  dayjs.locale('ko');
+  const allPublicPostCards = await fetchPublicPostCards();
 
   return (
-    <>
-      <ul className='flex flex-wrap gap-4 max-w-screen-2xl m-auto'>
-        {allPosts &&
-          allPosts.length > 0 &&
-          allPosts.map((post, index: number) => (
-            <li key={post.id} className='p-4 group w-[340px]'>
-              <ThumbnailImage
-                postId={post.id}
-                leftCandidateUrl={post.leftCandidateUrl}
-                leftCandidateName={post.leftCandidateName}
-                rightCandidateUrl={post.rightCandidateUrl}
-                rightCandidateName={post.rightCandidateName}
-              />
-              <div className='flex items-end justify-between'>
-                <div className='flex-1'>
-                  <h2 className='font-bold text-lg py-2' title={post.title}>
-                    {post.title}
-                  </h2>
-                  <p className='mb-2'>{post.description}</p>
-                  <div className='flex items-center justify-between w-full'>
-                    <div>
-                      <span className='text-gray-500'>{post.nickname}</span>
-                      <span
-                        className='text-gray-500 ml-4'
-                        title={dayjs(post.createdAt).toString()}
-                      >
-                        {dayjs(post.createdAt).fromNow()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <CardLink
-                postId={post.id}
-                availableRounds={getNumberOfRoundsAvailable(
-                  post.numberOfCandidates
-                )}
-                title={post.title}
-              />
-            </li>
+    <div className='max-w-screen-2xl m-auto'>
+      <ul className='flex flex-wrap mt-6'>
+        {allPublicPostCards &&
+          allPublicPostCards.length > 0 &&
+          allPublicPostCards.map((post, index: number) => (
+            <Card key={post.id} post={post} />
           ))}
       </ul>
-    </>
+    </div>
   );
 }

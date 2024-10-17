@@ -75,7 +75,7 @@ export default function CommentSection({ session, postId, comments }: Props) {
             <li className='mb-4' key={comment.id}>
               <div className='mb-2'>
                 <span className='text-gray-500 mr-4 '>{comment.nickname}</span>
-                <span className='text-sm'>
+                <span className='text-base'>
                   {getRelativeDate(comment.createdAt)}
                 </span>
               </div>

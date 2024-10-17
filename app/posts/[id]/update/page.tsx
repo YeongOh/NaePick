@@ -3,10 +3,10 @@ import {
   fetchAllCategories,
   fetchCandidatesByPostId,
   fetchPostByPostId,
-  fetchPostThumbnailByPostId,
+  fetchPostWithThumbnailInfoByPostId,
 } from '@/app/lib/data';
 import UpdatePostForm from '@/app/ui/posts/UpdatePostForm';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 interface Props {
   params: { id: string };
@@ -15,16 +15,15 @@ interface Props {
 export default async function Page({ params }: Props) {
   const postId = params.id;
   const [postResult, candidates, session, categories] = await Promise.all([
-    await fetchPostThumbnailByPostId(postId),
-    await fetchCandidatesByPostId(postId),
-    await getSession(),
-    await fetchAllCategories(),
+    fetchPostWithThumbnailInfoByPostId(postId),
+    fetchCandidatesByPostId(postId),
+    getSession(),
+    fetchAllCategories(),
   ]);
 
   if (!postResult || !postResult[0] || !candidates) notFound();
 
-  if (postResult[0].userId !== session.id)
-    return <div>수정할 권한이 없습니다.</div>;
+  if (postResult[0].userId !== session.id) redirect('/error/forbidden');
 
   return (
     <div className='max-w-4xl m-auto'>

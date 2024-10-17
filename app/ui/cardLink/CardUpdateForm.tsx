@@ -18,18 +18,16 @@ export default function CardUpdateForm({ postId, userId }: Props) {
   };
 
   return (
-    <div className='mt-4 flex'>
-      <div className='flex h-12 w-full items-center justify-between px-4'>
-        <Link
-          className='p-2 bg-primary-500 text-white rounded px-4'
-          href={`posts/${postId}/update`}
-        >
-          수정
-        </Link>
-        <button className='text-red-500' onClick={handleDeleteClick}>
-          삭제
-        </button>
-      </div>
+    <div className='mt-4 flex gap-2 text-base'>
+      <button className='flex-1 text-red-500' onClick={handleDeleteClick}>
+        삭제
+      </button>
+      <Link
+        className='flex-1 p-2 text-primary-500 bg-gray-100 rounded text-center'
+        href={`posts/${postId}/update`}
+      >
+        수정
+      </Link>
     </div>
   );
 }

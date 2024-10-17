@@ -7,6 +7,19 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontSize: {
+      sm: ['0.75rem', '1rem'],
+      md: ['0.875rem', '1.25rem'],
+      base: ['0.875rem', '1.25rem'],
+      lg: ['1rem', '1.5rem'],
+      xl: ['1.125rem', '1.5rem'],
+      '2xl': ['1.25rem', '1.75rem'],
+      '3xl': ['1.5rem', '2rem'],
+      '4xl': ['1.875rem', '2.25rem'],
+      '5xl': ['2.25rem', '2.5rem'],
+      '6xl': ['3rem', '3.25rem'],
+      '7xl': ['3.75rem', '4rem'],
+    },
     extend: {
       colors: {
         primary: {
@@ -50,6 +63,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
 };
 export default config;

@@ -136,10 +136,10 @@ export default function RankScreen({ candidates, postStat }: Props) {
                       fill
                       objectFit='cover'
                     />
-                    <div className='absolute top-1 left-1 bg-white rounded-full text-sm w-6 h-6 flex justify-center items-center shadow-lg font-semibold text-slate-600'>
+                    <div className='absolute top-1 left-1 bg-white rounded-full text-base w-6 h-6 flex justify-center items-center shadow-lg font-semibold text-slate-600'>
                       {index + 1}
                     </div>
-                    <div className='absolute bottom-1 text-white text-sm truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'>
+                    <div className='absolute bottom-1 text-white text-base truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'>
                       {candidate.name}
                     </div>
                   </div>

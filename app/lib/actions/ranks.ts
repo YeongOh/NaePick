@@ -87,12 +87,6 @@ export async function sendStats(
           `,
       [totalNumberOfMatches, totalSpentTime, postId]
     );
-    console.log(postStatResult);
-
-    console.log(winners);
-    console.log(losers);
-    console.log(spentTimes);
-    console.log(finalWinner);
   } catch (err) {
     console.log(err);
   }

@@ -8,7 +8,7 @@ import CommentSection from '@/app/ui/comment/CommentSection';
 import Fold from '@/app/ui/fold/Fold';
 import PickScreen from '@/app/ui/posts/PickScreen';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 interface Props {
   params: { id: string; round: string };
@@ -18,10 +18,10 @@ export default async function Page({ params }: Props) {
   const postId = params.id;
   const round = Number(params.round);
   const [postResult, candidates, session, comments] = await Promise.all([
-    await fetchPostByPostId(postId),
-    await fetchRandomCandidatesByPostId(postId, round),
-    await getSession(),
-    await fetchCommentsByPostId(postId),
+    fetchPostByPostId(postId),
+    fetchRandomCandidatesByPostId(postId, round),
+    getSession(),
+    fetchCommentsByPostId(postId),
   ]);
 
   if (postResult && postResult[0]) {
@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
       postResult[0].publicity === 'private' &&
       session.id !== postResult[0].userId
     ) {
-      return <div>비공개 이상형 월드컵입니다.</div>;
+      redirect('/error/forbidden');
     }
 
     return (

@@ -182,8 +182,6 @@ export async function updatePost(
 
       const result = await Promise.all(promises);
     }
-    console.log('undefined?');
-    console.log(leftCandidateId, rightCandidateId, postId);
 
     await connection.query(
       `Update Thumbnails

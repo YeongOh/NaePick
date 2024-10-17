@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
 import Navbar from './ui/navbar/Navbar';
 
-const inter = Inter({ subsets: ['latin'] });
+const notoSansKr = Noto_Sans_KR({
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: '이상형 월드컵 NaePick, 내픽!',
@@ -17,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
-        <div className='flex flex-col'>
+      <body className={notoSansKr.className}>
+        <main className='flex flex-col'>
           <Navbar />
-          <div className='flex-grow md:overflow-y-auto'>{children}</div>
-        </div>
+          <div>{children}</div>
+        </main>
       </body>
     </html>
   );

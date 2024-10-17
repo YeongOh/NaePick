@@ -9,23 +9,42 @@ import {
 } from './definitions';
 import { pool } from './db';
 
-export async function fetchPublicPosts() {
+export async function fetchPublicPostCards() {
   try {
     const [result, meta]: [PostCard[], FieldPacket[]] = await pool.query(
       `SELECT p.*, c1.name as leftCandidateName, c2.name as rightCandidateName, 
               c1.url as leftCandidateUrl, c2.url as rightCandidateUrl,
-              u.nickname as nickname, u.username as username,
-              ct.name as categoryName
+              u.nickname as nickname, u.username as username
       FROM Posts p 
       LEFT JOIN Thumbnails t ON p.id = t.postId
       LEFT JOIN Candidates c1 ON t.leftCandidateId = c1.id
       LEFT JOIN Candidates c2 ON t.rightCandidateId = c2.id
-      LEFT JOIN Categories ct ON p.categoryId = ct.id
       LEFT JOIN Users u ON p.userId = u.id
       WHERE p.publicity = 'public'
-      ORDER BY p.createdAt DESC
-      LIMIT 12;`
+      ORDER BY p.createdAt DESC;`
     );
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function fetchPostCardByPostId(postId: string) {
+  try {
+    const [result, meta]: [PostCard[], FieldPacket[]] = await pool.query(
+      `SELECT p.*, c1.name as leftCandidateName, c2.name as rightCandidateName, 
+              c1.url as leftCandidateUrl, c2.url as rightCandidateUrl,
+              u.nickname as nickname, u.username as username
+      FROM Posts p 
+      LEFT JOIN Thumbnails t ON p.id = t.postId
+      LEFT JOIN Candidates c1 ON t.leftCandidateId = c1.id
+      LEFT JOIN Candidates c2 ON t.rightCandidateId = c2.id
+      LEFT JOIN Users u ON p.userId = u.id
+      WHERE p.id = ?;`,
+      [postId]
+    );
+    console.log(result);
     return result;
   } catch (err) {
     console.log(err);
@@ -91,7 +110,7 @@ export async function fetchPostByPostId(id: string) {
   }
 }
 
-export async function fetchPostThumbnailByPostId(id: string) {
+export async function fetchPostWithThumbnailInfoByPostId(id: string) {
   try {
     const [result, meta]: [
       PostInfo[] & { leftCandidateId: string; rightCandidateId: string },

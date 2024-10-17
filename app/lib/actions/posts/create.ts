@@ -68,7 +68,6 @@ export async function createPost(
     numberOfCandidates: formData.get('numberOfCandidates'),
     thumbnails: JSON.parse(formData.get('thumbnails') as string),
   });
-  console.log('1');
 
   if (!validatedFields.success) {
     return {
@@ -77,7 +76,6 @@ export async function createPost(
     };
   }
 
-  console.log('2');
   const {
     title,
     description,
@@ -86,8 +84,6 @@ export async function createPost(
     numberOfCandidates,
     thumbnails,
   } = validatedFields.data;
-  console.log(thumbnails);
-  console.log('3');
 
   const candidateNames = [];
   const files = [];
@@ -120,16 +116,6 @@ export async function createPost(
     // 트랜잭션 시작
     await connection.beginTransaction();
 
-    console.log(
-      postId,
-      title,
-      description,
-      publicity,
-      userId,
-      categoryId,
-      numberOfCandidates
-    );
-
     await connection.query(
       `INSERT INTO Posts (id, title, description, publicity, userId, categoryId, numberOfCandidates) 
       VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -153,17 +139,13 @@ export async function createPost(
       const candidateId = uuidv4();
       const url = `/${candidateId}${ext}`;
 
-      console.log(candidateId, postId, candidateName, url);
       await connection.query(
         `INSERT INTO Candidates (id, postId, name, url) 
         VALUES (?, ?, ?, ?)`,
         [candidateId, postId, candidateName, url]
       );
-      // check filename with thumbnail filenames
-      console.log('thumb');
-      console.log(thumbnails);
-      console.log(file.name);
 
+      // check filename with thumbnail filenames
       const thumbnailIndex = thumbnails.findIndex(
         (thumbI) => Number(thumbI) === i
       );

@@ -11,27 +11,31 @@ interface Props {
   title: string;
 }
 
-export default function CardLink({ postId, numberOfCandidates, title }: Props) {
+export default function DirectCardLink({
+  postId,
+  numberOfCandidates,
+  title,
+}: Props) {
   const [showStartWorldCupModal, setShowStartWorldCupModal] = useState(false);
   const [showShareWorldCupModal, setShowShareWorldCupModal] = useState(false);
 
   return (
     <>
-      <div className='mt-4 flex gap-4 text-base'>
+      <div className='mt-4 flex gap-8 text-lg'>
         <button
-          className='flex-1 py-2 rounded text-primary-500'
+          className='flex-1 py-4 rounded text-primary-500'
           onClick={() => setShowShareWorldCupModal(true)}
         >
           공유
         </button>
         <Link
-          className='flex-1 py-2 rounded text-primary-700 bg-gray-100 text-center'
+          className='flex-1 py-4 rounded text-primary-700 bg-gray-100 text-center'
           href={`/posts/ranks/${postId}`}
         >
           랭킹
         </Link>
         <button
-          className='font-semibold flex-1 py-2 bg-primary-500 text-white rounded'
+          className='font-semibold flex-1 py-4 bg-primary-500 text-white rounded'
           onClick={() => setShowStartWorldCupModal(true)}
         >
           시작

@@ -101,7 +101,6 @@ export default function UpdatePostForm({
       }
     },
   });
-  console.log(thumbnails);
 
   function nameLengthValidator(file: any) {
     if (file.name.length > FILE_NAME_MAX_LENGTH) {
@@ -180,19 +179,19 @@ export default function UpdatePostForm({
           <div className='flex justify-between items-center my-2'>
             <label
               htmlFor={`candidateNames[${i}]`}
-              className='block font-semibold text-sm'
+              className='block font-semibold text-base'
             >
               후보 {i + 1}
             </label>
             <button
               onClick={() => removeOldCandidate(candidate)}
-              className='bg-white border border-grey-700 px-3 flex h-8 items-center rounded-lg text-red-500 font-semibold text-sm'
+              className='bg-white border border-grey-700 px-3 flex h-8 items-center rounded-lg text-red-500 font-semibold text-base'
             >
               삭제
             </button>
           </div>
           <input
-            className='block w-full border rounded-md mb-2 p-2 text-sm placeholder:text-gray-500 focus:outline-primary-500'
+            className='block w-full border rounded-md mb-2 p-2 text-base placeholder:text-gray-500 focus:outline-primary-500'
             id={candidate.id}
             name={candidate.name}
             placeholder={candidate.name}
@@ -249,19 +248,19 @@ export default function UpdatePostForm({
         <div className='flex justify-between items-center my-2'>
           <label
             htmlFor={`candidateNames[${i}]`}
-            className='block font-semibold text-sm'
+            className='block font-semibold text-base'
           >
             후보 {oldCandidates.length + i + 1}
           </label>
           <button
             onClick={() => removeCandidate(i)}
-            className='bg-white border border-grey-700 px-3 flex h-8 items-center rounded-lg text-red-500 font-semibold text-sm'
+            className='bg-white border border-grey-700 px-3 flex h-8 items-center rounded-lg text-red-500 font-semibold text-base'
           >
             삭제
           </button>
         </div>
         <input
-          className='block w-full border rounded-md mb-2 p-2 text-sm placeholder:text-gray-500 focus:outline-primary-500'
+          className='block w-full border rounded-md mb-2 p-2 text-base placeholder:text-gray-500 focus:outline-primary-500'
           id={`candidateNames[${i}]`}
           name={`candidateNames[${i}]`}
           placeholder={namePlaceholder}

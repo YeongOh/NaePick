@@ -28,7 +28,6 @@ export interface Post extends QueryResult {
 export interface PostCard extends Post {
   username: string;
   nickname: string;
-  categoryName: string;
   leftCandidateName: string;
   rightCandidateName: string;
 }
