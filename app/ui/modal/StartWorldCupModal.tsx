@@ -68,7 +68,7 @@ export default function StartWorldCupModal({
                   </button>
                   <Link
                     className='bg-primary-500 text-white px-4 py-2 rounded'
-                    href={`/posts/${postId}/2`}
+                    href={`/posts/${postId}/${round}`}
                   >
                     시작하기!
                   </Link>
