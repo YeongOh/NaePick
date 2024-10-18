@@ -1,9 +1,9 @@
-import { fetchPublicPostCards } from './lib/data';
+import { fetchPublicWorldcupCards } from './lib/data';
 import 'dayjs/locale/ko';
-import Card from './ui/card/Card';
+import Card from './components/card/card';
 
 export default async function Home() {
-  const allPublicPostCards = await fetchPublicPostCards();
+  const allPublicPostCards = await fetchPublicWorldcupCards();
 
   return (
     <div className='max-w-screen-2xl m-auto'>

@@ -1,6 +1,6 @@
 'use server';
 
-import { COMMENT_MAX_LENGTH } from '@/app/constants';
+import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { z } from 'zod';
 import { pool } from '../db';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,8 +15,8 @@ const FormSchema = z.object({
     .min(1, {
       message: `내용을 입력해주세요.`,
     })
-    .max(COMMENT_MAX_LENGTH, {
-      message: `${COMMENT_MAX_LENGTH}자 이하이어야 합니다.`,
+    .max(COMMENT_TEXT_MAX_LENGTH, {
+      message: `${COMMENT_TEXT_MAX_LENGTH}자 이하이어야 합니다.`,
     })
     .trim(),
 });
@@ -66,6 +66,6 @@ export async function createComment(state: CommentState, formData: FormData) {
       message: '댓글 추가 실패했습니다',
     };
   }
-  revalidatePath(`/posts/${postId}`);
+  revalidatePath(`/worldcups/${postId}`);
   return {};
 }

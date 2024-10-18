@@ -1,10 +1,10 @@
 // URLS
-export const DOMAIN = 'https://pick.co.kr';
+export const KR_DOMAIN = process.env.KR_DOMAIN;
 
 // Create Post Form Validation
-export const POST_TITLE_MIN_LENGTH = 4;
-export const POST_TITLE_MAX_LENGTH = 100;
-export const POST_DESCRIPTION_MAX_LENGTH = 300;
+export const WORLDCUP_TITLE_MIN_LENGTH = 2;
+export const WORLDCUP_TITLE_MAX_LENGTH = 30;
+export const WORLDCUP_DESCRIPTION_MAX_LENGTH = 300;
 
 // File Name Limit
 export const FILE_NAME_MAX_LENGTH = 60;
@@ -20,14 +20,16 @@ export const CATEGORIES = [
 // signup
 export const USERNAME_MIN_LENGTH = 4;
 export const USERNAME_MAX_LENGTH = 40;
-export const NICKNAME_MIN_LENGTH = 3;
-export const NICKNAME_MAX_LENGTH = 12;
-export const EMAIL_MAX_LENGTH = 40;
+export const NICKNAME_MIN_LENGTH = 2; // should be byte
+export const NICKNAME_MAX_LENGTH = 20;
+export const EMAIL_MAX_LENGTH = 255;
 export const PASSWORD_MIN_LENGTH = 8;
-export const PASSWORD_MAX_LENGTH = 40;
+export const PASSWORD_MAX_LENGTH = 64;
+
+// candidate name length
 
 // comment
-export const COMMENT_MAX_LENGTH = 100;
+export const COMMENT_TEXT_MAX_LENGTH = 150;
 
 // number of rounds available
 export const DEFAULT_ROUNDS = 32;

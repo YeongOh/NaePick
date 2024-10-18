@@ -9,28 +9,28 @@ import {
 } from './definitions';
 import { pool } from './db';
 
-export async function fetchPublicPostCards() {
+export async function fetchPublicWorldcupCards() {
   try {
     const [result, meta]: [PostCard[], FieldPacket[]] = await pool.query(
       `SELECT p.*, c1.name as leftCandidateName, c2.name as rightCandidateName, 
               c1.url as leftCandidateUrl, c2.url as rightCandidateUrl,
               u.nickname as nickname, u.username as username
       FROM Posts p 
-      LEFT JOIN Thumbnails t ON p.id = t.postId
-      LEFT JOIN Candidates c1 ON t.leftCandidateId = c1.id
-      LEFT JOIN Candidates c2 ON t.rightCandidateId = c2.id
-      LEFT JOIN Users u ON p.userId = u.id
+      INNER JOIN Thumbnails t ON p.id = t.postId
+      INNER JOIN Candidates c1 ON t.leftCandidateId = c1.id
+      INNER JOIN Candidates c2 ON t.rightCandidateId = c2.id
+      INNER JOIN Users u ON p.userId = u.id
       WHERE p.publicity = 'public'
       ORDER BY p.createdAt DESC;`
     );
-    console.log(result);
+
     return result;
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function fetchPostCardByPostId(postId: string) {
+export async function fetchWorldcupCardByWorldcupId(postId: string) {
   try {
     const [result, meta]: [PostCard[], FieldPacket[]] = await pool.query(
       `SELECT p.*, c1.name as leftCandidateName, c2.name as rightCandidateName, 
@@ -51,7 +51,7 @@ export async function fetchPostCardByPostId(postId: string) {
   }
 }
 
-export async function fetchUserAllPosts(userId: string) {
+export async function fetchWorldcupsByUserId(userId: string) {
   try {
     const [result, meta]: [PostCard[] & Thumbnail[], FieldPacket[]] =
       await pool.query(
@@ -90,7 +90,7 @@ export async function fetchAllCategories() {
   }
 }
 
-export async function fetchPostByPostId(id: string) {
+export async function fetchWorldcupInfoByWorldcupId(id: string) {
   try {
     const [result, meta]: [PostInfo[], FieldPacket[]] = await pool.query(
       `SELECT p.*, c.name AS categoryName,
@@ -110,7 +110,7 @@ export async function fetchPostByPostId(id: string) {
   }
 }
 
-export async function fetchPostWithThumbnailInfoByPostId(id: string) {
+export async function fetchWorldcupWithThumbnailByWorldcupId(id: string) {
   try {
     const [result, meta]: [
       PostInfo[] & { leftCandidateId: string; rightCandidateId: string },
@@ -135,7 +135,7 @@ export async function fetchPostWithThumbnailInfoByPostId(id: string) {
   }
 }
 
-export async function fetchPostStatById(id: string) {
+export async function fetchWorldcupStatsByWorldcupId(id: string) {
   try {
     const [result, meta]: [PostStat[], FieldPacket[]] = await pool.query(
       `SELECT p.*, c.name AS categoryName,
@@ -159,7 +159,7 @@ export async function fetchPostStatById(id: string) {
   }
 }
 
-export async function fetchCommentsByPostId(postId: string) {
+export async function fetchCommentsByWorldcupId(postId: string) {
   try {
     const [result, meta]: [Comment[], FieldPacket[]] = await pool.query(
       `SELECT c.*, 
@@ -176,7 +176,7 @@ export async function fetchCommentsByPostId(postId: string) {
   }
 }
 
-export async function fetchRandomCandidatesByPostId(
+export async function fetchRandomCandidatesByWorldcupId(
   postId: string,
   round: number | string
 ) {
@@ -200,13 +200,13 @@ export async function fetchRandomCandidatesByPostId(
   }
 }
 
-export async function fetchCandidatesByPostId(postId: string) {
+export async function fetchCandidatesByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
       `SELECT * 
         FROM Candidates 
         WHERE postId = ? `,
-      [postId]
+      [worldcupId]
     );
 
     return result;

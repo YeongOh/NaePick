@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from './app/lib/actions/session';
 
-const protectedRoutes = ['/posts/create', '/auth/update'];
-const publicRoutes = ['/auth/signin', '/auth/signup'];
+const protectedRoutes = ['/worldcups/create', '/edit-user'];
+const publicRoutes = ['/signin', '/signup'];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -13,11 +13,11 @@ export default async function middleware(req: NextRequest) {
   const isAuthenticated = session?.username;
 
   if (isProtectedRoute && !isAuthenticated) {
-    return NextResponse.redirect(new URL('/auth/signin', req.nextUrl));
+    return NextResponse.redirect(new URL('/signin', req.nextUrl));
   }
 
   if (isPublicRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/auth/signout', req.nextUrl));
+    return NextResponse.redirect(new URL('/signout', req.nextUrl));
   }
 
   return NextResponse.next();
