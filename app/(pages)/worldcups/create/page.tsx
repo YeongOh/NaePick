@@ -1,4 +1,4 @@
-import { fetchAllCategories } from '@/app/lib/data';
+import { fetchAllCategories } from '@/app/lib/data/worldcups';
 import CreateWorldcupForm from '@/app/components/worldcups/create-worldcup-form';
 
 export default async function Page() {

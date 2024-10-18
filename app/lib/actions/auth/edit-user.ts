@@ -100,7 +100,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
 
   try {
     const session = await getSession();
-    if (!session?.id) {
+    if (!session?.userId) {
       return {
         message: '현재 로그인된 상태가 아닙니다.',
       };
@@ -113,7 +113,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
       `SELECT username, password
         FROM Users
         WHERE id = ?;`,
-      [session.id]
+      [session.userId]
     );
 
     const user = result?.[0];
@@ -137,9 +137,9 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
         await pool.query(
           `SELECT * FROM Users
              WHERE nickname = ? AND id != ?;`,
-          [nickname, session.id]
+          [nickname, session.userId]
         );
-      console.log(nickname, session.id);
+      console.log(nickname, session.userId);
       if (duplicatedUserResult?.[0]) {
         return {
           errors: {
@@ -157,14 +157,14 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
         `Update Users
         Set nickname = ?, password = ?
         WHERE id = ?;`,
-        [nickname, hashedNewPassword, session.id]
+        [nickname, hashedNewPassword, session.userId]
       );
     } else {
       await pool.query(
         `Update Users
                 Set nickname = ?
                 WHERE id = ?;`,
-        [nickname, session.id]
+        [nickname, session.userId]
       );
     }
 

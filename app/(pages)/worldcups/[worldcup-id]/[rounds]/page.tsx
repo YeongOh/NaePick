@@ -1,33 +1,33 @@
 import { getSession } from '@/app/lib/actions/session';
 import {
-  fetchRandomCandidatesByWorldcupId,
   fetchCommentsByWorldcupId,
-  fetchWorldcupInfoByWorldcupId,
-} from '@/app/lib/data';
+  fetchWorldcupByWorldcupId,
+} from '@/app/lib/data/worldcups';
 import CommentSection from '@/app/components/comment/comment-section';
 import Fold from '@/app/components/fold/fold';
 import PickScreen from '@/app/components/worldcups/pick-screen';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
+import { fetchRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
 
 interface Props {
   params: { ['worldcup-id']: string; rounds: string };
 }
 
 export default async function Page({ params }: Props) {
-  const postId = params['worldcup-id'];
+  const worldcupId = params['worldcup-id'];
   const rounds = Number(params.rounds);
-  const [postResult, candidates, session, comments] = await Promise.all([
-    fetchWorldcupInfoByWorldcupId(postId),
-    fetchRandomCandidatesByWorldcupId(postId, rounds),
+  const [worldcupResult, candidates, session, comments] = await Promise.all([
+    fetchWorldcupByWorldcupId(worldcupId),
+    fetchRandomCandidatesByWorldcupId(worldcupId, rounds),
     getSession(),
-    fetchCommentsByWorldcupId(postId),
+    fetchCommentsByWorldcupId(worldcupId),
   ]);
 
-  if (postResult && postResult[0]) {
+  if (worldcupResult && worldcupResult[0]) {
     if (
-      postResult[0].publicity === 'private' &&
-      session.id !== postResult[0].userId
+      worldcupResult[0].publicity === 'private' &&
+      session.userId !== worldcupResult[0].userId
     ) {
       redirect('/forbidden');
     }
@@ -36,24 +36,22 @@ export default async function Page({ params }: Props) {
       <>
         <PickScreen
           defaultCandidates={candidates}
-          post={postResult[0]}
-          postId={postId}
+          post={worldcupResult[0]}
+          worldcupId={worldcupId}
           round={rounds}
         />
-        <Fold postStat={postResult[0]} />
-        <div className='p-4 mb-4'>
-          <Link
-            className='min-w-9 rounded-md border border-slate-300 py-2 px-3 text-center shadow-sm hover:shadow-md'
-            href={`/worldcups/${postId}/statistics`}
-          >
-            통계 보기
-          </Link>
+        <div className='max-w-screen-2xl m-auto'>
+          <div className='p-8'>
+            <Fold worldcup={worldcupResult[0]} />
+          </div>
+          <div className='p-8'>
+            <CommentSection
+              worldcupId={worldcupId}
+              session={structuredClone(session)}
+              comments={comments}
+            />
+          </div>
         </div>
-        <CommentSection
-          postId={postId}
-          session={structuredClone(session)}
-          comments={comments}
-        />
       </>
     );
   } else {

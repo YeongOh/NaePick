@@ -2,7 +2,7 @@ import {
   fetchCommentsByWorldcupId,
   fetchWorldcupStatsByWorldcupId,
   fetchCandidatesByWorldcupId,
-} from '@/app/lib/data';
+} from '@/app/lib/data/worldcups';
 import RankScreen from '@/app/components/ranks/RankScreen';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';

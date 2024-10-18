@@ -1,11 +1,5 @@
 'use server';
 
-import {
-  PASSWORD_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  USERNAME_MIN_LENGTH,
-} from '@/app/constants';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { FieldPacket, RowDataPacket } from 'mysql2';
@@ -16,38 +10,13 @@ import { pool } from '../../db';
 import { createSession } from '../session';
 
 const FormSchema = z.object({
-  username: z
-    .string()
-    .min(USERNAME_MIN_LENGTH, {
-      message: `올바른 형식이 아닙니다.`,
-    })
-    .max(USERNAME_MAX_LENGTH, {
-      message: `올바른 형식이 아닙니다.`,
-    })
-    .trim(),
-  password: z
-    .string() // 수정 필요 - 올바른 항목 여러개가 표시됨
-    .min(PASSWORD_MIN_LENGTH, {
-      message: `올바른 형식이 아닙니다.`,
-    })
-    .max(PASSWORD_MAX_LENGTH, {
-      message: `올바른 형식이 아닙니다.`,
-    })
-    .regex(/[a-zA-Z]/, {
-      message: '올바른 형식이 아닙니다.',
-    })
-    .regex(/[0-9]/, {
-      message: '올바른 형식이 아닙니다.',
-    })
-    .regex(/[^a-zA-Z0-9]/, {
-      message: '올바른 형식이 아닙니다.',
-    })
-    .trim(),
+  email: z.string().email({ message: '올바른 이메일을 입력해주세요.' }),
+  password: z.string(),
 });
 
 export type SigninState = {
   errors?: {
-    username?: string[];
+    email?: string[];
     password?: string[];
   };
   message?: string | null;
@@ -55,7 +24,7 @@ export type SigninState = {
 
 export async function signin(state: SigninState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
-    username: formData.get('username'),
+    email: formData.get('email'),
     password: formData.get('password'),
   });
 
@@ -66,25 +35,26 @@ export async function signin(state: SigninState, formData: FormData) {
     };
   }
 
-  const { username, password } = validatedFields.data;
+  const { email, password } = validatedFields.data;
 
   try {
     const [result, fields]: [
-      Pick<User, 'id' | 'username' | 'email' | 'password' | 'nickname'>[] &
+      Pick<User, 'userId' | 'email' | 'password' | 'nickname'>[] &
         RowDataPacket[],
       FieldPacket[]
     ] = await pool.query(
-      `SELECT id, nickname, username, password, email
-      FROM Users
-      WHERE username = ?;`,
-      [username]
+      `SELECT user_id AS userId,
+              nickname, password, email
+      FROM user
+      WHERE email = ?;`,
+      [email]
     );
 
     const user = result?.[0];
     if (!user) {
       return {
         errors: {
-          username: ['존재하지 않는 아이디입니다.'],
+          email: ['존재하지 않는 이메일입니다.'],
         },
         message: '로그인에 실패했습니다. (e1)',
       };
@@ -99,19 +69,20 @@ export async function signin(state: SigninState, formData: FormData) {
       };
     }
 
-    const loginInfo = {
-      id: user.id,
-      nickname: user.nickname,
-      email: user.email,
-      username,
-    };
-    await createSession(loginInfo);
+    console.log(user);
+    const { userId, nickname } = user;
+    console.log(userId, nickname);
+
+    await createSession({ userId, nickname, email });
   } catch (error) {
     console.log(error);
     return {
       message: '로그인에 실패했습니다. (e4).',
     };
   }
+
+  // TODO: 로그인 토스트
+
   revalidatePath('/');
   redirect('/');
 }

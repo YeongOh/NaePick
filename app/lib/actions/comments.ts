@@ -36,7 +36,7 @@ export async function createComment(state: CommentState, formData: FormData) {
   const session = await getSession();
 
   const validatedFields = FormSchema.safeParse({
-    userId: session.id,
+    userId: session.userId,
     postId: formData.get('postId'),
     text: formData.get('text'),
   });

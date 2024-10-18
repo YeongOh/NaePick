@@ -7,6 +7,7 @@ import { deleteSession } from '../session';
 export async function signout() {
   await deleteSession();
 
-  revalidatePath('/signup');
-  redirect('/auth/signin');
+  // TODO: 로그아웃 토스트
+  revalidatePath('/');
+  redirect('/');
 }

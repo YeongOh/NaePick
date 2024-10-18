@@ -3,7 +3,7 @@ import {
   fetchAllCategories,
   fetchCandidatesByWorldcupId,
   fetchWorldcupWithThumbnailByWorldcupId,
-} from '@/app/lib/data';
+} from '@/app/lib/data/worldcups';
 import UpdateWorldcupForm from '@/app/components/worldcups/update-worldcup-form';
 import { notFound, redirect } from 'next/navigation';
 
@@ -22,7 +22,7 @@ export default async function Page({ params }: Props) {
 
   if (!postResult || !postResult[0] || !candidates) notFound();
 
-  if (postResult[0].userId !== session.id) redirect('/forbidden');
+  if (postResult[0].userId !== session.userId) redirect('/forbidden');
 
   return (
     <div className='max-w-4xl m-auto'>

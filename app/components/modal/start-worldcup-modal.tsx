@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 interface Props {
   open: boolean;
   onClose: any;
-  postId: string;
+  worldcupId: string;
   numberOfCandidates: number;
   title: string;
 }
@@ -16,7 +16,7 @@ interface Props {
 export default function StartWorldcupModal({
   open,
   onClose,
-  postId,
+  worldcupId,
   numberOfCandidates,
   title,
 }: Props) {
@@ -68,7 +68,7 @@ export default function StartWorldcupModal({
                   </button>
                   <Link
                     className='bg-primary-500 text-white px-4 py-2 rounded'
-                    href={`/worldcups/${postId}/${round}`}
+                    href={`/worldcups/${worldcupId}/${round}`}
                   >
                     시작하기!
                   </Link>

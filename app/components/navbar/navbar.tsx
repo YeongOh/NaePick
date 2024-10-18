@@ -19,11 +19,11 @@ export default async function Navbar() {
           >
             월드컵 만들기
           </NavbarLink>
-          {session?.username ? (
+          {session?.userId ? (
             <>
               <NavbarLink
-                href={`/worldcups/users/${session.id}`}
-                pathToHighlight={`/worldcups/users/${session.id}`}
+                href={`/worldcups/users/${session.userId}`}
+                pathToHighlight={`/worldcups/users/${session.userId}`}
               >
                 내 월드컵 관리
               </NavbarLink>

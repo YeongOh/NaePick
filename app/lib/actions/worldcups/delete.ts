@@ -13,7 +13,7 @@ export async function deleteUserPost(postId: string, userId: string) {
 
   try {
     const session = await getSession();
-    if (session.id !== userId) {
+    if (session.userId !== userId) {
       return;
     }
 

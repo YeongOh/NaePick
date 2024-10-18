@@ -1,4 +1,4 @@
-import { fetchWorldcupCardByWorldcupId } from '@/app/lib/data';
+import { fetchWorldcupCardByWorldcupId } from '@/app/lib/data/worldcups';
 import { BASE_IMAGE_URL } from '@/app/lib/images';
 import DirectCardLink from '@/app/components/card-extensions/direct-card-link';
 import Image from 'next/image';
@@ -9,19 +9,19 @@ import 'dayjs/locale/ko';
 import { getSession } from '@/app/lib/actions/session';
 
 interface Props {
-  params: { id: string; round: string };
+  params: { ['worldcup-id']: string; round: string };
 }
 
 export default async function Page({ params }: Props) {
-  const postId = params.id;
-  const [post, session] = await Promise.all([
-    fetchWorldcupCardByWorldcupId(postId),
+  const worldcupId = params['worldcup-id'];
+  const [worldcup, session] = await Promise.all([
+    fetchWorldcupCardByWorldcupId(worldcupId),
     getSession(),
   ]);
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
-  if (!post || !post[0]) {
+  if (!worldcup || !worldcup[0]) {
     notFound();
   }
   const {
@@ -33,13 +33,12 @@ export default async function Page({ params }: Props) {
     description,
     publicity,
     createdAt,
-    updatedAt,
     numberOfCandidates,
     nickname,
     userId,
-  } = post[0];
+  } = worldcup[0];
 
-  if (publicity === 'private' && session?.id !== userId) {
+  if (publicity === 'private' && session?.userId !== userId) {
     redirect('/forbidden');
   }
 
@@ -102,7 +101,7 @@ export default async function Page({ params }: Props) {
         <p className='m-2 line-clamp-3'>{description}</p>
 
         <DirectCardLink
-          postId={postId}
+          worldcupId={worldcupId}
           numberOfCandidates={numberOfCandidates}
           title={title}
         />

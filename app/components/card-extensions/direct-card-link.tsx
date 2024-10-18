@@ -6,13 +6,13 @@ import StartWorldcupModal from '../modal/start-worldcup-modal';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
 
 interface Props {
-  postId: string;
+  worldcupId: string;
   numberOfCandidates: number;
   title: string;
 }
 
 export default function DirectCardLink({
-  postId,
+  worldcupId,
   numberOfCandidates,
   title,
 }: Props) {
@@ -30,7 +30,7 @@ export default function DirectCardLink({
         </button>
         <Link
           className='flex-1 py-4 rounded text-primary-700 bg-gray-100 text-center'
-          href={`/worldcups/${postId}/statistics`}
+          href={`/worldcups/${worldcupId}/statistics`}
         >
           랭킹
         </Link>
@@ -44,13 +44,13 @@ export default function DirectCardLink({
       <ShareWorldcupModal
         open={showShareWorldCupModal}
         onClose={() => setShowShareWorldCupModal(false)}
-        postId={postId}
+        worldcupId={worldcupId}
         title={title}
       />
       <StartWorldcupModal
         open={showStartWorldCupModal}
         onClose={() => setShowStartWorldCupModal(false)}
-        postId={postId}
+        worldcupId={worldcupId}
         numberOfCandidates={numberOfCandidates}
         title={title}
       />

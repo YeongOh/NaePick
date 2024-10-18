@@ -1,23 +1,23 @@
 'use client';
 
-import { KR_DOMAIN } from '@/app/constants';
+import { DOMAIN } from '@/app/constants';
 import { createPortal } from 'react-dom';
 
 interface Props {
   open: boolean;
   onClose: any;
   title: string;
-  postId: string;
+  worldcupId: string;
 }
 
 export default function ShareWorldcupModal({
   open,
   title,
   onClose,
-  postId,
+  worldcupId,
 }: Props) {
   const handleCopyShareLInk = async () => {
-    await navigator.clipboard.writeText(`${KR_DOMAIN}/worldcups/${postId}`);
+    await navigator.clipboard.writeText(`${DOMAIN}/worldcups/${worldcupId}`);
   };
 
   return (
@@ -37,7 +37,7 @@ export default function ShareWorldcupModal({
               </h2>
               <div className='flex flex-col items-center justify-between'>
                 <div className='relative w-full text-base border bg-gray-50 rounded-lg p-4 whitespace-nowrap overflow-hidden'>
-                  <p className='w-full'>{`${KR_DOMAIN}/worldcups/${postId}`}</p>
+                  <p className='w-full'>{`${DOMAIN}/worldcups/${worldcupId}`}</p>
                   <button
                     onClick={handleCopyShareLInk}
                     className='absolute top-2 right-2 bg-primary-500 text-white px-4 py-2 rounded'

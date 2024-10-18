@@ -34,9 +34,6 @@ const CreatePostFormSchema = z.object({
   categoryId: z.coerce
     .number()
     .positive({ message: '카테고리를 선택해주세요.' }),
-  numberOfCandidates: z.coerce
-    .number()
-    .gte(2, { message: '후보는 2명 이상이어야 합니다.' }),
   thumbnails: z.array(z.number()).length(2, {
     message: '후보 이미지를 클릭하여 썸네일을 2개 선택해주세요.',
   }),
@@ -48,7 +45,6 @@ export type CreatePostFormState = {
     description?: string[];
     publicity?: string[];
     categoryId?: string[];
-    numberOfCandidates?: string[];
     thumbnails?: string[];
   };
   message?: string | null;
@@ -65,7 +61,6 @@ export async function createPost(
     description: formData.get('description'),
     publicity: formData.get('publicity'),
     categoryId: formData.get('categoryId'),
-    numberOfCandidates: formData.get('numberOfCandidates'),
     thumbnails: JSON.parse(formData.get('thumbnails') as string),
   });
 
@@ -76,29 +71,25 @@ export async function createPost(
     };
   }
 
-  const {
-    title,
-    description,
-    publicity,
-    categoryId,
-    numberOfCandidates,
-    thumbnails,
-  } = validatedFields.data;
+  const { title, description, publicity, categoryId, thumbnails } =
+    validatedFields.data;
 
   const candidateNames = [];
   const files = [];
-  for (let i = 0; i < numberOfCandidates; i++) {
+
+  let i = 0;
+  while (true) {
+    // TODO: 후보 이름 길이 확인
     const candidateName = formData.get(`candidateNames[${i}]`);
+    if (!candidateName) {
+      break;
+    }
     candidateNames.push(candidateName);
     const file = formData.get(`imageFiles[${i}]`) as File;
     files.push(file);
+    ++i;
   }
 
-  if (new Set(files).size != files.length) {
-    return {
-      message: '이미지 파일에 중복이 있습니다.',
-    };
-  }
   if (new Set(candidateNames).size != candidateNames.length) {
     return {
       message: '후보 이름에 중복이 있습니다.',
@@ -106,48 +97,38 @@ export async function createPost(
   }
   const connection = await pool.getConnection();
   try {
-    const postId = uuidv4();
+    const worldcupId = uuidv4();
     let leftCandidateId;
     let rightCandidateId;
 
     const session = await getSession();
-    const userId = session.id;
+    const userId = session.userId;
 
     // 트랜잭션 시작
     await connection.beginTransaction();
 
     await connection.query(
-      `INSERT INTO Posts (id, title, description, publicity, userId, categoryId, numberOfCandidates) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        postId,
-        title,
-        description,
-        publicity,
-        userId,
-        categoryId,
-        numberOfCandidates,
-      ]
+      `INSERT INTO worldcup (worldcup_id, title, description, publicity, user_id, category_id) 
+      VALUES (?, ?, ?, ?, ?, ?)`,
+      [worldcupId, title, description, publicity, userId, categoryId]
     );
-
-    for (let i = 0; i < numberOfCandidates; i++) {
-      const file = files[i];
-      const candidateName = candidateNames[i];
-
+    for (let j = 0; j < files.length; j++) {
+      const file = files[j];
+      const candidateName = candidateNames[j];
       const ext = path.extname(file.name);
-
       const candidateId = uuidv4();
-      const url = `/${candidateId}${ext}`;
+
+      const url = `worldcups/${worldcupId}/${candidateId}${ext}`;
 
       await connection.query(
-        `INSERT INTO Candidates (id, postId, name, url) 
+        `INSERT INTO candidate (candidate_id, worldcup_id, name, url) 
         VALUES (?, ?, ?, ?)`,
-        [candidateId, postId, candidateName, url]
+        [candidateId, worldcupId, candidateName, url]
       );
 
       // check filename with thumbnail filenames
       const thumbnailIndex = thumbnails.findIndex(
-        (thumbI) => Number(thumbI) === i
+        (thumbI) => Number(thumbI) === j
       );
       if (thumbnailIndex == 0) {
         leftCandidateId = candidateId;
@@ -163,19 +144,10 @@ export async function createPost(
 
     const thumbnailId = uuidv4();
 
-    console.log(thumbnailId, postId, leftCandidateId, rightCandidateId);
     await connection.query(
-      `INSERT INTO Thumbnails (id, postId, leftCandidateId, rightCandidateId) 
+      `INSERT INTO thumbnail (thumbnail_id, worldcup_id, left_candidate_id, right_candidate_id) 
       VALUES (?, ?, ?, ?)`,
-      [thumbnailId, postId, leftCandidateId, rightCandidateId]
-    );
-
-    const postStatsId = uuidv4();
-
-    await connection.query(
-      `INSERT INTO PostStats (id, postId) 
-      VALUES (?, ?)`,
-      [postStatsId, postId]
+      [thumbnailId, worldcupId, leftCandidateId, rightCandidateId]
     );
 
     await connection.commit();

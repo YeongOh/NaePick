@@ -2,7 +2,6 @@ import { BASE_IMAGE_URL } from '@/app/lib/images';
 import Image from 'next/image';
 
 interface Props {
-  postId: string;
   leftCandidateUrl: string;
   leftCandidateName: string;
   rightCandidateUrl: string;

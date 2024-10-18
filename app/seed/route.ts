@@ -22,8 +22,8 @@ async function seedWorldcup() {
     const [results2, fields2] = await pool.query(
       `CREATE TABLE IF NOT EXISTS worldcup (
 	      worldcup_id VARCHAR(255) NOT NULL,
-	      title VARCHAR(30) NOT NULL,
-	      description VARCHAR(300),
+	      title VARCHAR(60) NOT NULL,
+	      description VARCHAR(500),
         publicity ENUM('public', 'private', 'unlisted') NOT NULL DEFAULT 'public',
         user_id VARCHAR(255) DEFAULT NULL,
         category_id INT NOT NULL,
@@ -88,7 +88,6 @@ async function seedCandidates() {
           name VARCHAR(255) NOT NULL,
           url VARCHAR(255) NOT NULL,
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (candidate_id),
           FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE
         );`

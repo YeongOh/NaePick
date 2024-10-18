@@ -19,27 +19,6 @@ export default function SignupForm() {
           <br></br>
           회원 탈퇴시 모든 정보가 완전히 제거됩니다.
         </div>
-        <label htmlFor='username' className='ml-2 mb-2 block font-semibold'>
-          회원 아이디
-        </label>
-        <input
-          id='username'
-          name='username'
-          type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
-              ${state.errors?.username && 'outline outline-1 outline-red-500'}`}
-          placeholder={`로그인에 사용될 아이디를 입력해주세요. `}
-          aria-describedby='username-error'
-          autoFocus
-        />
-        <div id='username-error' aria-live='polite' aria-atomic='true'>
-          {state.errors?.username &&
-            state.errors.username.map((error: string) => (
-              <p className='m-2 mb-4 text-red-500' key={error}>
-                {error}
-              </p>
-            ))}
-        </div>
         <label htmlFor='email' className='ml-2 mb-2 block font-semibold'>
           이메일
         </label>

@@ -6,8 +6,6 @@ import {
   NICKNAME_MIN_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  USERNAME_MIN_LENGTH,
 } from '@/app/constants';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
@@ -21,15 +19,6 @@ import { createSession } from '../session';
 
 const FormSchema = z
   .object({
-    username: z
-      .string()
-      .min(USERNAME_MIN_LENGTH, {
-        message: `아이디는 ${USERNAME_MIN_LENGTH}글자 이상이어야 합니다.`,
-      })
-      .max(USERNAME_MAX_LENGTH, {
-        message: `${USERNAME_MAX_LENGTH}자 이하이어야 합니다.`,
-      })
-      .trim(),
     email: z
       .string()
       .email({ message: '올바른 이메일을 입력해주세요.' })
@@ -73,7 +62,6 @@ export type SignupState = {
 };
 
 export type SignupError = {
-  username?: string[];
   email?: string[];
   nickname?: string[];
   password?: string[];
@@ -82,7 +70,6 @@ export type SignupError = {
 
 export async function signup(state: SignupState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
-    username: formData.get('username'),
     email: formData.get('email'),
     nickname: formData.get('nickname'),
     password: formData.get('password'),
@@ -96,28 +83,26 @@ export async function signup(state: SignupState, formData: FormData) {
     };
   }
 
-  const { username, email, password, nickname } = validatedFields.data;
+  const { email, password, nickname } = validatedFields.data;
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   try {
-    // check if userid or email already exists in db
+    // 이메일이나 닉네임이 이미 사용되고 있는지 확인
     const [duplicateResult, duplicateFields]: [
-      Pick<User, 'userId' | 'email' | 'nickname'>[] & RowDataPacket[],
+      Pick<User, 'email' | 'nickname'>[] & RowDataPacket[],
       FieldPacket[]
     ] = await pool.query(
-      `SELECT username, email, nickname
-      FROM Users
-      WHERE username = ? OR email = ? OR nickname = ?;`,
-      [username, email, nickname]
+      `SELECT email, nickname
+      FROM user
+      WHERE email = ? OR nickname = ?;`,
+      [email, nickname]
     );
 
     const duplicateUser = duplicateResult?.[0];
     if (duplicateUser) {
       const errors: SignupError = {};
-      if (username === duplicateUser.username)
-        errors.username = ['이미 존재하는 아이디입니다.'];
       if (nickname === duplicateUser.nickname)
         errors.nickname = ['이미 존재하는 닉네임입니다.'];
       if (email === duplicateUser.email)
@@ -129,22 +114,24 @@ export async function signup(state: SignupState, formData: FormData) {
       };
     }
 
-    const id = uuidv4();
-    const role = 'user';
+    const userId = uuidv4();
 
     await pool.query(
-      `INSERT INTO Users (id, username, email, nickname, role, password)
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, username, email, nickname, role, hashedPassword]
+      `INSERT INTO user (user_id, email, nickname, password)
+      VALUES (?, ?, ?, ?)`,
+      [userId, email, nickname, hashedPassword]
     );
 
-    await createSession({ id, username, nickname, email });
+    await createSession({ userId, nickname, email });
   } catch (error) {
     console.log(error);
     return {
       message: '회원가입에 실패했습니다. (e4).',
     };
   }
+
+  // TODO: 회원가입 성공 토스트
+
   revalidatePath('/');
   redirect('/');
 }

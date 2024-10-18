@@ -294,7 +294,7 @@ export default function UpdateWorldcupForm({
     );
     formData.append('thumbnails', JSON.stringify(thumbnails));
     formData.append('oldCandidates', JSON.stringify(oldCandidates));
-    formData.append('id', post.id);
+    formData.append('id', post.worldcupId);
     submitUpdatePostForm(formData);
   }
 

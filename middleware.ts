@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from './app/lib/actions/session';
 
-const protectedRoutes = ['/worldcups/create', '/edit-user'];
+const protectedRoutes = [
+  '/worldcups/create',
+  '/edit-user',
+  '/worldcups/update',
+  '/worldcups/users',
+];
 const publicRoutes = ['/signin', '/signup'];
 
 export default async function middleware(req: NextRequest) {
@@ -10,7 +15,7 @@ export default async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   const session = await getSession();
-  const isAuthenticated = session?.username;
+  const isAuthenticated = session?.userId;
 
   if (isProtectedRoute && !isAuthenticated) {
     return NextResponse.redirect(new URL('/signin', req.nextUrl));

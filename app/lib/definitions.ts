@@ -2,7 +2,7 @@ import { RowDataPacket as QueryResult } from 'mysql2';
 import { SessionOptions } from 'iron-session';
 
 export interface User extends QueryResult {
-  id: string;
+  userId: string;
   username: string;
   nickname: string;
   role: 'user' | 'admin';
@@ -13,26 +13,25 @@ export interface User extends QueryResult {
   updatedAt: string;
 }
 
-export interface Post extends QueryResult {
-  id: string;
+export interface Worldcup extends QueryResult {
+  worldcupId: string;
   title: string;
   description: string;
   publicity: 'public' | 'unlisted' | 'private';
   userId: string;
   categoryId: number;
-  numberOfCandidates: number;
   createdAt: string;
-  updatedAt: string;
 }
 
-export interface PostCard extends Post {
-  username: string;
+export interface WorldcupCard extends Worldcup {
   nickname: string;
   leftCandidateName: string;
   rightCandidateName: string;
+  leftCandidateUrl: string;
+  rightCandidateUrl: string;
 }
 
-export interface PostInfo extends Post {
+export interface PostInfo extends Worldcup {
   username: string;
   nickname: string;
   categoryName: string;
@@ -45,17 +44,11 @@ export interface PostStat extends PostInfo {
 }
 
 export interface Candidate extends QueryResult {
-  id: string;
-  postId: string;
+  candidate_id: string;
+  worldcup_id: string;
   name: string;
   url: string;
-  numberOfMatches: number;
-  numberOfMatchesWon: number;
-  numberOfGames: number;
-  numberOfGamesWon: number;
-  spentTime: number;
   createdAt: string;
-  updatedAt: string;
 }
 
 export interface Category extends QueryResult {
@@ -64,8 +57,8 @@ export interface Category extends QueryResult {
 }
 
 export interface Thumbnail extends QueryResult {
-  id: string;
-  postId: string;
+  thumbnailId: string;
+  worldcupId: string;
   leftCandidateId: string;
   rightCandidateId: string;
 }
@@ -100,14 +93,6 @@ export function translateCategory(categoryName: string): string {
 
 // ex : https://supabase.com/docs/guides/auth/users
 
-export type SignupError = {
-  username?: string[];
-  email?: string[];
-  nickname?: string[];
-  password?: string[];
-  confirmPassword?: string[];
-};
-
 export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_PASSWORD as string,
   cookieName: 'iron',
@@ -117,8 +102,7 @@ export const sessionOptions: SessionOptions = {
 };
 
 export interface SessionData {
-  id: string;
+  userId: string;
   email: string;
-  username: string;
   nickname: string;
 }

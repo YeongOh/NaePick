@@ -155,6 +155,7 @@ export default function CreateWorldcupForm({ categories }: Props) {
             삭제
           </button>
         </div>
+
         <input
           className='block w-full border rounded-md mb-2 p-2 text-base placeholder:text-gray-500 focus:outline-primary-500'
           id={`candidateNames[${i}]`}
@@ -175,6 +176,8 @@ export default function CreateWorldcupForm({ categories }: Props) {
   }, []);
 
   function handleCreatePostFormSubmit(formData: FormData) {
+    // TODO: 파일 중복 확인
+    // TODO: 후보 이름 길이 확인
     if (formRef.current) {
       const input: HTMLInputElement | null =
         formRef.current.querySelector('input[type=file]');
@@ -184,7 +187,11 @@ export default function CreateWorldcupForm({ categories }: Props) {
         );
       }
     }
-    formData.append('numberOfCandidates', String(files.length));
+    // TODO: 토스트로 더 좋은 에러 처리
+    if (files.length < 2) {
+      alert('후보는 2명 이상이어야 합니다.');
+      return;
+    }
     formData.append('thumbnails', JSON.stringify(thumbnails));
     submitCreatePostForm(formData);
   }
@@ -203,6 +210,7 @@ export default function CreateWorldcupForm({ categories }: Props) {
             state.errors?.title && 'outline outline-1 outline-red-500'
           }`}
           placeholder={`이상형 월드컵 제목을 입력해주세요. (최소 ${WORLDCUP_TITLE_MIN_LENGTH}, 최대 ${WORLDCUP_TITLE_MAX_LENGTH}자)`}
+          maxLength={WORLDCUP_TITLE_MAX_LENGTH}
           aria-describedby='title-error'
           autoFocus
         />
@@ -341,10 +349,7 @@ export default function CreateWorldcupForm({ categories }: Props) {
             후보 추가하기
           </label>
           <div
-            className={`border rounded-md mb-2 p-4 cursor-pointer bg-white hover:bg-gray-50 ${
-              state.errors?.numberOfCandidates &&
-              'outline outline-1 outline-red-500'
-            }`}
+            className={`border rounded-md mb-2 p-4 cursor-pointer bg-white hover:bg-gray-50`}
           >
             <div {...getRootProps({ className: 'dropzone' })}>
               <input {...getInputProps({ id: 'dropzoneInput' })} />
@@ -352,18 +357,6 @@ export default function CreateWorldcupForm({ categories }: Props) {
                 선택해서 파일을 추가하거나 드롭하세요.
               </p>
             </div>
-          </div>
-          <div
-            id='numberOfCandidates-error'
-            aria-live='polite'
-            aria-atomic='true'
-          >
-            {state.errors?.numberOfCandidates &&
-              state.errors.numberOfCandidates.map((error: string) => (
-                <p className='m-2 text-red-500' key={error}>
-                  {error}
-                </p>
-              ))}
           </div>
           <div id='thumbnails-error' aria-live='polite' aria-atomic='true'>
             {state.errors?.thumbnails &&

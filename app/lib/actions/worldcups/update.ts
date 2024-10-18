@@ -122,7 +122,7 @@ export async function updatePost(
     let rightCandidateId;
 
     const session = await getSession();
-    const userId = session.id;
+    const userId = session.userId;
 
     // 트랜잭션 시작
     await connection.beginTransaction();

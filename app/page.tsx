@@ -1,17 +1,17 @@
-import { fetchPublicWorldcupCards } from './lib/data';
+import { fetchPublicWorldcupCards } from './lib/data/worldcups';
 import 'dayjs/locale/ko';
 import Card from './components/card/card';
 
 export default async function Home() {
-  const allPublicPostCards = await fetchPublicWorldcupCards();
+  const allPublicWorldcupCards = await fetchPublicWorldcupCards();
 
   return (
     <div className='max-w-screen-2xl m-auto'>
       <ul className='flex flex-wrap mt-6'>
-        {allPublicPostCards &&
-          allPublicPostCards.length > 0 &&
-          allPublicPostCards.map((post, index: number) => (
-            <Card key={post.id} post={post} />
+        {allPublicWorldcupCards &&
+          allPublicWorldcupCards.length > 0 &&
+          allPublicWorldcupCards.map((worldcup, index: number) => (
+            <Card key={worldcup.worldcupId} worldcup={worldcup} />
           ))}
       </ul>
     </div>

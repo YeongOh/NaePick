@@ -1,10 +1,11 @@
 // URLS
-export const KR_DOMAIN = process.env.KR_DOMAIN;
+// TODO: env에 넣기 => 클라이언트에서 현재 안되는 문제
+export const DOMAIN = 'https://naepick.co.kr';
 
 // Create Post Form Validation
 export const WORLDCUP_TITLE_MIN_LENGTH = 2;
-export const WORLDCUP_TITLE_MAX_LENGTH = 30;
-export const WORLDCUP_DESCRIPTION_MAX_LENGTH = 300;
+export const WORLDCUP_TITLE_MAX_LENGTH = 60;
+export const WORLDCUP_DESCRIPTION_MAX_LENGTH = 500;
 
 // File Name Limit
 export const FILE_NAME_MAX_LENGTH = 60;

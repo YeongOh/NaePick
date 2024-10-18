@@ -1,4 +1,4 @@
-import { PostCard } from '@/app/lib/definitions';
+import { WorldcupCard } from '@/app/lib/definitions';
 import ThumbnailImage from '../thumbnail/ThumbnailImage';
 import CardLink from '../card-extensions/card-link';
 import dayjs from 'dayjs';
@@ -6,11 +6,11 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 
 interface Props {
-  post: PostCard;
+  worldcup: WorldcupCard;
   children?: React.ReactNode;
 }
 
-export default function Card({ post, children }: Props) {
+export default function Card({ worldcup, children }: Props) {
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
@@ -18,25 +18,27 @@ export default function Card({ post, children }: Props) {
     <li className='p-4 w-[300px] mb-4'>
       <div className='h-[230px]'>
         <ThumbnailImage
-          postId={post.id}
-          leftCandidateUrl={post.leftCandidateUrl}
-          leftCandidateName={post.leftCandidateName}
-          rightCandidateUrl={post.rightCandidateUrl}
-          rightCandidateName={post.rightCandidateName}
+          leftCandidateUrl={worldcup.leftCandidateUrl}
+          leftCandidateName={worldcup.leftCandidateName}
+          rightCandidateUrl={worldcup.rightCandidateUrl}
+          rightCandidateName={worldcup.rightCandidateName}
         />
         <div className='flex items-end justify-between'>
           <div className='flex-1 overflow-hidden'>
             <h2
               className='text-lg font-bold line-clamp-2 mb-2 text-slate-700'
-              title={post.title}
+              title={worldcup.title}
             >
-              {post.title}
+              {worldcup.title}
             </h2>
             <div className='flex items-center justify-between w-full'>
               <div className='text-base text-gray-500'>
-                <span>{post.nickname}</span>
-                <span className='ml-2' title={dayjs(post.createdAt).toString()}>
-                  {dayjs(post.createdAt).fromNow()}
+                <span>{worldcup.nickname}</span>
+                <span
+                  className='ml-2'
+                  title={dayjs(worldcup.createdAt).toString()}
+                >
+                  {dayjs(worldcup.createdAt).fromNow()}
                 </span>
               </div>
             </div>
@@ -44,9 +46,9 @@ export default function Card({ post, children }: Props) {
         </div>
       </div>
       <CardLink
-        postId={post.id}
-        numberOfCandidates={post.numberOfCandidates}
-        title={post.title}
+        worldcupId={worldcup.worldcupId}
+        numberOfCandidates={worldcup.numberOfCandidates}
+        title={worldcup.title}
       />
       {children}
     </li>

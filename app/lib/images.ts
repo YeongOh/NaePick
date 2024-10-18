@@ -29,6 +29,7 @@ export async function uploadFile(file: File, fileName: string) {
   }
 }
 
+// TODO: in env
 export const BASE_IMAGE_URL = 'https://cdn.naepick.co.kr/';
 
 export async function deleteImage(candidateId: string) {

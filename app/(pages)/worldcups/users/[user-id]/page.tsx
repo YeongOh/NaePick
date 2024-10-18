@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
-import { fetchWorldcupsByUserId } from '@/app/lib/data';
+import { fetchWorldcupsByUserId } from '@/app/lib/data/worldcups';
 import { getSession } from '@/app/lib/actions/session';
 import CardUpdateForm from '@/app/components/card-extensions/card-update-form';
 import Card from '@/app/components/card/card';
@@ -20,7 +20,7 @@ export default async function Page({ params }: Props) {
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
-  if (session?.id !== userId) {
+  if (session?.userId !== userId) {
     redirect('/forbidden');
   }
   return (
@@ -29,8 +29,8 @@ export default async function Page({ params }: Props) {
         {allUsersPosts &&
           allUsersPosts.length > 0 &&
           allUsersPosts.map((post, index: number) => (
-            <Card key={post.id} post={post}>
-              <CardUpdateForm postId={post.id} userId={userId} />
+            <Card key={post.worldcupId} post={post}>
+              <CardUpdateForm postId={post.worldcupId} userId={userId} />
             </Card>
           ))}
       </ul>
