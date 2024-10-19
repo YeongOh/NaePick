@@ -63,6 +63,7 @@ export async function createPost(
     categoryId: formData.get('categoryId'),
     thumbnails: JSON.parse(formData.get('thumbnails') as string),
   });
+  console.log(formData.get('categoryId'));
 
   if (!validatedFields.success) {
     return {
@@ -73,6 +74,7 @@ export async function createPost(
 
   const { title, description, publicity, categoryId, thumbnails } =
     validatedFields.data;
+  console.log(categoryId);
 
   const candidateNames = [];
   const files = [];
@@ -106,6 +108,7 @@ export async function createPost(
 
     // 트랜잭션 시작
     await connection.beginTransaction();
+    console.log(worldcupId, title, description, publicity, userId, categoryId);
 
     await connection.query(
       `INSERT INTO worldcup (worldcup_id, title, description, publicity, user_id, category_id) 
@@ -142,12 +145,10 @@ export async function createPost(
       const result = await Promise.all(promises);
     }
 
-    const thumbnailId = uuidv4();
-
     await connection.query(
-      `INSERT INTO thumbnail (thumbnail_id, worldcup_id, left_candidate_id, right_candidate_id) 
-      VALUES (?, ?, ?, ?)`,
-      [thumbnailId, worldcupId, leftCandidateId, rightCandidateId]
+      `INSERT INTO thumbnail (worldcup_id, left_candidate_id, right_candidate_id) 
+      VALUES (?, ?, ?)`,
+      [worldcupId, leftCandidateId, rightCandidateId]
     );
 
     await connection.commit();

@@ -326,7 +326,10 @@ export default function CreateWorldcupForm({ categories }: Props) {
               카테고리를 선택해주세요.
             </option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option
+                key={`category ${category.categoryId}`}
+                value={category.categoryId}
+              >
                 {translateCategory(category.name)}
               </option>
             ))}

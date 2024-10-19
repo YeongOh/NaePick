@@ -28,3 +28,46 @@ export async function fetchRandomCandidatesByWorldcupId(
     console.log(err);
   }
 }
+
+export async function fetchCandidatesByWorldcupId(worldcupId: string) {
+  try {
+    const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
+      `SELECT * 
+        FROM candidate 
+        WHERE worldcup_id = ? `,
+      [worldcupId]
+    );
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function fetchCandidatesStatisticsByWorldcupId(
+  worldcupId: string
+) {
+  try {
+    const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
+      `SELECT c.candidate_id, c.name, c.url,
+          (SELECT COUNT(*)
+           FROM match_result mr
+           WHERE mr.winner_candidate_id = c.candidate_id) AS numberOfWins,
+           (SELECT COUNT(*)
+           FROM match_result mr
+           WHERE mr.loser_candidate_id = c.candidate_id) AS numberOfLoses,
+           (SELECT COUNT(*)
+           FROM champion ch
+           WHERE ch.candidate_id = c.candidate_id) AS numberOfTrophies
+        FROM candidate c
+        WHERE c.worldcup_id = ?
+        ;`,
+      [worldcupId]
+    );
+    console.log(result);
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}

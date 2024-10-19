@@ -37,15 +37,9 @@ export interface PostInfo extends Worldcup {
   categoryName: string;
 }
 
-export interface PostStat extends PostInfo {
-  numberOfMatches: number;
-  numberOfGames: number;
-  totalSpentTime: number;
-}
-
 export interface Candidate extends QueryResult {
-  candidate_id: string;
-  worldcup_id: string;
+  candidateId: string;
+  worldcupId: string;
   name: string;
   url: string;
   createdAt: string;
@@ -72,6 +66,11 @@ export interface Comment extends QueryResult {
   text: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface MatchResult {
+  winnerCandidateId: string;
+  loserCandidateId: string;
 }
 
 export function translateCategory(categoryName: string): string {

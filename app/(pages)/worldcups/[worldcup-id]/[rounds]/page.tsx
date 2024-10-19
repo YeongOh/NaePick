@@ -5,7 +5,7 @@ import {
 } from '@/app/lib/data/worldcups';
 import CommentSection from '@/app/components/comment/comment-section';
 import Fold from '@/app/components/fold/fold';
-import PickScreen from '@/app/components/worldcups/pick-screen';
+import WorldcupScreen from '@/app/components/worldcups/worldcup-screen';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { fetchRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
@@ -34,11 +34,10 @@ export default async function Page({ params }: Props) {
 
     return (
       <>
-        <PickScreen
+        <WorldcupScreen
           defaultCandidates={candidates}
-          post={worldcupResult[0]}
-          worldcupId={worldcupId}
-          round={rounds}
+          worldcup={worldcupResult[0]}
+          startingRound={rounds}
         />
         <div className='max-w-screen-2xl m-auto'>
           <div className='p-8'>

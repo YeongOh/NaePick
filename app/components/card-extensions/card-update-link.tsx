@@ -8,7 +8,7 @@ interface Props {
   userId: string;
 }
 
-export default function CardUpdateForm({ postId, userId }: Props) {
+export default function CardUpdateLink({ postId, userId }: Props) {
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!confirm('정말로 삭제하시겠습니까?')) {

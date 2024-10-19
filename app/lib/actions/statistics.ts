@@ -1,93 +1,30 @@
 'use server';
 
 import { pool } from '../db';
+import { MatchResult } from '../definitions';
 
-export async function sendStats(
-  postId: string,
-  winners: any,
-  losers: any,
-  finalWinner: any,
-  spentTimes: number[]
+export async function submitMatchResult(
+  matchResult: MatchResult[],
+  worldcupId: string
 ) {
+  const championCandidateId = matchResult.at(-1)?.winnerCandidateId;
+  const query = matchResult.map((result) => {
+    // [..., [winnerCandidateId, loserCandidateId, worldcupId]]
+    const statement = Object.values(result);
+    statement.push(worldcupId);
+    return statement;
+  });
+
+  const sql = `INSERT INTO match_result (winner_candidate_id, loser_candidate_id, worldcup_id)
+     VALUES ?`;
+
   try {
-    const visitedId = new Set();
-
-    winners.forEach(async (winner: any, i: number) => {
-      if (visitedId.has(winner.id)) {
-        const [results, fields] = await pool.query(
-          `
-            UPDATE Candidates
-            SET numberOfMatches = numberOfMatches + 1,
-                numberOfMatchesWon = numberOfMatchesWon + 1,
-                spentTime = spentTime + ?
-            WHERE Candidates.postId = ? AND Candidates.id = ?;
-            `,
-          [spentTimes[i], postId, winner.id]
-        );
-      } else {
-        visitedId.add(winner.id);
-        const [results, fields] = await pool.query(
-          `
-            UPDATE Candidates
-            SET numberOfMatches = numberOfMatches + 1,
-                numberOfMatchesWon = numberOfMatchesWon + 1,
-                numberOfGames = numberOfGames + 1,
-                spentTime = spentTime + ?
-            WHERE Candidates.postId = ? AND Candidates.id = ?;
-            `,
-          [spentTimes[i], postId, winner.id]
-        );
-      }
-    });
-
-    losers.forEach(async (loser: any, i: number) => {
-      if (visitedId.has(loser.id)) {
-        const [results, fields] = await pool.query(
-          `
-            UPDATE Candidates
-            SET numberOfMatches = numberOfMatches + 1,
-                spentTime = spentTime + ?
-            WHERE Candidates.postId = ? AND Candidates.id = ?;
-            `,
-          [spentTimes[i], postId, loser.id]
-        );
-      } else {
-        visitedId.add(loser.id);
-        const [results, fields] = await pool.query(
-          `
-            UPDATE Candidates
-            SET numberOfMatches = numberOfMatches + 1,
-                numberOfGames = numberOfGames + 1,
-                spentTime = spentTime + ?
-            WHERE Candidates.postId = ? AND Candidates.id = ?;
-            `,
-          [spentTimes[i], postId, loser.id]
-        );
-      }
-    });
-
-    const [results, fields] = await pool.query(
-      `
-          UPDATE Candidates
-          SET numberOfGamesWon = numberOfGamesWon + 1
-          WHERE Candidates.postId = ? AND Candidates.id = ?;
-          `,
-      [postId, finalWinner.id]
+    await pool.query(sql, [query]);
+    await pool.query(
+      `INSERT INTO champion (candidate_id, worldcup_id) VALUES (?, ?)`,
+      [championCandidateId, worldcupId]
     );
-
-    const totalSpentTime = spentTimes.reduce((prev, curr) => prev + curr, 0);
-    const totalNumberOfMatches = winners.length;
-    const [postStatResult, postStatField] = await pool.query(
-      `
-          UPDATE PostStats
-          SET numberOfMatches = numberOfMatches + ?,
-              numberOfGames = numberOfGames + 1,
-              totalSpentTime = totalSpentTime + ?
-          WHERE PostStats.postId = ?;
-          `,
-      [totalNumberOfMatches, totalSpentTime, postId]
-    );
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
   }
 }

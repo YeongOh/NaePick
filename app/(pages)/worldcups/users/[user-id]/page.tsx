@@ -3,7 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { fetchWorldcupsByUserId } from '@/app/lib/data/worldcups';
 import { getSession } from '@/app/lib/actions/session';
-import CardUpdateForm from '@/app/components/card-extensions/card-update-form';
+import CardUpdateLink from '@/app/components/card-extensions/card-update-link';
 import Card from '@/app/components/card/card';
 import { redirect } from 'next/navigation';
 
@@ -30,7 +30,7 @@ export default async function Page({ params }: Props) {
           allUsersPosts.length > 0 &&
           allUsersPosts.map((post, index: number) => (
             <Card key={post.worldcupId} post={post}>
-              <CardUpdateForm postId={post.worldcupId} userId={userId} />
+              <CardUpdateLink postId={post.worldcupId} userId={userId} />
             </Card>
           ))}
       </ul>

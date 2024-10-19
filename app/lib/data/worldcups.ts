@@ -1,10 +1,8 @@
 import { FieldPacket } from 'mysql2/promise';
 import {
-  Candidate,
   Comment,
   WorldcupCard,
   PostInfo,
-  PostStat,
   Thumbnail,
   Worldcup,
 } from '../definitions';
@@ -105,6 +103,7 @@ export async function fetchWorldcupByWorldcupId(worldcupId: string) {
   }
 }
 
+// TODO:
 export async function fetchWorldcupsByUserId(userId: string) {
   try {
     const [result, meta]: [WorldcupCard[] & Thumbnail[], FieldPacket[]] =
@@ -134,8 +133,9 @@ export async function fetchWorldcupsByUserId(userId: string) {
 export async function fetchAllCategories() {
   try {
     const result: any = await pool.query(
-      `SELECT *
-      FROM Categories;`
+      `SELECT category_id as categoryId,
+              name as name
+      FROM category;`
     );
 
     return result[0];
@@ -144,6 +144,7 @@ export async function fetchAllCategories() {
   }
 }
 
+// TODO:
 export async function fetchWorldcupWithThumbnailByWorldcupId(id: string) {
   try {
     const [result, meta]: [
@@ -169,53 +170,14 @@ export async function fetchWorldcupWithThumbnailByWorldcupId(id: string) {
   }
 }
 
-export async function fetchWorldcupStatsByWorldcupId(id: string) {
-  try {
-    const [result, meta]: [PostStat[], FieldPacket[]] = await pool.query(
-      `SELECT p.*, c.name AS categoryName,
-            u.nickname as nickname,
-            u.username as username,
-            ps.numberOfMatches as numberOfMatches,
-            ps.numberOfGames as numberOfGames,
-            ps.totalSpentTime as totalSpentTime
-       FROM Posts p
-       LEFT JOIN Categories c ON p.categoryId = c.id
-       LEFT JOIN Users u ON p.userId = u.id
-       LEFT JOIN PostStats ps ON p.id = ps.postId
-       WHERE p.id = ?;`,
-      [id]
-    );
-    console.log(result);
-
-    return result;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export async function fetchCommentsByWorldcupId(postId: string) {
+export async function fetchCommentsByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Comment[], FieldPacket[]] = await pool.query(
       `SELECT c.*, 
           u.nickname as nickname
-       FROM Comments c
-       LEFT JOIN Users u ON u.id = c.userId
-       WHERE c.postId = ?;`,
-      [postId]
-    );
-
-    return result;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export async function fetchCandidatesByWorldcupId(worldcupId: string) {
-  try {
-    const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
-      `SELECT * 
-        FROM Candidates 
-        WHERE postId = ? `,
+       FROM comment c
+       LEFT JOIN user u ON u.user_id = c.user_id
+       WHERE c.worldcup_id = ?;`,
       [worldcupId]
     );
 
