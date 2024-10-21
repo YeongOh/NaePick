@@ -57,7 +57,7 @@ export default function WorldcupScreen({
 
   return (
     <>
-      <section className='relative flex bg-black h-[90vh]'>
+      <section className='relative flex bg-black h-[calc(100vh-62px)]'>
         <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
           <h2 className='flex justify-center items-center text-white text-5xl p-2 font-bold'>
             {worldcup.title} {getRoundsDescription(round)}

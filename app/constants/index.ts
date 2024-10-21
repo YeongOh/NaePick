@@ -30,7 +30,7 @@ export const PASSWORD_MAX_LENGTH = 64;
 // candidate name length
 
 // comment
-export const COMMENT_TEXT_MAX_LENGTH = 150;
+export const COMMENT_TEXT_MAX_LENGTH = 300;
 
 // number of rounds available
 export const DEFAULT_ROUNDS = 32;

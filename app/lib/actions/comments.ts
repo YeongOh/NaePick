@@ -8,7 +8,7 @@ import { getSession } from './session';
 import { revalidatePath } from 'next/cache';
 
 const FormSchema = z.object({
-  postId: z.string(),
+  worldcupId: z.string(),
   userId: z.string(),
   text: z
     .string()
@@ -29,7 +29,7 @@ export type CommentState = {
 export type CommentError = {
   userId?: string[];
   text?: string[];
-  postId?: string[];
+  worldcupId?: string[];
 };
 
 export async function createComment(state: CommentState, formData: FormData) {
@@ -37,7 +37,7 @@ export async function createComment(state: CommentState, formData: FormData) {
 
   const validatedFields = FormSchema.safeParse({
     userId: session.userId,
-    postId: formData.get('postId'),
+    worldcupId: formData.get('worldcupId'),
     text: formData.get('text'),
   });
 
@@ -48,15 +48,15 @@ export async function createComment(state: CommentState, formData: FormData) {
     };
   }
 
-  const { userId, text, postId } = validatedFields.data;
+  const { userId, text, worldcupId } = validatedFields.data;
 
   try {
     const commentId = uuidv4();
 
     const [result, fields] = await pool.query(
-      `INSERT INTO Comments (id, postId, userId, text) 
+      `INSERT INTO comment (comment_id, worldcup_id, user_id, text) 
       VALUES (?, ?, ?, ?)`,
-      [commentId, postId, userId, text]
+      [commentId, worldcupId, userId, text]
     );
 
     // TODO
@@ -66,6 +66,6 @@ export async function createComment(state: CommentState, formData: FormData) {
       message: '댓글 추가 실패했습니다',
     };
   }
-  revalidatePath(`/worldcups/${postId}`);
+  revalidatePath(`/worldcups/${worldcupId}`);
   return {};
 }

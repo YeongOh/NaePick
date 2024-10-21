@@ -1,8 +1,10 @@
 'use client';
 
+import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { CommentState, createComment } from '@/app/lib/actions/comments';
 import { Comment, SessionData } from '@/app/lib/definitions';
 import { getRelativeDate, sortDate } from '@/app/utils/date';
+import { useState } from 'react';
 import { useFormState } from 'react-dom';
 
 interface Props {
@@ -18,6 +20,7 @@ export default function CommentSection({
 }: Props) {
   const initialState: CommentState = { message: null, errors: {} };
   const [state, submitCommentForm] = useFormState(createComment, initialState);
+  const [text, setText] = useState<string>('');
   const isAuth = !!session?.userId;
 
   function handleCommentFormSubmit(formData: FormData) {
@@ -25,8 +28,8 @@ export default function CommentSection({
       return;
     }
     formData.append('worldcupId', worldcupId);
-    // TODO: comment
-    // submitCommentForm(formData);
+    submitCommentForm(formData);
+    setText('');
   }
 
   const sortedComments = comments?.sort((a, b) =>
@@ -44,7 +47,8 @@ export default function CommentSection({
         <input
           id='text'
           name='text'
-          type='text'
+          value={text}
+          onChange={(e) => setText(e.target.value)}
           className={`text-lg block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.text && 'outline outline-1 outline-red-500'}`}
           placeholder={
@@ -52,6 +56,7 @@ export default function CommentSection({
           }
           aria-describedby='text-error'
           autoComplete='off'
+          maxLength={COMMENT_TEXT_MAX_LENGTH}
           disabled={!isAuth}
         />
         {state.errors?.text &&
