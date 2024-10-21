@@ -2,14 +2,20 @@
 
 import { signup, SignupState } from '@/app/lib/actions/auth/signup';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useFormState } from 'react-dom';
 
 export default function SignupForm() {
   const initialState: SignupState = { message: null, errors: {} };
-  const [state, action] = useFormState(signup, initialState);
+  const [state, submitSignupForm] = useFormState(signup, initialState);
+  const [nickname, setNickname] = useState<string>('');
+
+  const handleSignupSubmit = (formData: FormData) => {
+    submitSignupForm(formData);
+  };
 
   return (
-    <form action={action}>
+    <form action={handleSignupSubmit}>
       <div className='rounded-md bg-gray-50 p-6'>
         <div className='text-center font-semibold mb-4 text-lg'>
           이상형 월드컵 NaePick에 오신걸 환영합니다!
@@ -43,6 +49,8 @@ export default function SignupForm() {
         <input
           id='nickname'
           name='nickname'
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
           type='text'
           className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
               ${state.errors?.nickname && 'outline outline-1 outline-red-500'}`}

@@ -43,7 +43,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <div className='max-w-screen-md w-screen m-auto'>
+    <div className='max-w-screen-md m-auto'>
       <>
         <div
           className={`inline-flex bg-black w-full h-[500px] overflow-hidden rounded-xl mt-10`}
@@ -91,14 +91,14 @@ export default async function Page({ params }: Props) {
             </div>
           )}
         </div>
-        <h1 className='text-slate-700 text-xl font-bold m-2  '>{title}</h1>
-        <div className='w-full m-2 text-gray-500'>
-          <span> {nickname}</span>
-          <span className='ml-2' title={dayjs(createdAt).toString()}>
-            {dayjs(createdAt).fromNow()}
+        <h1 className='text-slate-700 text-3xl font-bold m-2'>{title}</h1>
+        <div className='w-full m-2 text-slate-700'>
+          <p className='text-lg font-semibold mb-2'>{nickname}</p>
+          <span className='mr-2 font-semibold'>
+            {dayjs(createdAt).format('YYYY. MM.DD.')}
           </span>
         </div>
-        <p className='m-2 line-clamp3'>{description}</p>
+        <p className='m-2 line-clamp3 mb-10'>{description}</p>
 
         <DirectCardLink
           worldcupId={worldcupId}

@@ -59,15 +59,15 @@ export default function StartWorldcupModal({
                     </option>
                   ))}
                 </select>
-                <div className='m-4'>
+                <div className='flex w-full gap-4'>
                   <button
-                    className='text-primary-500 px-4 py-2'
+                    className='flex-1 text-primary-500 text-base px-4 py-2 text-center'
                     onClick={onClose}
                   >
                     취소
                   </button>
                   <Link
-                    className='bg-primary-500 text-white px-4 py-2 rounded'
+                    className='flex-1 text-base bg-primary-500 text-center text-white px-4 py-2 rounded'
                     href={`/worldcups/${worldcupId}/${round}`}
                   >
                     시작하기!
