@@ -98,7 +98,7 @@ export default async function Page({ params }: Props) {
             {dayjs(createdAt).fromNow()}
           </span>
         </div>
-        <p className='m-2 line-clamp-3'>{description}</p>
+        <p className='m-2 line-clamp3'>{description}</p>
 
         <DirectCardLink
           worldcupId={worldcupId}

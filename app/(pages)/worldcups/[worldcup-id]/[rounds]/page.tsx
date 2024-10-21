@@ -24,36 +24,32 @@ export default async function Page({ params }: Props) {
     fetchCommentsByWorldcupId(worldcupId),
   ]);
 
-  if (worldcupResult && worldcupResult[0]) {
-    if (
-      worldcupResult[0].publicity === 'private' &&
-      session.userId !== worldcupResult[0].userId
-    ) {
-      redirect('/forbidden');
-    }
-
-    return (
-      <>
-        <WorldcupScreen
-          defaultCandidates={candidates}
-          worldcup={worldcupResult[0]}
-          startingRound={rounds}
-        />
-        <div className='max-w-screen-2xl m-auto'>
-          <div className='p-8'>
-            <Fold worldcup={worldcupResult[0]} />
-          </div>
-          <div className='p-8'>
-            <CommentSection
-              worldcupId={worldcupId}
-              session={structuredClone(session)}
-              comments={comments}
-            />
-          </div>
-        </div>
-      </>
-    );
-  } else {
+  if (!worldcupResult || !candidates) {
     notFound();
   }
+
+  if (
+    worldcupResult[0].publicity === 'private' &&
+    session.userId !== worldcupResult[0].userId
+  ) {
+    redirect('/forbidden');
+  }
+
+  return (
+    <>
+      <WorldcupScreen
+        defaultCandidates={candidates}
+        worldcup={worldcupResult[0]}
+        startingRound={rounds}
+      />
+      <div className='max-w-screen-lg m-auto'>
+        <Fold worldcup={worldcupResult[0]} />
+        <CommentSection
+          worldcupId={worldcupId}
+          session={structuredClone(session)}
+          comments={comments}
+        />
+      </div>
+    </>
+  );
 }

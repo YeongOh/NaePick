@@ -27,7 +27,7 @@ export default function ThumbnailImage({
                 src={`${BASE_IMAGE_URL}${leftCandidateUrl}`}
                 alt={leftCandidateName}
                 fill={true}
-                sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
+                sizes='134px' // '(max-width: 768px) 33vw, (max-width: 1200px) 20vw, 20vw'
                 priority={true}
               />
               <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
@@ -48,7 +48,7 @@ export default function ThumbnailImage({
               src={`${BASE_IMAGE_URL}${rightCandidateUrl}`}
               alt={rightCandidateName}
               fill={true}
-              sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
+              sizes='134px'
               priority={true}
             />
             <div className='bg-black/30 absolute h-auto bottom-0 w-full'>

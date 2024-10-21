@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
         {allUsersPosts &&
           allUsersPosts.length > 0 &&
           allUsersPosts.map((post, index: number) => (
-            <Card key={post.worldcupId} post={post}>
+            <Card key={post.worldcupId} worldcup={post}>
               <CardUpdateLink postId={post.worldcupId} userId={userId} />
             </Card>
           ))}

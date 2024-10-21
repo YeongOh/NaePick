@@ -34,7 +34,7 @@ export default function CommentSection({
   );
 
   return (
-    <section>
+    <section className='p-8'>
       <div className='my-4 text-lg font-semibold'>
         {comments && comments.length > 0
           ? `댓글 ${comments.length}개`

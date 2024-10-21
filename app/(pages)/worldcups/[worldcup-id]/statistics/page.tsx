@@ -5,9 +5,9 @@ import {
 import StatisticsScreen from '@/app/components/statistics/statistics-screen';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';
-import Link from 'next/link';
 import CommentSection from '@/app/components/comment/comment-section';
 import { fetchCandidatesStatisticsByWorldcupId } from '@/app/lib/data/candidates';
+import { getSession } from '@/app/lib/actions/session';
 
 interface Props {
   params: { ['worldcup-id']: string };
@@ -15,30 +15,28 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcupResult, candidatesStatistics, comments] = await Promise.all([
-    await fetchWorldcupByWorldcupId(worldcupId),
-    await fetchCandidatesStatisticsByWorldcupId(worldcupId),
-    await fetchCommentsByWorldcupId(worldcupId),
-  ]);
+  const [worldcupResult, candidatesStatistics, comments, session] =
+    await Promise.all([
+      fetchWorldcupByWorldcupId(worldcupId),
+      fetchCandidatesStatisticsByWorldcupId(worldcupId),
+      fetchCommentsByWorldcupId(worldcupId),
+      getSession(),
+    ]);
 
   if (worldcupResult && worldcupResult[0] && candidatesStatistics) {
     const worldcup = worldcupResult[0];
     return (
-      <div className='max-w-screen-xl m-auto'>
-        <Fold worldcup={worldcup} />
-        <div className='p-4'>
-          <Link
-            className='min-w-9 rounded-md border border-slate-300 py-2 px-3 text-center shadow-sm hover:shadow-md'
-            href={`/worldcups/${worldcupId}`}
-          >
-            월드컵 시작하기
-          </Link>
-        </div>
+      <div className='max-w-screen-lg m-auto'>
         <StatisticsScreen
           candidates={candidatesStatistics}
           worldcup={worldcup}
         />
-        <CommentSection worldcupId={worldcupId} comments={comments} />
+        <Fold worldcup={worldcup} />
+        <CommentSection
+          worldcupId={worldcupId}
+          session={structuredClone(session)}
+          comments={comments}
+        />
       </div>
     );
   } else {

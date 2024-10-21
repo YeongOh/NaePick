@@ -25,26 +25,11 @@ const FormSchema = z
       .max(NICKNAME_MAX_LENGTH, {
         message: `${NICKNAME_MAX_LENGTH}자 이하이어야 합니다.`,
       })
-      .trim()
-      .optional(),
-    oldPassword: z
-      .string() // 수정 필요 - 올바른 항목 여러개가 표시됨
-      .min(PASSWORD_MIN_LENGTH, {
-        message: `올바른 형식이 아닙니다.`,
-      })
-      .max(PASSWORD_MAX_LENGTH, {
-        message: `올바른 형식이 아닙니다.`,
-      })
-      .regex(/[a-zA-Z]/, {
-        message: '올바른 형식이 아닙니다.',
-      })
-      .regex(/[0-9]/, {
-        message: '올바른 형식이 아닙니다.',
-      })
-      .regex(/[^a-zA-Z0-9]/, {
-        message: '올바른 형식이 아닙니다.',
-      })
       .trim(),
+    oldPassword: z.string(),
+    changePassword: z
+      .enum(['true', 'false'])
+      .transform((value) => value === 'true'),
     newPassword: z
       .string()
       .min(PASSWORD_MIN_LENGTH, {
@@ -59,8 +44,8 @@ const FormSchema = z
         message: '최소 한 개의 특수문자를 포함해야 합니다.',
       })
       .trim()
-      .optional(),
-    confirmNewPassword: z.string().trim().optional(),
+      .nullable(),
+    confirmNewPassword: z.string().trim().nullable(),
   })
   .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: '패스워드가 일치하지 않습니다.',
@@ -74,6 +59,7 @@ export type UpdateUserState = {
 
 export type UpdateUserError = {
   nickname?: string[];
+  changePassword?: string[];
   oldPassword?: string[];
   newPassword?: string[];
   confirmNewPassword?: string[];
@@ -83,21 +69,43 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
     nickname: formData.get('nickname'),
     oldPassword: formData.get('oldPassword'),
+    changePassword: formData.get('changePassword'),
     newPassword: formData.get('newPassword'),
     confirmNewPassword: formData.get('confirmNewPassword'),
   });
 
+  console.log(validatedFields);
+  console.log(
+    formData.get('nickname'),
+    formData.get('oldPassword'),
+    formData.get('changePassword'),
+    formData.get('newPassword'),
+    formData.get('confirmNewPassword')
+  );
   if (!validatedFields.success) {
+    console.log('누락');
+    console.log(validatedFields.error.flatten().fieldErrors);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: '누락된 항목이 있습니다.',
     };
   }
+  console.log('11');
 
-  const { nickname, oldPassword, newPassword, confirmNewPassword } =
-    validatedFields.data;
-  console.log(nickname, oldPassword, newPassword, confirmNewPassword);
-
+  const {
+    nickname,
+    oldPassword,
+    changePassword,
+    newPassword,
+    confirmNewPassword,
+  } = validatedFields.data;
+  console.log(
+    nickname,
+    oldPassword,
+    changePassword,
+    newPassword,
+    confirmNewPassword
+  );
   try {
     const session = await getSession();
     if (!session?.userId) {
@@ -105,18 +113,22 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
         message: '현재 로그인된 상태가 아닙니다.',
       };
     }
+    console.log(2);
 
     const [result, fields]: [
-      Pick<User, 'username' | 'password'>[] & RowDataPacket[],
+      Pick<User, 'email' | 'nickname' | 'password'>[] & RowDataPacket[],
       FieldPacket[]
     ] = await pool.query(
-      `SELECT username, password
-        FROM Users
-        WHERE id = ?;`,
+      `SELECT email, nickname, password
+        FROM user
+        WHERE user_id = ?;`,
       [session.userId]
     );
+    console.log(result);
+    console.log(3);
 
     const user = result?.[0];
+    console.log(user);
     if (!user) {
       return {
         message: '알수없는 에러가 발생했습니다.(e1)',
@@ -128,43 +140,47 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
         errors: {
           oldPassword: ['패스워드가 틀렸습니다.'],
         },
-        message: '수정에 실패했습니다. (e2)',
+        message: '회원정보 수정에 실패했습니다. (e2)',
       };
     }
 
-    if (nickname) {
+    // 닉네임이 원래 닉네임과 다를 경우 수정
+    if (nickname !== user.nickname) {
       const [duplicatedUserResult, duplicatedFields]: [User[], FieldPacket[]] =
         await pool.query(
-          `SELECT * FROM Users
-             WHERE nickname = ? AND id != ?;`,
+          `SELECT * FROM user
+             WHERE nickname = ? AND user_id != ?;`,
           [nickname, session.userId]
         );
+      console.log(4);
       console.log(nickname, session.userId);
       if (duplicatedUserResult?.[0]) {
+        console.log(5);
         return {
           errors: {
             nickname: ['이미 존재하는 닉네임입니다.'],
           },
           message: '수정에 실패했습니다. (e3)',
         };
+      } else {
+        await pool.query(
+          `UPDATE user
+             SET nickname = ?
+             WHERE user_id = ?;`,
+          [nickname, session.userId]
+        );
+        console.log(6);
       }
     }
 
-    if (newPassword) {
+    if (changePassword && newPassword) {
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
       await pool.query(
-        `Update Users
-        Set nickname = ?, password = ?
-        WHERE id = ?;`,
-        [nickname, hashedNewPassword, session.userId]
-      );
-    } else {
-      await pool.query(
-        `Update Users
-                Set nickname = ?
-                WHERE id = ?;`,
-        [nickname, session.userId]
+        `Update user
+        Set password = ?
+        WHERE user_id = ?;`,
+        [hashedNewPassword, session.userId]
       );
     }
 

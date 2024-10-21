@@ -34,7 +34,7 @@ export default function Fold({ worldcup }: Props) {
 
   return (
     <>
-      <section>
+      <section className='p-8'>
         <div className='flex mb-2'>
           <h2 className='font-bold text-3xl text-slate-700'>{title}</h2>
         </div>

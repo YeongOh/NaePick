@@ -1,11 +1,11 @@
 import { getSession } from '@/app/lib/actions/session';
 import {
   fetchAllCategories,
-  fetchCandidatesByWorldcupId,
   fetchWorldcupWithThumbnailByWorldcupId,
 } from '@/app/lib/data/worldcups';
 import UpdateWorldcupForm from '@/app/components/worldcups/update-worldcup-form';
 import { notFound, redirect } from 'next/navigation';
+import { fetchCandidatesByWorldcupId } from '@/app/lib/data/candidates';
 
 interface Props {
   params: { 'worldcup-id': string };

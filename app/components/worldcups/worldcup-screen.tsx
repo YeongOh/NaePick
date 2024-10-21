@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 interface Props {
-  defaultCandidates: any;
+  defaultCandidates: Candidate[];
   worldcup: Worldcup;
   startingRound: number;
 }
@@ -78,20 +78,22 @@ export default function WorldcupScreen({
             if (picked) return;
             handlePick('left');
           }}
-          className={`w-1/2 cursor-pointer ${
-            picked === 'left' && 'animate-pickLeft justify-center'
-          } ${picked === 'right' && 'animate-moveLeft'}`}
+          className={`w-full cursor-pointer ${
+            picked === 'left' && 'animate-expandLeft'
+          } ${picked === 'right' && 'animate-shrinkRight'}`}
         >
           <div className='relative w-full h-full flex'>
-            <Image
-              className='object-contain'
-              src={`${BASE_IMAGE_URL}${leftCandidate.url}`}
-              alt={leftCandidate.name}
-              priority={true}
-              fill={true}
-              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-            />
-            {!isFinished && (
+            {picked !== 'right' && (
+              <Image
+                className='object-contain'
+                src={`${BASE_IMAGE_URL}${leftCandidate.url}`}
+                alt={leftCandidate.name}
+                priority={true}
+                fill={true}
+                sizes='50vw'
+              />
+            )}
+            {!isFinished && picked !== 'right' && (
               <figcaption className='text-white absolute text-center bottom-[60px] text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
                 {leftCandidate.name}
               </figcaption>
@@ -110,20 +112,22 @@ export default function WorldcupScreen({
             if (picked) return;
             handlePick('right');
           }}
-          className={`w-1/2 flex items-center justify-start cursor-pointer ${
-            picked === 'left' && 'animate-moveRight'
-          } ${picked === 'right' && 'animate-pickRight justify-center'}`}
+          className={`w-full flex items-center justify-start cursor-pointer ${
+            picked === 'left' && 'animate-shrinkLeft'
+          } ${picked === 'right' && 'animate-expandRight'}`}
         >
           <div className='relative w-full h-full'>
-            <Image
-              className='object-contain'
-              src={`${BASE_IMAGE_URL}${rightCandidate.url}`}
-              alt={rightCandidate.name}
-              priority={true}
-              fill={true}
-              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-            />
-            {!isFinished && (
+            {picked !== 'left' && (
+              <Image
+                className='object-contain'
+                src={`${BASE_IMAGE_URL}${rightCandidate.url}`}
+                alt={rightCandidate.name}
+                priority={true}
+                fill={true}
+                sizes='50vw'
+              />
+            )}
+            {!isFinished && picked !== 'left' && (
               <figcaption className='text-white absolute text-center bottom-[60px] text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
                 {rightCandidate.name}
               </figcaption>

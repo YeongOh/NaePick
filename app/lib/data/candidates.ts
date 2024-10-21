@@ -1,6 +1,6 @@
 import { FieldPacket } from 'mysql2';
 import { pool } from '../db';
-import { Candidate } from '../definitions';
+import { Candidate, CandidateWithStatistics } from '../definitions';
 
 export async function fetchRandomCandidatesByWorldcupId(
   worldcupId: string,
@@ -48,22 +48,23 @@ export async function fetchCandidatesStatisticsByWorldcupId(
   worldcupId: string
 ) {
   try {
-    const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
-      `SELECT c.candidate_id, c.name, c.url,
+    const [result, meta]: [CandidateWithStatistics[], FieldPacket[]] =
+      await pool.query(
+        `SELECT c.candidate_id AS candidateId, c.name, c.url,
           (SELECT COUNT(*)
            FROM match_result mr
            WHERE mr.winner_candidate_id = c.candidate_id) AS numberOfWins,
            (SELECT COUNT(*)
            FROM match_result mr
-           WHERE mr.loser_candidate_id = c.candidate_id) AS numberOfLoses,
+           WHERE mr.loser_candidate_id = c.candidate_id) AS numberOfLosses,
            (SELECT COUNT(*)
            FROM champion ch
            WHERE ch.candidate_id = c.candidate_id) AS numberOfTrophies
         FROM candidate c
         WHERE c.worldcup_id = ?
         ;`,
-      [worldcupId]
-    );
+        [worldcupId]
+      );
     console.log(result);
 
     return result;

@@ -45,6 +45,12 @@ export interface Candidate extends QueryResult {
   createdAt: string;
 }
 
+export interface CandidateWithStatistics extends Candidate {
+  numberOfWins: number;
+  numberOfLosses: number;
+  numberOfTrophies: number;
+}
+
 export interface Category extends QueryResult {
   id: number;
   name: string;

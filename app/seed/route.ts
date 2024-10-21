@@ -27,6 +27,8 @@ async function seedWorldcup() {
 
 async function seedCandidates() {
   try {
+    // TODO: gif, imgur 타입추가
+    // TODO: youtube 추가
     const [result, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS candidate (
           candidate_id VARCHAR(255) NOT NULL,
