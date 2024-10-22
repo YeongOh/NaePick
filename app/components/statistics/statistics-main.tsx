@@ -11,7 +11,7 @@ interface Props {
   worldcup: Worldcup;
 }
 
-export default function StatisticsScreen({ candidates, worldcup }: Props) {
+export default function StatisticsMain({ candidates, worldcup }: Props) {
   const [sortWinrateIncreasing, setSortWinrateIncreasing] =
     useState<boolean>(true);
 

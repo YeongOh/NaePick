@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   DeleteObjectCommand,
+  ListObjectsCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -68,6 +69,22 @@ export async function fetchImageUploadUrl(key: string, fileType: string) {
   }
 }
 
+export async function listAllS3Objects(key: string) {
+  try {
+    const params = {
+      Bucket,
+      Prefix: key,
+    };
+    const command = new ListObjectsCommand(params);
+    const { Contents } = await s3.send(command);
+    console.log(Contents);
+    return Contents;
+  } catch (error) {
+    console.log('s3 image upload url');
+    throw new Error('S3 Image upload signedUrl fetch fail');
+  }
+}
+
 export async function uploadFile(file: File, fileName: string) {
   const Body = (await file.arrayBuffer()) as Buffer;
 
@@ -84,7 +101,7 @@ export async function uploadFile(file: File, fileName: string) {
   }
 }
 
-export async function deleteS3Image(key: string) {
+export async function deleteObject(key: string) {
   try {
     await s3.send(
       new DeleteObjectCommand({

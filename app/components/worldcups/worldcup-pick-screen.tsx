@@ -12,7 +12,7 @@ interface Props {
   startingRound: number;
 }
 
-export default function WorldcupScreen({
+export default function WorldcupPickScreen({
   defaultCandidates,
   worldcup,
   startingRound,

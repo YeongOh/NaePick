@@ -2,7 +2,7 @@
 
 import { updateCandidateImageURL } from '@/app/lib/actions/candidates/update';
 import {
-  deleteS3Image,
+  deleteObject,
   fetchUpdateCandidateImageUploadURL,
 } from '@/app/lib/images';
 import { useCallback } from 'react';
@@ -45,7 +45,7 @@ export default function UpdateCandidateImageDropzone({
         // 전의 이미지 파일과 파일타입이 달라서 키가 바뀐다면 고아 이미지가 발생하기에
         // 삭제하고 다시 업로드
         // 후속 작업이 없어 기다릴 필요 없으니 await 생략
-        deleteS3Image(originalCandidateURL);
+        deleteObject(originalCandidateURL);
         // revalidatePath때문에 후속작업 필요
         await updateCandidateImageURL(worldcupId, candidateId, candidateURL);
       }

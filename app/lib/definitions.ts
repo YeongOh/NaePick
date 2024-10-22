@@ -58,9 +58,9 @@ export interface Thumbnail extends QueryResult {
 }
 
 export interface Comment extends QueryResult {
-  id: string;
-  postId: string;
-  parentId: string;
+  commentId: string;
+  worldcupId: string;
+  parentCommentId: string;
   userId: string;
   nickname: string;
   text: string;

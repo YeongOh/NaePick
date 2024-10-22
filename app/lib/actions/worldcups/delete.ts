@@ -1,68 +1,45 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { Candidate } from '../../definitions';
-import { FieldPacket } from 'mysql2';
 import { getSession } from '../session';
 import { pool } from '../../db';
 import { redirect } from 'next/navigation';
+import { deleteObject, listAllS3Objects } from '../../images';
 
-export async function deleteUserPost(postId: string, userId: string) {
-  const connection = await pool.getConnection();
+export async function deleteWorldcup(
+  worldcupId: string,
+  worldcupUserId: string
+) {
+  const session = await getSession();
 
   try {
-    const session = await getSession();
-    if (session.userId !== userId) {
-      return;
+    if (session.userId !== worldcupUserId) {
+      redirect(`/forbidden`);
     }
 
-    const [result, meta] = await connection.query(
-      `DELETE FROM Posts
-          WHERE id = ?`,
-      [postId]
-    );
-
-    await connection.query(
-      `DELETE FROM PostStats
-          WHERE postid = ?`,
-      [postId]
-    );
-
-    const [candidates, candidatesMeta]: [Candidate[], FieldPacket[]] =
-      await connection.query(
-        `SELECT * FROM Candidates
-          WHERE postid = ?`,
-        [postId]
+    // S3 이미지 삭제
+    // 1. 버킷 안의 모든 파일 조회
+    const worldcupKey = `worldcups/${worldcupId}`;
+    const contents = await listAllS3Objects(worldcupKey);
+    const deleteObjectPromises: Promise<void>[] = [];
+    if (contents && contents.length) {
+      // 버킷 안의 객체가 존재할 경우 모두 삭제 => 모든 객체가 삭제될경우 디렉토리도 사라짐
+      // S3에는 디렉토리의 개념이 없음
+      contents.forEach(({ Key }) =>
+        deleteObjectPromises.push(deleteObject(Key as string))
       );
-
-    if (candidates) {
-      const promises: Promise<void>[] = [];
-      const imageDeleteResult = await Promise.all(promises);
     }
+    const result = await Promise.all(deleteObjectPromises);
 
-    await connection.query(
-      `DELETE FROM Candidates
-          WHERE postid = ?`,
-      [postId]
+    // ON DELETE CASCADE로 관련 있는 모든 로우 한번에 삭제
+    const [worldcupDeleteResult, meta] = await pool.query(
+      `DELETE FROM worldcup
+          WHERE worldcup_id = ?`,
+      [worldcupId]
     );
-
-    await connection.query(
-      `DELETE FROM Thumbnails
-          WHERE postid = ?`,
-      [postId]
-    );
-
-    await connection.query(
-      `DELETE FROM Comments
-          WHERE postid = ?`,
-      [postId]
-    );
-
-    connection.commit();
   } catch (err) {
     console.log(err);
-    connection.rollback();
   }
-  revalidatePath(`/${userId}`);
-  redirect(`/${userId}`);
+  revalidatePath(`/worldcups/users/${session.userId}`);
+  redirect(`/worldcups/users/${session.userId}`);
 }

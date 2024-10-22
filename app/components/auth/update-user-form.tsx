@@ -20,6 +20,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
 
   const handleUpdateUserFormSubmit = (formData: FormData) => {
     formData.append('changePassword', String(changePassword));
+    console.log(changePassword);
     submitUpdateUserForm(formData);
   };
 

@@ -4,7 +4,7 @@ import { BASE_IMAGE_URL } from '@/app/constants';
 import { createCandidate } from '@/app/lib/actions/candidates/create';
 import { updateCandidateNames } from '@/app/lib/actions/candidates/update';
 import { Candidate, Worldcup } from '@/app/lib/definitions';
-import { deleteS3Image, fetchCandidateImageUploadURL } from '@/app/lib/images';
+import { deleteObject, fetchCandidateImageUploadURL } from '@/app/lib/images';
 import { excludeFileExtension } from '@/app/utils/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -50,7 +50,7 @@ export default function UpdateWorldcupCandidatesForm({
         filenameWithoutExtension,
         candidateURL
       );
-      toast.error('업로드에 성공했습니다!');
+      toast.success('업로드에 성공했습니다!');
     } else {
       toast.error('업로드에 실패했습니다.');
     }
@@ -78,7 +78,7 @@ export default function UpdateWorldcupCandidatesForm({
     candidateUrl: string
   ) => {
     if (confirm('삭제하시겠습니까?')) {
-      await deleteS3Image(candidateUrl);
+      await deleteObject(candidateUrl);
       await deleteCandidate(worldcup.worldcupId, candidateId);
       toast.success('삭제 성공!');
     }

@@ -1,14 +1,11 @@
 import { getSession } from '@/app/lib/actions/session';
-import {
-  fetchCommentsByWorldcupId,
-  fetchWorldcupByWorldcupId,
-} from '@/app/lib/data/worldcups';
+import { fetchWorldcupByWorldcupId } from '@/app/lib/data/worldcups';
 import CommentSection from '@/app/components/comment/comment-section';
 import Fold from '@/app/components/fold/fold';
-import WorldcupScreen from '@/app/components/worldcups/worldcup-screen';
-import Link from 'next/link';
+import WorldcupPickScreen from '@/app/components/worldcups/worldcup-pick-screen';
 import { notFound, redirect } from 'next/navigation';
 import { fetchRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
+import { fetchCommentsByWorldcupId } from '@/app/lib/data/comments';
 
 interface Props {
   params: { ['worldcup-id']: string; rounds: string };
@@ -37,7 +34,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <WorldcupScreen
+      <WorldcupPickScreen
         defaultCandidates={candidates}
         worldcup={worldcupResult[0]}
         startingRound={rounds}

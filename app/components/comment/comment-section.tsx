@@ -22,6 +22,7 @@ export default function CommentSection({
   const [state, submitCommentForm] = useFormState(createComment, initialState);
   const [text, setText] = useState<string>('');
   const isAuth = !!session?.userId;
+  console.log(comments);
 
   function handleCommentFormSubmit(formData: FormData) {
     if (!session?.userId) {
@@ -82,14 +83,16 @@ export default function CommentSection({
       {comments ? (
         <ul>
           {sortedComments?.map((comment) => (
-            <li className='mb-4' key={comment.id}>
+            <li className='mb-4' key={comment.commentId}>
               <div className='mb-2'>
-                <span className='text-gray-500 mr-4 '>{comment.nickname}</span>
+                <span className='text-gray-500 mr-4 '>
+                  {comment.nickname ? comment.nickname : '탈퇴한 회원'}
+                </span>
                 <span className='text-base'>
                   {getRelativeDate(comment.createdAt)}
                 </span>
               </div>
-              <div>{comment.text}</div>
+              <div className='text-base'>{comment.text}</div>
             </li>
           ))}
         </ul>

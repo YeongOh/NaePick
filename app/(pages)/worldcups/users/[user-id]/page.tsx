@@ -13,7 +13,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const userId = params['user-id'];
-  const [allUsersPosts, session] = await Promise.all([
+  const [allWorldcupsByUser, session] = await Promise.all([
     fetchWorldcupsByUserId(userId),
     getSession(),
   ]);
@@ -23,14 +23,19 @@ export default async function Page({ params }: Props) {
   if (session?.userId !== userId) {
     redirect('/forbidden');
   }
+  console.log(allWorldcupsByUser);
+
   return (
     <div className='max-w-screen-2xl m-auto'>
       <ul className='flex flex-wrap mt-6'>
-        {allUsersPosts &&
-          allUsersPosts.length > 0 &&
-          allUsersPosts.map((post, index: number) => (
-            <Card key={post.worldcupId} worldcup={post}>
-              <CardUpdateLink postId={post.worldcupId} userId={userId} />
+        {allWorldcupsByUser &&
+          allWorldcupsByUser.length > 0 &&
+          allWorldcupsByUser.map((worldcup, index: number) => (
+            <Card key={worldcup.worldcupId} worldcup={worldcup}>
+              <CardUpdateLink
+                worldcupId={worldcup.worldcupId}
+                worldcupUserId={worldcup.userId}
+              />
             </Card>
           ))}
       </ul>

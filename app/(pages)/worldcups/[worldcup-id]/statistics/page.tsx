@@ -2,7 +2,7 @@ import {
   fetchCommentsByWorldcupId,
   fetchWorldcupByWorldcupId,
 } from '@/app/lib/data/worldcups';
-import StatisticsScreen from '@/app/components/statistics/statistics-screen';
+import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';
 import CommentSection from '@/app/components/comment/comment-section';
@@ -27,10 +27,7 @@ export default async function Page({ params }: Props) {
     const worldcup = worldcupResult[0];
     return (
       <div className='max-w-screen-lg m-auto'>
-        <StatisticsScreen
-          candidates={candidatesStatistics}
-          worldcup={worldcup}
-        />
+        <StatisticsMain candidates={candidatesStatistics} worldcup={worldcup} />
         <Fold worldcup={worldcup} />
         <CommentSection
           worldcupId={worldcupId}

@@ -27,9 +27,7 @@ const FormSchema = z
       })
       .trim(),
     oldPassword: z.string(),
-    changePassword: z
-      .enum(['true', 'false'])
-      .transform((value) => value === 'true'),
+    changePassword: z.boolean(),
     newPassword: z
       .string()
       .min(PASSWORD_MIN_LENGTH, {
@@ -69,7 +67,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
     nickname: formData.get('nickname'),
     oldPassword: formData.get('oldPassword'),
-    changePassword: formData.get('changePassword'),
+    changePassword: Boolean(formData.get('changePassword')),
     newPassword: formData.get('newPassword'),
     confirmNewPassword: formData.get('confirmNewPassword'),
   });
