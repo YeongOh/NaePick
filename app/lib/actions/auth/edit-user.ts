@@ -74,14 +74,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     confirmNewPassword: formData.get('confirmNewPassword'),
   });
 
-  console.log(validatedFields);
-  console.log(
-    formData.get('nickname'),
-    formData.get('oldPassword'),
-    formData.get('changePassword'),
-    formData.get('newPassword'),
-    formData.get('confirmNewPassword')
-  );
   if (!validatedFields.success) {
     console.log('누락');
     console.log(validatedFields.error.flatten().fieldErrors);
@@ -92,20 +84,9 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   }
   console.log('11');
 
-  const {
-    nickname,
-    oldPassword,
-    changePassword,
-    newPassword,
-    confirmNewPassword,
-  } = validatedFields.data;
-  console.log(
-    nickname,
-    oldPassword,
-    changePassword,
-    newPassword,
-    confirmNewPassword
-  );
+  const { nickname, oldPassword, changePassword, newPassword } =
+    validatedFields.data;
+
   try {
     const session = await getSession();
     if (!session?.userId) {
@@ -177,8 +158,8 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
       await pool.query(
-        `Update user
-        Set password = ?
+        `UPDATE user
+        SET password = ?
         WHERE user_id = ?;`,
         [hashedNewPassword, session.userId]
       );

@@ -31,12 +31,6 @@ export interface WorldcupCard extends Worldcup {
   rightCandidateUrl: string;
 }
 
-export interface PostInfo extends Worldcup {
-  username: string;
-  nickname: string;
-  categoryName: string;
-}
-
 export interface Candidate extends QueryResult {
   candidateId: string;
   worldcupId: string;
@@ -78,6 +72,14 @@ export interface MatchResult {
   winnerCandidateId: string;
   loserCandidateId: string;
 }
+
+export type Publicity = 'public' | 'private' | 'unlisted';
+
+export const publicityText: { [key in Publicity]: string } = {
+  public: '모두에게 공개 됩니다.',
+  unlisted: '링크를 가지고 있는 사용자만 볼 수 있습니다.',
+  private: '만든 사용자만 볼 수 있습니다.',
+};
 
 export function translateCategory(categoryName: string): string {
   switch (categoryName) {

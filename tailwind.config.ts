@@ -21,6 +21,11 @@ const config: Config = {
       '7xl': ['3.75rem', '4rem'],
     },
     extend: {
+      extend: {
+        transitionProperty: {
+          width: 'width',
+        },
+      },
       colors: {
         primary: {
           '50': '#f6f6f6',
@@ -34,6 +39,10 @@ const config: Config = {
           '800': '#454545',
           '900': '#3d3d3d',
           '950': '#000000',
+        },
+        bg: {
+          '400': '#f7f7f9',
+          '500': '#EBEEF1',
         },
       },
       backgroundImage: {
@@ -54,15 +63,36 @@ const config: Config = {
         pickRight: {
           '100%': { transform: 'translateX(-50%)' },
         },
+        // 버전 2
+        shrinkLeft: {
+          '100%': { width: '0%' },
+        },
+        shrinkRight: {
+          '100%': { width: '0%' },
+        },
+        expandRight: {
+          '80%': { width: '100%' },
+          '100%': { width: '100%', 'justify-content': 'center' },
+        },
+        expandLeft: {
+          '80%': { width: '100%' },
+          // justify-content를 늦게 줘야 layout shifting이 안생김
+          '100%': { width: '100%', 'justify-content': 'center' },
+        },
       },
       animation: {
         moveLeft: 'moveLeft 0.5s ease-in-out forwards',
         moveRight: 'moveRight 0.5s ease-in-out forwards',
         pickLeft: 'pickLeft 0.75s ease-in-out forwards',
         pickRight: 'pickRight 0.75s ease-in-out forwards',
+        // 버전 2
+        shrinkLeft: 'shrinkLeft 0.4s ease-in-out forwards',
+        shrinkRight: 'shrinkRight 0.4s ease-in-out forwards',
+        expandLeft: 'expandLeft 0.5s ease-in-out forwards',
+        expandRight: 'expandRight 0.5s ease-in-out forwards',
       },
     },
   },
-  plugins: [require('@tailwindcss/line-clamp')],
+  plugins: [],
 };
 export default config;

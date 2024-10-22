@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { CandidateWithStatistics, Worldcup } from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
 import Image from 'next/image';
-import { BASE_IMAGE_URL } from '@/app/lib/images';
+import { BASE_IMAGE_URL } from '@/app/constants';
 
 interface Props {
   candidates: CandidateWithStatistics[];

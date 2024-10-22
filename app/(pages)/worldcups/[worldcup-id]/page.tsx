@@ -1,5 +1,4 @@
 import { fetchWorldcupCardByWorldcupId } from '@/app/lib/data/worldcups';
-import { BASE_IMAGE_URL } from '@/app/lib/images';
 import DirectCardLink from '@/app/components/card-extensions/direct-card-link';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
@@ -7,6 +6,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { getSession } from '@/app/lib/actions/session';
+import { BASE_IMAGE_URL } from '@/app/constants';
 
 interface Props {
   params: { ['worldcup-id']: string; round: string };

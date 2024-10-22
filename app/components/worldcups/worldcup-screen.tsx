@@ -1,8 +1,8 @@
 'use client';
 
+import { BASE_IMAGE_URL } from '@/app/constants';
 import { submitMatchResult } from '@/app/lib/actions/statistics';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
-import { BASE_IMAGE_URL } from '@/app/lib/images';
 import Image from 'next/image';
 import { useState } from 'react';
 

@@ -1,21 +1,17 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '../../../constants';
-import { pool } from '../../db';
 import { getSession } from '../session';
-import { uploadFile } from '../../images';
+import { pool } from '../../db';
 
 const CreatePostFormSchema = z.object({
-  id: z.string(),
   title: z
     .string()
     .min(WORLDCUP_TITLE_MIN_LENGTH, {
@@ -34,36 +30,28 @@ const CreatePostFormSchema = z.object({
   categoryId: z.coerce
     .number()
     .positive({ message: '카테고리를 선택해주세요.' }),
-  thumbnails: z.array(z.number()).length(2, {
-    message: '후보 이미지를 클릭하여 썸네일을 2개 선택해주세요.',
-  }),
 });
 
-export type CreatePostFormState = {
+export type CreateWorldcupFormState = {
   errors?: {
     title?: string[];
     description?: string[];
     publicity?: string[];
     categoryId?: string[];
-    thumbnails?: string[];
   };
   message?: string | null;
 };
 
-const CreateInvoice = CreatePostFormSchema.omit({ id: true });
-
-export async function createPost(
-  prevState: CreatePostFormState,
+export async function createWorldcup(
+  prevState: CreateWorldcupFormState,
   formData: FormData
 ) {
-  const validatedFields = CreateInvoice.safeParse({
+  const validatedFields = CreatePostFormSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
     publicity: formData.get('publicity'),
     categoryId: formData.get('categoryId'),
-    thumbnails: JSON.parse(formData.get('thumbnails') as string),
   });
-  console.log(formData.get('categoryId'));
 
   if (!validatedFields.success) {
     return {
@@ -72,94 +60,30 @@ export async function createPost(
     };
   }
 
-  const { title, description, publicity, categoryId, thumbnails } =
-    validatedFields.data;
-  console.log(categoryId);
+  const { title, description, publicity, categoryId } = validatedFields.data;
 
-  const candidateNames = [];
-  const files = [];
-
-  let i = 0;
-  while (true) {
-    // TODO: 후보 이름 길이 확인
-    const candidateName = formData.get(`candidateNames[${i}]`);
-    if (!candidateName) {
-      break;
-    }
-    candidateNames.push(candidateName);
-    const file = formData.get(`imageFiles[${i}]`) as File;
-    files.push(file);
-    ++i;
-  }
-
-  if (new Set(candidateNames).size != candidateNames.length) {
+  const session = await getSession();
+  if (!session?.userId) {
     return {
-      message: '후보 이름에 중복이 있습니다.',
+      message: '로그인 세션이 만료되었습니다.',
     };
   }
-  const connection = await pool.getConnection();
+
+  const worldcupId = uuidv4();
+
   try {
-    const worldcupId = uuidv4();
-    let leftCandidateId;
-    let rightCandidateId;
-
-    const session = await getSession();
-    const userId = session.userId;
-
-    // 트랜잭션 시작
-    await connection.beginTransaction();
-    console.log(worldcupId, title, description, publicity, userId, categoryId);
-
-    await connection.query(
-      `INSERT INTO worldcup (worldcup_id, title, description, publicity, user_id, category_id) 
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [worldcupId, title, description, publicity, userId, categoryId]
+    pool.query(
+      `INSERT INTO worldcup 
+                (worldcup_id, title, description, publicity, user_id, category_id)          
+                VALUES (?,?,?,?,?,?)`,
+      [worldcupId, title, description, publicity, session.userId, categoryId]
     );
-    for (let j = 0; j < files.length; j++) {
-      const file = files[j];
-      const candidateName = candidateNames[j];
-      const ext = path.extname(file.name);
-      const candidateId = uuidv4();
-
-      const url = `worldcups/${worldcupId}/${candidateId}${ext}`;
-
-      await connection.query(
-        `INSERT INTO candidate (candidate_id, worldcup_id, name, url) 
-        VALUES (?, ?, ?, ?)`,
-        [candidateId, worldcupId, candidateName, url]
-      );
-
-      // check filename with thumbnail filenames
-      const thumbnailIndex = thumbnails.findIndex(
-        (thumbI) => Number(thumbI) === j
-      );
-      if (thumbnailIndex == 0) {
-        leftCandidateId = candidateId;
-      } else if (thumbnailIndex == 1) {
-        rightCandidateId = candidateId;
-      }
-
-      const promises: Promise<void>[] = [];
-      promises.push(uploadFile(file, url));
-
-      const result = await Promise.all(promises);
-    }
-
-    await connection.query(
-      `INSERT INTO thumbnail (worldcup_id, left_candidate_id, right_candidate_id) 
-      VALUES (?, ?, ?)`,
-      [worldcupId, leftCandidateId, rightCandidateId]
-    );
-
-    await connection.commit();
   } catch (error) {
     console.log(error);
-    await connection.rollback();
     return {
       message: '이상형 월드컵 생성에 실패했습니다.',
     };
   }
 
-  revalidatePath('/');
-  redirect('/');
+  redirect(`/worldcups/${worldcupId}/update-candidates`);
 }

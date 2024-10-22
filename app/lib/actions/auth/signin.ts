@@ -81,8 +81,6 @@ export async function signin(state: SigninState, formData: FormData) {
     };
   }
 
-  // TODO: 로그인 토스트
-
   revalidatePath('/');
   redirect('/');
 }

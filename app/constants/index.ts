@@ -42,3 +42,6 @@ export function getNumberOfRoundsAvailable(
   const result = options.filter((option) => option <= numberOfCandidates);
   return result;
 }
+
+// TODO: in env
+export const BASE_IMAGE_URL = 'https://cdn.naepick.co.kr/';

@@ -29,14 +29,17 @@ export async function fetchRandomCandidatesByWorldcupId(
   }
 }
 
-export async function fetchCandidatesByWorldcupId(worldcupId: string) {
+export async function fetchCandidatesToUpdateByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
-      `SELECT * 
+      `SELECT candidate_id AS candidateId,
+              created_at AS createdAt,
+              name, url
         FROM candidate 
-        WHERE worldcup_id = ? `,
+        WHERE worldcup_id = ?;`,
       [worldcupId]
     );
+    console.log(result);
 
     return result;
   } catch (err) {

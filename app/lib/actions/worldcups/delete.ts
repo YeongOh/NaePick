@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { deleteImage } from '../../images';
 import { Candidate } from '../../definitions';
 import { FieldPacket } from 'mysql2';
 import { getSession } from '../session';
@@ -38,9 +37,6 @@ export async function deleteUserPost(postId: string, userId: string) {
 
     if (candidates) {
       const promises: Promise<void>[] = [];
-      candidates.forEach(async (candidate: Candidate) =>
-        promises.push(deleteImage(candidate.url))
-      );
       const imageDeleteResult = await Promise.all(promises);
     }
 

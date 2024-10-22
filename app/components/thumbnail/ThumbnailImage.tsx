@@ -1,4 +1,4 @@
-import { BASE_IMAGE_URL } from '@/app/lib/images';
+import { BASE_IMAGE_URL } from '@/app/constants';
 import Image from 'next/image';
 
 interface Props {

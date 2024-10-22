@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export function formatBytes(bytes: number, decimals: number): string {
   if (bytes == 0) return '0 Bytes';
   const k = 1024,
@@ -9,4 +11,8 @@ export function formatBytes(bytes: number, decimals: number): string {
 
 export function excludeFileExtension(fileName: string): string {
   return fileName.slice(0, fileName.lastIndexOf('.'));
+}
+
+export function generateUUID() {
+  return uuidv4();
 }
