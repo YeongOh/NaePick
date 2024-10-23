@@ -66,13 +66,13 @@ export default function UpdateWorldcupCandidateImageDropzone({
     multiple: false,
   });
   return (
-    <div className='cursor-pointer' {...getRootProps()}>
+    <button
+      type='button'
+      className='px-4 py-2 bg-white border rounded-md text-base text-primary-500'
+      {...getRootProps()}
+    >
       <input {...getInputProps()} />
-      {isDragActive ? (
-        <p>Drop the files here ...</p>
-      ) : (
-        <p>Drag drop some files here, or click to select files</p>
-      )}
-    </div>
+      <div>이미지 수정</div>
+    </button>
   );
 }

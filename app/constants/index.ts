@@ -28,6 +28,7 @@ export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
 
 // candidate name length
+export const CANDIDATE_NAME_MAX_LENGTH = 25;
 
 // comment
 export const COMMENT_TEXT_MAX_LENGTH = 300;

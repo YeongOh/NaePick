@@ -7,7 +7,11 @@ export default async function Page() {
 
   return (
     <div className='max-w-screen-md w-screen m-auto'>
-      <WorldcupFormTab worldcupId={null} disabled={'candidates'} />
+      <WorldcupFormTab
+        worldcupId={null}
+        disabled={'candidates'}
+        highlight='info'
+      />
       <CreateWorldcupForm categories={categories} />
     </div>
   );

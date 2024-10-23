@@ -15,30 +15,32 @@ export default function WorldcupFormTab({
   highlight,
 }: Props) {
   return (
-    <nav className='flex'>
+    <nav className='flex mt-4'>
       <Link
         href={`/worldcups/${worldcupId}/update-info`}
-        className={`px-8 py-4 ${
-          highlight == 'info' && 'font-semibold text-primary-500'
+        className={`w-[90px] py-3 text-center text-gray-500 text-base ${
+          highlight == 'info' &&
+          'text-slate-700 font-semibold bg-gray-50 rounded-tl-lg rounded-tr-lg'
         }`}
       >
-        정보
+        정보 작성
       </Link>
       {disabled === 'candidates' ? (
         <div
-          onClick={() => toast.error('월드컵을 먼저 만들어야 합니다.')}
-          className='cursor-pointer px-8 py-4'
+          onClick={() => toast.error('월드컵을 먼저 생성해야 합니다.')}
+          className='w-[90px] py-3 text-center cursor-pointer text-gray-500'
         >
-          후보 관리
+          후보 추가
         </div>
       ) : (
         <Link
           href={`/worldcups/${worldcupId}/update-candidates`}
-          className={`px-8 py-4 ${
-            highlight == 'candidates' && 'font-semibold text-primary-500'
+          className={`w-[90px] py-3 text-center text-gray-500 text-base ${
+            highlight == 'candidates' &&
+            'text-slate-700 font-semibold bg-gray-50 rounded-tl-lg rounded-tr-lg'
           }`}
         >
-          후보 관리
+          후보 추가
         </Link>
       )}
     </nav>
