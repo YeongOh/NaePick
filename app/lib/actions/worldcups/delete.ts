@@ -5,17 +5,17 @@ import { getSession } from '../session';
 import { pool } from '../../db';
 import { redirect } from 'next/navigation';
 import { deleteObject, listAllS3Objects } from '../../images';
+import { validateWorldcupOwnership } from '../auth/worldcup-ownership';
 
-export async function deleteWorldcup(
-  worldcupId: string,
-  worldcupUserId: string
-) {
+export async function deleteWorldcup(worldcupId: string) {
   const session = await getSession();
 
   try {
-    if (session.userId !== worldcupUserId) {
-      redirect(`/forbidden`);
+    if (!session?.userId) {
+      throw new Error('로그인이 만료되었습니다.');
     }
+
+    await validateWorldcupOwnership(worldcupId, session.userId);
 
     // S3 이미지 삭제
     // 1. 버킷 안의 모든 파일 조회

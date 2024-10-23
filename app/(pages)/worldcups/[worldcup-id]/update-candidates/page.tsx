@@ -29,7 +29,11 @@ export default async function Page({ params }: Props) {
 
   return (
     <div className='max-w-3xl m-auto'>
-      <WorldcupFormTab worldcupId={worldcupId} disabled={null} />
+      <WorldcupFormTab
+        worldcupId={worldcupId}
+        disabled={null}
+        highlight='candidates'
+      />
       <UpdateWorldcupCandidatesForm
         worldcup={worldcupResult[0]}
         candidates={candidates}

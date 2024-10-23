@@ -2,6 +2,8 @@
 
 import { pool } from '@/app/lib/db';
 import { revalidatePath } from 'next/cache';
+import { getSession } from '../session';
+import { validateWorldcupOwnership } from '../auth/worldcup-ownership';
 
 export async function updateCandidateNames(
   worldcupId: string,
@@ -10,6 +12,13 @@ export async function updateCandidateNames(
   }
 ) {
   try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+
+    await validateWorldcupOwnership(worldcupId, session.userId);
+
     for (const [candidateId, candidateName] of Object.entries(
       candidateObjects
     )) {
@@ -35,6 +44,13 @@ export async function updateCandidateImageURL(
   candidateURL: string
 ) {
   try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+
+    await validateWorldcupOwnership(worldcupId, session.userId);
+
     const [result, fields] = await pool.query(
       `
             UPDATE candidate

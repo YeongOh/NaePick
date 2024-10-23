@@ -32,10 +32,7 @@ export default async function Page({ params }: Props) {
           allWorldcupsByUser.length > 0 &&
           allWorldcupsByUser.map((worldcup, index: number) => (
             <Card key={worldcup.worldcupId} worldcup={worldcup}>
-              <CardUpdateLink
-                worldcupId={worldcup.worldcupId}
-                worldcupUserId={worldcup.userId}
-              />
+              <CardUpdateLink worldcupId={worldcup.worldcupId} />
             </Card>
           ))}
       </ul>

@@ -4,14 +4,20 @@ import { getSession } from './app/lib/actions/session';
 const protectedRoutes = [
   '/worldcups/create',
   '/edit-user',
-  '/worldcups/update',
+  '/update-info',
+  '/update-candidates',
   '/worldcups/users',
 ];
 const publicRoutes = ['/signin', '/signup'];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
+  const isProtectedRoute = protectedRoutes.some(
+    (publicRoute) =>
+      publicRoute === path ||
+      path.endsWith(publicRoute) ||
+      path.startsWith(publicRoute)
+  ); // 다이나믹 path 때문에 이런식으로 확인
   const isPublicRoute = publicRoutes.includes(path);
 
   const session = await getSession();

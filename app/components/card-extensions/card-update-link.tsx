@@ -2,19 +2,19 @@
 
 import { deleteWorldcup } from '@/app/lib/actions/worldcups/delete';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 interface Props {
   worldcupId: string;
-  worldcupUserId: string;
 }
 
-export default function CardUpdateLink({ worldcupId, worldcupUserId }: Props) {
-  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+export default function CardUpdateLink({ worldcupId }: Props) {
+  const handleDeleteClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!confirm('정말로 삭제하시겠습니까?')) {
       return;
     }
-    deleteWorldcup(worldcupId, worldcupUserId);
+    await deleteWorldcup(worldcupId);
   };
 
   return (

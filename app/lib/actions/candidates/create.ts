@@ -10,6 +10,7 @@ export async function createCandidate(
   candidateUrl: string
 ) {
   try {
+    // 월드컵 오너십 확인은 반복문 전에 이미 완료
     const [result, fields] = await pool.query(
       `
         INSERT INTO candidate

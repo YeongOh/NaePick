@@ -4,14 +4,17 @@ import { BASE_IMAGE_URL } from '@/app/constants';
 import { createCandidate } from '@/app/lib/actions/candidates/create';
 import { updateCandidateNames } from '@/app/lib/actions/candidates/update';
 import { Candidate, Worldcup } from '@/app/lib/definitions';
-import { deleteObject, fetchCandidateImageUploadURL } from '@/app/lib/images';
+import {
+  deleteCandidateObject,
+  fetchCandidateImageUploadURL,
+} from '@/app/lib/images';
 import { excludeFileExtension } from '@/app/utils/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback } from 'react';
 import { useDropzone, FileWithPath } from 'react-dropzone';
 import toast from 'react-hot-toast';
-import UpdateCandidateImageDropzone from './update-candidate-image-dropzone';
+import UpdateWorldcupCandidateImageDropzone from './update-worldcup-candidate-image-dropzone';
 import { deleteCandidate } from '@/app/lib/actions/candidates/delete';
 
 interface Props {
@@ -23,38 +26,40 @@ export default function UpdateWorldcupCandidatesForm({
   worldcup,
   candidates,
 }: Props) {
-  console.log(candidates);
   const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
-    // Do something with the files
-    console.log(acceptedFiles);
-    const file = acceptedFiles[0];
-    const filenameWithoutExtension = excludeFileExtension(file.name);
-    const { signedURL, candidateURL, candidateId } =
-      await fetchCandidateImageUploadURL(
-        worldcup.worldcupId,
-        file.path as string,
-        file.type
-      );
-    const response = await fetch(signedURL, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': file.type,
-      },
-      body: file,
-    });
-    console.log(response);
-    if (response.ok) {
-      await createCandidate(
-        worldcup.worldcupId,
-        candidateId,
-        filenameWithoutExtension,
-        candidateURL
-      );
-      toast.success('업로드에 성공했습니다!');
-    } else {
-      toast.error('업로드에 실패했습니다.');
+    try {
+      acceptedFiles.forEach(async (acceptedFile) => {
+        const filenameWithoutExtension = excludeFileExtension(
+          acceptedFile.name
+        );
+        const { signedURL, candidateURL, candidateId } =
+          await fetchCandidateImageUploadURL(
+            worldcup.worldcupId,
+            acceptedFile.path as string,
+            acceptedFile.type
+          );
+        const response = await fetch(signedURL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': acceptedFile.type,
+          },
+          body: acceptedFile,
+        });
+        console.log(response);
+        if (response.ok) {
+          await createCandidate(
+            worldcup.worldcupId,
+            candidateId,
+            filenameWithoutExtension,
+            candidateURL
+          );
+          toast.success('업로드에 성공했습니다!');
+        }
+      });
+    } catch (error) {
+      toast.error((error as Error).message);
     }
-    // 후보 레코드 생성
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -67,10 +72,13 @@ export default function UpdateWorldcupCandidatesForm({
   });
 
   const handleUpdateWorldcupCandidates = async (formData: FormData) => {
-    const formObject = Object.fromEntries(formData);
-    console.log(formObject);
-    await updateCandidateNames(worldcup.worldcupId, formObject);
-    toast.success('저장되었습니다!');
+    try {
+      const formObject = Object.fromEntries(formData);
+      await updateCandidateNames(worldcup.worldcupId, formObject);
+      toast.success('저장되었습니다!');
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   const onClickDeleteCandidate = async (
@@ -78,9 +86,13 @@ export default function UpdateWorldcupCandidatesForm({
     candidateUrl: string
   ) => {
     if (confirm('삭제하시겠습니까?')) {
-      await deleteObject(candidateUrl);
-      await deleteCandidate(worldcup.worldcupId, candidateId);
-      toast.success('삭제 성공!');
+      try {
+        await deleteCandidateObject(candidateUrl, worldcup.worldcupId);
+        await deleteCandidate(candidateId, worldcup.worldcupId);
+        toast.success('삭제 성공!');
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
     }
   };
 
@@ -114,13 +126,14 @@ export default function UpdateWorldcupCandidatesForm({
                 defaultValue={candidate.name}
                 autoComplete='off'
               />
-              <UpdateCandidateImageDropzone
+              <UpdateWorldcupCandidateImageDropzone
                 worldcupId={worldcup.worldcupId}
                 candidateId={candidate.candidateId}
                 originalCandidateURL={candidate.url}
               />
             </div>
             <button
+              type='button'
               onClick={() =>
                 onClickDeleteCandidate(candidate.candidateId, candidate.url)
               }

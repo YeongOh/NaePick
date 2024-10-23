@@ -80,7 +80,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
       message: '누락된 항목이 있습니다.',
     };
   }
-  console.log('11');
 
   const { nickname, oldPassword, changePassword, newPassword } =
     validatedFields.data;
@@ -92,7 +91,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
         message: '현재 로그인된 상태가 아닙니다.',
       };
     }
-    console.log(2);
 
     const [result, fields]: [
       Pick<User, 'email' | 'nickname' | 'password'>[] & RowDataPacket[],
@@ -103,11 +101,8 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
         WHERE user_id = ?;`,
       [session.userId]
     );
-    console.log(result);
-    console.log(3);
 
     const user = result?.[0];
-    console.log(user);
     if (!user) {
       return {
         message: '알수없는 에러가 발생했습니다.(e1)',
@@ -131,8 +126,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
              WHERE nickname = ? AND user_id != ?;`,
           [nickname, session.userId]
         );
-      console.log(4);
-      console.log(nickname, session.userId);
       if (duplicatedUserResult?.[0]) {
         console.log(5);
         return {
@@ -148,7 +141,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
              WHERE user_id = ?;`,
           [nickname, session.userId]
         );
-        console.log(6);
       }
     }
 

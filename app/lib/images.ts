@@ -10,6 +10,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import path from 'path';
+import { getSession } from './actions/session';
+import { validateWorldcupOwnership } from './actions/auth/worldcup-ownership';
 
 const Bucket = process.env.AWS_S3_BUCKET;
 const credentials = {
@@ -26,15 +28,27 @@ export async function fetchCandidateImageUploadURL(
   imagePath: string,
   fileType: string
 ) {
-  const candidateId = uuidv4();
-  const fileExtname = path.extname(imagePath);
-  const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
 
-  return {
-    signedURL: await fetchImageUploadUrl(key, fileType),
-    candidateURL: key,
-    candidateId,
-  };
+    await validateWorldcupOwnership(worldcupId, session.userId);
+
+    const candidateId = uuidv4();
+    const fileExtname = path.extname(imagePath);
+    const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
+
+    return {
+      signedURL: await fetchImageUploadUrl(key, fileType),
+      candidateURL: key,
+      candidateId,
+    };
+  } catch (error) {
+    console.log(error);
+    throw new Error('이미지 업로드 실패...');
+  }
 }
 
 export async function fetchUpdateCandidateImageUploadURL(
@@ -43,13 +57,24 @@ export async function fetchUpdateCandidateImageUploadURL(
   imagePath: string,
   fileType: string
 ) {
-  const fileExtname = path.extname(imagePath);
-  const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+    await validateWorldcupOwnership(worldcupId, session.userId);
 
-  return {
-    signedURL: await fetchImageUploadUrl(key, fileType),
-    candidateURL: key,
-  };
+    const fileExtname = path.extname(imagePath);
+    const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
+
+    return {
+      signedURL: await fetchImageUploadUrl(key, fileType),
+      candidateURL: key,
+    };
+  } catch (error) {
+    console.log(error);
+    throw new Error('이미지 업로드 실패...');
+  }
 }
 
 export async function fetchImageUploadUrl(key: string, fileType: string) {
@@ -85,7 +110,7 @@ export async function listAllS3Objects(key: string) {
   }
 }
 
-export async function uploadFile(file: File, fileName: string) {
+async function uploadFile(file: File, fileName: string) {
   const Body = (await file.arrayBuffer()) as Buffer;
 
   try {
@@ -101,7 +126,30 @@ export async function uploadFile(file: File, fileName: string) {
   }
 }
 
-export async function deleteObject(key: string) {
+export async function deleteCandidateObject(
+  candidateURL: string,
+  worldcupId: string
+) {
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+    await validateWorldcupOwnership(worldcupId, session.userId);
+
+    await s3.send(
+      new DeleteObjectCommand({
+        Bucket,
+        Key: candidateURL,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error('이미지 삭제 실패...');
+  }
+}
+
+async function deleteObject(key: string) {
   try {
     await s3.send(
       new DeleteObjectCommand({

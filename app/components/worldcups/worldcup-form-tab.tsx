@@ -6,14 +6,21 @@ import toast from 'react-hot-toast';
 interface Props {
   worldcupId: string | null;
   disabled: 'candidates' | null;
+  highlight: 'info' | 'candidates';
 }
 
-export default function WorldcupFormTab({ worldcupId, disabled }: Props) {
+export default function WorldcupFormTab({
+  worldcupId,
+  disabled,
+  highlight,
+}: Props) {
   return (
     <nav className='flex'>
       <Link
         href={`/worldcups/${worldcupId}/update-info`}
-        className='px-8 py-4 font-semibold text-primary-500'
+        className={`px-8 py-4 ${
+          highlight == 'info' && 'font-semibold text-primary-500'
+        }`}
       >
         정보
       </Link>
@@ -27,7 +34,9 @@ export default function WorldcupFormTab({ worldcupId, disabled }: Props) {
       ) : (
         <Link
           href={`/worldcups/${worldcupId}/update-candidates`}
-          className='px-8 py-4'
+          className={`px-8 py-4 ${
+            highlight == 'candidates' && 'font-semibold text-primary-500'
+          }`}
         >
           후보 관리
         </Link>

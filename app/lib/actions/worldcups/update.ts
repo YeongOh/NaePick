@@ -8,6 +8,9 @@ import {
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '../../../constants';
 import { pool } from '../../db';
+import { validateWorldcupOwnership } from '../auth/worldcup-ownership';
+import { getSession } from '../session';
+import { revalidatePath } from 'next/cache';
 
 const UpdatePostFormSchema = z.object({
   worldcupId: z.string(),
@@ -52,7 +55,6 @@ export async function updateWorldcupInfo(
     publicity: formData.get('publicity'),
     categoryId: formData.get('categoryId'),
   });
-  console.log(formData);
 
   if (!validatedFields.success) {
     return {
@@ -64,7 +66,16 @@ export async function updateWorldcupInfo(
   const { worldcupId, title, description, publicity, categoryId } =
     validatedFields.data;
 
+  const session = await getSession();
+  if (!session?.userId) {
+    return {
+      message: '로그인 세션이 만료되었습니다.',
+    };
+  }
+
   try {
+    await validateWorldcupOwnership(worldcupId, session.userId);
+
     pool.query(
       `UPDATE worldcup 
       SET title = ?, description = ?, publicity = ?, category_id = ?
@@ -73,8 +84,8 @@ export async function updateWorldcupInfo(
     );
   } catch (error) {
     return {
-      message: '이상형 월드컵 생성에 실패했습니다.',
+      message: '이상형 월드컵 수정에 실패했습니다.',
     };
   }
-  redirect(`/worldcups/${worldcupId}/update/candidates`);
+  redirect(`/worldcups/${worldcupId}/update-candidates`);
 }
