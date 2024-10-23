@@ -2,9 +2,9 @@
 
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { z } from 'zod';
-import { pool } from '../db';
+import { pool } from '../../db';
 import { v4 as uuidv4 } from 'uuid';
-import { getSession } from './session';
+import { getSession } from '../session';
 import { revalidatePath } from 'next/cache';
 
 const FormSchema = z.object({

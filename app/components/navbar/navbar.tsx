@@ -27,7 +27,10 @@ export default async function Navbar() {
               >
                 내 월드컵 관리
               </NavbarLink>
-              <NavbarLink href={'/edit-user'} pathToHighlight={'/edit-user'}>
+              <NavbarLink
+                href={'/update-user'}
+                pathToHighlight={'/update-user'}
+              >
                 회원정보 수정
               </NavbarLink>
               <SignoutButtion />

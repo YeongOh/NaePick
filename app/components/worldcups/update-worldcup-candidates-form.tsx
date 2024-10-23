@@ -19,6 +19,7 @@ import { deleteCandidate } from '@/app/lib/actions/candidates/delete';
 import { FaFileUpload } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
+import DeleteConfirmModal from '../modal/delete-confirm-modal';
 
 interface Props {
   worldcup: Worldcup;
@@ -30,6 +31,10 @@ export default function UpdateWorldcupCandidatesForm({
   candidates,
 }: Props) {
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  const [selectedCandidateToDelete, setSelectedCandidateToDelete] =
+    useState<Candidate | null>(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
+    useState<boolean>(false);
   console.log(candidates);
 
   const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
@@ -102,111 +107,144 @@ export default function UpdateWorldcupCandidatesForm({
     }
   };
 
+  const handleDeleteCandidateConfirm = async () => {
+    try {
+      if (!selectedCandidateToDelete) {
+        throw new Error('선택된 후보가 없습니다.');
+      }
+      await deleteCandidateObject(
+        selectedCandidateToDelete.url,
+        worldcup.worldcupId
+      );
+      await deleteCandidate(
+        selectedCandidateToDelete.candidateId,
+        worldcup.worldcupId
+      );
+      toast.success('삭제에 성공했습니다.');
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setShowDeleteConfirmModal(false);
+    }
+  };
+
   return (
-    <form action={handleUpdateWorldcupCandidates}>
-      <div className='rounded-md bg-gray-50 p-6'>
-        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-          후보 이미지 추가
-        </h2>
-        <div
-          className='cursor-pointer border rounded-md mb-4 text-base bg-white p-4'
-          {...getRootProps()}
-        >
-          <input {...getInputProps()} />
-          <div className='flex items-center justify-center gap-2'>
-            <FaFileUpload size={'1.5em'} className='text-primary-500' />
-            <p className='text-slate-700'>파일을 드롭하거나 클릭해서 업로드</p>
+    <>
+      <form action={handleUpdateWorldcupCandidates}>
+        <div className='rounded-md bg-gray-50 p-6'>
+          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+            후보 이미지 추가
+          </h2>
+          <div
+            className='cursor-pointer border rounded-md mb-4 text-base bg-white p-4'
+            {...getRootProps()}
+          >
+            <input {...getInputProps()} />
+            <div className='flex items-center justify-center gap-2'>
+              <FaFileUpload size={'1.5em'} className='text-primary-500' />
+              <p className='text-slate-700'>
+                파일을 드롭하거나 클릭해서 업로드
+              </p>
+            </div>
           </div>
-        </div>
-        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-          후보 {candidates.length}명
-        </h2>
-        <ul>
-          {candidates
-            .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
-            .map((candidate, index) => (
-              <li key={candidate.url}>
-                <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
-                  <div className='relative w-[96px] h-[96px] cursor-pointer'>
-                    <Image
-                      className='object-cover'
-                      src={`${BASE_IMAGE_URL}${candidate.url}`}
-                      alt={candidate.name}
-                      fill={true}
-                      sizes='(max-width: 768px) 25vw, (max-width: 1200px) 15vw, 15vw'
-                      onClick={() => {
-                        if (previewIndex === index) {
-                          setPreviewIndex(null);
-                        } else {
-                          setPreviewIndex(index);
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className='w-full flex'>
-                    <input
-                      className='flex-1 ml-2 mr-2 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
-                      id={candidate.name}
-                      name={candidate.candidateId}
-                      type='text'
-                      defaultValue={candidate.name}
-                      placeholder={candidate.name}
-                      autoComplete='off'
-                      maxLength={CANDIDATE_NAME_MAX_LENGTH}
-                    />
-                    <div className='flex items-center'>
-                      <UpdateWorldcupCandidateImageDropzone
-                        worldcupId={worldcup.worldcupId}
-                        candidateId={candidate.candidateId}
-                        originalCandidateURL={candidate.url}
-                      />
-                      <button
-                        type='button'
-                        className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mx-4'
-                        onClick={() =>
-                          onClickDeleteCandidate(
-                            candidate.candidateId,
-                            candidate.url
-                          )
-                        }
-                      >
-                        <div className='flex items-center gap-1'>
-                          <MdDelete className='text-red-500' size={'1.3em'} />
-                          <span>삭제</span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                {previewIndex === index && (
-                  <div className='flex justify-center items-center m-4'>
-                    <div className='relative w-[350px] h-[250px]'>
+          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+            후보 {candidates.length}명
+          </h2>
+          <ul>
+            {candidates
+              .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
+              .map((candidate, index) => (
+                <li key={candidate.url}>
+                  <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
+                    <div className='relative w-[96px] h-[96px] cursor-pointer'>
                       <Image
-                        className='object-cover cursor-pointer rounded-md overflow-hidden'
+                        className='object-cover'
                         src={`${BASE_IMAGE_URL}${candidate.url}`}
                         alt={candidate.name}
                         fill={true}
-                        sizes='(max-width: 768px) 50vw, (max-width: 1200px) 40vw, 40vw'
-                        onClick={() => setPreviewIndex(null)}
+                        sizes='(max-width: 768px) 25vw, (max-width: 1200px) 15vw, 15vw'
+                        onClick={() => {
+                          if (previewIndex === index) {
+                            setPreviewIndex(null);
+                          } else {
+                            setPreviewIndex(index);
+                          }
+                        }}
                       />
                     </div>
+                    <div className='w-full flex'>
+                      <input
+                        className='flex-1 ml-2 mr-2 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
+                        id={candidate.name}
+                        name={candidate.candidateId}
+                        type='text'
+                        defaultValue={candidate.name}
+                        placeholder={candidate.name}
+                        autoComplete='off'
+                        maxLength={CANDIDATE_NAME_MAX_LENGTH}
+                      />
+                      <div className='flex items-center'>
+                        <UpdateWorldcupCandidateImageDropzone
+                          worldcupId={worldcup.worldcupId}
+                          candidateId={candidate.candidateId}
+                          originalCandidateURL={candidate.url}
+                        />
+                        <button
+                          type='button'
+                          className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mx-4'
+                          onClick={() => {
+                            setSelectedCandidateToDelete(candidate);
+                            setShowDeleteConfirmModal(true);
+                          }}
+                        >
+                          <div className='flex items-center gap-1'>
+                            <MdDelete className='text-red-500' size={'1.3em'} />
+                            <span>삭제</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </li>
-            ))}
-        </ul>
-      </div>
-      <div className='flex gap-4 m-4 justify-end'>
-        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
-          저장
-        </button>
-        <Link
-          href={'/'}
-          className='bg-gray-100 px-4 flex h-12 items-center rounded-lg font-semibold text-gray-600'
-        >
-          취소
-        </Link>
-      </div>
-    </form>
+                  {previewIndex === index && (
+                    <div className='flex justify-center items-center m-4'>
+                      <div className='relative w-[350px] h-[250px]'>
+                        <Image
+                          className='object-cover cursor-pointer rounded-md overflow-hidden'
+                          src={`${BASE_IMAGE_URL}${candidate.url}`}
+                          alt={candidate.name}
+                          fill={true}
+                          sizes='(max-width: 768px) 50vw, (max-width: 1200px) 40vw, 40vw'
+                          onClick={() => setPreviewIndex(null)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </li>
+              ))}
+          </ul>
+        </div>
+        <div className='flex gap-4 m-4 justify-end'>
+          <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
+            저장
+          </button>
+          <Link
+            href={'/'}
+            className='bg-gray-100 px-4 flex h-12 items-center rounded-lg font-semibold text-gray-600'
+          >
+            취소
+          </Link>
+        </div>
+      </form>
+      <DeleteConfirmModal
+        open={showDeleteConfirmModal}
+        onClose={() => {
+          setShowDeleteConfirmModal(false);
+          setSelectedCandidateToDelete(null);
+        }}
+        onConfirm={handleDeleteCandidateConfirm}
+      >
+        후보를 삭제하시겠습니까? <br /> 관련 통계도 전부 삭제됩니다.
+      </DeleteConfirmModal>
+    </>
   );
 }

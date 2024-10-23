@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 
 interface Props {
   open: boolean;
-  onClose: any;
+  onClose: () => void;
   worldcupId: string;
   numberOfCandidates: number;
   title: string;
@@ -42,7 +42,7 @@ export default function StartWorldcupModal({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-4 min-w-[300px]'
+              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-4 min-w-[320px]'
             >
               <div className='flex flex-col items-center justify-between'>
                 <h2 className='text-lg font-semibold m-4'>{title}</h2>

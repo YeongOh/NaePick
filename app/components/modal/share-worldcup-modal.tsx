@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 interface Props {
   open: boolean;
-  onClose: any;
+  onClose: () => void;
   title: string;
   worldcupId: string;
 }

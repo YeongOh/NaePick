@@ -26,7 +26,7 @@ export default function Card({ worldcup, children }: Props) {
         <div className='flex items-end justify-between'>
           <div className='flex-1 overflow-hidden'>
             <h2
-              className='text-lg font-bold line-clamp-2 mb-2 text-slate-700'
+              className='text-lg font-bold line-clamp-2 my-1.5 text-slate-700'
               title={worldcup.title}
             >
               {worldcup.title}

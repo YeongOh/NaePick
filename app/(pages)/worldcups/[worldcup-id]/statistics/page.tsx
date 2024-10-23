@@ -1,13 +1,11 @@
-import {
-  fetchCommentsByWorldcupId,
-  fetchWorldcupByWorldcupId,
-} from '@/app/lib/data/worldcups';
+import { fetchWorldcupByWorldcupId } from '@/app/lib/data/worldcups';
 import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';
 import CommentSection from '@/app/components/comment/comment-section';
 import { fetchCandidatesStatisticsByWorldcupId } from '@/app/lib/data/candidates';
 import { getSession } from '@/app/lib/actions/session';
+import { fetchCommentsByWorldcupId } from '@/app/lib/data/comments';
 
 interface Props {
   params: { ['worldcup-id']: string };

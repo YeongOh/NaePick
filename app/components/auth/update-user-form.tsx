@@ -1,6 +1,9 @@
 'use client';
 
-import { updateUser, UpdateUserState } from '@/app/lib/actions/auth/edit-user';
+import {
+  updateUser,
+  UpdateUserState,
+} from '@/app/lib/actions/auth/update-user';
 import { SessionData } from '@/app/lib/definitions';
 import { IronSession } from 'iron-session';
 import Link from 'next/link';
