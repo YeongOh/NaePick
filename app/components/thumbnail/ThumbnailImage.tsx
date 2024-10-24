@@ -1,4 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import { BASE_IMAGE_URL } from '@/app/constants';
+import MyImage from '@/app/ui/my-image/my-image';
 import Image from 'next/image';
 
 interface Props {
@@ -22,13 +24,10 @@ export default function ThumbnailImage({
         {leftCandidateUrl && (
           <>
             <div className='relative w-1/2'>
-              <Image
-                className='object-cover'
-                src={`${BASE_IMAGE_URL}${leftCandidateUrl}`}
+              <MyImage
+                className='object-cover size-full'
+                src={`${leftCandidateUrl}?w=300&h=300`}
                 alt={leftCandidateName}
-                fill={true}
-                sizes='134px' // '(max-width: 768px) 33vw, (max-width: 1200px) 20vw, 20vw'
-                priority={true}
               />
               <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
                 <p
@@ -43,13 +42,10 @@ export default function ThumbnailImage({
         )}
         {rightCandidateUrl && (
           <div className='relative w-1/2'>
-            <Image
-              className='object-cover'
-              src={`${BASE_IMAGE_URL}${rightCandidateUrl}`}
+            <MyImage
+              className='object-cover size-full'
+              src={`${rightCandidateUrl}?w=300&h=300`}
               alt={rightCandidateName}
-              fill={true}
-              sizes='134px'
-              priority={true}
             />
             <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
               <p

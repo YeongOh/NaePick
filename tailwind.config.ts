@@ -71,13 +71,16 @@ const config: Config = {
           '100%': { width: '0%' },
         },
         expandRight: {
-          '80%': { width: '100%' },
+          '0%': { width: '50%', 'justify-content': 'center' },
           '100%': { width: '100%', 'justify-content': 'center' },
         },
         expandLeft: {
-          '80%': { width: '100%' },
           // justify-content를 늦게 줘야 layout shifting이 안생김
-          '100%': { width: '100%', 'justify-content': 'center' },
+          '0%': { width: '50%', 'justify-content': 'center' },
+          '100%': {
+            width: '100%',
+            'justify-content': 'center',
+          },
         },
       },
       animation: {

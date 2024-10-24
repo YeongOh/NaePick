@@ -9,10 +9,9 @@ import {
   fetchCandidateImageUploadURL,
 } from '@/app/lib/images';
 import { excludeFileExtension } from '@/app/utils/utils';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { useDropzone, FileWithPath } from 'react-dropzone';
+import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
 import toast from 'react-hot-toast';
 import UpdateWorldcupCandidateImageDropzone from './update-worldcup-candidate-image-dropzone';
 import { deleteCandidate } from '@/app/lib/actions/candidates/delete';
@@ -20,6 +19,7 @@ import { FaFileUpload } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
+import MyImage from '@/app/ui/my-image/my-image';
 
 interface Props {
   worldcup: Worldcup;
@@ -38,48 +38,62 @@ export default function UpdateWorldcupCandidatesForm({
   console.log(candidates);
 
   const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
-    try {
-      acceptedFiles.forEach(async (acceptedFile) => {
-        const filenameWithoutExtension = excludeFileExtension(
-          acceptedFile.name
+    acceptedFiles.forEach(async (acceptedFile) => {
+      const filenameWithoutExtension = excludeFileExtension(acceptedFile.name);
+      const { signedURL, candidateURL, candidateId } =
+        await fetchCandidateImageUploadURL(
+          worldcup.worldcupId,
+          acceptedFile.path as string,
+          acceptedFile.type
         );
-        const { signedURL, candidateURL, candidateId } =
-          await fetchCandidateImageUploadURL(
-            worldcup.worldcupId,
-            acceptedFile.path as string,
-            acceptedFile.type
-          );
-        const response = await fetch(signedURL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': acceptedFile.type,
-          },
-          body: acceptedFile,
-        });
-        console.log(response);
-        if (response.ok) {
-          await createCandidate(
-            worldcup.worldcupId,
-            candidateId,
-            filenameWithoutExtension,
-            candidateURL
-          );
-          toast.success('업로드에 성공했습니다!');
-        }
+      const response = await fetch(signedURL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': acceptedFile.type,
+        },
+        body: acceptedFile,
       });
-    } catch (error) {
-      toast.error((error as Error).message);
-    }
+      console.log(response);
+      if (response.ok) {
+        await createCandidate(
+          worldcup.worldcupId,
+          candidateId,
+          filenameWithoutExtension,
+          candidateURL
+        );
+        toast.success('업로드에 성공했습니다!');
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onError = (error: Error) => {
+    toast.error(error.message);
+  };
+
+  const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
+    // 최대 파일 개수 제한 오류 출력
+    // 최대 파일 사이즈 제한 오류 출력
+    // 지원하지 않는 파일 사이즈 제한 오류 출력
+    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 넘었습니다.');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    // accept: {
-    //   'image/png': ['.png'],
-    //   'image/jpeg': ['.jpeg'],
-    //   'image/jpg': ['.jpgg'],
-    // },
+    maxSize: 10485760,
+    // maxFiles: 100,
+    accept: {
+      'image/png': [], // 'gif' 아직 미지원
+      'image/jpg': [],
+      'image/jpeg': [],
+      'image/webp': [],
+      'image/svg': [],
+      'image/tiff': [],
+    },
     onDrop,
+    onDropRejected,
+    onError,
   });
 
   const handleUpdateWorldcupCandidates = async (formData: FormData) => {
@@ -89,21 +103,6 @@ export default function UpdateWorldcupCandidatesForm({
       toast.success('저장되었습니다!');
     } catch (error) {
       toast.error((error as Error).message);
-    }
-  };
-
-  const onClickDeleteCandidate = async (
-    candidateId: string,
-    candidateUrl: string
-  ) => {
-    if (confirm('삭제하시겠습니까?')) {
-      try {
-        await deleteCandidateObject(candidateUrl, worldcup.worldcupId);
-        await deleteCandidate(candidateId, worldcup.worldcupId);
-        toast.success('삭제 성공!');
-      } catch (error) {
-        toast.error((error as Error).message);
-      }
     }
   };
 
@@ -156,13 +155,11 @@ export default function UpdateWorldcupCandidatesForm({
               .map((candidate, index) => (
                 <li key={candidate.url}>
                   <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
-                    <div className='relative w-[96px] h-[96px] cursor-pointer'>
-                      <Image
-                        className='object-cover'
-                        src={`${BASE_IMAGE_URL}${candidate.url}`}
+                    <div className='relative w-[64px] h-[64px] cursor-pointer'>
+                      <MyImage
+                        className='object-cover size-full'
+                        src={`${candidate.url}?w=128&h=128`}
                         alt={candidate.name}
-                        fill={true}
-                        sizes='(max-width: 768px) 25vw, (max-width: 1200px) 15vw, 15vw'
                         onClick={() => {
                           if (previewIndex === index) {
                             setPreviewIndex(null);
@@ -205,20 +202,6 @@ export default function UpdateWorldcupCandidatesForm({
                       </div>
                     </div>
                   </div>
-                  {previewIndex === index && (
-                    <div className='flex justify-center items-center m-4'>
-                      <div className='relative w-[350px] h-[250px]'>
-                        <Image
-                          className='object-cover cursor-pointer rounded-md overflow-hidden'
-                          src={`${BASE_IMAGE_URL}${candidate.url}`}
-                          alt={candidate.name}
-                          fill={true}
-                          sizes='(max-width: 768px) 50vw, (max-width: 1200px) 40vw, 40vw'
-                          onClick={() => setPreviewIndex(null)}
-                        />
-                      </div>
-                    </div>
-                  )}
                 </li>
               ))}
           </ul>

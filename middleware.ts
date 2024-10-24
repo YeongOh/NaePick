@@ -3,7 +3,7 @@ import { getSession } from './app/lib/actions/session';
 
 const protectedRoutes = [
   '/worldcups/create',
-  '/edit-user',
+  '/update-user',
   '/update-info',
   '/update-candidates',
   '/worldcups/users',

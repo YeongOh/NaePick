@@ -86,6 +86,7 @@ export async function fetchImageUploadUrl(key: string, fileType: string) {
     };
     const command = new PutObjectCommand(params);
     const urlResult = await getSignedUrl(s3, command, { expiresIn: 6000 });
+
     console.log(urlResult);
     return urlResult;
   } catch (error) {

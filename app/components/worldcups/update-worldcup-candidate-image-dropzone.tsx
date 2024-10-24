@@ -6,7 +6,7 @@ import {
   fetchUpdateCandidateImageUploadURL,
 } from '@/app/lib/images';
 import { useCallback } from 'react';
-import { FileWithPath, useDropzone } from 'react-dropzone';
+import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 interface Props {
@@ -56,15 +56,29 @@ export default function UpdateWorldcupCandidateImageDropzone({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
+    // 최대 파일 개수 제한 오류 출력
+    // 최대 파일 사이즈 제한 오류 출력
+    // 지원하지 않는 파일 사이즈 제한 오류 출력
+    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 넘었습니다.');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    // accept: {
-    //   'image/png': ['.png'],
-    //   'image/jpeg': ['.jpeg'],
-    //   'image/jpg': ['.jpg'],
-    // },
+    maxSize: 10485760,
+    accept: {
+      'image/png': [], // 'gif' 아직 미지원
+      'image/jpg': [],
+      'image/jpeg': [],
+      'image/webp': [],
+      'image/svg': [],
+      'image/tiff': [],
+    },
     onDrop,
-    multiple: false,
+    onDropRejected,
+    noDrag: true,
   });
+
   return (
     <button
       type='button'
@@ -72,7 +86,7 @@ export default function UpdateWorldcupCandidateImageDropzone({
       {...getRootProps()}
     >
       <input {...getInputProps()} />
-      <div>이미지 수정</div>
+      <span>이미지 수정</span>
     </button>
   );
 }

@@ -5,6 +5,7 @@ import { CandidateWithStatistics, Worldcup } from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
 import Image from 'next/image';
 import { BASE_IMAGE_URL } from '@/app/constants';
+import MyImage from '@/app/ui/my-image/my-image';
 
 interface Props {
   candidates: CandidateWithStatistics[];
@@ -58,12 +59,10 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
               <td className='px-4'>{i + 1}</td>
               <td className='flex items-center p-2'>
                 <div className='relative w-[64px] h-[64px] rounded-lg overflow-hidden shrink-0'>
-                  <Image
-                    className='object-cover'
-                    src={`${BASE_IMAGE_URL}${candidate.url}`}
+                  <MyImage
+                    className='object-cover size-full'
+                    src={`${candidate.url}?w=128&h=128`}
                     alt={candidate.name}
-                    fill={true}
-                    sizes='(max-width: 768px) 17vw, (max-width: 1200px) 10vw, 10vw'
                   />
                 </div>
                 <span className='ml-4'>{candidate.name}</span>

@@ -3,7 +3,8 @@
 import { BASE_IMAGE_URL } from '@/app/constants';
 import { submitMatchResult } from '@/app/lib/actions/statistics';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
-import Image from 'next/image';
+import MyImage from '@/app/ui/my-image/my-image';
+import Image from '@/app/ui/my-image/my-image';
 import { useState } from 'react';
 
 interface Props {
@@ -78,19 +79,16 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('left');
           }}
-          className={`w-full cursor-pointer ${
+          className={`w-1/2 cursor-pointer flex justify-end ${
             picked === 'left' && 'animate-expandLeft'
           } ${picked === 'right' && 'animate-shrinkRight'}`}
         >
-          <div className='relative w-full h-full flex'>
+          <div className='relative'>
             {picked !== 'right' && (
-              <Image
-                className='object-contain'
-                src={`${BASE_IMAGE_URL}${leftCandidate.url}`}
+              <MyImage
+                className='object-contain w-full h-full'
+                src={`${leftCandidate.url}?w=1920&h=1760`}
                 alt={leftCandidate.name}
-                priority={true}
-                fill={true}
-                sizes='50vw'
               />
             )}
             {!isFinished && picked !== 'right' && (
@@ -112,19 +110,16 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('right');
           }}
-          className={`w-full flex items-center justify-start cursor-pointer ${
+          className={`w-1/2 cursor-pointer flex justify-start ${
             picked === 'left' && 'animate-shrinkLeft'
           } ${picked === 'right' && 'animate-expandRight'}`}
         >
-          <div className='relative w-full h-full'>
+          <div className='relative'>
             {picked !== 'left' && (
-              <Image
-                className='object-contain'
-                src={`${BASE_IMAGE_URL}${rightCandidate.url}`}
+              <MyImage
+                className='object-contain w-full h-full'
+                src={`${rightCandidate.url}?w=1920&h=1760`}
                 alt={rightCandidate.name}
-                priority={true}
-                fill={true}
-                sizes='50vw'
               />
             )}
             {!isFinished && picked !== 'left' && (
