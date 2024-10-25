@@ -2,6 +2,8 @@
 
 import { pool } from '@/app/lib/db';
 import { revalidatePath } from 'next/cache';
+import { validateWorldcupOwnership } from '../auth/worldcup-ownership';
+import { getSession } from '../session';
 
 export async function createCandidate(
   worldcupId: string,
@@ -10,7 +12,11 @@ export async function createCandidate(
   candidateUrl: string
 ) {
   try {
-    // 월드컵 오너십 확인은 반복문 전에 이미 완료
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+    await validateWorldcupOwnership(worldcupId, session.userId);
     const [result, fields] = await pool.query(
       `
         INSERT INTO candidate

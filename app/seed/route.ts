@@ -72,12 +72,12 @@ async function seedThumbnail() {
       `CREATE TABLE IF NOT EXISTS thumbnail (
         thumbnail_id INT NOT NULL AUTO_INCREMENT,
         worldcup_id VARCHAR(255) NOT NULL,
-        left_candidate_id VARCHAR(255) NOT NULL,
-        right_candidate_id VARCHAR(255) NOT NULL,
+        left_candidate_id VARCHAR(255) NULL,
+        right_candidate_id VARCHAR(255) NULL,
         PRIMARY KEY (thumbnail_id),
         FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE,
-        FOREIGN KEY (left_candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE,
-        FOREIGN KEY (right_candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
+        FOREIGN KEY (left_candidate_id) REFERENCES candidate(candidate_id) ON DELETE SET NULL,
+        FOREIGN KEY (right_candidate_id) REFERENCES candidate(candidate_id) ON DELETE SET NULL
       );`
     );
 

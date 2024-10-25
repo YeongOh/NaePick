@@ -19,7 +19,7 @@ export default async function Page({ params }: Props) {
     fetchAllCategories(),
   ]);
 
-  if (!worldcupResult || !worldcupResult[0]) notFound();
+  if (!worldcupResult || !worldcupResult[0] || !categories) notFound();
   if (worldcupResult[0].userId !== session.userId) redirect('/forbidden');
 
   return (

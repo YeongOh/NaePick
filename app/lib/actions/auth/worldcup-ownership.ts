@@ -3,7 +3,6 @@
 import { FieldPacket } from 'mysql2';
 import { pool } from '../../db';
 import { Worldcup } from '../../definitions';
-import { getSession } from '../session';
 
 export async function validateWorldcupOwnership(
   worldcupId: string,

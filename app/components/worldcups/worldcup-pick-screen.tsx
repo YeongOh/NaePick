@@ -1,10 +1,8 @@
 'use client';
 
-import { BASE_IMAGE_URL } from '@/app/constants';
 import { submitMatchResult } from '@/app/lib/actions/statistics';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
-import Image from '@/app/ui/my-image/my-image';
 import { useState } from 'react';
 
 interface Props {

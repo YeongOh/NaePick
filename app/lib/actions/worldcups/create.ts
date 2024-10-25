@@ -10,6 +10,7 @@ import {
 } from '../../../constants';
 import { getSession } from '../session';
 import { pool } from '../../db';
+import { createThumbnail } from '../thumbnails/create';
 
 const CreatePostFormSchema = z.object({
   title: z
@@ -72,12 +73,13 @@ export async function createWorldcup(
   const worldcupId = uuidv4();
 
   try {
-    pool.query(
+    await pool.query(
       `INSERT INTO worldcup 
                 (worldcup_id, title, description, publicity, user_id, category_id)          
                 VALUES (?,?,?,?,?,?)`,
       [worldcupId, title, description, publicity, session.userId, categoryId]
     );
+    await createThumbnail(worldcupId);
   } catch (error) {
     console.log(error);
     return {

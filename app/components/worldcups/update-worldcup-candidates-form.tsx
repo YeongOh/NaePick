@@ -1,9 +1,9 @@
 'use client';
 
-import { BASE_IMAGE_URL, CANDIDATE_NAME_MAX_LENGTH } from '@/app/constants';
+import { CANDIDATE_NAME_MAX_LENGTH } from '@/app/constants';
 import { createCandidate } from '@/app/lib/actions/candidates/create';
 import { updateCandidateNames } from '@/app/lib/actions/candidates/update';
-import { Candidate, Worldcup } from '@/app/lib/definitions';
+import { Candidate, WorldcupCard } from '@/app/lib/definitions';
 import {
   deleteCandidateObject,
   fetchCandidateImageUploadURL,
@@ -20,9 +20,13 @@ import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import MyImage from '@/app/ui/my-image/my-image';
+import { updateThumbnail } from '@/app/lib/actions/thumbnails/update';
+import ThumbnailImage from '../thumbnail/ThumbnailImage';
+import { MdInfo } from 'react-icons/md';
+import Preview from '../preview/preview';
 
 interface Props {
-  worldcup: Worldcup;
+  worldcup: WorldcupCard;
   candidates: Candidate[];
 }
 
@@ -35,38 +39,52 @@ export default function UpdateWorldcupCandidatesForm({
     useState<Candidate | null>(null);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
     useState<boolean>(false);
-  console.log(candidates);
+  const [showPreview, setShowPreview] = useState<boolean>(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
+    null
+  );
 
-  const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
-    acceptedFiles.forEach(async (acceptedFile) => {
-      const filenameWithoutExtension = excludeFileExtension(acceptedFile.name);
-      const { signedURL, candidateURL, candidateId } =
-        await fetchCandidateImageUploadURL(
-          worldcup.worldcupId,
-          acceptedFile.path as string,
-          acceptedFile.type
+  const onDrop = useCallback(
+    async (acceptedFiles: FileWithPath[]) => {
+      acceptedFiles.forEach(async (acceptedFile) => {
+        const filenameWithoutExtension = excludeFileExtension(
+          acceptedFile.name
         );
-      const response = await fetch(signedURL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': acceptedFile.type,
-        },
-        body: acceptedFile,
+        const { signedURL, candidateURL, candidateId } =
+          await fetchCandidateImageUploadURL(
+            worldcup.worldcupId,
+            acceptedFile.path as string,
+            acceptedFile.type
+          );
+        const response = await fetch(signedURL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': acceptedFile.type,
+          },
+          body: acceptedFile,
+        });
+        console.log(response);
+        if (response.ok) {
+          await createCandidate(
+            worldcup.worldcupId,
+            candidateId,
+            filenameWithoutExtension,
+            candidateURL
+          );
+          toast.success('업로드에 성공했습니다!');
+        }
+        console.log(worldcup);
+        if (!worldcup.leftCandidateName) {
+          console.log('here1');
+          await updateThumbnail(worldcup.worldcupId, 'left', candidateId);
+        } else if (!worldcup.rightCandidateName) {
+          await updateThumbnail(worldcup.worldcupId, 'right', candidateId);
+        }
       });
-      console.log(response);
-      if (response.ok) {
-        await createCandidate(
-          worldcup.worldcupId,
-          candidateId,
-          filenameWithoutExtension,
-          candidateURL
-        );
-        toast.success('업로드에 성공했습니다!');
-      }
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [worldcup]
+  );
 
   const onError = (error: Error) => {
     toast.error(error.message);
@@ -132,6 +150,25 @@ export default function UpdateWorldcupCandidatesForm({
       <form action={handleUpdateWorldcupCandidates}>
         <div className='rounded-md bg-gray-50 p-6'>
           <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+            썸네일 미리보기
+          </h2>
+          <div className='flex flex-col items-center justify-center'>
+            <div className='p-4 w-[300px]'>
+              <div className='h-[160px]'>
+                <ThumbnailImage
+                  leftCandidateName={worldcup.leftCandidateName}
+                  leftCandidateUrl={worldcup.leftCandidateUrl}
+                  rightCandidateName={worldcup.rightCandidateName}
+                  rightCandidateUrl={worldcup.rightCandidateUrl}
+                />
+              </div>{' '}
+            </div>
+            <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
+              <MdInfo size={'1.5em'} className='text-primary-500' />
+              썸네일은 우승을 많이 한 후보들로 업데이트 됩니다.
+            </span>
+          </div>
+          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
             후보 이미지 추가
           </h2>
           <div
@@ -142,7 +179,7 @@ export default function UpdateWorldcupCandidatesForm({
             <div className='flex items-center justify-center gap-2'>
               <FaFileUpload size={'1.5em'} className='text-primary-500' />
               <p className='text-slate-700'>
-                파일을 드롭하거나 클릭해서 업로드
+                이미지 파일을 드랍하거나 클릭해서 업로드
               </p>
             </div>
           </div>
@@ -161,11 +198,9 @@ export default function UpdateWorldcupCandidatesForm({
                         src={`${candidate.url}?w=128&h=128`}
                         alt={candidate.name}
                         onClick={() => {
-                          if (previewIndex === index) {
-                            setPreviewIndex(null);
-                          } else {
-                            setPreviewIndex(index);
-                          }
+                          setSelectedCandidate(candidate);
+                          setShowPreview(true);
+                          console.log(candidate);
                         }}
                       />
                     </div>
@@ -228,6 +263,17 @@ export default function UpdateWorldcupCandidatesForm({
       >
         후보를 삭제하시겠습니까? <br /> 관련 통계도 전부 삭제됩니다.
       </DeleteConfirmModal>
+      {selectedCandidate && (
+        <Preview
+          open={showPreview}
+          onClose={() => {
+            setShowPreview(false);
+            setSelectedCandidate(null);
+          }}
+          src={`${selectedCandidate.url}?w=1920&h=1760`}
+          alt={`${selectedCandidate.name}`}
+        />
+      )}
     </>
   );
 }

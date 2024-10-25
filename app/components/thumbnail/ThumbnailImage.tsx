@@ -1,7 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { BASE_IMAGE_URL } from '@/app/constants';
 import MyImage from '@/app/ui/my-image/my-image';
-import Image from 'next/image';
 
 interface Props {
   leftCandidateUrl: string;

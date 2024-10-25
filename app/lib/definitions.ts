@@ -7,7 +7,6 @@ export interface User extends QueryResult {
   nickname: string;
   role: 'user' | 'admin';
   email: string;
-  emailConfirmedAt: string;
   password: string;
   createdAt: string;
   updatedAt: string;
@@ -46,7 +45,7 @@ export interface CandidateWithStatistics extends Candidate {
 }
 
 export interface Category extends QueryResult {
-  id: number;
+  categoryId: number;
   name: string;
 }
 
