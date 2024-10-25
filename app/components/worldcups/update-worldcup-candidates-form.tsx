@@ -34,15 +34,13 @@ export default function UpdateWorldcupCandidatesForm({
   worldcup,
   candidates,
 }: Props) {
-  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [selectedCandidateToDelete, setSelectedCandidateToDelete] =
     useState<Candidate | null>(null);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
     useState<boolean>(false);
   const [showPreview, setShowPreview] = useState<boolean>(false);
-  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(
-    null
-  );
+  const [selectedCandidateToPreview, setSelectedCandidateToPreview] =
+    useState<Candidate | null>(null);
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
@@ -153,8 +151,8 @@ export default function UpdateWorldcupCandidatesForm({
             썸네일 미리보기
           </h2>
           <div className='flex flex-col items-center justify-center'>
-            <div className='p-4 w-[300px]'>
-              <div className='h-[160px]'>
+            <div className='p-4 w-[330px]'>
+              <div className='h-[170px]'>
                 <ThumbnailImage
                   leftCandidateName={worldcup.leftCandidateName}
                   leftCandidateUrl={worldcup.leftCandidateUrl}
@@ -198,7 +196,7 @@ export default function UpdateWorldcupCandidatesForm({
                         src={`${candidate.url}?w=128&h=128`}
                         alt={candidate.name}
                         onClick={() => {
-                          setSelectedCandidate(candidate);
+                          setSelectedCandidateToPreview(candidate);
                           setShowPreview(true);
                           console.log(candidate);
                         }}
@@ -263,15 +261,15 @@ export default function UpdateWorldcupCandidatesForm({
       >
         후보를 삭제하시겠습니까? <br /> 관련 통계도 전부 삭제됩니다.
       </DeleteConfirmModal>
-      {selectedCandidate && (
+      {selectedCandidateToPreview && (
         <Preview
           open={showPreview}
           onClose={() => {
             setShowPreview(false);
-            setSelectedCandidate(null);
+            setSelectedCandidateToPreview(null);
           }}
-          src={`${selectedCandidate.url}?w=1920&h=1760`}
-          alt={`${selectedCandidate.name}`}
+          src={`${selectedCandidateToPreview.url}?w=1920&h=1760`}
+          alt={`${selectedCandidateToPreview.name}`}
         />
       )}
     </>

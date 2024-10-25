@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CandidateWithStatistics, Worldcup } from '@/app/lib/definitions';
+import {
+  Candidate,
+  CandidateWithStatistics,
+  Worldcup,
+} from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
-import Image from 'next/image';
-import { BASE_IMAGE_URL } from '@/app/constants';
 import MyImage from '@/app/ui/my-image/my-image';
+import Preview from '../preview/preview';
 
 interface Props {
   candidates: CandidateWithStatistics[];
@@ -15,6 +18,9 @@ interface Props {
 export default function StatisticsMain({ candidates, worldcup }: Props) {
   const [sortWinrateIncreasing, setSortWinrateIncreasing] =
     useState<boolean>(true);
+  const [showPreview, setShowPreview] = useState<boolean>(false);
+  const [selectedCandidateToPreview, setSelectedCandidateToPreview] =
+    useState<Candidate | null>(null);
 
   const candidatesWithWinrate = candidates.map((candidate) => ({
     ...candidate,
@@ -60,9 +66,13 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
               <td className='flex items-center p-2'>
                 <div className='relative w-[64px] h-[64px] rounded-lg overflow-hidden shrink-0'>
                   <MyImage
-                    className='object-cover size-full'
+                    className='object-cover size-full cursor-pointer'
                     src={`${candidate.url}?w=128&h=128`}
                     alt={candidate.name}
+                    onClick={() => {
+                      setSelectedCandidateToPreview(candidate);
+                      setShowPreview(true);
+                    }}
                   />
                 </div>
                 <span className='ml-4'>{candidate.name}</span>
@@ -77,6 +87,17 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
           ))}
         </tbody>
       </table>
+      {selectedCandidateToPreview && (
+        <Preview
+          open={showPreview}
+          onClose={() => {
+            setShowPreview(false);
+            setSelectedCandidateToPreview(null);
+          }}
+          src={`${selectedCandidateToPreview.url}?w=1920&h=1760`}
+          alt={`${selectedCandidateToPreview.name}`}
+        />
+      )}
     </section>
   );
 }

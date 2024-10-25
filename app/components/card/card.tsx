@@ -15,7 +15,7 @@ export default function Card({ worldcup, children }: Props) {
   dayjs.locale('ko');
 
   return (
-    <li className='p-4 w-[300px] mb-4'>
+    <li className='p-4 w-[330px] mb-4'>
       <div className='h-[230px]'>
         <ThumbnailImage
           leftCandidateUrl={worldcup.leftCandidateUrl}

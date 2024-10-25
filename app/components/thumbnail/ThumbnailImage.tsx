@@ -17,14 +17,14 @@ export default function ThumbnailImage({
   return (
     <>
       <div
-        className={`inline-flex bg-black w-full h-[150px] overflow-hidden rounded-xl`}
+        className={`inline-flex bg-black w-full h-[175px] overflow-hidden rounded-xl`}
       >
         {leftCandidateUrl && (
           <>
             <div className='relative w-1/2'>
               <MyImage
                 className='object-cover size-full'
-                src={`${leftCandidateUrl}?w=300&h=300`}
+                src={`${leftCandidateUrl}?w=300&h=350`}
                 alt={leftCandidateName}
               />
               <div className='bg-black/30 absolute h-auto bottom-0 w-full'>

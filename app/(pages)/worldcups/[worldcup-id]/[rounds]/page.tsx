@@ -1,5 +1,8 @@
 import { getSession } from '@/app/lib/actions/session';
-import { fetchWorldcupByWorldcupId } from '@/app/lib/data/worldcups';
+import {
+  fetchWorldcupByWorldcupId,
+  fetchWorldcupCardByWorldcupId,
+} from '@/app/lib/data/worldcups';
 import CommentSection from '@/app/components/comment/comment-section';
 import Fold from '@/app/components/fold/fold';
 import WorldcupPickScreen from '@/app/components/worldcups/worldcup-pick-screen';

@@ -1,6 +1,9 @@
 'use client';
 
-import { submitMatchResult } from '@/app/lib/actions/statistics';
+import {
+  submitMatchResult,
+  updateThumbnailsByMatchResult,
+} from '@/app/lib/actions/statistics/create-match-result';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
 import { useState } from 'react';
@@ -43,6 +46,7 @@ export default function WorldcupPickScreen({
         { winnerCandidateId, loserCandidateId },
       ];
       submitMatchResult(matchResultToSubmit, worldcup.worldcupId);
+      updateThumbnailsByMatchResult(worldcup.worldcupId);
       return;
     }
 
