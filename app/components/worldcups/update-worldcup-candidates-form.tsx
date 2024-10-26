@@ -24,7 +24,11 @@ import { updateThumbnail } from '@/app/lib/actions/thumbnails/update';
 import ThumbnailImage from '../thumbnail/ThumbnailImage';
 import { MdInfo } from 'react-icons/md';
 import Preview from '../preview/preview';
-import { testImgurAPI } from '@/app/lib/actions/auth/imgur';
+import {
+  downloadImgurUploadS3,
+  testImgurAPI,
+} from '@/app/lib/actions/videos/imgur';
+import { fetchYoutubeTitle } from '@/app/lib/actions/videos/youtube';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -42,6 +46,8 @@ export default function UpdateWorldcupCandidatesForm({
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const [selectedCandidateToPreview, setSelectedCandidateToPreview] =
     useState<Candidate | null>(null);
+  const [videoURL, setVideoURL] = useState<string>('');
+  console.log(candidates);
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
@@ -49,12 +55,11 @@ export default function UpdateWorldcupCandidatesForm({
         const filenameWithoutExtension = excludeFileExtension(
           acceptedFile.name
         );
-        const { signedURL, candidateURL, candidateId } =
-          await fetchCandidateImageUploadURL(
-            worldcup.worldcupId,
-            acceptedFile.path as string,
-            acceptedFile.type
-          );
+        const { signedURL, candidateURL } = await fetchCandidateImageUploadURL(
+          worldcup.worldcupId,
+          acceptedFile.path as string,
+          acceptedFile.type
+        );
         const response = await fetch(signedURL, {
           method: 'PUT',
           headers: {
@@ -62,27 +67,29 @@ export default function UpdateWorldcupCandidatesForm({
           },
           body: acceptedFile,
         });
-        if (response.ok) {
-          await createCandidate(
-            worldcup.worldcupId,
-            candidateId,
-            filenameWithoutExtension,
-            candidateURL
-          );
-          toast.success('업로드에 성공했습니다!');
+        if (!response.ok) {
+          throw new Error('업로드 실패');
         }
-        if (!worldcup.leftCandidateName) {
+        const candidateId = await createCandidate(
+          worldcup.worldcupId,
+          filenameWithoutExtension,
+          candidateURL,
+          'cdn_img'
+        );
+        toast.success('업로드에 성공했습니다!');
+
+        if (!worldcup.leftCandidateName && candidateId) {
           await updateThumbnail(worldcup.worldcupId, 'left', candidateId);
-        } else if (!worldcup.rightCandidateName) {
+        } else if (!worldcup.rightCandidateName && candidateId) {
           await updateThumbnail(worldcup.worldcupId, 'right', candidateId);
         }
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     [worldcup]
   );
 
   const onError = (error: Error) => {
+    // 에러 처리 세분화
     toast.error(error.message);
   };
 
@@ -95,7 +102,8 @@ export default function UpdateWorldcupCandidatesForm({
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    maxSize: 10485760,
+    // 2mb
+    maxSize: 2097152,
     // maxFiles: 100,
     accept: {
       'image/png': [], // 'gif' 아직 미지원
@@ -141,13 +149,32 @@ export default function UpdateWorldcupCandidatesForm({
     }
   };
 
-  const handleImgurUpload = async () => {
+  const handleVideoUpload = async () => {
     try {
-      //await downloadAndUploadMp4ToS3('https://i.imgur.com/a/Qty3ykP', 'test3');
-      await testImgurAPI();
-      console.log('here');
-      // await getImgurDirectLink('https://imgur.com/a/tJCgmrD');
-      toast.success('업로드완료');
+      if (videoURL.startsWith('https://imgur.com/')) {
+        const candidateURL = await downloadImgurUploadS3(
+          videoURL,
+          worldcup.worldcupId
+        );
+        await createCandidate(
+          worldcup.worldcupId,
+          videoURL,
+          candidateURL,
+          'cdn_video'
+        );
+      } else if (
+        videoURL.startsWith('https://youtube.com/') ||
+        videoURL.startsWith('https://youtu.be/')
+      ) {
+        const youtubeVideoTitle = await fetchYoutubeTitle(videoURL);
+        console.log(youtubeVideoTitle);
+        // await createCandidate(
+        //   worldcup.worldcupId,
+        //   videoURL,
+        //   videoURL,
+        //   'youtube'
+        // );
+      }
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -156,9 +183,6 @@ export default function UpdateWorldcupCandidatesForm({
   return (
     <>
       <form action={handleUpdateWorldcupCandidates}>
-        <button type='button' onClick={handleImgurUpload}>
-          imgur upload
-        </button>
         <div className='rounded-md bg-gray-50 p-6'>
           <h2 className='font-semibold text-slate-700 mb-2 text-base'>
             썸네일 미리보기
@@ -195,6 +219,29 @@ export default function UpdateWorldcupCandidatesForm({
             </div>
           </div>
           <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+            후보 동영상 추가
+          </h2>
+          <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center mb-4 relative'>
+            <input
+              className='block w-[92%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
+              type='url'
+              placeholder='주소 입력'
+              value={videoURL}
+              onChange={(e) => setVideoURL(e.target.value)}
+            />
+            <button
+              type='button'
+              onClick={handleVideoUpload}
+              className='absolute px-3 py-1 bg-primary-500 text-white right-2 rounded'
+            >
+              추가
+            </button>
+          </div>
+          <div className='text-base mb-6 text-gray-700'>
+            <h2 className='font-semibold'>지원 형식</h2>
+            <p> - imgur: https://imgur.com/tJCgmrD</p>
+          </div>
+          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
             후보 {candidates.length}명
           </h2>
           <ul>
@@ -204,16 +251,29 @@ export default function UpdateWorldcupCandidatesForm({
                 <li key={candidate.url}>
                   <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
                     <div className='relative w-[64px] h-[64px] cursor-pointer'>
-                      <MyImage
-                        className='object-cover size-full'
-                        src={`${candidate.url}?w=128&h=128`}
-                        alt={candidate.name}
-                        onClick={() => {
-                          setSelectedCandidateToPreview(candidate);
-                          setShowPreview(true);
-                          console.log(candidate);
-                        }}
-                      />
+                      {candidate.mediaType === 'cdn_video' ? (
+                        <video
+                          className='w-full h-full object-cover'
+                          autoPlay
+                          controls
+                        >
+                          <source
+                            src={`https://cdn.naepick.co.kr/${candidate.url}`}
+                            type='video/mp4'
+                          />
+                        </video>
+                      ) : (
+                        <MyImage
+                          className='object-cover size-full'
+                          src={`${candidate.url}?w=128&h=128`}
+                          alt={candidate.name}
+                          onClick={() => {
+                            setSelectedCandidateToPreview(candidate);
+                            setShowPreview(true);
+                            console.log(candidate);
+                          }}
+                        />
+                      )}
                     </div>
                     <div className='w-full flex'>
                       <input

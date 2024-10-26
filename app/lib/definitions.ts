@@ -5,7 +5,6 @@ export interface User extends QueryResult {
   userId: string;
   username: string;
   nickname: string;
-  role: 'user' | 'admin';
   email: string;
   password: string;
   createdAt: string;
@@ -16,7 +15,7 @@ export interface Worldcup extends QueryResult {
   worldcupId: string;
   title: string;
   description: string;
-  publicity: 'public' | 'unlisted' | 'private';
+  publicity: Publicity;
   userId: string;
   categoryId: number;
   createdAt: string;
@@ -35,6 +34,7 @@ export interface Candidate extends QueryResult {
   worldcupId: string;
   name: string;
   url: string;
+  mediaType: MediaType;
   createdAt: string;
 }
 
@@ -71,6 +71,8 @@ export interface MatchResult {
   winnerCandidateId: string;
   loserCandidateId: string;
 }
+
+export type MediaType = 'cdn_img' | 'cdn_video' | 'youtube' | 'chzzk';
 
 export type Publicity = 'public' | 'private' | 'unlisted';
 

@@ -12,13 +12,17 @@ export async function fetchRandomCandidatesByWorldcupId(
     console.log(worldcupId, round);
     // rand() 이용한 정렬은 인덱스를 이용하지 않기에 데이터가 많을 경우 성능 저하
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
-      `SELECT candidate_id AS candidateId,
-                created_at AS createdAt,
-                name, url
-          FROM candidate 
-          WHERE worldcup_id = ? 
-          ORDER BY RAND()
-          LIMIT ?;`,
+      `SELECT c.candidate_id AS candidateId,
+              c.created_at AS createdAt,
+              c.name AS name,
+              cm.url AS url,
+              t.type As mediaType
+        FROM candidate c
+        JOIN candidate_media cm ON c.candidate_id = cm.candidate_id
+        JOIN media_type t ON t.media_type_id = cm.media_type_id
+        WHERE c.worldcup_id = ?
+        ORDER BY RAND()
+        LIMIT ?;`,
       [worldcupId, roundForSQL === 0 ? 32 : roundForSQL]
     );
     console.log(result);
@@ -32,11 +36,15 @@ export async function fetchRandomCandidatesByWorldcupId(
 export async function fetchCandidatesToUpdateByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
-      `SELECT candidate_id AS candidateId,
-              created_at AS createdAt,
-              name, url
-        FROM candidate 
-        WHERE worldcup_id = ?;`,
+      `SELECT c.candidate_id AS candidateId,
+              c.created_at AS createdAt,
+              c.name AS name,
+              cm.url AS url,
+              t.type As mediaType
+        FROM candidate c
+        JOIN candidate_media cm ON c.candidate_id = cm.candidate_id
+        JOIN media_type t ON t.media_type_id = cm.media_type_id
+        WHERE c.worldcup_id = ?;`,
       [worldcupId]
     );
     console.log(result);
@@ -53,7 +61,9 @@ export async function fetchCandidatesStatisticsByWorldcupId(
   try {
     const [result, meta]: [CandidateWithStatistics[], FieldPacket[]] =
       await pool.query(
-        `SELECT c.candidate_id AS candidateId, c.name, c.url,
+        `SELECT c.candidate_id AS candidateId, 
+          c.name as name,
+          cm.url AS url,
           (SELECT COUNT(*)
            FROM match_result mr
            WHERE mr.winner_candidate_id = c.candidate_id) AS numberOfWins,
@@ -64,6 +74,7 @@ export async function fetchCandidatesStatisticsByWorldcupId(
            FROM champion ch
            WHERE ch.candidate_id = c.candidate_id) AS numberOfTrophies
         FROM candidate c
+        JOIN candidate_media cm ON cm.candidate_id = c.candidate_id
         WHERE c.worldcup_id = ?
         ;`,
         [worldcupId]

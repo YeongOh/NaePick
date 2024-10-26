@@ -86,7 +86,19 @@ export default function WorldcupPickScreen({
           } ${picked === 'right' && 'animate-shrinkRight'}`}
         >
           <div className='relative'>
-            {picked !== 'right' && (
+            {picked !== 'right' && leftCandidate.url.endsWith('mp4') ? (
+              <video
+                className='w-full h-full object-contain'
+                autoPlay
+                playsInline
+                loop
+              >
+                <source
+                  src={`https://cdn.naepick.co.kr/${leftCandidate.url}`}
+                  type='video/mp4'
+                />
+              </video>
+            ) : (
               <MyImage
                 className='object-contain w-full h-full'
                 src={`${leftCandidate.url}?w=1920&h=1760`}
@@ -117,7 +129,20 @@ export default function WorldcupPickScreen({
           } ${picked === 'right' && 'animate-expandRight'}`}
         >
           <div className='relative'>
-            {picked !== 'left' && (
+            {picked !== 'left' && rightCandidate.url.endsWith('mp4') ? (
+              <video
+                className='w-full h-full object-contain'
+                autoPlay
+                playsInline
+                controls
+                loop
+              >
+                <source
+                  src={`https://cdn.naepick.co.kr/${rightCandidate.url}`}
+                  type='video/mp4'
+                />
+              </video>
+            ) : (
               <MyImage
                 className='object-contain w-full h-full'
                 src={`${rightCandidate.url}?w=1920&h=1760`}

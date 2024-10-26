@@ -1,7 +1,9 @@
 'use server';
 
+import { OBJECT_ID_LENGTH } from '@/app/constants';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { nanoid } from 'nanoid';
 import { PassThrough, Readable } from 'stream';
 
 const Bucket = process.env.AWS_S3_BUCKET;
@@ -14,9 +16,13 @@ const s3 = new S3Client({
   credentials,
 });
 
-export async function downloadAndUploadMp4ToS3(imgurUrl: string, key: string) {
-  // Fetching the MP4 file from Imgur
-  const response = await fetch(imgurUrl);
+export async function downloadImgurUploadS3(
+  imgurUrl: string,
+  worldcupId: string
+) {
+  const pathname = new URL(imgurUrl).pathname;
+  const originalVideoURL = `https://i.imgur.com${pathname}.mp4`;
+  const response = await fetch(originalVideoURL);
 
   if (!response.ok) {
     throw new Error(
@@ -31,8 +37,18 @@ export async function downloadAndUploadMp4ToS3(imgurUrl: string, key: string) {
   const passThrough = new PassThrough();
   nodeStream.pipe(passThrough);
   const contentType = response.headers.get('Content-Type') as string;
-  console.log(contentType);
+  console.log(originalVideoURL);
+  console.dir(response.headers, { depth: null });
+  const contentLength = response.headers.get('content-length');
+  console.log(contentLength);
   // mp4 upload => content type = video/mp4
+  if (contentType !== 'video/mp4') {
+    throw new Error(
+      'imgur은 mp4 동영상 파일만 지원합니다. 주소가 올바른지 확인해보세요.'
+    );
+  }
+  const objectId = nanoid(OBJECT_ID_LENGTH);
+  const key = `worldcups/${worldcupId}/${objectId}.mp4`;
 
   const uploadParams = {
     Bucket,
@@ -40,7 +56,7 @@ export async function downloadAndUploadMp4ToS3(imgurUrl: string, key: string) {
     Body: passThrough,
     ContentType: contentType,
   };
-  // content length를 모르게 lib-storage를 상요하여 Upload
+  // content length를 몰라서 lib-storage를 사용해야함
   const parallelUploads3 = new Upload({
     client: s3,
     params: uploadParams,
@@ -62,15 +78,13 @@ export async function downloadAndUploadMp4ToS3(imgurUrl: string, key: string) {
     // // the leftover parts.
     leavePartsOnError: false,
   });
+
   parallelUploads3.on('httpUploadProgress', (progress) => {
     console.log(progress);
   });
 
   await parallelUploads3.done();
-  //   const command = new PutObjectCommand(uploadParams);
-
-  //   await s3.send(command);
-  console.log('MP4 streamed and uploaded to S3');
+  return key;
 }
 
 function convertToNodeStream(webStream: ReadableStream<Uint8Array>) {
@@ -100,7 +114,12 @@ export async function testImgurAPI() {
     // redirect: 'follow',
   };
 
-  fetch('https://api.imgur.com/3/album/2HukUxt', requestOptions)
+  //   fetch('https://api.imgur.com/3/album/2HukUxt', requestOptions)
+  //     .then((response) => response.json())
+  //     .then((result) => console.dir(result, { depth: null }))
+  //     .catch((error) => console.log('error', error));
+
+  fetch('https://api.imgur.com/3/image/i6uyHNs', requestOptions)
     .then((response) => response.json())
     .then((result) => console.dir(result, { depth: null }))
     .catch((error) => console.log('error', error));

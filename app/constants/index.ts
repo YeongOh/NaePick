@@ -2,6 +2,13 @@
 // TODO: env에 넣기 => 클라이언트에서 현재 안되는 문제
 export const DOMAIN = 'https://naepick.co.kr';
 
+// nanoid: 회원 수 = 월드컵 수 < 후보 수 (num needed for 1% of 1 collision)
+export const WORLDCUP_ID_LENGTH = 6; // => 37K
+export const USER_ID_LENGTH = 7; // => 297K
+export const CANDIDATE_ID_LENGTH = 8; // => 2M
+export const COMMENT_ID_LENGTH = 8;
+export const OBJECT_ID_LENGTH = 6;
+
 // Create Post Form Validation
 export const WORLDCUP_TITLE_MIN_LENGTH = 2;
 export const WORLDCUP_TITLE_MAX_LENGTH = 60;

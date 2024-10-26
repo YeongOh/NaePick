@@ -11,16 +11,18 @@ export async function fetchPublicWorldcupCards() {
               w.publicity, 
               w.created_at AS createdAt,
               c1.name AS leftCandidateName, c2.name AS rightCandidateName, 
-              c1.url AS leftCandidateUrl, c2.url AS rightCandidateUrl,
+              cm1.url AS leftCandidateUrl, cm2.url AS rightCandidateUrl,
               u.nickname as nickname, 
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
               WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
       FROM worldcup w
-      JOIN user u ON w.user_id = u.user_id
-      JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
-      JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
-      JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
+      LEFT JOIN user u ON w.user_id = u.user_id
+      LEFT JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
+      LEFT JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
+      LEFT JOIN candidate_media cm1 ON cm1.candidate_id = c1.candidate_id
+      LEFT JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
+      LEFT JOIN candidate_media cm2 ON cm2.candidate_id = c2.candidate_id
       WHERE w.publicity = 'public'
       ORDER BY w.created_at DESC;`
     );
@@ -42,7 +44,7 @@ export async function fetchWorldcupCardByWorldcupId(worldcupId: string) {
               w.created_at AS createdAt,
               u.user_id AS userId,
               c1.name AS leftCandidateName, c2.name AS rightCandidateName, 
-              c1.url AS leftCandidateUrl, c2.url AS rightCandidateUrl,
+              cm1.url AS leftCandidateUrl, cm2.url AS rightCandidateUrl,
               u.nickname as nickname, 
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
@@ -51,7 +53,9 @@ export async function fetchWorldcupCardByWorldcupId(worldcupId: string) {
       LEFT JOIN user u ON w.user_id = u.user_id
       LEFT JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
       LEFT JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
+      LEFT JOIN candidate_media cm1 ON cm1.candidate_id = c1.candidate_id
       LEFT JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
+      LEFT JOIN candidate_media cm2 ON cm2.candidate_id = c2.candidate_id
       WHERE w.worldcup_id = ?;`,
       [worldcupId]
     );
@@ -109,16 +113,18 @@ export async function fetchWorldcupsByUserId(userId: string) {
               u.nickname as nickname, 
               c1.name AS leftCandidateName,
               c2.name AS rightCandidateName, 
-              c1.url AS leftCandidateUrl,
-              c2.url AS rightCandidateUrl,
+              cm1.url AS leftCandidateUrl,
+              cm2.url AS rightCandidateUrl,
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
               WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
       FROM worldcup w
       LEFT JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
       LEFT JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
+      LEFT JOIN candidate_media cm1 ON cm1.candidate_id = c1.candidate_id
       LEFT JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
-      JOIN user u ON w.user_id = u.user_id
+      LEFT JOIN candidate_media cm2 ON cm2.candidate_id = c2.candidate_id
+      LEFT JOIN user u ON w.user_id = u.user_id
       WHERE w.user_id = ?;`,
       [userId]
     );

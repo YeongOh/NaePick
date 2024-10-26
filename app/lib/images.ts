@@ -11,7 +11,7 @@ import path from 'path';
 import { getSession } from './actions/session';
 import { validateWorldcupOwnership } from './actions/auth/worldcup-ownership';
 import { nanoid } from 'nanoid';
-import { CANDIDATE_ID_LENGTH } from '../constants';
+import { CANDIDATE_ID_LENGTH, OBJECT_ID_LENGTH } from '../constants';
 
 const Bucket = process.env.AWS_S3_BUCKET;
 const credentials = {
@@ -33,39 +33,10 @@ export async function fetchCandidateImageUploadURL(
     if (!session?.userId) {
       throw new Error('로그인을 해주세요.');
     }
-
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    const candidateId = nanoid(CANDIDATE_ID_LENGTH);
-    const fileExtname = path.extname(imagePath);
-    const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
-
-    return {
-      signedURL: await fetchImageUploadUrl(key, fileType),
-      candidateURL: key,
-      candidateId,
-    };
-  } catch (error) {
-    console.log(error);
-    throw new Error('이미지 업로드 실패...');
-  }
-}
-
-export async function fetchUpdateCandidateImageUploadURL(
-  worldcupId: string,
-  candidateId: string,
-  imagePath: string,
-  fileType: string
-) {
-  try {
-    const session = await getSession();
-    if (!session?.userId) {
-      throw new Error('로그인을 해주세요.');
-    }
-    await validateWorldcupOwnership(worldcupId, session.userId);
-
-    const fileExtname = path.extname(imagePath);
-    const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
+    const objectId = nanoid(OBJECT_ID_LENGTH);
+    const key = `worldcups/${worldcupId}/${objectId}${path.extname(imagePath)}`;
 
     return {
       signedURL: await fetchImageUploadUrl(key, fileType),
@@ -87,7 +58,6 @@ export async function fetchImageUploadUrl(key: string, fileType: string) {
     const command = new PutObjectCommand(params);
     const urlResult = await getSignedUrl(s3, command, { expiresIn: 6000 });
 
-    console.log(urlResult);
     return urlResult;
   } catch (error) {
     console.log('s3 image upload url');

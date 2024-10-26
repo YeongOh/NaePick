@@ -65,10 +65,10 @@ const config: Config = {
         },
         // 버전 2
         shrinkLeft: {
-          '100%': { width: '0%' },
+          '100%': { width: '0%', transform: 'translateX(100%)' },
         },
         shrinkRight: {
-          '100%': { width: '0%' },
+          '100%': { width: '0%', transform: 'translateX(-100%)' },
         },
         expandRight: {
           '0%': { width: '50%', 'justify-content': 'center' },
