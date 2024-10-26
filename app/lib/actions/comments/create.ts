@@ -1,11 +1,11 @@
 'use server';
 
-import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
+import { COMMENT_ID_LENGTH, COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { z } from 'zod';
 import { pool } from '../../db';
-import { v4 as uuidv4 } from 'uuid';
 import { getSession } from '../session';
 import { revalidatePath } from 'next/cache';
+import { nanoid } from 'nanoid';
 
 const FormSchema = z.object({
   worldcupId: z.string(),
@@ -51,7 +51,7 @@ export async function createComment(state: CommentState, formData: FormData) {
   const { userId, text, worldcupId } = validatedFields.data;
 
   try {
-    const commentId = uuidv4();
+    const commentId = nanoid(COMMENT_ID_LENGTH);
 
     const [result, fields] = await pool.query(
       `INSERT INTO comment (comment_id, worldcup_id, user_id, text) 

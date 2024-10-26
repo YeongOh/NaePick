@@ -24,6 +24,7 @@ import { updateThumbnail } from '@/app/lib/actions/thumbnails/update';
 import ThumbnailImage from '../thumbnail/ThumbnailImage';
 import { MdInfo } from 'react-icons/md';
 import Preview from '../preview/preview';
+import { testImgurAPI } from '@/app/lib/actions/auth/imgur';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -61,7 +62,6 @@ export default function UpdateWorldcupCandidatesForm({
           },
           body: acceptedFile,
         });
-        console.log(response);
         if (response.ok) {
           await createCandidate(
             worldcup.worldcupId,
@@ -71,9 +71,7 @@ export default function UpdateWorldcupCandidatesForm({
           );
           toast.success('업로드에 성공했습니다!');
         }
-        console.log(worldcup);
         if (!worldcup.leftCandidateName) {
-          console.log('here1');
           await updateThumbnail(worldcup.worldcupId, 'left', candidateId);
         } else if (!worldcup.rightCandidateName) {
           await updateThumbnail(worldcup.worldcupId, 'right', candidateId);
@@ -143,9 +141,24 @@ export default function UpdateWorldcupCandidatesForm({
     }
   };
 
+  const handleImgurUpload = async () => {
+    try {
+      //await downloadAndUploadMp4ToS3('https://i.imgur.com/a/Qty3ykP', 'test3');
+      await testImgurAPI();
+      console.log('here');
+      // await getImgurDirectLink('https://imgur.com/a/tJCgmrD');
+      toast.success('업로드완료');
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
   return (
     <>
       <form action={handleUpdateWorldcupCandidates}>
+        <button type='button' onClick={handleImgurUpload}>
+          imgur upload
+        </button>
         <div className='rounded-md bg-gray-50 p-6'>
           <h2 className='font-semibold text-slate-700 mb-2 text-base'>
             썸네일 미리보기

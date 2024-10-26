@@ -1,7 +1,5 @@
 'use server';
 
-import { v4 as uuidv4 } from 'uuid';
-
 import {
   DeleteObjectCommand,
   ListObjectsCommand,
@@ -12,6 +10,8 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import path from 'path';
 import { getSession } from './actions/session';
 import { validateWorldcupOwnership } from './actions/auth/worldcup-ownership';
+import { nanoid } from 'nanoid';
+import { CANDIDATE_ID_LENGTH } from '../constants';
 
 const Bucket = process.env.AWS_S3_BUCKET;
 const credentials = {
@@ -36,7 +36,7 @@ export async function fetchCandidateImageUploadURL(
 
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    const candidateId = uuidv4();
+    const candidateId = nanoid(CANDIDATE_ID_LENGTH);
     const fileExtname = path.extname(imagePath);
     const key = `worldcups/${worldcupId}/${candidateId}${fileExtname}`;
 
@@ -150,7 +150,7 @@ export async function deleteCandidateObject(
   }
 }
 
-async function deleteObject(key: string) {
+export async function deleteObject(key: string) {
   try {
     await s3.send(
       new DeleteObjectCommand({

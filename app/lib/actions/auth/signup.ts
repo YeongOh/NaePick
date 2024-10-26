@@ -6,16 +6,17 @@ import {
   NICKNAME_MIN_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
+  USER_ID_LENGTH,
 } from '@/app/constants';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { User } from '../../definitions';
 import { pool } from '../../db';
 import { createSession } from '../session';
+import { nanoid } from 'nanoid';
 
 const FormSchema = z
   .object({
@@ -114,7 +115,7 @@ export async function signup(state: SignupState, formData: FormData) {
       };
     }
 
-    const userId = uuidv4();
+    const userId = nanoid(USER_ID_LENGTH);
 
     await pool.query(
       `INSERT INTO user (user_id, email, nickname, password)

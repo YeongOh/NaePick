@@ -2,15 +2,16 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { v4 as uuidv4 } from 'uuid';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
+  WORLDCUP_ID_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '../../../constants';
 import { getSession } from '../session';
 import { pool } from '../../db';
 import { createThumbnail } from '../thumbnails/create';
+import { nanoid } from 'nanoid';
 
 const CreatePostFormSchema = z.object({
   title: z
@@ -70,7 +71,7 @@ export async function createWorldcup(
     };
   }
 
-  const worldcupId = uuidv4();
+  const worldcupId = nanoid(WORLDCUP_ID_LENGTH);
 
   try {
     await pool.query(
