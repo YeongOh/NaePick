@@ -1,8 +1,10 @@
+'use server';
+
 import { FieldPacket } from 'mysql2';
 import { pool } from '../db';
 import { Candidate, CandidateWithStatistics } from '../definitions';
 
-export async function fetchRandomCandidatesByWorldcupId(
+export async function getRandomCandidatesByWorldcupId(
   worldcupId: string,
   round: number | string
 ) {
@@ -15,7 +17,8 @@ export async function fetchRandomCandidatesByWorldcupId(
       `SELECT c.candidate_id AS candidateId,
               c.created_at AS createdAt,
               c.name AS name,
-              cm.url AS url,
+              cm.pathname AS pathname,
+              cm.thumbnail_url AS thumbnailURL,
               t.type As mediaType
         FROM candidate c
         JOIN candidate_media cm ON c.candidate_id = cm.candidate_id
@@ -33,13 +36,14 @@ export async function fetchRandomCandidatesByWorldcupId(
   }
 }
 
-export async function fetchCandidatesToUpdateByWorldcupId(worldcupId: string) {
+export async function getCandidatesToUpdateByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
       `SELECT c.candidate_id AS candidateId,
               c.created_at AS createdAt,
               c.name AS name,
-              cm.url AS url,
+              cm.pathname AS pathname,
+              cm.thumbnail_url AS thumbnailURL,
               t.type As mediaType
         FROM candidate c
         JOIN candidate_media cm ON c.candidate_id = cm.candidate_id
@@ -55,15 +59,15 @@ export async function fetchCandidatesToUpdateByWorldcupId(worldcupId: string) {
   }
 }
 
-export async function fetchCandidatesStatisticsByWorldcupId(
-  worldcupId: string
-) {
+export async function getCandidatesStatisticsByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [CandidateWithStatistics[], FieldPacket[]] =
       await pool.query(
         `SELECT c.candidate_id AS candidateId, 
           c.name as name,
-          cm.url AS url,
+          cm.pathname AS pathname,
+          cm.thumbnail_url AS thumbnailURL,
+          m.type AS mediaType,
           (SELECT COUNT(*)
            FROM match_result mr
            WHERE mr.winner_candidate_id = c.candidate_id) AS numberOfWins,
@@ -71,10 +75,11 @@ export async function fetchCandidatesStatisticsByWorldcupId(
            FROM match_result mr
            WHERE mr.loser_candidate_id = c.candidate_id) AS numberOfLosses,
            (SELECT COUNT(*)
-           FROM champion ch
-           WHERE ch.candidate_id = c.candidate_id) AS numberOfTrophies
+           FROM match_result mr
+           WHERE mr.winner_candidate_id = c.candidate_id AND mr.is_final_match IS TRUE) AS numberOfTrophies
         FROM candidate c
         JOIN candidate_media cm ON cm.candidate_id = c.candidate_id
+        JOIN media_type m ON m.media_type_id = cm.media_type_id
         WHERE c.worldcup_id = ?
         ;`,
         [worldcupId]

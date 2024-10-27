@@ -1,6 +1,8 @@
 // URLS
 // TODO: env에 넣기 => 클라이언트에서 현재 안되는 문제
 export const DOMAIN = 'https://naepick.co.kr';
+export const IMG_ORIGIN = 'https://cdn.naepick.co.kr';
+export const VIDEO_ORIGIN = 'https://cdn.naepick.co.kr';
 
 // nanoid: 회원 수 = 월드컵 수 < 후보 수 (num needed for 1% of 1 collision)
 export const WORLDCUP_ID_LENGTH = 6; // => 37K
@@ -35,7 +37,7 @@ export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
 
 // candidate name length
-export const CANDIDATE_NAME_MAX_LENGTH = 25;
+export const CANDIDATE_NAME_MAX_LENGTH = 60;
 
 // comment
 export const COMMENT_TEXT_MAX_LENGTH = 300;
@@ -50,6 +52,3 @@ export function getNumberOfRoundsAvailable(
   const result = options.filter((option) => option <= numberOfCandidates);
   return result;
 }
-
-// TODO: in env
-export const BASE_IMAGE_URL = 'https://cdn.naepick.co.kr/';

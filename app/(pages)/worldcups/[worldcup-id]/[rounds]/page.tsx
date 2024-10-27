@@ -1,14 +1,14 @@
 import { getSession } from '@/app/lib/actions/session';
 import {
-  fetchWorldcupByWorldcupId,
-  fetchWorldcupCardByWorldcupId,
+  getWorldcupByWorldcupId,
+  getWorldcupCardByWorldcupId,
 } from '@/app/lib/data/worldcups';
 import CommentSection from '@/app/components/comment/comment-section';
 import Fold from '@/app/components/fold/fold';
 import WorldcupPickScreen from '@/app/components/worldcups/worldcup-pick-screen';
 import { notFound, redirect } from 'next/navigation';
-import { fetchRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
-import { fetchCommentsByWorldcupId } from '@/app/lib/data/comments';
+import { getRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
+import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 
 interface Props {
   params: { ['worldcup-id']: string; rounds: string };
@@ -18,10 +18,10 @@ export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const rounds = Number(params.rounds);
   const [worldcupResult, candidates, session, comments] = await Promise.all([
-    fetchWorldcupByWorldcupId(worldcupId),
-    fetchRandomCandidatesByWorldcupId(worldcupId, rounds),
+    getWorldcupByWorldcupId(worldcupId),
+    getRandomCandidatesByWorldcupId(worldcupId, rounds),
     getSession(),
-    fetchCommentsByWorldcupId(worldcupId),
+    getCommentsByWorldcupId(worldcupId),
   ]);
 
   if (!worldcupResult || !candidates) {

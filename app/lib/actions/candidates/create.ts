@@ -5,24 +5,46 @@ import { revalidatePath } from 'next/cache';
 import { validateWorldcupOwnership } from '../auth/worldcup-ownership';
 import { getSession } from '../session';
 import { nanoid } from 'nanoid';
-import { CANDIDATE_ID_LENGTH } from '@/app/constants';
+import {
+  CANDIDATE_ID_LENGTH,
+  CANDIDATE_NAME_MAX_LENGTH,
+} from '@/app/constants';
 import { MediaType } from '../../definitions';
 
-export async function createCandidate(
-  worldcupId: string,
-  candidateName: string,
-  candidateUrl: string,
-  mediaType: MediaType
-) {
+interface CandidateParameters {
+  worldcupId: string;
+  candidateName: string;
+  candidatePathname: string;
+  mediaType: MediaType;
+  thumbnailURL?: string;
+}
+
+export async function createCandidate({
+  worldcupId,
+  candidateName,
+  candidatePathname,
+  mediaType,
+  thumbnailURL,
+}: CandidateParameters) {
   try {
+    console.log('-1');
     const session = await getSession();
+    console.log('0');
     if (!session?.userId) {
       throw new Error('로그인을 해주세요.');
     }
+
     await validateWorldcupOwnership(worldcupId, session.userId);
 
+    if (candidateName.length > CANDIDATE_NAME_MAX_LENGTH) {
+      throw new Error('후보 이름이 글자 수 제한을 초과했습니다.');
+    }
+
     const candidateId = nanoid(CANDIDATE_ID_LENGTH);
-    const [result, fields] = await pool.query(
+
+    console.log('1');
+    await pool.query('START TRANSACTION');
+    const [result1, fields1] = await pool.query(
       `
         INSERT INTO candidate
         (candidate_id, worldcup_id, name)
@@ -31,19 +53,22 @@ export async function createCandidate(
         `,
       [candidateId, worldcupId, candidateName]
     );
-
-    await pool.query(
+    console.log(result1);
+    const [result, fields] = await pool.query(
       `
         INSERT INTO candidate_media
-        (candidate_id, url, media_type_id)
+        (candidate_id, pathname, media_type_id, thumbnail_url)
         VALUES
-        (?, ?, (SELECT media_type_id FROM media_type WHERE type = ?))
+        (?, ?, (SELECT media_type_id FROM media_type WHERE type = ?), ?)
         `,
-      [candidateId, candidateUrl, mediaType]
+      [candidateId, candidatePathname, mediaType, thumbnailURL ?? null]
     );
+    await pool.query('COMMIT');
+    console.log(result);
 
     return candidateId;
   } catch (error) {
+    await pool.query('ROLLBACK');
     console.log(error);
   }
   revalidatePath(`/worldcups/${worldcupId}/update-candidates`);

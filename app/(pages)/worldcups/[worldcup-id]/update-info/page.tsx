@@ -1,7 +1,7 @@
 import { getSession } from '@/app/lib/actions/session';
 import {
-  fetchAllCategories,
-  fetchWorldcupInfoFormByWorldcupId,
+  getAllCategories,
+  getWorldcupInfoFormByWorldcupId,
 } from '@/app/lib/data/worldcups';
 import UpdateWorldcupInfoForm from '@/app/components/worldcups/update-worldcup-info-form';
 import { notFound, redirect } from 'next/navigation';
@@ -14,9 +14,9 @@ interface Props {
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const [worldcupResult, session, categories] = await Promise.all([
-    fetchWorldcupInfoFormByWorldcupId(worldcupId),
+    getWorldcupInfoFormByWorldcupId(worldcupId),
     getSession(),
-    fetchAllCategories(),
+    getAllCategories(),
   ]);
 
   if (!worldcupResult || !worldcupResult[0] || !categories) notFound();

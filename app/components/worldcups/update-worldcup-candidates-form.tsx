@@ -19,16 +19,16 @@ import { FaFileUpload } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
-import MyImage from '@/app/ui/my-image/my-image';
-import { updateThumbnail } from '@/app/lib/actions/thumbnails/update';
 import ThumbnailImage from '../thumbnail/ThumbnailImage';
 import { MdInfo } from 'react-icons/md';
 import Preview from '../preview/preview';
+import { downloadImgurUploadS3 } from '@/app/lib/actions/videos/imgur';
 import {
-  downloadImgurUploadS3,
-  testImgurAPI,
-} from '@/app/lib/actions/videos/imgur';
-import { fetchYoutubeTitle } from '@/app/lib/actions/videos/youtube';
+  extractYoutubeId,
+  fetchYoutubeTitle,
+} from '@/app/lib/actions/videos/youtube';
+import CandidateThumbnailImage from '../thumbnail/CandidateThumbnailImage';
+import { crawlChzzkThumbnailURL } from '@/app/lib/actions/videos/chzzk';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -47,6 +47,7 @@ export default function UpdateWorldcupCandidatesForm({
   const [selectedCandidateToPreview, setSelectedCandidateToPreview] =
     useState<Candidate | null>(null);
   const [videoURL, setVideoURL] = useState<string>('');
+  const worldcupId = worldcup.worldcupId;
   console.log(candidates);
 
   const onDrop = useCallback(
@@ -55,11 +56,12 @@ export default function UpdateWorldcupCandidatesForm({
         const filenameWithoutExtension = excludeFileExtension(
           acceptedFile.name
         );
-        const { signedURL, candidateURL } = await fetchCandidateImageUploadURL(
-          worldcup.worldcupId,
-          acceptedFile.path as string,
-          acceptedFile.type
-        );
+        const { signedURL, candidatePathname } =
+          await fetchCandidateImageUploadURL(
+            worldcup.worldcupId,
+            acceptedFile.path as string,
+            acceptedFile.type
+          );
         const response = await fetch(signedURL, {
           method: 'PUT',
           headers: {
@@ -70,19 +72,13 @@ export default function UpdateWorldcupCandidatesForm({
         if (!response.ok) {
           throw new Error('업로드 실패');
         }
-        const candidateId = await createCandidate(
-          worldcup.worldcupId,
-          filenameWithoutExtension,
-          candidateURL,
-          'cdn_img'
-        );
+        const candidateId = await createCandidate({
+          candidateName: filenameWithoutExtension,
+          mediaType: 'cdn_img',
+          candidatePathname,
+          worldcupId,
+        });
         toast.success('업로드에 성공했습니다!');
-
-        if (!worldcup.leftCandidateName && candidateId) {
-          await updateThumbnail(worldcup.worldcupId, 'left', candidateId);
-        } else if (!worldcup.rightCandidateName && candidateId) {
-          await updateThumbnail(worldcup.worldcupId, 'right', candidateId);
-        }
       });
     },
     [worldcup]
@@ -121,7 +117,10 @@ export default function UpdateWorldcupCandidatesForm({
   const handleUpdateWorldcupCandidates = async (formData: FormData) => {
     try {
       const formObject = Object.fromEntries(formData);
-      await updateCandidateNames(worldcup.worldcupId, formObject);
+      delete formObject[videoURL];
+      console.log(formObject);
+
+      await updateCandidateNames(worldcupId, formObject);
       toast.success('저장되었습니다!');
     } catch (error) {
       toast.error((error as Error).message);
@@ -133,14 +132,8 @@ export default function UpdateWorldcupCandidatesForm({
       if (!selectedCandidateToDelete) {
         throw new Error('선택된 후보가 없습니다.');
       }
-      await deleteCandidateObject(
-        selectedCandidateToDelete.url,
-        worldcup.worldcupId
-      );
-      await deleteCandidate(
-        selectedCandidateToDelete.candidateId,
-        worldcup.worldcupId
-      );
+      await deleteCandidateObject(selectedCandidateToDelete.url, worldcupId);
+      await deleteCandidate(selectedCandidateToDelete.candidateId, worldcupId);
       toast.success('삭제에 성공했습니다.');
     } catch (error) {
       toast.error((error as Error).message);
@@ -151,33 +144,72 @@ export default function UpdateWorldcupCandidatesForm({
 
   const handleVideoUpload = async () => {
     try {
-      if (videoURL.startsWith('https://imgur.com/')) {
-        const candidateURL = await downloadImgurUploadS3(
-          videoURL,
-          worldcup.worldcupId
-        );
-        await createCandidate(
-          worldcup.worldcupId,
-          videoURL,
-          candidateURL,
-          'cdn_video'
-        );
+      const UrlObject = new URL(videoURL);
+      if (UrlObject.protocol != 'https:') {
+        toast.error('https부터 시작하는 주소를 입력해주세요.');
+        return;
+      }
+
+      const hostname = UrlObject.hostname;
+      const cleanURL = UrlObject.toString();
+
+      if (hostname === 'imgur.com' || hostname === 'www.imgur.com') {
+        const candidateURL = await downloadImgurUploadS3(cleanURL, worldcupId);
+        await createCandidate({
+          mediaType: 'cdn_video',
+          candidateName: cleanURL,
+          candidatePathname: candidateURL,
+          worldcupId,
+        });
       } else if (
-        videoURL.startsWith('https://youtube.com/') ||
-        videoURL.startsWith('https://youtu.be/')
+        hostname === 'youtube.com' ||
+        hostname === 'youtu.be' ||
+        hostname === 'www.youtube.com' ||
+        hostname === 'www.youtu.be'
       ) {
-        const youtubeVideoTitle = await fetchYoutubeTitle(videoURL);
-        console.log(youtubeVideoTitle);
-        // await createCandidate(
-        //   worldcup.worldcupId,
-        //   videoURL,
-        //   videoURL,
-        //   'youtube'
-        // );
+        const youtubeVideoId = extractYoutubeId(cleanURL);
+        if (youtubeVideoId === null) {
+          throw new Error('유튜브 주소가 올바른지 확인해주세요!');
+        }
+        const youtubeVideoURL = `https://www.youtube.com/watch?v=${youtubeVideoId}`;
+        const youtubeVideoTitle = await fetchYoutubeTitle(youtubeVideoURL);
+
+        console.log(youtubeVideoId, youtubeVideoTitle, worldcupId);
+
+        await createCandidate({
+          candidateName: youtubeVideoTitle ?? '유튜브 동영상',
+          candidatePathname: youtubeVideoId,
+          mediaType: 'youtube',
+          worldcupId,
+        });
+        console.log('created');
+      } else if (
+        cleanURL.startsWith('https://chzzk.naver.com/clips') ||
+        cleanURL.startsWith('https://chzzk.naver.com/embed/clip')
+      ) {
+        console.log('here');
+        const chzzkIdIndex = cleanURL.lastIndexOf('/') + 1;
+        const chzzkId = cleanURL.slice(chzzkIdIndex);
+        const data = await crawlChzzkThumbnailURL(chzzkId);
+
+        await createCandidate({
+          candidateName: data?.chzzkClipTitle || '치지직 클립',
+          thumbnailURL: data?.chzzkThumbnailURL || '',
+          candidatePathname: chzzkId,
+          mediaType: 'chzzk',
+          worldcupId,
+        });
+      } else {
+        throw new Error('주소가 올바른지 확인해주세요!');
       }
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error('잘못된 URL입니다.');
     }
+  };
+
+  const openPreview = (candidate: Candidate) => {
+    setSelectedCandidateToPreview(candidate);
+    setShowPreview(true);
   };
 
   return (
@@ -196,7 +228,7 @@ export default function UpdateWorldcupCandidatesForm({
                   rightCandidateName={worldcup.rightCandidateName}
                   rightCandidateUrl={worldcup.rightCandidateUrl}
                 />
-              </div>{' '}
+              </div>
             </div>
             <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
               <MdInfo size={'1.5em'} className='text-primary-500' />
@@ -223,6 +255,8 @@ export default function UpdateWorldcupCandidatesForm({
           </h2>
           <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center mb-4 relative'>
             <input
+              id='videoURL'
+              name='videoURL'
               className='block w-[92%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
               type='url'
               placeholder='주소 입력'
@@ -240,6 +274,7 @@ export default function UpdateWorldcupCandidatesForm({
           <div className='text-base mb-6 text-gray-700'>
             <h2 className='font-semibold'>지원 형식</h2>
             <p> - imgur: https://imgur.com/tJCgmrD</p>
+            <p> - youtube: https://youtube.com/tJCgmrD</p>
           </div>
           <h2 className='font-semibold text-slate-700 mb-2 text-base'>
             후보 {candidates.length}명
@@ -248,32 +283,13 @@ export default function UpdateWorldcupCandidatesForm({
             {candidates
               .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
               .map((candidate, index) => (
-                <li key={candidate.url}>
+                <li key={`${candidate.candidateId}/${candidate.url}`}>
                   <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
-                    <div className='relative w-[64px] h-[64px] cursor-pointer'>
-                      {candidate.mediaType === 'cdn_video' ? (
-                        <video
-                          className='w-full h-full object-cover'
-                          autoPlay
-                          controls
-                        >
-                          <source
-                            src={`https://cdn.naepick.co.kr/${candidate.url}`}
-                            type='video/mp4'
-                          />
-                        </video>
-                      ) : (
-                        <MyImage
-                          className='object-cover size-full'
-                          src={`${candidate.url}?w=128&h=128`}
-                          alt={candidate.name}
-                          onClick={() => {
-                            setSelectedCandidateToPreview(candidate);
-                            setShowPreview(true);
-                            console.log(candidate);
-                          }}
-                        />
-                      )}
+                    <div className='relative w-[64px] h-[64px]'>
+                      <CandidateThumbnailImage
+                        candidate={candidate}
+                        onClick={() => openPreview(candidate)}
+                      />
                     </div>
                     <div className='w-full flex'>
                       <input

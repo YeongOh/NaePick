@@ -1,8 +1,10 @@
+'use server';
+
 import { FieldPacket } from 'mysql2/promise';
-import { WorldcupCard, Thumbnail, Worldcup, Category } from '../definitions';
+import { WorldcupCard, Worldcup, Category } from '../definitions';
 import { pool } from '../db';
 
-export async function fetchPublicWorldcupCards() {
+export async function getPublicWorldcupCards() {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -10,19 +12,12 @@ export async function fetchPublicWorldcupCards() {
               w.description,
               w.publicity, 
               w.created_at AS createdAt,
-              c1.name AS leftCandidateName, c2.name AS rightCandidateName, 
-              cm1.url AS leftCandidateUrl, cm2.url AS rightCandidateUrl,
-              u.nickname as nickname, 
+              u.nickname as nickname,
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
               WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
       FROM worldcup w
       LEFT JOIN user u ON w.user_id = u.user_id
-      LEFT JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
-      LEFT JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
-      LEFT JOIN candidate_media cm1 ON cm1.candidate_id = c1.candidate_id
-      LEFT JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
-      LEFT JOIN candidate_media cm2 ON cm2.candidate_id = c2.candidate_id
       WHERE w.publicity = 'public'
       ORDER BY w.created_at DESC;`
     );
@@ -34,7 +29,7 @@ export async function fetchPublicWorldcupCards() {
   }
 }
 
-export async function fetchWorldcupCardByWorldcupId(worldcupId: string) {
+export async function getWorldcupCardByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -43,19 +38,13 @@ export async function fetchWorldcupCardByWorldcupId(worldcupId: string) {
               w.publicity, 
               w.created_at AS createdAt,
               u.user_id AS userId,
-              c1.name AS leftCandidateName, c2.name AS rightCandidateName, 
-              cm1.url AS leftCandidateUrl, cm2.url AS rightCandidateUrl,
               u.nickname as nickname, 
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
               WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
       FROM worldcup w
+      LEFT JOIN category ct ON ct.category_id = w.category_id
       LEFT JOIN user u ON w.user_id = u.user_id
-      LEFT JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
-      LEFT JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
-      LEFT JOIN candidate_media cm1 ON cm1.candidate_id = c1.candidate_id
-      LEFT JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
-      LEFT JOIN candidate_media cm2 ON cm2.candidate_id = c2.candidate_id
       WHERE w.worldcup_id = ?;`,
       [worldcupId]
     );
@@ -66,7 +55,7 @@ export async function fetchWorldcupCardByWorldcupId(worldcupId: string) {
   }
 }
 
-export async function fetchWorldcupByWorldcupId(worldcupId: string) {
+export async function getWorldcupByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [
       Omit<Worldcup[], 'categoryId'> & {
@@ -87,8 +76,8 @@ export async function fetchWorldcupByWorldcupId(worldcupId: string) {
               FROM candidate c
               WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
       FROM worldcup w
-      JOIN category ct ON ct.category_id = w.category_id
-      JOIN user u ON w.user_id = u.user_id
+      LEFT JOIN category ct ON ct.category_id = w.category_id
+      LEFT JOIN user u ON w.user_id = u.user_id
       WHERE w.worldcup_id = ?;`,
       [worldcupId]
     );
@@ -101,7 +90,7 @@ export async function fetchWorldcupByWorldcupId(worldcupId: string) {
 }
 
 // TODO:
-export async function fetchWorldcupsByUserId(userId: string) {
+export async function getWorldcupsByUserId(userId: string) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -110,20 +99,11 @@ export async function fetchWorldcupsByUserId(userId: string) {
               w.publicity, 
               w.created_at AS createdAt,
               w.user_id AS userId,
-              u.nickname as nickname, 
-              c1.name AS leftCandidateName,
-              c2.name AS rightCandidateName, 
-              cm1.url AS leftCandidateUrl,
-              cm2.url AS rightCandidateUrl,
+              u.nickname as nickname,
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
               WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
       FROM worldcup w
-      LEFT JOIN thumbnail t ON t.worldcup_id = w.worldcup_id
-      LEFT JOIN candidate c1 ON c1.candidate_id = t.left_candidate_id
-      LEFT JOIN candidate_media cm1 ON cm1.candidate_id = c1.candidate_id
-      LEFT JOIN candidate c2 ON c2.candidate_id = t.right_candidate_id
-      LEFT JOIN candidate_media cm2 ON cm2.candidate_id = c2.candidate_id
       LEFT JOIN user u ON w.user_id = u.user_id
       WHERE w.user_id = ?;`,
       [userId]
@@ -136,7 +116,7 @@ export async function fetchWorldcupsByUserId(userId: string) {
   }
 }
 
-export async function fetchAllCategories() {
+export async function getAllCategories() {
   try {
     const [result, meta]: [Category[], FieldPacket[]] = await pool.query(
       `SELECT category_id as categoryId,
@@ -150,7 +130,7 @@ export async function fetchAllCategories() {
   }
 }
 
-export async function fetchWorldcupInfoFormByWorldcupId(worldcupId: string) {
+export async function getWorldcupInfoFormByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Worldcup[], FieldPacket[]] = await pool.query(
       `SELECT worldcup_id as worldcupId,

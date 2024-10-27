@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { BASE_IMAGE_URL } from '@/app/constants';
+import { IMG_ORIGIN } from '@/app/constants';
 
 interface Props {
   className?: string;
@@ -19,7 +19,7 @@ export default function MyImage({
   return (
     <img
       className={className}
-      src={`${BASE_IMAGE_URL}${src}`}
+      src={`${IMG_ORIGIN}/${src}`}
       alt={alt}
       onClick={onClick}
       {...otherProps}

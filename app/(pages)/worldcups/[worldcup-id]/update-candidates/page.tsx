@@ -1,10 +1,10 @@
 import UpdateWorldcupCandidatesForm from '@/app/components/worldcups/update-worldcup-candidates-form';
 import WorldcupFormTab from '@/app/components/worldcups/worldcup-form-tab';
 import { getSession } from '@/app/lib/actions/session';
-import { fetchCandidatesToUpdateByWorldcupId } from '@/app/lib/data/candidates';
+import { getCandidatesToUpdateByWorldcupId } from '@/app/lib/data/candidates';
 import {
-  fetchAllCategories,
-  fetchWorldcupCardByWorldcupId,
+  getAllCategories,
+  getWorldcupCardByWorldcupId,
 } from '@/app/lib/data/worldcups';
 import { notFound, redirect } from 'next/navigation';
 
@@ -15,10 +15,10 @@ interface Props {
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const [worldcupResult, candidates, session, categories] = await Promise.all([
-    fetchWorldcupCardByWorldcupId(worldcupId),
-    fetchCandidatesToUpdateByWorldcupId(worldcupId),
+    getWorldcupCardByWorldcupId(worldcupId),
+    getCandidatesToUpdateByWorldcupId(worldcupId),
     getSession(),
-    fetchAllCategories(),
+    getAllCategories(),
   ]);
 
   console.log(candidates);

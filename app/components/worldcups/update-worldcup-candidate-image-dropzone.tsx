@@ -1,7 +1,6 @@
 'use client';
 
 import { updateCandidateImageURL } from '@/app/lib/actions/candidates/update';
-import { Candidate } from '@/app/lib/definitions';
 import {
   deleteCandidateObject,
   fetchCandidateImageUploadURL,
@@ -24,11 +23,12 @@ export default function UpdateWorldcupCandidateImageDropzone({
   const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
     try {
       const file = acceptedFiles[0];
-      const { signedURL, candidateURL } = await fetchCandidateImageUploadURL(
-        worldcupId,
-        file.path as string,
-        file.type
-      );
+      const { signedURL, candidatePathname: candidateURL } =
+        await fetchCandidateImageUploadURL(
+          worldcupId,
+          file.path as string,
+          file.type
+        );
       const response = await fetch(signedURL, {
         method: 'PUT',
         headers: {
@@ -43,6 +43,8 @@ export default function UpdateWorldcupCandidateImageDropzone({
 
         await deleteCandidateObject(originalCandidateURL, worldcupId);
         await updateCandidateImageURL(worldcupId, candidateId, candidateURL);
+
+        // 썸네일 확인 -> 추가 보류
       }
     } catch (error) {
       toast.error((error as Error).message);

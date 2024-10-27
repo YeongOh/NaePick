@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
-import { fetchWorldcupsByUserId } from '@/app/lib/data/worldcups';
+import { getWorldcupsByUserId } from '@/app/lib/data/worldcups';
 import { getSession } from '@/app/lib/actions/session';
 import CardUpdateLink from '@/app/components/card-extensions/card-update-link';
 import Card from '@/app/components/card/card';
@@ -14,7 +14,7 @@ interface Props {
 export default async function Page({ params }: Props) {
   const userId = params['user-id'];
   const [allWorldcupsByUser, session] = await Promise.all([
-    fetchWorldcupsByUserId(userId),
+    getWorldcupsByUserId(userId),
     getSession(),
   ]);
   dayjs.extend(relativeTime);

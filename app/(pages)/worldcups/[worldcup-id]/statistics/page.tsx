@@ -1,11 +1,11 @@
-import { fetchWorldcupByWorldcupId } from '@/app/lib/data/worldcups';
+import { getWorldcupByWorldcupId } from '@/app/lib/data/worldcups';
 import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';
 import CommentSection from '@/app/components/comment/comment-section';
-import { fetchCandidatesStatisticsByWorldcupId } from '@/app/lib/data/candidates';
+import { getCandidatesStatisticsByWorldcupId } from '@/app/lib/data/candidates';
 import { getSession } from '@/app/lib/actions/session';
-import { fetchCommentsByWorldcupId } from '@/app/lib/data/comments';
+import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 
 interface Props {
   params: { ['worldcup-id']: string };
@@ -15,9 +15,9 @@ export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const [worldcupResult, candidatesStatistics, comments, session] =
     await Promise.all([
-      fetchWorldcupByWorldcupId(worldcupId),
-      fetchCandidatesStatisticsByWorldcupId(worldcupId),
-      fetchCommentsByWorldcupId(worldcupId),
+      getWorldcupByWorldcupId(worldcupId),
+      getCandidatesStatisticsByWorldcupId(worldcupId),
+      getCommentsByWorldcupId(worldcupId),
       getSession(),
     ]);
 

@@ -10,7 +10,6 @@ import {
 } from '../../../constants';
 import { getSession } from '../session';
 import { pool } from '../../db';
-import { createThumbnail } from '../thumbnails/create';
 import { nanoid } from 'nanoid';
 
 const CreatePostFormSchema = z.object({
@@ -80,7 +79,6 @@ export async function createWorldcup(
                 VALUES (?,?,?,?,?,?)`,
       [worldcupId, title, description, publicity, session.userId, categoryId]
     );
-    await createThumbnail(worldcupId);
   } catch (error) {
     console.log(error);
     return {

@@ -33,9 +33,10 @@ export interface Candidate extends QueryResult {
   candidateId: string;
   worldcupId: string;
   name: string;
-  url: string;
+  pathname: string;
   mediaType: MediaType;
   createdAt: string;
+  thumbnailURL?: string;
 }
 
 export interface CandidateWithStatistics extends Candidate {
@@ -47,13 +48,6 @@ export interface CandidateWithStatistics extends Candidate {
 export interface Category extends QueryResult {
   categoryId: number;
   name: string;
-}
-
-export interface Thumbnail extends QueryResult {
-  thumbnailId: string;
-  worldcupId: string;
-  leftCandidateId: string;
-  rightCandidateId: string;
 }
 
 export interface Comment extends QueryResult {

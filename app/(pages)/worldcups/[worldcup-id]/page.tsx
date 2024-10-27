@@ -1,4 +1,4 @@
-import { fetchWorldcupCardByWorldcupId } from '@/app/lib/data/worldcups';
+import { getWorldcupCardByWorldcupId } from '@/app/lib/data/worldcups';
 import DirectCardLink from '@/app/components/card-extensions/direct-card-link';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { getSession } from '@/app/lib/actions/session';
-import { BASE_IMAGE_URL } from '@/app/constants';
+import { IMG_ORIGIN } from '@/app/constants';
 
 interface Props {
   params: { ['worldcup-id']: string; round: string };
@@ -15,7 +15,7 @@ interface Props {
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const [worldcup, session] = await Promise.all([
-    fetchWorldcupCardByWorldcupId(worldcupId),
+    getWorldcupCardByWorldcupId(worldcupId),
     getSession(),
   ]);
   dayjs.extend(relativeTime);
@@ -53,7 +53,7 @@ export default async function Page({ params }: Props) {
               <div className='relative w-1/2'>
                 <Image
                   className='object-cover'
-                  src={`${BASE_IMAGE_URL}${leftCandidateUrl}`}
+                  src={`${IMG_ORIGIN}/${leftCandidateUrl}`}
                   alt={leftCandidateName}
                   fill={true}
                   sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
@@ -74,7 +74,7 @@ export default async function Page({ params }: Props) {
             <div className='relative w-1/2'>
               <Image
                 className='object-cover'
-                src={`${BASE_IMAGE_URL}${rightCandidateUrl}`}
+                src={`${IMG_ORIGIN}/${rightCandidateUrl}`}
                 alt={rightCandidateName}
                 fill={true}
                 sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'

@@ -41,7 +41,7 @@ export async function updateCandidateNames(
 export async function updateCandidateImageURL(
   worldcupId: string,
   candidateId: string,
-  candidateURL: string
+  candidatePathname: string
 ) {
   try {
     const session = await getSession();
@@ -53,11 +53,11 @@ export async function updateCandidateImageURL(
 
     const [result, fields] = await pool.query(
       `
-            UPDATE candidate
-            SET url = ?
+            UPDATE candidate_media
+            SET pathname = ?
             WHERE candidate_id = ?
             `,
-      [candidateURL, candidateId]
+      [candidatePathname, candidateId]
     );
   } catch (error) {
     console.log(error);

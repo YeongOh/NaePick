@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  submitMatchResult,
-  updateThumbnailsByMatchResult,
-} from '@/app/lib/actions/statistics/create-match-result';
+import { submitMatchResult } from '@/app/lib/actions/statistics/create-match-result';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
 import { useState } from 'react';
@@ -46,7 +43,6 @@ export default function WorldcupPickScreen({
         { winnerCandidateId, loserCandidateId },
       ];
       submitMatchResult(matchResultToSubmit, worldcup.worldcupId);
-      updateThumbnailsByMatchResult(worldcup.worldcupId);
       return;
     }
 
@@ -57,18 +53,19 @@ export default function WorldcupPickScreen({
       setPicked(undefined);
     }, 2000);
   }
+  console.log(candidates);
 
   return (
     <>
       <section className='relative flex bg-black h-[calc(100vh-62px)]'>
         <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
-          <h2 className='flex justify-center items-center text-white text-5xl p-2 font-bold'>
+          <h2 className='flex justify-center items-center text-white text-2clamp p-2 font-bold'>
             {worldcup.title} {getRoundsDescription(round)}
           </h2>
         </div>
         {isFinished ? (
           <div className='absolute left-1/2 bottom-[60px] -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
-            <h2 className='flex justify-center items-center text-white text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+            <h2 className='flex justify-center items-center text-white text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
               {picked === 'left'
                 ? candidates[leftIndex].name
                 : candidates[rightIndex].name}{' '}
@@ -85,39 +82,70 @@ export default function WorldcupPickScreen({
             picked === 'left' && 'animate-expandLeft'
           } ${picked === 'right' && 'animate-shrinkRight'}`}
         >
-          <div className='relative'>
-            {picked !== 'right' && leftCandidate.url.endsWith('mp4') ? (
+          {picked !== 'right' && leftCandidate.mediaType === 'cdn_video' && (
+            <div className='max-w-fit w-full h-full'>
               <video
                 className='w-full h-full object-contain'
                 autoPlay
                 playsInline
                 loop
+                muted
               >
                 <source
-                  src={`https://cdn.naepick.co.kr/${leftCandidate.url}`}
+                  src={`https://cdn.naepick.co.kr/${leftCandidate.pathname}`}
                   type='video/mp4'
                 />
               </video>
-            ) : (
+            </div>
+          )}
+          {picked !== 'right' && leftCandidate.mediaType === 'cdn_img' && (
+            <div className='max-w-fit w-full h-full'>
               <MyImage
                 className='object-contain w-full h-full'
-                src={`${leftCandidate.url}?w=1920&h=1760`}
+                src={`${leftCandidate.pathname}?w=1920&h=1760`}
                 alt={leftCandidate.name}
               />
-            )}
-            {!isFinished && picked !== 'right' && (
-              <figcaption className='text-white absolute text-center bottom-[60px] text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
-                {leftCandidate.name}
-              </figcaption>
-            )}
-          </div>
-          <span
-            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary-500 text-7xl font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+            </div>
+          )}
+          {picked !== 'right' && leftCandidate.mediaType === 'youtube' && (
+            <div className='w-full h-full flex items-center justify-center'>
+              <iframe
+                onClick={(e) => e.stopPropagation()}
+                className='w-full max-h-full aspect-video'
+                src={`https://www.youtube-nocookie.com/embed/${leftCandidate.pathname}`}
+                title='Youtube video player'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                referrerPolicy='strict-origin-when-cross-origin'
+                allowFullScreen
+              />
+            </div>
+          )}
+          {picked !== 'right' && leftCandidate.mediaType === 'chzzk' && (
+            <div className='w-full h-full flex items-center justify-center'>
+              <iframe
+                onClick={(e) => e.stopPropagation()}
+                className='w-full max-h-full aspect-video'
+                src={`https://chzzk.naver.com/embed/clip/${leftCandidate.pathname}`}
+                title='CHZZK Player'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                referrerPolicy='strict-origin-when-cross-origin'
+                allowFullScreen
+              />
+            </div>
+          )}
+          {!isFinished && picked !== 'right' && (
+            <figcaption className='text-white absolute right-2/3 bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+              {leftCandidate.name}
+            </figcaption>
+          )}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`absolute top-1/2 left-1/2 cursor-default -translate-x-1/2 -translate-y-1/2 text-primary-500 text-3clamp font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
               picked && 'hidden'
             }`}
           >
             VS
-          </span>
+          </div>
         </figure>
         <figure
           onClick={() => {
@@ -128,33 +156,58 @@ export default function WorldcupPickScreen({
             picked === 'left' && 'animate-shrinkLeft'
           } ${picked === 'right' && 'animate-expandRight'}`}
         >
-          <div className='relative'>
-            {picked !== 'left' && rightCandidate.url.endsWith('mp4') ? (
-              <video
-                className='w-full h-full object-contain'
-                autoPlay
-                playsInline
-                controls
-                loop
-              >
-                <source
-                  src={`https://cdn.naepick.co.kr/${rightCandidate.url}`}
-                  type='video/mp4'
-                />
-              </video>
-            ) : (
-              <MyImage
-                className='object-contain w-full h-full'
-                src={`${rightCandidate.url}?w=1920&h=1760`}
-                alt={rightCandidate.name}
+          {picked !== 'left' && rightCandidate.mediaType === 'cdn_video' && (
+            <video
+              className='w-full h-full object-contain'
+              autoPlay
+              playsInline
+              loop
+              muted
+            >
+              <source
+                src={`https://cdn.naepick.co.kr/${rightCandidate.pathname}`}
+                type='video/mp4'
               />
-            )}
-            {!isFinished && picked !== 'left' && (
-              <figcaption className='text-white absolute text-center bottom-[60px] text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] w-full'>
-                {rightCandidate.name}
-              </figcaption>
-            )}
-          </div>
+            </video>
+          )}
+          {picked !== 'left' && rightCandidate.mediaType === 'cdn_img' && (
+            <MyImage
+              className='object-contain w-full h-full'
+              src={`${rightCandidate.pathname}?w=1920&h=1760`}
+              alt={rightCandidate.name}
+            />
+          )}
+          {picked !== 'left' && rightCandidate.mediaType === 'youtube' && (
+            <div className='w-full h-full flex items-center justify-center'>
+              <iframe
+                onClick={(e) => e.stopPropagation()}
+                className='w-full max-h-full aspect-video'
+                src={`https://www.youtube-nocookie.com/embed/${rightCandidate.pathname}`}
+                title='Youtube video player'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                referrerPolicy='strict-origin-when-cross-origin'
+                allowFullScreen
+              />
+            </div>
+          )}
+          {picked !== 'left' && rightCandidate.mediaType === 'chzzk' && (
+            <div className='w-full h-full flex items-center justify-center'>
+              <iframe
+                onClick={(e) => e.stopPropagation()}
+                className='w-full max-h-full aspect-video'
+                src={`https://chzzk.naver.com/embed/clip/${rightCandidate.pathname}`}
+                title='CHZZK Player'
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+                referrerPolicy='strict-origin-when-cross-origin'
+                allowFullScreen
+              />
+            </div>
+          )}
+          {!isFinished && picked !== 'left' && (
+            <figcaption className='text-white absolute left-2/3 text-center bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+              {rightCandidate.name}
+            </figcaption>
+          )}
         </figure>
       </section>
     </>

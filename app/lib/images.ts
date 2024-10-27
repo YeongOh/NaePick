@@ -11,7 +11,7 @@ import path from 'path';
 import { getSession } from './actions/session';
 import { validateWorldcupOwnership } from './actions/auth/worldcup-ownership';
 import { nanoid } from 'nanoid';
-import { CANDIDATE_ID_LENGTH, OBJECT_ID_LENGTH } from '../constants';
+import { OBJECT_ID_LENGTH } from '../constants';
 
 const Bucket = process.env.AWS_S3_BUCKET;
 const credentials = {
@@ -40,7 +40,7 @@ export async function fetchCandidateImageUploadURL(
 
     return {
       signedURL: await fetchImageUploadUrl(key, fileType),
-      candidateURL: key,
+      candidatePathname: key,
     };
   } catch (error) {
     console.log(error);
@@ -73,7 +73,6 @@ export async function listAllS3Objects(key: string) {
     };
     const command = new ListObjectsCommand(params);
     const { Contents } = await s3.send(command);
-    console.log(Contents);
     return Contents;
   } catch (error) {
     console.log('s3 image upload url');
@@ -98,7 +97,7 @@ async function uploadFile(file: File, fileName: string) {
 }
 
 export async function deleteCandidateObject(
-  candidateURL: string,
+  candidatePathname: string,
   worldcupId: string
 ) {
   try {
@@ -111,7 +110,7 @@ export async function deleteCandidateObject(
     await s3.send(
       new DeleteObjectCommand({
         Bucket,
-        Key: candidateURL,
+        Key: candidatePathname,
       })
     );
   } catch (error) {

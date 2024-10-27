@@ -30,7 +30,7 @@ async function seedCandidates() {
       `CREATE TABLE IF NOT EXISTS candidate (
           candidate_id VARCHAR(10) NOT NULL,
           worldcup_id VARCHAR(10) DEFAULT NULL,
-          name VARCHAR(25) NOT NULL,
+          name VARCHAR(60) NOT NULL,
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (candidate_id),
           FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE
@@ -71,14 +71,15 @@ async function seedMediaType() {
   }
 }
 
-async function seedCandidateMedias() {
+async function seedCandidateMedia() {
   try {
     const [result, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS candidate_media (
           candidate_media_id INT NOT NULL AUTO_INCREMENT,
           candidate_id VARCHAR(10) NOT NULL,
           media_type_id INT NOT NULL,
-          url VARCHAR(255) NOT NULL,
+          pathname VARCHAR(255) NOT NULL,
+          thumbnail_url VARCHAR(255) NULL,
           created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (candidate_media_id),
@@ -102,28 +103,6 @@ async function seedCategory() {
         name VARCHAR(20) NOT NULL,
         PRIMARY KEY (category_id),
         UNIQUE (name)
-      );`
-    );
-
-    console.log(results);
-    console.log(fields);
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function seedThumbnail() {
-  try {
-    const [results, fields] = await pool.query(
-      `CREATE TABLE IF NOT EXISTS thumbnail (
-        thumbnail_id INT NOT NULL AUTO_INCREMENT,
-        worldcup_id VARCHAR(10) NOT NULL,
-        left_candidate_id VARCHAR(255) NULL,
-        right_candidate_id VARCHAR(255) NULL,
-        PRIMARY KEY (thumbnail_id),
-        FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE,
-        FOREIGN KEY (left_candidate_id) REFERENCES candidate(candidate_id) ON DELETE SET NULL,
-        FOREIGN KEY (right_candidate_id) REFERENCES candidate(candidate_id) ON DELETE SET NULL
       );`
     );
 
@@ -174,7 +153,7 @@ async function seedUser() {
   }
 }
 
-async function seedMatch() {
+async function seedMatchResult() {
   try {
     const [results, fields] = await pool.query(
       `CREATE TABLE IF NOT EXISTS match_result (
@@ -182,32 +161,12 @@ async function seedMatch() {
         worldcup_id VARCHAR(10) NOT NULL,
         winner_candidate_id VARCHAR(10) NOT NULL,
         loser_candidate_id VARCHAR(10) NOT NULL,
+        is_final_match BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (match_result_id),
         FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE,
         FOREIGN KEY (winner_candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE,
         FOREIGN KEY (loser_candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
-      );`
-    );
-
-    console.log(results);
-    console.log(fields);
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function seedChampion() {
-  try {
-    const [results, fields] = await pool.query(
-      `CREATE TABLE IF NOT EXISTS champion (
-        champion_id INT NOT NULL AUTO_INCREMENT,
-        worldcup_id VARCHAR(10) NOT NULL,
-        candidate_id VARCHAR(10) NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (champion_id),
-        FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE,
-        FOREIGN KEY (candidate_id) REFERENCES candidate(candidate_id) ON DELETE CASCADE
       );`
     );
 
@@ -251,10 +210,8 @@ export async function GET() {
     await seedWorldcup();
     await seedCandidates();
     await seedMediaType();
-    await seedCandidateMedias();
-    await seedThumbnail();
-    await seedMatch();
-    await seedChampion();
+    await seedCandidateMedia();
+    await seedMatchResult();
     await seedComment();
 
     return Response.json({ message: 'Database seeded successfully' });

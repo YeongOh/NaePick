@@ -7,8 +7,8 @@ import {
   Worldcup,
 } from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
-import MyImage from '@/app/ui/my-image/my-image';
 import Preview from '../preview/preview';
+import CandidateThumbnailImage from '../thumbnail/CandidateThumbnailImage';
 
 interface Props {
   candidates: CandidateWithStatistics[];
@@ -65,10 +65,8 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
               <td className='px-4'>{i + 1}</td>
               <td className='flex items-center p-2'>
                 <div className='relative w-[64px] h-[64px] rounded-lg overflow-hidden shrink-0'>
-                  <MyImage
-                    className='object-cover size-full cursor-pointer'
-                    src={`${candidate.url}?w=128&h=128`}
-                    alt={candidate.name}
+                  <CandidateThumbnailImage
+                    candidate={candidate}
                     onClick={() => {
                       setSelectedCandidateToPreview(candidate);
                       setShowPreview(true);
@@ -94,7 +92,7 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
             setShowPreview(false);
             setSelectedCandidateToPreview(null);
           }}
-          src={`${selectedCandidateToPreview.url}?w=1920&h=1760`}
+          src={`${selectedCandidateToPreview.pathname}?w=1920&h=1760`}
           alt={`${selectedCandidateToPreview.name}`}
         />
       )}

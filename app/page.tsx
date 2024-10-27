@@ -1,9 +1,9 @@
-import { fetchPublicWorldcupCards } from './lib/data/worldcups';
+import { getPublicWorldcupCards } from './lib/data/worldcups';
 import 'dayjs/locale/ko';
 import Card from './components/card/card';
 
 export default async function Home() {
-  const allPublicWorldcupCards = await fetchPublicWorldcupCards();
+  const allPublicWorldcupCards = await getPublicWorldcupCards();
 
   return (
     <div className='max-w-screen-2xl m-auto'>

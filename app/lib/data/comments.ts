@@ -1,8 +1,10 @@
+'use server';
+
 import { FieldPacket } from 'mysql2';
 import { Comment } from '../definitions';
 import { pool } from '../db';
 
-export async function fetchCommentsByWorldcupId(worldcupId: string) {
+export async function getCommentsByWorldcupId(worldcupId: string) {
   try {
     const [result, meta]: [Comment[], FieldPacket[]] = await pool.query(
       `SELECT c.comment_id as commentId,
