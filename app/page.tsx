@@ -11,7 +11,7 @@ export default async function Home() {
         {allPublicWorldcupCards &&
           allPublicWorldcupCards.length > 0 &&
           allPublicWorldcupCards.map((worldcup, index: number) => (
-            <Card key={worldcup.worldcupId} worldcup={worldcup} />
+            <Card key={worldcup.worldcupId} worldcupCard={worldcup} />
           ))}
       </ul>
     </div>

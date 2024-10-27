@@ -83,7 +83,7 @@ export default function WorldcupPickScreen({
           } ${picked === 'right' && 'animate-shrinkRight'}`}
         >
           {picked !== 'right' && leftCandidate.mediaType === 'cdn_video' && (
-            <div className='max-w-fit w-full h-full'>
+            <div className='max-w-fit size-full'>
               <video
                 className='w-full h-full object-contain'
                 autoPlay
@@ -99,19 +99,19 @@ export default function WorldcupPickScreen({
             </div>
           )}
           {picked !== 'right' && leftCandidate.mediaType === 'cdn_img' && (
-            <div className='max-w-fit w-full h-full'>
+            <div className='max-w-fit size-full'>
               <MyImage
-                className='object-contain w-full h-full'
+                className='object-contain size-full'
                 src={`${leftCandidate.pathname}?w=1920&h=1760`}
                 alt={leftCandidate.name}
               />
             </div>
           )}
           {picked !== 'right' && leftCandidate.mediaType === 'youtube' && (
-            <div className='w-full h-full flex items-center justify-center'>
+            <div className='size-full flex items-center justify-center'>
               <iframe
                 onClick={(e) => e.stopPropagation()}
-                className='w-full max-h-full aspect-video'
+                className='w-full h-[80%] max-h-full aspect-video'
                 src={`https://www.youtube-nocookie.com/embed/${leftCandidate.pathname}`}
                 title='Youtube video player'
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
@@ -121,10 +121,10 @@ export default function WorldcupPickScreen({
             </div>
           )}
           {picked !== 'right' && leftCandidate.mediaType === 'chzzk' && (
-            <div className='w-full h-full flex items-center justify-center'>
+            <div className='size-full flex items-center justify-center'>
               <iframe
                 onClick={(e) => e.stopPropagation()}
-                className='w-full max-h-full aspect-video'
+                className='w-full h-[80%] max-h-full aspect-video'
                 src={`https://chzzk.naver.com/embed/clip/${leftCandidate.pathname}`}
                 title='CHZZK Player'
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
@@ -171,17 +171,19 @@ export default function WorldcupPickScreen({
             </video>
           )}
           {picked !== 'left' && rightCandidate.mediaType === 'cdn_img' && (
-            <MyImage
-              className='object-contain w-full h-full'
-              src={`${rightCandidate.pathname}?w=1920&h=1760`}
-              alt={rightCandidate.name}
-            />
+            <div className='max-w-fit size-full'>
+              <MyImage
+                className='object-contain size-full'
+                src={`${rightCandidate.pathname}?w=1920&h=1760`}
+                alt={rightCandidate.name}
+              />
+            </div>
           )}
           {picked !== 'left' && rightCandidate.mediaType === 'youtube' && (
-            <div className='w-full h-full flex items-center justify-center'>
+            <div className='size-full flex items-center justify-center'>
               <iframe
                 onClick={(e) => e.stopPropagation()}
-                className='w-full max-h-full aspect-video'
+                className='w-full h-[90%] max-h-full aspect-video'
                 src={`https://www.youtube-nocookie.com/embed/${rightCandidate.pathname}`}
                 title='Youtube video player'
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
@@ -191,10 +193,10 @@ export default function WorldcupPickScreen({
             </div>
           )}
           {picked !== 'left' && rightCandidate.mediaType === 'chzzk' && (
-            <div className='w-full h-full flex items-center justify-center'>
+            <div className='size-full flex items-center justify-center'>
               <iframe
                 onClick={(e) => e.stopPropagation()}
-                className='w-full max-h-full aspect-video'
+                className='w-full h-[90%] max-h-full aspect-video'
                 src={`https://chzzk.naver.com/embed/clip/${rightCandidate.pathname}`}
                 title='CHZZK Player'
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'

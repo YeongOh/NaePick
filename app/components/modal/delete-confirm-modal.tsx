@@ -21,7 +21,7 @@ export default function DeleteConfirmModal({
       {open &&
         createPortal(
           <div
-            className='fixed inset-0 z-99 bg-black/30 w-screen h-screen'
+            className='fixed inset-0 z-99 bg-black/30 w-screen h-screen y-scroll-hidden'
             onClick={onClose}
           >
             <div

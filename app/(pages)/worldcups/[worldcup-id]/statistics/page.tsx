@@ -1,4 +1,4 @@
-import { getWorldcupByWorldcupId } from '@/app/lib/data/worldcups';
+import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';
@@ -15,7 +15,7 @@ export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const [worldcupResult, candidatesStatistics, comments, session] =
     await Promise.all([
-      getWorldcupByWorldcupId(worldcupId),
+      getWorldcupPickScreenByWorldcupId(worldcupId),
       getCandidatesStatisticsByWorldcupId(worldcupId),
       getCommentsByWorldcupId(worldcupId),
       getSession(),
@@ -24,15 +24,17 @@ export default async function Page({ params }: Props) {
   if (worldcupResult && worldcupResult[0] && candidatesStatistics) {
     const worldcup = worldcupResult[0];
     return (
-      <div className='max-w-screen-lg m-auto'>
+      <>
         <StatisticsMain candidates={candidatesStatistics} worldcup={worldcup} />
-        <Fold worldcup={worldcup} />
-        <CommentSection
-          worldcupId={worldcupId}
-          session={structuredClone(session)}
-          comments={comments}
-        />
-      </div>
+        <div className='max-w-screen-lg m-auto'>
+          <Fold worldcup={worldcup} />
+          <CommentSection
+            worldcupId={worldcupId}
+            session={structuredClone(session)}
+            comments={comments}
+          />
+        </div>
+      </>
     );
   } else {
     notFound();

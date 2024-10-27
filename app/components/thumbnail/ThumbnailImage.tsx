@@ -1,31 +1,38 @@
 /* eslint-disable @next/next/no-img-element */
+import { WorldcupCard } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
+import CandidateThumbnailImage from './CandidateThumbnailImage';
 
 interface Props {
-  leftCandidateUrl: string;
-  leftCandidateName: string;
-  rightCandidateUrl: string;
-  rightCandidateName: string;
+  worldcupCard: WorldcupCard;
 }
 
-export default function ThumbnailImage({
-  leftCandidateUrl,
-  leftCandidateName,
-  rightCandidateUrl,
-  rightCandidateName,
-}: Props) {
+export default function ThumbnailImage({ worldcupCard }: Props) {
+  const {
+    leftCandidateName,
+    leftCandidatePathname,
+    leftCandidateMediaType,
+    leftCandidateThumbnailURL,
+    rightCandidateName,
+    rightCandidatePathname,
+    rightCandidateMediaType,
+    rightCandidateThumbnailURL,
+  } = worldcupCard;
+
   return (
     <>
       <div
         className={`inline-flex bg-black w-full h-[175px] overflow-hidden rounded-xl`}
       >
-        {leftCandidateUrl && (
+        {leftCandidatePathname && (
           <>
             <div className='relative w-1/2'>
-              <MyImage
-                className='object-cover size-full'
-                src={`${leftCandidateUrl}?w=300&h=350`}
-                alt={leftCandidateName}
+              <CandidateThumbnailImage
+                pathname={leftCandidatePathname}
+                name={leftCandidateName}
+                mediaType={leftCandidateMediaType}
+                thumbnailURL={leftCandidateThumbnailURL}
+                size='medium'
               />
               <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
                 <p
@@ -38,12 +45,14 @@ export default function ThumbnailImage({
             </div>
           </>
         )}
-        {rightCandidateUrl && (
+        {rightCandidatePathname && (
           <div className='relative w-1/2'>
-            <MyImage
-              className='object-cover size-full'
-              src={`${rightCandidateUrl}?w=300&h=300`}
-              alt={rightCandidateName}
+            <CandidateThumbnailImage
+              pathname={rightCandidatePathname}
+              name={rightCandidateName}
+              mediaType={rightCandidateMediaType}
+              thumbnailURL={rightCandidateThumbnailURL}
+              size='medium'
             />
             <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
               <p

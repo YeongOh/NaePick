@@ -1,14 +1,14 @@
 'use client';
 
 import { DEFAULT_ROUNDS, getNumberOfRoundsAvailable } from '@/app/constants';
-import Link from 'next/link';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface Props {
   open: boolean;
-  onClose: () => void;
-  worldcupId: string;
+  onClose?: () => void;
+  onRoundSubmit: (round: number) => void;
+  worldcupId?: string;
   numberOfCandidates: number;
   title: string;
 }
@@ -16,7 +16,7 @@ interface Props {
 export default function StartWorldcupModal({
   open,
   onClose,
-  worldcupId,
+  onRoundSubmit,
   numberOfCandidates,
   title,
 }: Props) {
@@ -37,7 +37,7 @@ export default function StartWorldcupModal({
       {open &&
         createPortal(
           <div
-            className='fixed inset-0 z-99 bg-black/30 w-screen h-screen'
+            className='fixed inset-0 z-99 bg-black/80 w-screen h-screen'
             onClick={onClose}
           >
             <div
@@ -49,7 +49,7 @@ export default function StartWorldcupModal({
                 <select
                   id={`${title} round`}
                   name='round'
-                  className={`w-full flex-1 peer block cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-4 text-base`}
+                  className={`w-full text-center flex-1 peer block cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-4 text-base`}
                   defaultValue={round}
                   onChange={handleRoundChange}
                 >
@@ -64,14 +64,14 @@ export default function StartWorldcupModal({
                     className='flex-1 text-primary-500 text-base px-4 py-2 text-center'
                     onClick={onClose}
                   >
-                    취소
+                    돌아가기
                   </button>
-                  <Link
+                  <button
                     className='flex-1 text-base bg-primary-500 text-center text-white px-4 py-2 rounded'
-                    href={`/worldcups/${worldcupId}/${round}`}
+                    onClick={() => onRoundSubmit(round)}
                   >
                     시작하기!
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

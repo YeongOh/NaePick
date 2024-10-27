@@ -3,20 +3,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
-import StartWorldcupModal from '../modal/start-worldcup-modal';
 
 interface Props {
   worldcupId: string;
-  numberOfCandidates: number;
   title: string;
 }
 
-export default function CardLink({
-  worldcupId,
-  numberOfCandidates,
-  title,
-}: Props) {
-  const [showStartWorldCupModal, setShowStartWorldCupModal] = useState(false);
+export default function CardLink({ worldcupId, title }: Props) {
   const [showShareWorldCupModal, setShowShareWorldCupModal] = useState(false);
 
   return (
@@ -34,24 +27,17 @@ export default function CardLink({
         >
           랭킹
         </Link>
-        <button
-          className='font-semibold flex-1 py-2 bg-primary-500 text-white rounded'
-          onClick={() => setShowStartWorldCupModal(true)}
+        <Link
+          className='flex-1 py-2 rounded bg-primary-500 text-white text-center'
+          href={`/worldcups/${worldcupId}`}
         >
           시작
-        </button>
+        </Link>
       </div>
       <ShareWorldcupModal
         open={showShareWorldCupModal}
         onClose={() => setShowShareWorldCupModal(false)}
         worldcupId={worldcupId}
-        title={title}
-      />
-      <StartWorldcupModal
-        open={showStartWorldCupModal}
-        onClose={() => setShowStartWorldCupModal(false)}
-        worldcupId={worldcupId}
-        numberOfCandidates={numberOfCandidates}
         title={title}
       />
     </>

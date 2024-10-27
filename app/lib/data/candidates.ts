@@ -26,7 +26,7 @@ export async function getRandomCandidatesByWorldcupId(
         WHERE c.worldcup_id = ?
         ORDER BY RAND()
         LIMIT ?;`,
-      [worldcupId, roundForSQL === 0 ? 32 : roundForSQL]
+      [worldcupId, roundForSQL]
     );
     console.log(result);
 

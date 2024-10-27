@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+:root:has(.y-scroll-hidden) {
+  overflow-y: hidden;
+}
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

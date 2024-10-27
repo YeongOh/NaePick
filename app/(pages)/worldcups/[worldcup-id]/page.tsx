@@ -1,111 +1,48 @@
-import { getWorldcupCardByWorldcupId } from '@/app/lib/data/worldcups';
-import DirectCardLink from '@/app/components/card-extensions/direct-card-link';
-import Image from 'next/image';
-import { notFound, redirect } from 'next/navigation';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
 import { getSession } from '@/app/lib/actions/session';
-import { IMG_ORIGIN } from '@/app/constants';
+import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
+import CommentSection from '@/app/components/comment/comment-section';
+import Fold from '@/app/components/fold/fold';
+import WorldcupPickScreen from '@/app/components/worldcups/worldcup-pick-screen';
+import { notFound, redirect } from 'next/navigation';
+import { getRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
+import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
+import WorldcupPickScreenSetter from '@/app/components/worldcups/worldcup-pick-screen-setter';
 
 interface Props {
-  params: { ['worldcup-id']: string; round: string };
+  params: { ['worldcup-id']: string; rounds: string };
 }
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcup, session] = await Promise.all([
-    getWorldcupCardByWorldcupId(worldcupId),
+  const rounds = Number(params.rounds);
+  const [worldcupResult, comments, session] = await Promise.all([
+    getWorldcupPickScreenByWorldcupId(worldcupId),
+    getCommentsByWorldcupId(worldcupId),
     getSession(),
   ]);
-  dayjs.extend(relativeTime);
-  dayjs.locale('ko');
 
-  if (!worldcup || !worldcup[0]) {
+  if (!worldcupResult) {
     notFound();
   }
-  const {
-    leftCandidateUrl,
-    leftCandidateName,
-    rightCandidateName,
-    rightCandidateUrl,
-    title,
-    description,
-    publicity,
-    createdAt,
-    numberOfCandidates,
-    nickname,
-    userId,
-  } = worldcup[0];
 
-  if (publicity === 'private' && session?.userId !== userId) {
+  if (
+    worldcupResult[0].publicity === 'private' &&
+    session.userId !== worldcupResult[0].userId
+  ) {
     redirect('/forbidden');
   }
 
   return (
-    <div className='max-w-screen-md m-auto'>
-      <>
-        <div
-          className={`inline-flex bg-black w-full h-[500px] overflow-hidden rounded-xl mt-10`}
-        >
-          {leftCandidateUrl && (
-            <>
-              <div className='relative w-1/2'>
-                <Image
-                  className='object-cover'
-                  src={`${IMG_ORIGIN}/${leftCandidateUrl}`}
-                  alt={leftCandidateName}
-                  fill={true}
-                  sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
-                  priority={true}
-                />
-                <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
-                  <p
-                    className='text-center text-white text-2xl truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'
-                    title={leftCandidateName}
-                  >
-                    {leftCandidateName}
-                  </p>
-                </div>
-              </div>
-            </>
-          )}
-          {rightCandidateUrl && (
-            <div className='relative w-1/2'>
-              <Image
-                className='object-cover'
-                src={`${IMG_ORIGIN}/${rightCandidateUrl}`}
-                alt={rightCandidateName}
-                fill={true}
-                sizes='(max-width: 768px) 66vw, (max-width: 1200px) 33vw'
-                priority={true}
-              />
-              <div className='bg-black/30 absolute h-auto bottom-0 w-full'>
-                <p
-                  className='text-center text-white text-2xl truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-bold'
-                  title={rightCandidateName}
-                >
-                  {rightCandidateName}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-        <h1 className='text-slate-700 text-3xl font-bold m-2'>{title}</h1>
-        <div className='w-full m-2 text-slate-700'>
-          <p className='text-lg font-semibold mb-2'>{nickname}</p>
-          <span className='mr-2 font-semibold'>
-            {dayjs(createdAt).format('YYYY. MM.DD.')}
-          </span>
-        </div>
-        <p className='m-2 line-clamp3 mb-10'>{description}</p>
-
-        <DirectCardLink
+    <>
+      <WorldcupPickScreenSetter worldcup={worldcupResult[0]} />
+      <div className='max-w-screen-lg m-auto'>
+        <Fold worldcup={worldcupResult[0]} />
+        <CommentSection
           worldcupId={worldcupId}
-          numberOfCandidates={numberOfCandidates}
-          title={title}
+          session={structuredClone(session)}
+          comments={comments}
         />
-      </>
-    </div>
+      </div>
+    </>
   );
 }

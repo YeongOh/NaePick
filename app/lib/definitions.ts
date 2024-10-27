@@ -19,14 +19,17 @@ export interface Worldcup extends QueryResult {
   userId: string;
   categoryId: number;
   createdAt: string;
+  numberOfCandidates?: number;
 }
 
 export interface WorldcupCard extends Worldcup {
   nickname: string;
   leftCandidateName: string;
+  leftCandidatePathname: string;
+  leftCandidateMediaType: MediaType;
   rightCandidateName: string;
-  leftCandidateUrl: string;
-  rightCandidateUrl: string;
+  rightCandidatePahtname: string;
+  rightCandidateMediaType: MediaType;
 }
 
 export interface Candidate extends QueryResult {

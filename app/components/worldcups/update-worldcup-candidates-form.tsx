@@ -222,12 +222,12 @@ export default function UpdateWorldcupCandidatesForm({
           <div className='flex flex-col items-center justify-center'>
             <div className='p-4 w-[330px]'>
               <div className='h-[170px]'>
-                <ThumbnailImage
+                {/* <ThumbnailImage
                   leftCandidateName={worldcup.leftCandidateName}
                   leftCandidateUrl={worldcup.leftCandidateUrl}
                   rightCandidateName={worldcup.rightCandidateName}
                   rightCandidateUrl={worldcup.rightCandidateUrl}
-                />
+                /> */}
               </div>
             </div>
             <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
@@ -287,8 +287,12 @@ export default function UpdateWorldcupCandidatesForm({
                   <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
                     <div className='relative w-[64px] h-[64px]'>
                       <CandidateThumbnailImage
-                        candidate={candidate}
+                        pathname={candidate.pathname}
+                        name={candidate.name}
+                        mediaType={candidate.mediaType}
+                        thumbnailURL={candidate?.thumbnailURL}
                         onClick={() => openPreview(candidate)}
+                        size='small'
                       />
                     </div>
                     <div className='w-full flex'>
@@ -357,7 +361,7 @@ export default function UpdateWorldcupCandidatesForm({
             setShowPreview(false);
             setSelectedCandidateToPreview(null);
           }}
-          src={`${selectedCandidateToPreview.url}?w=1920&h=1760`}
+          src={`${selectedCandidateToPreview.pathname}?w=1920&h=1760`}
           alt={`${selectedCandidateToPreview.name}`}
         />
       )}
