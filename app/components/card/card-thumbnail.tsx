@@ -1,13 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { WorldcupCard } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
-import CandidateThumbnailImage from './CandidateThumbnailImage';
+import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
 
 interface Props {
   worldcupCard: WorldcupCard;
 }
 
-export default function ThumbnailImage({ worldcupCard }: Props) {
+export default function CardThumbnail({ worldcupCard }: Props) {
   const {
     leftCandidateName,
     leftCandidatePathname,
@@ -27,7 +27,7 @@ export default function ThumbnailImage({ worldcupCard }: Props) {
         {leftCandidatePathname && (
           <>
             <div className='relative w-1/2'>
-              <CandidateThumbnailImage
+              <ResponsiveThumbnailImage
                 pathname={leftCandidatePathname}
                 name={leftCandidateName}
                 mediaType={leftCandidateMediaType}
@@ -47,7 +47,7 @@ export default function ThumbnailImage({ worldcupCard }: Props) {
         )}
         {rightCandidatePathname && (
           <div className='relative w-1/2'>
-            <CandidateThumbnailImage
+            <ResponsiveThumbnailImage
               pathname={rightCandidatePathname}
               name={rightCandidateName}
               mediaType={rightCandidateMediaType}

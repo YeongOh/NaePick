@@ -80,22 +80,6 @@ export async function listAllS3Objects(key: string) {
   }
 }
 
-async function uploadFile(file: File, fileName: string) {
-  const Body = (await file.arrayBuffer()) as Buffer;
-
-  try {
-    await s3.send(
-      new PutObjectCommand({
-        Bucket,
-        Key: fileName,
-        Body,
-      })
-    );
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export async function deleteCandidateObject(
   candidatePathname: string,
   worldcupId: string

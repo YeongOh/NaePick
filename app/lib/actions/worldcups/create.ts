@@ -11,6 +11,7 @@ import {
 import { getSession } from '../session';
 import { pool } from '../../db';
 import { nanoid } from 'nanoid';
+import { revalidatePath } from 'next/cache';
 
 const CreatePostFormSchema = z.object({
   title: z
@@ -85,6 +86,5 @@ export async function createWorldcup(
       message: '이상형 월드컵 생성에 실패했습니다.',
     };
   }
-
   redirect(`/worldcups/${worldcupId}/update-candidates`);
 }

@@ -3,9 +3,9 @@ import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound } from 'next/navigation';
 import Fold from '@/app/components/fold/fold';
 import CommentSection from '@/app/components/comment/comment-section';
-import { getCandidatesStatisticsByWorldcupId } from '@/app/lib/data/candidates';
 import { getSession } from '@/app/lib/actions/session';
 import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
+import { getCandidateStatisticsByWorldcupId } from '@/app/lib/data/statistics';
 
 interface Props {
   params: { ['worldcup-id']: string };
@@ -16,7 +16,7 @@ export default async function Page({ params }: Props) {
   const [worldcupResult, candidatesStatistics, comments, session] =
     await Promise.all([
       getWorldcupPickScreenByWorldcupId(worldcupId),
-      getCandidatesStatisticsByWorldcupId(worldcupId),
+      getCandidateStatisticsByWorldcupId(worldcupId),
       getCommentsByWorldcupId(worldcupId),
       getSession(),
     ]);
@@ -25,14 +25,20 @@ export default async function Page({ params }: Props) {
     const worldcup = worldcupResult[0];
     return (
       <>
-        <StatisticsMain candidates={candidatesStatistics} worldcup={worldcup} />
-        <div className='max-w-screen-lg m-auto'>
-          <Fold worldcup={worldcup} />
-          <CommentSection
-            worldcupId={worldcupId}
-            session={structuredClone(session)}
-            comments={comments}
-          />
+        <div className='bg-gray-50'>
+          <div className='bg-white max-w-screen-lg m-auto'>
+            <Fold worldcup={worldcup} />
+            <StatisticsMain
+              candidates={candidatesStatistics}
+              worldcup={worldcup}
+            />
+
+            <CommentSection
+              worldcupId={worldcupId}
+              session={structuredClone(session)}
+              comments={comments}
+            />
+          </div>
         </div>
       </>
     );

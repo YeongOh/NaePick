@@ -5,34 +5,37 @@ import { MediaType } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
 
 interface Props {
+  onClick?: () => void;
+  size: 'small' | 'medium' | 'large';
   pathname: string;
   name: string;
   mediaType: MediaType;
   thumbnailURL?: string;
-  onClick?: () => void;
-  size: 'small' | 'medium';
 }
 
-export default function CandidateThumbnailImage({
+export default function ResponsiveThumbnailImage({
+  onClick,
+  size,
   pathname,
   name,
   mediaType,
   thumbnailURL,
-  onClick,
-  size = 'small',
 }: Props) {
   if (mediaType === 'cdn_img') {
+    let params;
+    if (size === 'small') params = 'w=128&h=128';
+    if (size === 'medium') params = 'w=300&h=350';
+    if (size === 'large') params = 'w=500&h=500';
     return (
       <MyImage
-        className='object-cover size-full cursor-pointer'
-        src={`${pathname}?${size === 'medium' && 'w=300&h=350'}${
-          size === 'small' && 'w=128&h=128'
-        }`}
+        className='object-cover size-full'
+        src={`${pathname}?${params}`}
         alt={name}
         onClick={onClick}
       />
     );
   }
+
   if (mediaType === 'cdn_video') {
     return (
       <video className='size-full object-cover'>
@@ -40,6 +43,7 @@ export default function CandidateThumbnailImage({
       </video>
     );
   }
+
   if (mediaType === 'youtube') {
     const youtubeThumbnailURL = getYoutubeThumbnailURL(pathname, size);
     return (
@@ -50,6 +54,7 @@ export default function CandidateThumbnailImage({
       />
     );
   }
+
   if (mediaType === 'chzzk') {
     return (
       <img className='size-full object-cover' src={thumbnailURL} alt={name} />

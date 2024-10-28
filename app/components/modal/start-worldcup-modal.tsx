@@ -37,7 +37,7 @@ export default function StartWorldcupModal({
       {open &&
         createPortal(
           <div
-            className='fixed inset-0 z-99 bg-black/80 w-screen h-screen'
+            className='fixed inset-0 z-99 bg-black/80 w-screen h-screen y-scroll-hidden'
             onClick={onClose}
           >
             <div

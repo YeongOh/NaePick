@@ -2,7 +2,7 @@
 
 import { FieldPacket } from 'mysql2';
 import { pool } from '../db';
-import { Candidate, CandidateWithStatistics } from '../definitions';
+import { Candidate } from '../definitions';
 
 export async function getRandomCandidatesByWorldcupId(
   worldcupId: string,
@@ -51,39 +51,6 @@ export async function getCandidatesToUpdateByWorldcupId(worldcupId: string) {
         WHERE c.worldcup_id = ?;`,
       [worldcupId]
     );
-    console.log(result);
-
-    return result;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export async function getCandidatesStatisticsByWorldcupId(worldcupId: string) {
-  try {
-    const [result, meta]: [CandidateWithStatistics[], FieldPacket[]] =
-      await pool.query(
-        `SELECT c.candidate_id AS candidateId, 
-          c.name as name,
-          cm.pathname AS pathname,
-          cm.thumbnail_url AS thumbnailURL,
-          m.type AS mediaType,
-          (SELECT COUNT(*)
-           FROM match_result mr
-           WHERE mr.winner_candidate_id = c.candidate_id) AS numberOfWins,
-           (SELECT COUNT(*)
-           FROM match_result mr
-           WHERE mr.loser_candidate_id = c.candidate_id) AS numberOfLosses,
-           (SELECT COUNT(*)
-           FROM match_result mr
-           WHERE mr.winner_candidate_id = c.candidate_id AND mr.is_final_match IS TRUE) AS numberOfTrophies
-        FROM candidate c
-        JOIN candidate_media cm ON cm.candidate_id = c.candidate_id
-        JOIN media_type m ON m.media_type_id = cm.media_type_id
-        WHERE c.worldcup_id = ?
-        ;`,
-        [worldcupId]
-      );
     console.log(result);
 
     return result;

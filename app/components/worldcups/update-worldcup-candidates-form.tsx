@@ -19,7 +19,6 @@ import { FaFileUpload } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
-import ThumbnailImage from '../thumbnail/ThumbnailImage';
 import { MdInfo } from 'react-icons/md';
 import Preview from '../preview/preview';
 import { downloadImgurUploadS3 } from '@/app/lib/actions/videos/imgur';
@@ -27,8 +26,10 @@ import {
   extractYoutubeId,
   fetchYoutubeTitle,
 } from '@/app/lib/actions/videos/youtube';
-import CandidateThumbnailImage from '../thumbnail/CandidateThumbnailImage';
 import { crawlChzzkThumbnailURL } from '@/app/lib/actions/videos/chzzk';
+import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
+import CardThumbnail from '../card/card-thumbnail';
+import UpdateWorldcupCandidateVideo from './update-worldcup-candidate-video';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -72,7 +73,7 @@ export default function UpdateWorldcupCandidatesForm({
         if (!response.ok) {
           throw new Error('업로드 실패');
         }
-        const candidateId = await createCandidate({
+        await createCandidate({
           candidateName: filenameWithoutExtension,
           mediaType: 'cdn_img',
           candidatePathname,
@@ -81,7 +82,7 @@ export default function UpdateWorldcupCandidatesForm({
         toast.success('업로드에 성공했습니다!');
       });
     },
-    [worldcup]
+    [worldcup, candidates]
   );
 
   const onError = (error: Error) => {
@@ -118,7 +119,6 @@ export default function UpdateWorldcupCandidatesForm({
     try {
       const formObject = Object.fromEntries(formData);
       delete formObject[videoURL];
-      console.log(formObject);
 
       await updateCandidateNames(worldcupId, formObject);
       toast.success('저장되었습니다!');
@@ -132,7 +132,16 @@ export default function UpdateWorldcupCandidatesForm({
       if (!selectedCandidateToDelete) {
         throw new Error('선택된 후보가 없습니다.');
       }
-      await deleteCandidateObject(selectedCandidateToDelete.url, worldcupId);
+      // S3에 저장하고 있는 오브젝트 삭제
+      if (
+        selectedCandidateToDelete.mediaType === 'cdn_img' ||
+        selectedCandidateToDelete.mediaType === 'cdn_video'
+      ) {
+        await deleteCandidateObject(
+          selectedCandidateToDelete.pathname,
+          worldcupId
+        );
+      }
       await deleteCandidate(selectedCandidateToDelete.candidateId, worldcupId);
       toast.success('삭제에 성공했습니다.');
     } catch (error) {
@@ -174,20 +183,16 @@ export default function UpdateWorldcupCandidatesForm({
         const youtubeVideoURL = `https://www.youtube.com/watch?v=${youtubeVideoId}`;
         const youtubeVideoTitle = await fetchYoutubeTitle(youtubeVideoURL);
 
-        console.log(youtubeVideoId, youtubeVideoTitle, worldcupId);
-
         await createCandidate({
           candidateName: youtubeVideoTitle ?? '유튜브 동영상',
           candidatePathname: youtubeVideoId,
           mediaType: 'youtube',
           worldcupId,
         });
-        console.log('created');
       } else if (
         cleanURL.startsWith('https://chzzk.naver.com/clips') ||
         cleanURL.startsWith('https://chzzk.naver.com/embed/clip')
       ) {
-        console.log('here');
         const chzzkIdIndex = cleanURL.lastIndexOf('/') + 1;
         const chzzkId = cleanURL.slice(chzzkIdIndex);
         const data = await crawlChzzkThumbnailURL(chzzkId);
@@ -202,6 +207,7 @@ export default function UpdateWorldcupCandidatesForm({
       } else {
         throw new Error('주소가 올바른지 확인해주세요!');
       }
+      setVideoURL('');
     } catch (error) {
       toast.error('잘못된 URL입니다.');
     }
@@ -212,6 +218,7 @@ export default function UpdateWorldcupCandidatesForm({
     setShowPreview(true);
   };
 
+  console.log(worldcup);
   return (
     <>
       <form action={handleUpdateWorldcupCandidates}>
@@ -222,12 +229,7 @@ export default function UpdateWorldcupCandidatesForm({
           <div className='flex flex-col items-center justify-center'>
             <div className='p-4 w-[330px]'>
               <div className='h-[170px]'>
-                {/* <ThumbnailImage
-                  leftCandidateName={worldcup.leftCandidateName}
-                  leftCandidateUrl={worldcup.leftCandidateUrl}
-                  rightCandidateName={worldcup.rightCandidateName}
-                  rightCandidateUrl={worldcup.rightCandidateUrl}
-                /> */}
+                <CardThumbnail worldcupCard={worldcup} />
               </div>
             </div>
             <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
@@ -259,7 +261,7 @@ export default function UpdateWorldcupCandidatesForm({
               name='videoURL'
               className='block w-[92%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
               type='url'
-              placeholder='주소 입력'
+              placeholder='https://(주소입력)'
               value={videoURL}
               onChange={(e) => setVideoURL(e.target.value)}
             />
@@ -283,10 +285,10 @@ export default function UpdateWorldcupCandidatesForm({
             {candidates
               .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
               .map((candidate, index) => (
-                <li key={`${candidate.candidateId}/${candidate.url}`}>
+                <li key={`${candidate.candidateId}/${candidate.pathname}`}>
                   <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
                     <div className='relative w-[64px] h-[64px]'>
-                      <CandidateThumbnailImage
+                      <ResponsiveThumbnailImage
                         pathname={candidate.pathname}
                         name={candidate.name}
                         mediaType={candidate.mediaType}
@@ -297,7 +299,7 @@ export default function UpdateWorldcupCandidatesForm({
                     </div>
                     <div className='w-full flex'>
                       <input
-                        className='flex-1 ml-2 mr-2 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
+                        className='flex-1 ml-2 mr-1 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
                         id={candidate.name}
                         name={candidate.candidateId}
                         type='text'
@@ -306,15 +308,24 @@ export default function UpdateWorldcupCandidatesForm({
                         autoComplete='off'
                         maxLength={CANDIDATE_NAME_MAX_LENGTH}
                       />
-                      <div className='flex items-center'>
+                      <div className='flex items-center gap-1'>
+                        <div className='relative'>
+                          <UpdateWorldcupCandidateVideo
+                            worldcupId={worldcup.worldcupId}
+                            candidateId={candidate.candidateId}
+                            originalPathname={candidate.pathname}
+                            mediaType={candidate.mediaType}
+                          />
+                        </div>
                         <UpdateWorldcupCandidateImageDropzone
                           worldcupId={worldcup.worldcupId}
                           candidateId={candidate.candidateId}
-                          originalCandidateURL={candidate.url}
+                          originalPathname={candidate.pathname}
+                          mediaType={candidate.mediaType}
                         />
                         <button
                           type='button'
-                          className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mx-4'
+                          className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2'
                           onClick={() => {
                             setSelectedCandidateToDelete(candidate);
                             setShowDeleteConfirmModal(true);

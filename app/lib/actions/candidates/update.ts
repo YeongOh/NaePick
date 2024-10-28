@@ -54,11 +54,58 @@ export async function updateCandidateImageURL(
     const [result, fields] = await pool.query(
       `
             UPDATE candidate_media
-            SET pathname = ?
+            SET pathname = ?,
+                media_type_id =   
+                (SELECT media_type_id
+                FROM media_type
+                WHERE type = ?),
+                thumbnail_url = ?
             WHERE candidate_id = ?
             `,
-      [candidatePathname, candidateId]
+      [candidatePathname, 'cdn_img', null, candidateId]
     );
+    console.log(result);
+  } catch (error) {
+    console.log(error);
+  }
+  revalidatePath(`/worldcups/${worldcupId}/update-candidates`);
+}
+
+export async function updateCandidateVideoURL({
+  worldcupId,
+  candidateId,
+  candidatePathname,
+  mediaType,
+  thumbnailURL = null,
+}: {
+  worldcupId: string;
+  candidateId: string;
+  candidatePathname: string;
+  mediaType: string;
+  thumbnailURL?: string | null;
+}) {
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+
+    await validateWorldcupOwnership(worldcupId, session.userId);
+
+    const [result, fields] = await pool.query(
+      `
+            UPDATE candidate_media
+            SET pathname = ?,
+                media_type_id =   
+                (SELECT media_type_id
+                FROM media_type
+                WHERE type = ?),
+                thumbnail_url = ?
+            WHERE candidate_id = ?
+            `,
+      [candidatePathname, mediaType, thumbnailURL, candidateId]
+    );
+    console.log(result);
   } catch (error) {
     console.log(error);
   }

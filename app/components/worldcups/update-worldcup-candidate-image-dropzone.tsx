@@ -1,6 +1,7 @@
 'use client';
 
 import { updateCandidateImageURL } from '@/app/lib/actions/candidates/update';
+import { MediaType } from '@/app/lib/definitions';
 import {
   deleteCandidateObject,
   fetchCandidateImageUploadURL,
@@ -10,20 +11,22 @@ import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 interface Props {
-  originalCandidateURL: string;
+  originalPathname: string;
   worldcupId: string;
   candidateId: string;
+  mediaType: MediaType;
 }
 
 export default function UpdateWorldcupCandidateImageDropzone({
-  originalCandidateURL,
+  originalPathname,
   worldcupId,
   candidateId,
+  mediaType,
 }: Props) {
   const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
     try {
       const file = acceptedFiles[0];
-      const { signedURL, candidatePathname: candidateURL } =
+      const { signedURL, candidatePathname } =
         await fetchCandidateImageUploadURL(
           worldcupId,
           file.path as string,
@@ -37,19 +40,21 @@ export default function UpdateWorldcupCandidateImageDropzone({
         body: file,
       });
 
-      console.log(response);
       if (response.ok) {
+        if (mediaType === 'cdn_img' || mediaType === 'cdn_video') {
+          await deleteCandidateObject(originalPathname, worldcupId);
+        }
+
+        await updateCandidateImageURL(
+          worldcupId,
+          candidateId,
+          candidatePathname
+        );
         toast.success('이미지를 수정했습니다!');
-
-        await deleteCandidateObject(originalCandidateURL, worldcupId);
-        await updateCandidateImageURL(worldcupId, candidateId, candidateURL);
-
-        // 썸네일 확인 -> 추가 보류
       }
     } catch (error) {
       toast.error((error as Error).message);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
@@ -82,7 +87,7 @@ export default function UpdateWorldcupCandidateImageDropzone({
       {...getRootProps()}
     >
       <input {...getInputProps()} />
-      <span>이미지 수정</span>
+      이미지 수정
     </button>
   );
 }

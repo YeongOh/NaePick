@@ -14,11 +14,10 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcupResult, candidates, session, categories] = await Promise.all([
+  const [worldcupResult, candidates, session] = await Promise.all([
     getWorldcupCardByWorldcupId(worldcupId),
     getCandidatesToUpdateByWorldcupId(worldcupId),
     getSession(),
-    getAllCategories(),
   ]);
 
   console.log(candidates);

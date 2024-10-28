@@ -1,5 +1,5 @@
 import { WorldcupCard } from '@/app/lib/definitions';
-import ThumbnailImage from '../thumbnail/ThumbnailImage';
+import CardThumbnail from './card-thumbnail';
 import CardLink from '../card-extensions/card-link';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -18,7 +18,7 @@ export default function Card({ worldcupCard, children }: Props) {
   return (
     <li className='p-4 w-[330px] mb-4'>
       <div className='h-[230px]'>
-        <ThumbnailImage worldcupCard={worldcupCard} />
+        <CardThumbnail worldcupCard={worldcupCard} />
         <div className='flex items-end justify-between'>
           <div className='flex-1 overflow-hidden'>
             <h2

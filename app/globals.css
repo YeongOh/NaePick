@@ -4,6 +4,7 @@
 
 :root:has(.y-scroll-hidden) {
   overflow-y: hidden;
+  scrollbar-gutter: stable;
 }
 /* :root {
   --foreground-rgb: 0, 0, 0;

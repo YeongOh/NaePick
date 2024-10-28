@@ -1,6 +1,5 @@
 'use server';
 
-import { FieldPacket, RowDataPacket } from 'mysql2';
 import { pool } from '../../db';
 import { MatchResult } from '../../definitions';
 
@@ -39,9 +38,4 @@ export async function submitMatchResult(
     console.log(error);
     await connection.rollback();
   }
-}
-
-interface Stat extends RowDataPacket {
-  candidate_id: string;
-  win_count: number;
 }

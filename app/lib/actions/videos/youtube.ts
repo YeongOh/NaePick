@@ -45,11 +45,15 @@ export function extractYoutubeId(youtubeURL: string) {
 
 export function getYoutubeThumbnailURL(
   youtubeID: string,
-  resolution: 'small' | 'medium'
+  resolution: 'small' | 'medium' | 'large'
 ) {
   if (youtubeID === '') return '';
   if (resolution === 'small')
     return `https://img.youtube.com/vi/${youtubeID}/mqdefault.jpg`;
   if (resolution === 'medium')
+    return `https://img.youtube.com/vi/${youtubeID}/hqdefault.jpg`;
+  // 초고화질 보류
+  //return `https://img.youtube.com/vi/${youtubeID}/maxresdefault`
+  if (resolution === 'large')
     return `https://img.youtube.com/vi/${youtubeID}/hqdefault.jpg`;
 }
