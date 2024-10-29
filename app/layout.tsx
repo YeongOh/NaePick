@@ -21,10 +21,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={notoSansKr.className}>
-        <main className='flex flex-col'>
-          <Navbar />
-          <div>{children}</div>
-        </main>
+        <main>{children}</main>
         <Toaster />
       </body>
     </html>

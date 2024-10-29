@@ -5,20 +5,33 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import Link from 'next/link';
 import CardEllipsis from './card-ellipsis';
+import CardUpdateLink from '../card-extensions/card-update-link';
 
-interface Props {
+export interface CardProps {
   worldcupCard: WorldcupCard;
   children?: React.ReactNode;
+  openMenubar: boolean;
+  onOpenMenubar: () => void;
+  onCloseMenubar: () => void;
+  extended?: boolean;
 }
 
-export default function Card({ worldcupCard, children }: Props) {
+export default function Card({
+  worldcupCard,
+  openMenubar,
+  onOpenMenubar,
+  onCloseMenubar,
+  extended,
+}: CardProps) {
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
   return (
     <li className='p-4 w-[330px] mb-4'>
       <div className='h-[230px]'>
-        <CardThumbnail worldcupCard={worldcupCard} />
+        <Link href={`/worldcups/${worldcupCard.worldcupId}`}>
+          <CardThumbnail worldcupCard={worldcupCard} />
+        </Link>
         <div className='flex items-end justify-between'>
           <div className='flex-1'>
             <div className='flex items-center'>
@@ -36,6 +49,9 @@ export default function Card({ worldcupCard, children }: Props) {
               <CardEllipsis
                 worldcupId={worldcupCard.worldcupId}
                 title={worldcupCard.title}
+                openMenubar={openMenubar}
+                onOpenMenubar={onOpenMenubar}
+                onCloseMenubar={onCloseMenubar}
               />
             </div>
             <div className='flex items-center justify-between w-full'>
@@ -52,7 +68,7 @@ export default function Card({ worldcupCard, children }: Props) {
           </div>
         </div>
       </div>
-      {children}
+      {extended && <CardUpdateLink worldcupId={worldcupCard.worldcupId} />}
     </li>
   );
 }

@@ -2,7 +2,7 @@
 import { VIDEO_ORIGIN } from '@/app/constants';
 import { getYoutubeThumbnailURL } from '@/app/lib/actions/videos/youtube';
 import { MediaType } from '@/app/lib/definitions';
-import MyImage from '@/app/ui/my-image/my-image';
+import MyImage from '@/app/components/ui/my-image/my-image';
 import { mp4toJpg } from '@/app/utils/utils';
 import { useState } from 'react';
 

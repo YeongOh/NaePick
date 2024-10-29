@@ -41,12 +41,11 @@ export default function CardUpdateLink({ worldcupId }: Props) {
       </div>
       <DeleteConfirmModal
         open={showDeleteWorldcupConfirmModal}
+        title={'해당 월드컵을 정말로 삭제하시겠습니까?'}
+        description={'모든 데이터가 영구히 삭제되며 복원할 수 없습니다.'}
         onClose={() => setShowDeleteWorldcupConfirmModal(false)}
         onConfirm={handleDeleteConfirm}
-      >
-        정말 월드컵을 삭제하시겠습니까? <br />
-        해당 월드컵은 영구히 삭제됩니다.
-      </DeleteConfirmModal>
+      ></DeleteConfirmModal>
     </>
   );
 }

@@ -34,7 +34,7 @@ export default function ShareWorldcupModal({
       {open &&
         createPortal(
           <div
-            className='fixed inset-0 z-99 bg-black/30 w-screen h-screen y-scroll-hidden'
+            className='modal fixed inset-0 z-99 bg-black/30 w-screen h-screen y-scroll-hidden'
             onClick={onClose}
           >
             <div
@@ -47,7 +47,7 @@ export default function ShareWorldcupModal({
               <div className='flex flex-col items-center justify-between'>
                 <div className='relative w-full text-base border bg-gray-50 rounded-lg p-4 whitespace-nowrap overflow-hidden'>
                   <input
-                    className='w-[80%]'
+                    className='w-[80%] bg-gray-50'
                     ref={focusedRef}
                     onBlur={() => {
                       focusedRef.current = null;

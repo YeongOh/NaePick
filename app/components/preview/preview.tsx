@@ -1,4 +1,4 @@
-import MyImage from '@/app/ui/my-image/my-image';
+import MyImage from '@/app/components/ui/my-image/my-image';
 import { createPortal } from 'react-dom';
 
 interface Props {

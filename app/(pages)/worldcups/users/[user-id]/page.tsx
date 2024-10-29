@@ -6,6 +6,7 @@ import { getSession } from '@/app/lib/actions/session';
 import CardUpdateLink from '@/app/components/card-extensions/card-update-link';
 import Card from '@/app/components/card/card';
 import { redirect } from 'next/navigation';
+import CardGrid from '@/app/components/card-grid/card-grid';
 
 interface Props {
   params: { ['user-id']: string };
@@ -23,19 +24,12 @@ export default async function Page({ params }: Props) {
   if (session?.userId !== userId) {
     redirect('/forbidden');
   }
-  console.log(allWorldcupCardsByUser);
 
   return (
-    <div className='max-w-screen-2xl m-auto'>
-      <ul className='flex flex-wrap mt-6'>
-        {allWorldcupCardsByUser &&
-          allWorldcupCardsByUser.length > 0 &&
-          allWorldcupCardsByUser.map((worldcup, index: number) => (
-            <Card key={worldcup.worldcupId} worldcupCard={worldcup}>
-              <CardUpdateLink worldcupId={worldcup.worldcupId} />
-            </Card>
-          ))}
-      </ul>
-    </div>
+    <section className='max-w-screen-2xl m-auto'>
+      {allWorldcupCardsByUser && (
+        <CardGrid worldcupCards={allWorldcupCardsByUser} extended />
+      )}
+    </section>
   );
 }

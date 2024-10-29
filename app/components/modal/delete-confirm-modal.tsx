@@ -7,44 +7,48 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  children: React.ReactNode;
+  title: string;
+  description: string;
 }
 
 export default function DeleteConfirmModal({
   open,
   onClose,
   onConfirm,
-  children,
+  title,
+  description,
 }: Props) {
   return (
     <>
       {open &&
         createPortal(
           <div
-            className='fixed inset-0 z-99 bg-black/30 w-screen h-screen y-scroll-hidden'
+            className='modal fixed inset-0 z-99 bg-black/80 w-screen h-screen y-scroll-hidden'
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-4 min-w-[350px]'
+              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 min-w-[400px]'
             >
-              <div className='flex flex-col items-center justify-between'>
-                <h2 className='flex items-center justify-center text-lg font-semibold m-4 text-slate-700 h-[100px]'>
-                  {children}
+              <div className='flex flex-col justify-between'>
+                <h2 className='text-lg font-semibold text-slate-700 mb-4'>
+                  {title}
                 </h2>
-
-                <div className='flex w-full gap-4'>
+                <p className='text-base text-slate-500 h-[50px]'>
+                  {description}
+                </p>
+                <div className='flex w-full gap-2 justify-end'>
                   <button
-                    className='flex-1 text-primary-500 text-base px-4 py-2 text-center'
+                    className='text-primary-500 text-base px-4 py-2 text-center border rounded'
                     onClick={onClose}
                   >
                     취소
                   </button>
                   <button
-                    className='flex-1 text-base font-semibold bg-red-500 text-center text-white px-4 py-2 rounded'
+                    className='text-base font-semibold bg-red-500 text-center text-white px-4 py-2 rounded'
                     onClick={onConfirm}
                   >
-                    삭제
+                    삭제하기
                   </button>
                 </div>
               </div>

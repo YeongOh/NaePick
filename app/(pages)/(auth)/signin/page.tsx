@@ -2,8 +2,8 @@ import SigninForm from '@/app/components/auth/signin-form';
 
 export default async function Page() {
   return (
-    <div className='max-w-xl m-auto'>
+    <section className='max-w-xs m-auto min-h-screen flex flex-col justify-center items-center'>
       <SigninForm />
-    </div>
+    </section>
   );
 }

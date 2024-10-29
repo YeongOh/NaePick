@@ -1,51 +1,56 @@
 import Link from 'next/link';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 interface Props {
-  open: boolean;
+  openMenubar: boolean;
   worldcupId: string;
   title: string;
 }
 
-export default function Menubar({ open, worldcupId, title }: Props) {
-  const [showShareWorldCupModal, setShowShareWorldCupModal] = useState(false);
+const Menubar = forwardRef<HTMLDivElement, Props>(function Menubar(
+  { openMenubar, worldcupId, title }: Props,
+  ref
+) {
+  const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
 
   return (
     <>
-      {open && (
-        <>
-          <ul className='absolute border bg-white rounded-lg flex flex-col w-[150px] text-left text-base shadow cursor-pointer'>
+      {openMenubar && (
+        <div ref={ref} className='menubar'>
+          <ul className='absolute border bg-white rounded-lg flex flex-col w-[150px] text-left text-base shadow cursor-pointer text-slate-700 p-2'>
             <Link
-              className='p-3 mx-2 mt-2 hover:bg-gray-100'
+              className='p-2 hover:bg-gray-100'
               href={`/worldcups/${worldcupId}`}
             >
               시작 하기
             </Link>
             <Link
-              className='p-3 mx-2 my-1 hover:bg-gray-100'
+              className='p-2 my-0.5 hover:bg-gray-100'
               href={`/worldcups/${worldcupId}/statistics`}
             >
               통계 보기
             </Link>
             <button
-              className='p-3 m-2 mb-2 hover:bg-gray-100 text-left'
+              className='p-2 hover:bg-gray-100 text-left'
               onClick={() => {
                 console.log('here');
-                setShowShareWorldCupModal(true);
+                setShareWorldcupModal(true);
               }}
             >
               공유
             </button>
             <ShareWorldcupModal
-              open={showShareWorldCupModal}
-              onClose={() => setShowShareWorldCupModal(false)}
+              open={shareWorldcupModal}
+              onClose={() => setShareWorldcupModal(false)}
               worldcupId={worldcupId}
               title={title}
             />
           </ul>
-        </>
+        </div>
       )}
     </>
   );
-}
+});
+
+export default Menubar;

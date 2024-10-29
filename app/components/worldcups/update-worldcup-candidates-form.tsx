@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import {
@@ -291,8 +292,16 @@ export default function UpdateWorldcupCandidatesForm({
                 YouTube: https://youtube.com/watch?v=LV3vxkZpUjk
               </li>
               <li className='flex items-center gap-1'>
-                <img src={CHZZK_THUMBNAIL_URL} width={20} height={20} />
+                <img
+                  src={CHZZK_THUMBNAIL_URL}
+                  width={20}
+                  height={20}
+                  alt={'CHZZK logo'}
+                />
                 치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
+              </li>
+              <li className=''>
+                - Imgur, 치지직 썸네일 생성은 약 3~5초가 소요됩니다.
               </li>
             </ul>
           </div>
@@ -404,9 +413,9 @@ export default function UpdateWorldcupCandidatesForm({
           setSelectedCandidateToDelete(null);
         }}
         onConfirm={handleDeleteCandidateConfirm}
-      >
-        후보를 삭제하시겠습니까? <br /> 관련 통계도 전부 삭제됩니다.
-      </DeleteConfirmModal>
+        title={'해당 후보를 정말로 삭제하시겠습니까?'}
+        description={'후보의 데이터가 영구히 삭제되며 복원할 수 없습니다.'}
+      />
     </>
   );
 }
