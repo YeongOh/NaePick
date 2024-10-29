@@ -10,3 +10,7 @@ export function formatBytes(bytes: number, decimals: number): string {
 export function excludeFileExtension(fileName: string): string {
   return fileName.slice(0, fileName.lastIndexOf('.'));
 }
+
+export function mp4toJpg(pathname: string): string {
+  return pathname.substring(0, pathname.lastIndexOf('.')) + '.jpg';
+}

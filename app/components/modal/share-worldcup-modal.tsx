@@ -52,7 +52,8 @@ export default function ShareWorldcupModal({
                     onBlur={() => {
                       focusedRef.current = null;
                     }}
-                    value={`${DOMAIN}/worldcups/${worldcupId}`}
+                    defaultValue={`${DOMAIN}/worldcups/${worldcupId}`}
+                    readOnly
                   />
                   <button
                     onClick={handleCopyShareLInk}

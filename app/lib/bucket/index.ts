@@ -4,24 +4,16 @@ import {
   DeleteObjectCommand,
   ListObjectsCommand,
   PutObjectCommand,
-  S3Client,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import path from 'path';
-import { getSession } from './actions/session';
-import { validateWorldcupOwnership } from './actions/auth/worldcup-ownership';
+import { getSession } from '../actions/session';
+import { validateWorldcupOwnership } from '../actions/auth/worldcup-ownership';
 import { nanoid } from 'nanoid';
-import { OBJECT_ID_LENGTH } from '../constants';
-
-const Bucket = process.env.AWS_S3_BUCKET;
-const credentials = {
-  accessKeyId: process.env.AWS_ACCESS_KEY as string,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-};
-const s3 = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials,
-});
+import { OBJECT_ID_LENGTH } from '../../constants';
+import { MediaType } from '../definitions';
+import { mp4toJpg } from '../../utils/utils';
+import { ImageBucket, S3client, videoBucket } from './config';
 
 export async function fetchCandidateImageUploadURL(
   worldcupId: string,
@@ -51,12 +43,14 @@ export async function fetchCandidateImageUploadURL(
 export async function fetchImageUploadUrl(key: string, fileType: string) {
   try {
     const params = {
-      Bucket,
+      Bucket: ImageBucket,
       Key: key,
       ContentType: fileType,
     };
     const command = new PutObjectCommand(params);
-    const urlResult = await getSignedUrl(s3, command, { expiresIn: 6000 });
+    const urlResult = await getSignedUrl(S3client, command, {
+      expiresIn: 6000,
+    });
 
     return urlResult;
   } catch (error) {
@@ -65,14 +59,29 @@ export async function fetchImageUploadUrl(key: string, fileType: string) {
   }
 }
 
-export async function listAllS3Objects(key: string) {
+export async function listAllS3ImgObjects(key: string) {
   try {
     const params = {
-      Bucket,
+      Bucket: ImageBucket,
       Prefix: key,
     };
     const command = new ListObjectsCommand(params);
-    const { Contents } = await s3.send(command);
+    const { Contents } = await S3client.send(command);
+    return Contents;
+  } catch (error) {
+    console.log('s3 image upload url');
+    throw new Error('S3 Image upload signedUrl fetch fail');
+  }
+}
+
+export async function listAllS3VideoObjects(key: string) {
+  try {
+    const params = {
+      Bucket: videoBucket,
+      Prefix: key,
+    };
+    const command = new ListObjectsCommand(params);
+    const { Contents } = await S3client.send(command);
     return Contents;
   } catch (error) {
     console.log('s3 image upload url');
@@ -82,7 +91,8 @@ export async function listAllS3Objects(key: string) {
 
 export async function deleteCandidateObject(
   candidatePathname: string,
-  worldcupId: string
+  worldcupId: string,
+  mediaType: MediaType
 ) {
   try {
     const session = await getSession();
@@ -91,23 +101,50 @@ export async function deleteCandidateObject(
     }
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    await s3.send(
-      new DeleteObjectCommand({
-        Bucket,
-        Key: candidatePathname,
-      })
-    );
+    if (mediaType === 'cdn_img') {
+      await S3client.send(
+        new DeleteObjectCommand({
+          Bucket: ImageBucket,
+          Key: candidatePathname,
+        })
+      );
+    } else if (mediaType === 'cdn_video') {
+      await S3client.send(
+        new DeleteObjectCommand({
+          Bucket: videoBucket,
+          Key: candidatePathname,
+        })
+      );
+      await S3client.send(
+        new DeleteObjectCommand({
+          Bucket: ImageBucket,
+          Key: mp4toJpg(candidatePathname),
+        })
+      );
+    }
   } catch (error) {
     console.log(error);
     throw new Error('이미지 삭제 실패...');
   }
 }
 
-export async function deleteObject(key: string) {
+export async function deleteImgObject(key: string) {
   try {
-    await s3.send(
+    await S3client.send(
       new DeleteObjectCommand({
-        Bucket,
+        Bucket: ImageBucket,
+        Key: key,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function deleteVideoObject(key: string) {
+  try {
+    await S3client.send(
+      new DeleteObjectCommand({
+        Bucket: videoBucket,
         Key: key,
       })
     );

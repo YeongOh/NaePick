@@ -1,13 +1,16 @@
 'use client';
 
-import { CANDIDATE_NAME_MAX_LENGTH } from '@/app/constants';
+import {
+  CANDIDATE_NAME_MAX_LENGTH,
+  CHZZK_THUMBNAIL_URL,
+} from '@/app/constants';
 import { createCandidate } from '@/app/lib/actions/candidates/create';
 import { updateCandidateNames } from '@/app/lib/actions/candidates/update';
 import { Candidate, WorldcupCard } from '@/app/lib/definitions';
 import {
   deleteCandidateObject,
   fetchCandidateImageUploadURL,
-} from '@/app/lib/images';
+} from '@/app/lib/bucket';
 import { excludeFileExtension } from '@/app/utils/utils';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
@@ -20,7 +23,6 @@ import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import { MdInfo } from 'react-icons/md';
-import Preview from '../preview/preview';
 import { downloadImgurUploadS3 } from '@/app/lib/actions/videos/imgur';
 import {
   extractYoutubeId,
@@ -30,6 +32,9 @@ import { crawlChzzkThumbnailURL } from '@/app/lib/actions/videos/chzzk';
 import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
 import CardThumbnail from '../card/card-thumbnail';
 import UpdateWorldcupCandidateVideo from './update-worldcup-candidate-video';
+import ResponsiveMedia from '../media/responsive-media';
+import { IoLogoYoutube } from 'react-icons/io';
+import { SiImgur } from 'react-icons/si';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -44,12 +49,13 @@ export default function UpdateWorldcupCandidatesForm({
     useState<Candidate | null>(null);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
     useState<boolean>(false);
-  const [showPreview, setShowPreview] = useState<boolean>(false);
-  const [selectedCandidateToPreview, setSelectedCandidateToPreview] =
-    useState<Candidate | null>(null);
+  const [selectedCandidateToPreviewIndex, setSelectedCandidateToPreviewIndex] =
+    useState<number | null>(null);
+  const [showUpdateVideoInputIndex, setShowVideoInputIndex] = useState<
+    number | null
+  >(null);
   const [videoURL, setVideoURL] = useState<string>('');
   const worldcupId = worldcup.worldcupId;
-  console.log(candidates);
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
@@ -82,7 +88,7 @@ export default function UpdateWorldcupCandidatesForm({
         toast.success('업로드에 성공했습니다!');
       });
     },
-    [worldcup, candidates]
+    [worldcup, worldcupId]
   );
 
   const onError = (error: Error) => {
@@ -139,7 +145,8 @@ export default function UpdateWorldcupCandidatesForm({
       ) {
         await deleteCandidateObject(
           selectedCandidateToDelete.pathname,
-          worldcupId
+          worldcupId,
+          selectedCandidateToDelete.mediaType
         );
       }
       await deleteCandidate(selectedCandidateToDelete.candidateId, worldcupId);
@@ -213,12 +220,10 @@ export default function UpdateWorldcupCandidatesForm({
     }
   };
 
-  const openPreview = (candidate: Candidate) => {
-    setSelectedCandidateToPreview(candidate);
-    setShowPreview(true);
+  const handleOnChangeUpdateVideoInputIndex = (index: number | null) => {
+    setShowVideoInputIndex(index);
   };
 
-  console.log(worldcup);
   return (
     <>
       <form action={handleUpdateWorldcupCandidates}>
@@ -264,6 +269,7 @@ export default function UpdateWorldcupCandidatesForm({
               placeholder='https://(주소입력)'
               value={videoURL}
               onChange={(e) => setVideoURL(e.target.value)}
+              autoComplete='off'
             />
             <button
               type='button'
@@ -275,8 +281,20 @@ export default function UpdateWorldcupCandidatesForm({
           </div>
           <div className='text-base mb-6 text-gray-700'>
             <h2 className='font-semibold'>지원 형식</h2>
-            <p> - imgur: https://imgur.com/tJCgmrD</p>
-            <p> - youtube: https://youtube.com/tJCgmrD</p>
+            <ul>
+              <li className='flex items-center gap-1'>
+                <SiImgur color='green' size={'1.2rem'} /> Imgur:
+                https://imgur.com/i6uyHNs
+              </li>
+              <li className='flex items-center gap-1'>
+                <IoLogoYoutube color='red' size={'1.2rem'} />
+                YouTube: https://youtube.com/watch?v=LV3vxkZpUjk
+              </li>
+              <li className='flex items-center gap-1'>
+                <img src={CHZZK_THUMBNAIL_URL} width={20} height={20} />
+                치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
+              </li>
+            </ul>
           </div>
           <h2 className='font-semibold text-slate-700 mb-2 text-base'>
             후보 {candidates.length}명
@@ -284,16 +302,23 @@ export default function UpdateWorldcupCandidatesForm({
           <ul>
             {candidates
               .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
-              .map((candidate, index) => (
+              .map((candidate, candidateIndex) => (
                 <li key={`${candidate.candidateId}/${candidate.pathname}`}>
                   <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
-                    <div className='relative w-[64px] h-[64px]'>
+                    <div className='relative w-[64px] h-[64px] cursor-pointer'>
                       <ResponsiveThumbnailImage
                         pathname={candidate.pathname}
                         name={candidate.name}
                         mediaType={candidate.mediaType}
                         thumbnailURL={candidate?.thumbnailURL}
-                        onClick={() => openPreview(candidate)}
+                        onClick={() => {
+                          console.log('hello');
+                          setSelectedCandidateToPreviewIndex(
+                            candidateIndex === selectedCandidateToPreviewIndex
+                              ? null
+                              : candidateIndex
+                          );
+                        }}
                         size='small'
                       />
                     </div>
@@ -315,6 +340,13 @@ export default function UpdateWorldcupCandidatesForm({
                             candidateId={candidate.candidateId}
                             originalPathname={candidate.pathname}
                             mediaType={candidate.mediaType}
+                            candidateIndex={candidateIndex}
+                            onChangeVideoInputIndex={
+                              handleOnChangeUpdateVideoInputIndex
+                            }
+                            showVideoURLInput={
+                              showUpdateVideoInputIndex === candidateIndex
+                            }
                           />
                         </div>
                         <UpdateWorldcupCandidateImageDropzone
@@ -339,6 +371,16 @@ export default function UpdateWorldcupCandidatesForm({
                       </div>
                     </div>
                   </div>
+                  {selectedCandidateToPreviewIndex === candidateIndex && (
+                    <div className='w-full flex justify-center my-8 h-[400px] bg-black'>
+                      <ResponsiveMedia
+                        lowerHeight={false}
+                        pathname={candidate.pathname}
+                        name={candidate.name}
+                        mediaType={candidate.mediaType}
+                      />
+                    </div>
+                  )}
                 </li>
               ))}
           </ul>
@@ -365,17 +407,6 @@ export default function UpdateWorldcupCandidatesForm({
       >
         후보를 삭제하시겠습니까? <br /> 관련 통계도 전부 삭제됩니다.
       </DeleteConfirmModal>
-      {selectedCandidateToPreview && (
-        <Preview
-          open={showPreview}
-          onClose={() => {
-            setShowPreview(false);
-            setSelectedCandidateToPreview(null);
-          }}
-          src={`${selectedCandidateToPreview.pathname}?w=1920&h=1760`}
-          alt={`${selectedCandidateToPreview.name}`}
-        />
-      )}
     </>
   );
 }

@@ -1,19 +1,25 @@
 'use client';
 
-import { createCandidate } from '@/app/lib/actions/candidates/create';
 import { updateCandidateVideoURL } from '@/app/lib/actions/candidates/update';
 import { crawlChzzkThumbnailURL } from '@/app/lib/actions/videos/chzzk';
 import { downloadImgurUploadS3 } from '@/app/lib/actions/videos/imgur';
-import {
-  extractYoutubeId,
-  fetchYoutubeTitle,
-} from '@/app/lib/actions/videos/youtube';
+import { extractYoutubeId } from '@/app/lib/actions/videos/youtube';
 import { MediaType } from '@/app/lib/definitions';
-import { deleteCandidateObject } from '@/app/lib/images';
+import { deleteCandidateObject } from '@/app/lib/bucket';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface Props {
+  originalPathname: string;
+  worldcupId: string;
+  candidateId: string;
+  mediaType: MediaType;
+  onChangeVideoInputIndex: (index: number | null) => void;
+  candidateIndex: number;
+  showVideoURLInput: boolean;
+}
+
+interface UpdateVideoParams {
   originalPathname: string;
   worldcupId: string;
   candidateId: string;
@@ -25,15 +31,17 @@ export default function UpdateWorldcupCandidateVideo({
   worldcupId,
   candidateId,
   mediaType,
+  onChangeVideoInputIndex,
+  candidateIndex,
+  showVideoURLInput,
 }: Props) {
-  const [showVideoURLInput, setShowVideoURLInput] = useState<boolean>(false);
   const [videoURL, setVideoURL] = useState<string>('');
   const handleUpdateVideo = async ({
     originalPathname,
     worldcupId,
     candidateId,
     mediaType,
-  }: Props) => {
+  }: UpdateVideoParams) => {
     try {
       const UrlObject = new URL(videoURL);
       if (UrlObject.protocol != 'https:') {
@@ -62,8 +70,6 @@ export default function UpdateWorldcupCandidateVideo({
         if (youtubeVideoId === null) {
           throw new Error('유튜브 주소가 올바른지 확인해주세요!');
         }
-        const youtubeVideoURL = `https://www.youtube.com/watch?v=${youtubeVideoId}`;
-        // const youtubeVideoTitle = await fetchYoutubeTitle(youtubeVideoURL);
 
         await updateCandidateVideoURL({
           mediaType: 'youtube',
@@ -90,9 +96,10 @@ export default function UpdateWorldcupCandidateVideo({
         throw new Error('주소가 올바른지 확인해주세요!');
       }
       if (mediaType === 'cdn_img' || mediaType === 'cdn_video') {
-        await deleteCandidateObject(originalPathname, worldcupId);
+        await deleteCandidateObject(originalPathname, worldcupId, mediaType);
       }
       setVideoURL('');
+      onChangeVideoInputIndex(null);
     } catch (error) {
       toast.error('잘못된 URL입니다.');
     }
@@ -103,7 +110,7 @@ export default function UpdateWorldcupCandidateVideo({
       <button
         type='button'
         className='px-4 py-2 bg-white border rounded-md text-base text-primary-500'
-        onClick={() => setShowVideoURLInput((prev) => !prev)}
+        onClick={() => onChangeVideoInputIndex(candidateIndex)}
       >
         동영상 수정
       </button>
@@ -117,15 +124,18 @@ export default function UpdateWorldcupCandidateVideo({
             placeholder='https://(주소입력)'
             value={videoURL}
             onChange={(e) => setVideoURL(e.target.value)}
+            autoComplete='off'
           />
           <div className='absolute flex items-center gap-1 right-2'>
             <button
-              onClick={() => setShowVideoURLInput(false)}
-              className='px-3 py-1 right-[40px] text-primary-500 border border-primary-500 bg-gray-50 rounded'
+              type='button'
+              onClick={() => onChangeVideoInputIndex(null)}
+              className='px-3 py-1 right-[40px] text-gray-500 border bg-white rounded'
             >
               취소
             </button>
             <button
+              type='button'
               onClick={() =>
                 handleUpdateVideo({
                   originalPathname,
@@ -136,7 +146,7 @@ export default function UpdateWorldcupCandidateVideo({
               }
               className='px-3 py-1 bg-primary-500 text-white right-2 rounded'
             >
-              추가
+              입력
             </button>
           </div>
         </div>

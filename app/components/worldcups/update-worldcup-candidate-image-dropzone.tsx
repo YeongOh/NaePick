@@ -5,7 +5,7 @@ import { MediaType } from '@/app/lib/definitions';
 import {
   deleteCandidateObject,
   fetchCandidateImageUploadURL,
-} from '@/app/lib/images';
+} from '@/app/lib/bucket';
 import { useCallback } from 'react';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
@@ -42,7 +42,7 @@ export default function UpdateWorldcupCandidateImageDropzone({
 
       if (response.ok) {
         if (mediaType === 'cdn_img' || mediaType === 'cdn_video') {
-          await deleteCandidateObject(originalPathname, worldcupId);
+          await deleteCandidateObject(originalPathname, worldcupId, mediaType);
         }
 
         await updateCandidateImageURL(

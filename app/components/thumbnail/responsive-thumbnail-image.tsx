@@ -3,6 +3,8 @@ import { VIDEO_ORIGIN } from '@/app/constants';
 import { getYoutubeThumbnailURL } from '@/app/lib/actions/videos/youtube';
 import { MediaType } from '@/app/lib/definitions';
 import MyImage from '@/app/ui/my-image/my-image';
+import { mp4toJpg } from '@/app/utils/utils';
+import { useState } from 'react';
 
 interface Props {
   onClick?: () => void;
@@ -37,10 +39,17 @@ export default function ResponsiveThumbnailImage({
   }
 
   if (mediaType === 'cdn_video') {
+    let params;
+    if (size === 'small') params = 'w=128&h=128';
+    if (size === 'medium') params = 'w=300&h=350';
+    if (size === 'large') params = 'w=500&h=500';
     return (
-      <video className='size-full object-cover'>
-        <source src={`${VIDEO_ORIGIN}/${pathname}`} type='video/mp4' />
-      </video>
+      <MyImage
+        className='object-cover size-full'
+        src={`${mp4toJpg(pathname)}?${params}`}
+        alt={name}
+        onClick={onClick}
+      />
     );
   }
 
@@ -48,6 +57,7 @@ export default function ResponsiveThumbnailImage({
     const youtubeThumbnailURL = getYoutubeThumbnailURL(pathname, size);
     return (
       <img
+        onClick={onClick}
         className='size-full object-cover'
         src={youtubeThumbnailURL}
         alt={name}
@@ -57,7 +67,12 @@ export default function ResponsiveThumbnailImage({
 
   if (mediaType === 'chzzk') {
     return (
-      <img className='size-full object-cover' src={thumbnailURL} alt={name} />
+      <img
+        onClick={onClick}
+        className='size-full object-cover'
+        src={thumbnailURL}
+        alt={name}
+      />
     );
   }
 }

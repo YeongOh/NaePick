@@ -1,20 +1,10 @@
 'use server';
 
 import { OBJECT_ID_LENGTH } from '@/app/constants';
-import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { nanoid } from 'nanoid';
 import { PassThrough, Readable } from 'stream';
-
-const Bucket = process.env.AWS_S3_BUCKET;
-const credentials = {
-  accessKeyId: process.env.AWS_ACCESS_KEY as string,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-};
-const s3 = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials,
-});
+import { S3client, videoBucket } from '../../bucket/config';
 
 export async function downloadImgurUploadS3(
   imgurUrl: string,
@@ -51,14 +41,14 @@ export async function downloadImgurUploadS3(
   const key = `worldcups/${worldcupId}/${objectId}.mp4`;
 
   const uploadParams = {
-    Bucket,
+    Bucket: videoBucket,
     Key: key,
     Body: passThrough,
     ContentType: contentType,
   };
   // content length를 몰라서 lib-storage를 사용해야함
   const parallelUploads3 = new Upload({
-    client: s3,
+    client: S3client,
     params: uploadParams,
 
     // optional tags
@@ -84,6 +74,7 @@ export async function downloadImgurUploadS3(
   });
 
   await parallelUploads3.done();
+
   return key;
 }
 
