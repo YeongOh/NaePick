@@ -2,7 +2,7 @@
 
 import { submitMatchResult } from '@/app/lib/actions/statistics/create-match-result';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
-import MyImage from '@/app/components/ui/my-image/my-image';
+import MyImage from '@/app/components/ui/my-image';
 import { useState } from 'react';
 
 interface Props {

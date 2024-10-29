@@ -1,25 +1,33 @@
 'use client';
 
 import { signout } from '@/app/lib/actions/auth/signout';
+import Link from 'next/link';
+import Button from '../ui/button';
 
 export default function SignoutForm() {
   return (
-    <div className='rounded-md bg-gray-50 p-6'>
-      <div className='text-center font-semibold mb-4 text-lg'>
-        해당 서비스를 이용하기 위해서는 로그아웃이 필요합니다.
-      </div>
-      <div className='text-center mb-4 text-lg'>로그아웃 하시겠습니까?</div>
-      <div className='flex gap-4 m-4 items-center justify-center'>
-        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
-          돌아가기
-        </button>
-        <button
-          onClick={() => signout()}
-          className='bg-gray-100 px-4 flex h-12 items-center rounded-lg font-semibold text-gray-600 border border-slate-600'
-        >
-          로그아웃
-        </button>
-      </div>
+    <div className='rounded-md flex flex-col w-full -translate-y-1/4'>
+      <Link
+        href='/'
+        className='text-primary-500 text-5xl text-center m-4 font-extrabold'
+      >
+        NaePick
+      </Link>
+      <p className='text-center text-base mb-2 text-slate-700'>
+        해당 서비스를 이용하려면 로그아웃이 필요합니다.
+      </p>
+      <p className='text-center text-lg font-semibold mb-6 text-slate-700'>
+        로그아웃 하시겠습니까?
+      </p>
+      <Button variant='outline' className='mb-2'>
+        로그아웃
+      </Button>
+      <Link
+        href='/'
+        className='w-full text-center text-white font-semibold py-3 px-2 rounded bg-primary-500 hover:bg-primary-700 transition-colors'
+      >
+        돌아가기
+      </Link>
     </div>
   );
 }

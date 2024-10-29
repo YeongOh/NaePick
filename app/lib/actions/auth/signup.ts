@@ -22,7 +22,7 @@ const FormSchema = z
   .object({
     email: z
       .string()
-      .email({ message: '올바른 이메일을 입력해주세요.' })
+      .email({ message: '이메일이 올바르지 않습니다.' })
       .max(EMAIL_MAX_LENGTH, {
         message: `${EMAIL_MAX_LENGTH}자 이하이어야 합니다.`,
       })
@@ -30,7 +30,7 @@ const FormSchema = z
     nickname: z
       .string()
       .min(NICKNAME_MIN_LENGTH, {
-        message: `아이디는 ${NICKNAME_MIN_LENGTH}글자 이상이어야 합니다.`,
+        message: `닉네임은 ${NICKNAME_MIN_LENGTH}자 이상이어야 합니다.`,
       })
       .max(NICKNAME_MAX_LENGTH, {
         message: `${NICKNAME_MAX_LENGTH}자 이하이어야 합니다.`,
@@ -47,13 +47,13 @@ const FormSchema = z
       .regex(/[a-zA-Z]/, { message: '최소 한 개의 문자를 포함해야 합니다.' })
       .regex(/[0-9]/, { message: '최소 한 개의 숫자를 포함해야 합니다.' })
       .regex(/[^a-zA-Z0-9]/, {
-        message: '최소 한 개의 특수문자를 포함해야 합니다.',
+        message: '최소 한 개의 특수 문자를 포함해야 합니다.',
       })
       .trim(),
     confirmPassword: z.string().trim(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: '패스워드가 일치하지 않습니다.',
+    message: '비밀번호가 일치하지 않습니다.',
     path: ['confirmPassword'],
   });
 
@@ -130,8 +130,6 @@ export async function signup(state: SignupState, formData: FormData) {
       message: '회원가입에 실패했습니다. (e4).',
     };
   }
-
-  // TODO: 회원가입 성공 토스트
 
   revalidatePath('/');
   redirect('/');

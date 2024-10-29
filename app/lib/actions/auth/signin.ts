@@ -10,7 +10,7 @@ import { pool } from '../../db';
 import { createSession } from '../session';
 
 const FormSchema = z.object({
-  email: z.string().email({ message: '올바른 이메일을 입력해주세요.' }),
+  email: z.string().email({ message: '올바른 이메일이 아닙니다.' }),
   password: z.string(),
 });
 

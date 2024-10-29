@@ -84,6 +84,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   const { nickname, oldPassword, changePassword, newPassword } =
     validatedFields.data;
 
+  const connection = await pool.getConnection();
   try {
     const session = await getSession();
     if (!session?.userId) {
@@ -92,10 +93,12 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
       };
     }
 
+    await connection.beginTransaction();
+
     const [result, fields]: [
       Pick<User, 'email' | 'nickname' | 'password'>[] & RowDataPacket[],
       FieldPacket[]
-    ] = await pool.query(
+    ] = await connection.query(
       `SELECT email, nickname, password
         FROM user
         WHERE user_id = ?;`,
@@ -121,7 +124,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     // 닉네임이 원래 닉네임과 다를 경우 수정
     if (nickname !== user.nickname) {
       const [duplicatedUserResult, duplicatedFields]: [User[], FieldPacket[]] =
-        await pool.query(
+        await connection.query(
           `SELECT * FROM user
              WHERE nickname = ? AND user_id != ?;`,
           [nickname, session.userId]
@@ -135,7 +138,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
           message: '수정에 실패했습니다. (e3)',
         };
       } else {
-        await pool.query(
+        await connection.query(
           `UPDATE user
              SET nickname = ?
              WHERE user_id = ?;`,
@@ -147,18 +150,20 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     if (changePassword && newPassword) {
       const salt = await bcrypt.genSalt(10);
       const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-      await pool.query(
+      await connection.query(
         `UPDATE user
         SET password = ?
         WHERE user_id = ?;`,
         [hashedNewPassword, session.userId]
       );
     }
+    await connection.commit();
 
     if (nickname) {
       await createSession({ ...session, nickname });
     }
   } catch (error) {
+    await connection.rollback();
     console.log(error);
     return {
       message: '회원가입에 실패했습니다. (e4).',

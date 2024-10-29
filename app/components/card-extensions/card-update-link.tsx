@@ -45,7 +45,7 @@ export default function CardUpdateLink({ worldcupId }: Props) {
         description={'모든 데이터가 영구히 삭제되며 복원할 수 없습니다.'}
         onClose={() => setShowDeleteWorldcupConfirmModal(false)}
         onConfirm={handleDeleteConfirm}
-      ></DeleteConfirmModal>
+      />
     </>
   );
 }

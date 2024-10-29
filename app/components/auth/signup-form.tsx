@@ -2,121 +2,73 @@
 
 import { signup, SignupState } from '@/app/lib/actions/auth/signup';
 import Link from 'next/link';
-import { useState } from 'react';
 import { useFormState } from 'react-dom';
+import Input from '../ui/input';
+import InputErrorMessage from '../ui/input-error-message';
+import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH } from '@/app/constants';
+import Button from '../ui/button';
 
 export default function SignupForm() {
   const initialState: SignupState = { message: null, errors: {} };
   const [state, submitSignupForm] = useFormState(signup, initialState);
-  const [nickname, setNickname] = useState<string>('');
-
-  const handleSignupSubmit = (formData: FormData) => {
-    submitSignupForm(formData);
-  };
 
   return (
-    <form action={handleSignupSubmit}>
-      <div className='rounded-md bg-gray-50 p-6'>
-        <div className='text-center font-semibold mb-4 text-lg'>
-          이상형 월드컵 NaePick에 오신걸 환영합니다!
-        </div>
-        <div className='text-center font-medium mb-4'>
-          입력하신 이메일로 어떠한 메일도 발신되지 않으며
-          <br></br>
-          회원 탈퇴시 모든 정보가 완전히 제거됩니다.
-        </div>
-        <label htmlFor='email' className='ml-2 mb-2 block font-semibold'>
-          이메일
-        </label>
-        <input
-          id='email'
-          name='email'
-          type='email'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
-              ${state.errors?.email && 'outline outline-1 outline-red-500'}`}
-          placeholder={`example@google.com`}
-          aria-describedby='email-error'
-        />
-        {state.errors?.email &&
-          state.errors.email.map((error: string) => (
-            <p className='m-2 mb-4 text-red-500' key={error}>
-              {error}
-            </p>
-          ))}
-        <label htmlFor='nickname' className='ml-2 mb-2 block font-semibold'>
-          닉네임
-        </label>
-        <input
-          id='nickname'
-          name='nickname'
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          type='text'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
-              ${state.errors?.nickname && 'outline outline-1 outline-red-500'}`}
-          placeholder={`다른 사람들에게 표시될 닉네임을 입력해주세요.`}
-          aria-describedby='nickname-error'
-        />
-        {state.errors?.nickname &&
-          state.errors.nickname.map((error: string) => (
-            <p className='m-2 mb-4 text-red-500' key={error}>
-              {error}
-            </p>
-          ))}
-        <label htmlFor='password' className='ml-2 mb-2 block font-semibold'>
-          비밀번호
-        </label>
-        <input
-          id='password'
-          name='password'
-          type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
-              ${state.errors?.password && 'outline outline-1 outline-red-500'}`}
-          placeholder={`비밀번호를 입력해주세요.`}
-          aria-describedby='password-error'
-        />
-        {state.errors?.password &&
-          state.errors.password.map((error: string) => (
-            <p className='m-2 mb-4 text-red-500' key={error}>
-              {error}
-            </p>
-          ))}
-        <label
-          htmlFor='confirmPassword'
-          className='ml-2 mb-2 block font-semibold'
-        >
-          비밀번호 재입력
-        </label>
-        <input
-          id='confirmPassword'
-          name='confirmPassword'
-          type='password'
-          className={`block w-full rounded-md border mb-4 border-gray-200 py-2 pl-4 placeholder:text-gray-500 focus:outline-primary-500 
-              ${
-                state.errors?.confirmPassword &&
-                'outline outline-1 outline-red-500'
-              }`}
-          placeholder={`비밀번호를 재입력해주세요.`}
-          aria-describedby='confirmPassword-error'
-        />
-        {state.errors?.confirmPassword &&
-          state.errors.confirmPassword.map((error: string) => (
-            <p className='m-2 mb-4 text-red-500' key={error}>
-              {error}
-            </p>
-          ))}
-      </div>
-      <div className='flex gap-4 m-4 justify-end'>
-        <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
-          가입하기
-        </button>
-        <Link
-          href={'/'}
-          className='bg-gray-100 px-4 flex h-12 items-center rounded-lg font-semibold text-gray-600'
-        >
-          취소
-        </Link>
-      </div>
+    <form
+      action={submitSignupForm}
+      className='rounded-md flex flex-col w-full -translate-y-1/4'
+    >
+      <Link
+        href='/'
+        className='text-primary-500 text-5xl text-center m-4 font-extrabold'
+      >
+        NaePick
+      </Link>
+      <p className='text-center text-base mb-6 text-slate-700'>
+        이상형 월드컵 NaePick에 오신 걸 환영합니다! <br />
+        간단한 회원가입 후 이상형 월드컵을 만들어보세요!
+      </p>
+      <Input
+        id='email'
+        name='email'
+        type='text'
+        className={`p-4 mb-2`}
+        error={state.errors?.email}
+        placeholder={`이메일`}
+        autoFocus
+      />
+      <InputErrorMessage className='mb-2' errors={state.errors?.email} />
+      <Input
+        id='nickname'
+        name='nickname'
+        className={`p-4 mb-2`}
+        error={state.errors?.nickname}
+        placeholder={`닉네임 (${NICKNAME_MIN_LENGTH} ~ ${NICKNAME_MAX_LENGTH}자)`}
+      />
+      <InputErrorMessage className='mb-2' errors={state.errors?.nickname} />
+      <Input
+        id='password'
+        name='password'
+        type='password'
+        className={`p-4 mb-2`}
+        error={state.errors?.password}
+        placeholder={`비밀번호 (문자, 숫자, 특수 문자 포함 8자 이상)`}
+      />
+      <InputErrorMessage className='mb-2' errors={state.errors?.password} />
+      <Input
+        id='confirmPassword'
+        name='confirmPassword'
+        type='password'
+        className={`p-4 mb-2`}
+        error={state.errors?.confirmPassword}
+        placeholder={`비밀번호 재입력`}
+      />
+      <InputErrorMessage
+        className='mb-2'
+        errors={state.errors?.confirmPassword}
+      />
+      <Button variant='primary' className='mt-4'>
+        가입 완료
+      </Button>
     </form>
   );
 }

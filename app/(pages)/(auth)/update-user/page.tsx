@@ -5,8 +5,8 @@ export default async function Page() {
   const session = await getSession();
 
   return (
-    <div className='max-w-xl m-auto'>
+    <section className='max-w-xs m-auto min-h-screen flex flex-col justify-center items-center'>
       <UpdateUserForm stringifiedSession={JSON.stringify(session)} />
-    </div>
+    </section>
   );
 }
