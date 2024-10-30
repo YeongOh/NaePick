@@ -24,7 +24,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <div className='max-w-3xl m-auto flex flex-col'>
+      <div className='max-w-xl m-auto flex flex-col'>
         <WorldcupFormTab
           worldcupId={worldcupId}
           disabled={null}

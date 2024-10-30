@@ -48,7 +48,6 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
     selectedCandidateIndex !== null
       ? candidatesWithWinrate[selectedCandidateIndex]
       : null;
-  console.log(selectedCandidate);
 
   return (
     <section className=''>
@@ -93,10 +92,10 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
           <div className='bg-black w-full'>
             <div className='w-full h-[400px] flex justify-center'>
               <ResponsiveMedia
-                lowerHeight={false}
                 pathname={selectedCandidate?.pathname as string}
                 name={selectedCandidate?.name as string}
                 mediaType={selectedCandidate?.mediaType!}
+                allowVideoControl
               />
             </div>
           </div>

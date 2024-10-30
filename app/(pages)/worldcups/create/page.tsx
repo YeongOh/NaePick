@@ -8,7 +8,7 @@ export default async function Page() {
   if (!categories) notFound();
 
   return (
-    <section className='max-w-3xl m-auto flex flex-col'>
+    <section className='max-w-xl m-auto flex flex-col'>
       <CreateWorldcupForm categories={categories} />
     </section>
   );

@@ -394,7 +394,6 @@ export default function UpdateWorldcupCandidatesForm({
                 {selectedCandidateToPreviewIndex === candidateIndex && (
                   <div className='w-full flex justify-center my-8 h-[400px] bg-black'>
                     <ResponsiveMedia
-                      lowerHeight={false}
                       pathname={candidate.pathname}
                       name={candidate.name}
                       mediaType={candidate.mediaType}

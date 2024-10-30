@@ -39,7 +39,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
   return (
     <form
       onSubmit={handleUpdateUserFormSubmit}
-      className='rounded-md flex flex-col w-full -translate-y-20'
+      className='rounded-md flex flex-col w-full mb-28'
       onKeyDown={handleFormKeyDown}
     >
       <Link

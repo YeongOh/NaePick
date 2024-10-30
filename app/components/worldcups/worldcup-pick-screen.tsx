@@ -2,8 +2,9 @@
 
 import { submitMatchResult } from '@/app/lib/actions/statistics/create-match-result';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
-import MyImage from '@/app/components/ui/my-image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import ResponsiveMedia from '../media/responsive-media';
+import YouTube, { YouTubePlayer } from 'react-youtube';
 
 interface Props {
   defaultCandidates: Candidate[];
@@ -21,6 +22,12 @@ export default function WorldcupPickScreen({
   );
   const [matchResult, setMatchResult] = useState<MatchResult[]>([]);
   const [picked, setPicked] = useState<'left' | 'right'>();
+  const leftYoutubeRef = useRef<YouTube | null>(null);
+  const rightYoutubeRef = useRef<YouTube | null>(null);
+  const [leftYouTubePlayer, setLeftYouTubePlayer] =
+    useState<YouTubePlayer | null>(null);
+  const [rightYouTubePlayer, setRightYouTubePlayer] =
+    useState<YouTubePlayer | null>(null);
 
   const round = candidates.length;
   const [leftIndex, rightIndex] = [round - 2, round - 1];
@@ -53,7 +60,16 @@ export default function WorldcupPickScreen({
       setPicked(undefined);
     }, 2000);
   }
-  console.log(candidates);
+
+  function handleOnMouseOverLeftYouTube() {
+    if (rightYouTubePlayer) rightYouTubePlayer.mute();
+    if (leftYouTubePlayer) leftYouTubePlayer.unMute();
+  }
+
+  function handleOnMouseOverRightYouTube() {
+    if (leftYouTubePlayer) leftYouTubePlayer.mute();
+    if (rightYouTubePlayer) rightYouTubePlayer.unMute();
+  }
 
   return (
     <>
@@ -74,73 +90,37 @@ export default function WorldcupPickScreen({
           </div>
         ) : null}
         <figure
+          onMouseOver={handleOnMouseOverLeftYouTube}
           onClick={() => {
             if (picked) return;
             handlePick('left');
           }}
-          className={`w-1/2 cursor-pointer flex justify-end ${
+          className={`w-1/2 relative cursor-pointer flex justify-end ${
             picked === 'left' && 'animate-expandLeft'
           } ${picked === 'right' && 'animate-shrinkRight'}`}
         >
-          {picked !== 'right' && leftCandidate.mediaType === 'cdn_video' && (
-            <div className='max-w-fit size-full'>
-              <video
-                className='w-full h-full object-contain'
-                autoPlay
-                playsInline
-                loop
-                muted
-              >
-                <source
-                  src={`https://cdn.naepick.co.kr/${leftCandidate.pathname}`}
-                  type='video/mp4'
-                />
-              </video>
-            </div>
-          )}
-          {picked !== 'right' && leftCandidate.mediaType === 'cdn_img' && (
-            <div className='max-w-fit size-full'>
-              <MyImage
-                className='object-contain size-full'
-                src={`${leftCandidate.pathname}?w=1920&h=1760`}
-                alt={leftCandidate.name}
-              />
-            </div>
-          )}
-          {picked !== 'right' && leftCandidate.mediaType === 'youtube' && (
-            <div className='size-full flex items-center justify-center'>
-              <iframe
-                onClick={(e) => e.stopPropagation()}
-                className='w-full h-[80%] max-h-full aspect-video'
-                src={`https://www.youtube-nocookie.com/embed/${leftCandidate.pathname}`}
-                title='Youtube video player'
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                referrerPolicy='strict-origin-when-cross-origin'
-                allowFullScreen
-              />
-            </div>
-          )}
-          {picked !== 'right' && leftCandidate.mediaType === 'chzzk' && (
-            <div className='size-full flex items-center justify-center'>
-              <iframe
-                onClick={(e) => e.stopPropagation()}
-                className='w-full h-[80%] max-h-full aspect-video'
-                src={`https://chzzk.naver.com/embed/clip/${leftCandidate.pathname}`}
-                title='CHZZK Player'
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                referrerPolicy='strict-origin-when-cross-origin'
-                allowFullScreen
-              />
-            </div>
+          {picked !== 'right' && (
+            <ResponsiveMedia
+              lowerHeight={true}
+              pathname={leftCandidate.pathname}
+              mediaType={leftCandidate.mediaType}
+              name={leftCandidate.name}
+              ref={leftYoutubeRef}
+              onYouTubePlay={(e) => setLeftYouTubePlayer(e.target)}
+            />
           )}
           {!isFinished && picked !== 'right' && (
-            <figcaption className='text-white absolute right-2/3 bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+            <figcaption
+              className={`${
+                picked ? 'right-1/2' : 'right-1/4'
+              } text-white absolute text-center bottom-1/4 text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+            >
               {leftCandidate.name}
             </figcaption>
           )}
           <div
             onClick={(e) => e.stopPropagation()}
-            className={`absolute top-1/2 left-1/2 cursor-default -translate-x-1/2 -translate-y-1/2 text-primary-500 text-3clamp font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+            className={`absolute top-1/2 cursor-default translate-x-1/2 -translate-y-1/2 text-primary-500 text-3clamp font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
               picked && 'hidden'
             }`}
           >
@@ -148,65 +128,31 @@ export default function WorldcupPickScreen({
           </div>
         </figure>
         <figure
+          onMouseOver={handleOnMouseOverRightYouTube}
           onClick={() => {
             if (picked) return;
             handlePick('right');
           }}
-          className={`w-1/2 cursor-pointer flex justify-start ${
+          className={`w-1/2 relative cursor-pointer flex justify-start ${
             picked === 'left' && 'animate-shrinkLeft'
           } ${picked === 'right' && 'animate-expandRight'}`}
         >
-          {picked !== 'left' && rightCandidate.mediaType === 'cdn_video' && (
-            <video
-              className='w-full h-full object-contain'
-              autoPlay
-              playsInline
-              loop
-              muted
-            >
-              <source
-                src={`https://cdn.naepick.co.kr/${rightCandidate.pathname}`}
-                type='video/mp4'
-              />
-            </video>
-          )}
-          {picked !== 'left' && rightCandidate.mediaType === 'cdn_img' && (
-            <div className='max-w-fit size-full'>
-              <MyImage
-                className='object-contain size-full'
-                src={`${rightCandidate.pathname}?w=1920&h=1760`}
-                alt={rightCandidate.name}
-              />
-            </div>
-          )}
-          {picked !== 'left' && rightCandidate.mediaType === 'youtube' && (
-            <div className='size-full flex items-center justify-center'>
-              <iframe
-                onClick={(e) => e.stopPropagation()}
-                className='w-full h-[90%] max-h-full aspect-video'
-                src={`https://www.youtube-nocookie.com/embed/${rightCandidate.pathname}`}
-                title='Youtube video player'
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                referrerPolicy='strict-origin-when-cross-origin'
-                allowFullScreen
-              />
-            </div>
-          )}
-          {picked !== 'left' && rightCandidate.mediaType === 'chzzk' && (
-            <div className='size-full flex items-center justify-center'>
-              <iframe
-                onClick={(e) => e.stopPropagation()}
-                className='w-full h-[90%] max-h-full aspect-video'
-                src={`https://chzzk.naver.com/embed/clip/${rightCandidate.pathname}`}
-                title='CHZZK Player'
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-                referrerPolicy='strict-origin-when-cross-origin'
-                allowFullScreen
-              />
-            </div>
+          {picked !== 'left' && (
+            <ResponsiveMedia
+              lowerHeight={true}
+              pathname={rightCandidate.pathname}
+              mediaType={rightCandidate.mediaType}
+              name={rightCandidate.name}
+              ref={rightYoutubeRef}
+              onYouTubePlay={(e) => setRightYouTubePlayer(e.target)}
+            />
           )}
           {!isFinished && picked !== 'left' && (
-            <figcaption className='text-white absolute left-2/3 text-center bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+            <figcaption
+              className={`${
+                picked ? 'left-1/2' : 'left-1/4'
+              } text-white absolute  -translate-x-1/2 text-center bottom-1/4 text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+            >
               {rightCandidate.name}
             </figcaption>
           )}

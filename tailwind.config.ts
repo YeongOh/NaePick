@@ -54,19 +54,6 @@ const config: Config = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       keyframes: {
-        moveLeft: {
-          '100%': { transform: 'translateX(-100%)' },
-        },
-        moveRight: {
-          '100%': { transform: 'translateX(100%)' },
-        },
-        pickLeft: {
-          '100%': { transform: 'translateX(50%)' },
-        },
-        pickRight: {
-          '100%': { transform: 'translateX(-50%)' },
-        },
-        // 버전 2
         shrinkLeft: {
           '100%': { width: '0%', transform: 'translateX(100%)' },
         },
@@ -78,7 +65,6 @@ const config: Config = {
           '100%': { width: '100%', 'justify-content': 'center' },
         },
         expandLeft: {
-          // justify-content를 늦게 줘야 layout shifting이 안생김
           '0%': { width: '50%', 'justify-content': 'center' },
           '100%': {
             width: '100%',
@@ -87,11 +73,6 @@ const config: Config = {
         },
       },
       animation: {
-        moveLeft: 'moveLeft 0.5s ease-in-out forwards',
-        moveRight: 'moveRight 0.5s ease-in-out forwards',
-        pickLeft: 'pickLeft 0.75s ease-in-out forwards',
-        pickRight: 'pickRight 0.75s ease-in-out forwards',
-        // 버전 2
         shrinkLeft: 'shrinkLeft 0.4s ease-in-out forwards',
         shrinkRight: 'shrinkRight 0.4s ease-in-out forwards',
         expandLeft: 'expandLeft 0.5s ease-in-out forwards',

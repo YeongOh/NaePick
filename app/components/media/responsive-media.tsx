@@ -1,19 +1,28 @@
 import { MediaType } from '@/app/lib/definitions';
 import MyImage from '@/app/components/ui/my-image';
+import { forwardRef } from 'react';
+import YouTube, { YouTubeEvent } from 'react-youtube';
 
 interface Props {
-  lowerHeight: boolean;
+  lowerHeight?: boolean;
   pathname: string;
   name: string;
   mediaType: MediaType;
+  allowVideoControl?: boolean;
+  onYouTubePlay?: (e: YouTubeEvent) => void;
 }
 
-export default function ResponsiveMedia({
-  lowerHeight,
-  pathname,
-  name,
-  mediaType,
-}: Props) {
+const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
+  {
+    lowerHeight,
+    pathname,
+    name,
+    mediaType,
+    allowVideoControl,
+    onYouTubePlay,
+  }: Props,
+  ref
+) {
   return (
     <>
       {mediaType === 'cdn_video' && (
@@ -24,6 +33,7 @@ export default function ResponsiveMedia({
             playsInline
             loop
             muted
+            controls={allowVideoControl}
           >
             <source
               src={`https://cdn.naepick.co.kr/${pathname}`}
@@ -43,16 +53,25 @@ export default function ResponsiveMedia({
       )}
       {mediaType === 'youtube' && (
         <div className='size-full flex items-center justify-center'>
-          <iframe
-            onClick={(e) => e.stopPropagation()}
-            className={`w-full max-h-full aspect-video ${
+          <YouTube
+            className={`w-full max-h-full ${
               lowerHeight ? 'h-[80%]' : 'h-full'
             }`}
-            src={`https://www.youtube-nocookie.com/embed/${pathname}`}
-            title='Youtube video player'
-            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-            referrerPolicy='strict-origin-when-cross-origin'
-            allowFullScreen
+            opts={{
+              height: '100%',
+              width: '100%',
+              host: 'https://www.youtube-nocookie.com',
+              playerVars: {
+                loop: 1,
+                // start: 5,
+                // end: 8,
+              },
+            }}
+            ref={ref}
+            id={pathname}
+            videoId={`${pathname}?start=5&end=6`}
+            title='YouTube video player'
+            onPlay={onYouTubePlay}
           />
         </div>
       )}
@@ -60,9 +79,6 @@ export default function ResponsiveMedia({
         <div className='size-full flex items-center justify-center'>
           <iframe
             onClick={(e) => e.stopPropagation()}
-            className={`w-full max-h-full aspect-video ${
-              lowerHeight ? 'h-[80%]' : 'h-full'
-            }`}
             src={`https://chzzk.naver.com/embed/clip/${pathname}`}
             title='CHZZK Player'
             allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
@@ -73,4 +89,6 @@ export default function ResponsiveMedia({
       )}
     </>
   );
-}
+});
+
+export default ResponsiveMedia;

@@ -20,7 +20,7 @@ export default function SigninForm() {
   return (
     <form
       onSubmit={handleSigninSubmit}
-      className='rounded-md flex flex-col w-full -translate-y-1/4'
+      className='rounded-md flex flex-col w-full mb-28'
     >
       <Link
         href='/'
