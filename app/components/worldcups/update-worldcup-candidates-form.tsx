@@ -13,7 +13,6 @@ import {
   fetchCandidateImageUploadURL,
 } from '@/app/lib/bucket';
 import { excludeFileExtension } from '@/app/utils/utils';
-import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
 import toast from 'react-hot-toast';

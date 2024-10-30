@@ -3,8 +3,11 @@
 import { signout } from '@/app/lib/actions/auth/signout';
 import Link from 'next/link';
 import Button from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function SignoutForm() {
+  const router = useRouter();
+
   return (
     <div className='rounded-md flex flex-col w-full -translate-y-1/4'>
       <Link
@@ -19,15 +22,17 @@ export default function SignoutForm() {
       <p className='text-center text-lg font-semibold mb-6 text-slate-700'>
         로그아웃 하시겠습니까?
       </p>
-      <Button variant='outline' className='mb-2'>
-        로그아웃
-      </Button>
-      <Link
-        href='/'
-        className='w-full text-center text-white font-semibold py-3 px-2 rounded bg-primary-500 hover:bg-primary-700 transition-colors'
+      <Button
+        type='button'
+        onClick={() => router.back()}
+        variant='primary'
+        className='mb-2'
       >
         돌아가기
-      </Link>
+      </Button>
+      <Button onClick={() => signout()} variant='outline' className=''>
+        로그아웃
+      </Button>
     </div>
   );
 }

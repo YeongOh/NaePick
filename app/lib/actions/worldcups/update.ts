@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
@@ -11,6 +10,7 @@ import { pool } from '../../db';
 import { validateWorldcupOwnership } from '../auth/worldcup-ownership';
 import { getSession } from '../session';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 const UpdatePostFormSchema = z.object({
   worldcupId: z.string(),
@@ -87,5 +87,6 @@ export async function updateWorldcupInfo(
       message: '이상형 월드컵 수정에 실패했습니다.',
     };
   }
+  revalidatePath(`/worldcups/${worldcupId}/update-info`);
   redirect(`/worldcups/${worldcupId}/update-candidates`);
 }

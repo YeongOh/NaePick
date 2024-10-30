@@ -10,29 +10,16 @@ export default async function Navbar() {
     <nav className='p-4 gap-4 border border-b-1'>
       <div className='flex items-center justify-between max-w-screen-2xl m-auto'>
         <Link href={'/'}>
-          <h1 className='font-bold text-2xl text-primary-500'>NaePick</h1>
+          <div className='font-bold text-2xl text-primary-500'>NaePick</div>
         </Link>
         <div className='flex gap-4 items-center text-base font-semibold text-slate-600'>
-          <NavbarLink
-            href={`/worldcups/create`}
-            pathToHighlight={`/worldcups/create`}
-          >
-            월드컵 만들기
-          </NavbarLink>
+          <NavbarLink href={`/worldcups/create`}>월드컵 만들기</NavbarLink>
           {session?.userId ? (
             <>
-              <NavbarLink
-                href={`/worldcups/users/${session.userId}`}
-                pathToHighlight={`/worldcups/users/${session.userId}`}
-              >
+              <NavbarLink href={`/worldcups/users/${session.userId}`}>
                 내 월드컵 관리
               </NavbarLink>
-              <NavbarLink
-                href={'/update-user'}
-                pathToHighlight={'/update-user'}
-              >
-                회원정보 수정
-              </NavbarLink>
+              <NavbarLink href={'/update-user'}>회원정보 수정</NavbarLink>
               <SignoutButtion />
             </>
           ) : (

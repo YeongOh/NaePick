@@ -4,6 +4,7 @@ import { DOMAIN } from '@/app/constants';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
+import Button from '../ui/button';
 
 interface Props {
   open: boolean;
@@ -34,12 +35,12 @@ export default function ShareWorldcupModal({
       {open &&
         createPortal(
           <div
-            className='modal fixed inset-0 z-99 bg-black/30 w-screen h-screen y-scroll-hidden'
+            className='modal fixed inset-0 z-50 bg-black/30 w-screen h-screen'
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] border bg-white p-4 rounded-xl'
+              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] border bg-white p-4 rounded-xl animate-modalTransition'
             >
               <h2 className='font-semibold text-center mb-4'>
                 {title} 공유하기
@@ -57,7 +58,7 @@ export default function ShareWorldcupModal({
                   />
                   <button
                     onClick={handleCopyShareLInk}
-                    className='absolute top-2 right-2 bg-primary-500 text-white px-4 py-2 rounded'
+                    className='absolute top-2 right-2 bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors'
                   >
                     복사
                   </button>

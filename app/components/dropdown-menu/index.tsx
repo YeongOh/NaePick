@@ -19,7 +19,7 @@ export default function DropdownMenu({
     <>
       {openDropdownMenu && (
         <div className='menubar'>
-          <ul className='absolute border bg-white rounded-lg flex flex-col w-[150px] text-left text-base shadow cursor-pointer text-slate-700 p-2'>
+          <ul className='absolute border bg-white rounded-lg flex flex-col w-[150px] text-left text-base shadow cursor-pointer text-slate-700 p-2 z-50 animate-modalTransition'>
             <Link
               className='p-2 hover:bg-gray-100'
               href={`/worldcups/${worldcupId}`}
@@ -28,7 +28,7 @@ export default function DropdownMenu({
             </Link>
             <Link
               className='p-2 my-0.5 hover:bg-gray-100'
-              href={`/worldcups/${worldcupId}/statistics`}
+              href={`/worldcups/${worldcupId}/stats`}
             >
               통계 보기
             </Link>

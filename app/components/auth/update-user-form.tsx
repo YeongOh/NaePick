@@ -12,6 +12,7 @@ import { useFormState } from 'react-dom';
 import Input from '../ui/input';
 import InputErrorMessage from '../ui/input-error-message';
 import Button from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 // TODO:가지고 있는 토큰으로 확인하지말고 서버에 세션 확인 후 => 정보 새로 받기
 interface Props {
@@ -24,6 +25,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
   const [state, submitUpdateUserForm] = useFormState(updateUser, initialState);
   const [nickname, setNickname] = useState<string>(session.nickname);
   const [changePassword, setChangePassword] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleUpdateUserFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -116,12 +118,14 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
       <Button className='mt-4' variant='primary'>
         수정 완료
       </Button>
-      <Link
-        href='/'
-        className='mt-2 w-full text-center text-base font-semibold py-3 px-2 rounde border bg-white hover:bg-gray-50 transition-colors text-slate-700 rounded'
+      <Button
+        type='button'
+        onClick={() => router.back()}
+        variant='outline'
+        className='mt-2'
       >
         돌아가기
-      </Link>
+      </Button>
     </form>
   );
 }

@@ -80,7 +80,7 @@ export default function WorldcupPickScreen({
           </h2>
         </div>
         {isFinished ? (
-          <div className='absolute left-1/2 bottom-[60px] -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
+          <div className='absolute left-1/2 bottom-1/4 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
             <h2 className='flex justify-center items-center text-white text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
               {picked === 'left'
                 ? candidates[leftIndex].name
@@ -120,7 +120,7 @@ export default function WorldcupPickScreen({
           )}
           <div
             onClick={(e) => e.stopPropagation()}
-            className={`absolute top-1/2 cursor-default translate-x-1/2 -translate-y-1/2 text-primary-500 text-3clamp font-bold z-10 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+            className={`absolute top-1/2 cursor-default translate-x-1/2 -translate-y-1/2 text-primary-500 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
               picked && 'hidden'
             }`}
           >

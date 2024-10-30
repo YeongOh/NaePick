@@ -63,13 +63,16 @@ const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
               host: 'https://www.youtube-nocookie.com',
               playerVars: {
                 loop: 1,
+                rel: 0,
+                playsinline: 1,
+                color: 'white',
                 // start: 5,
                 // end: 8,
               },
             }}
             ref={ref}
             id={pathname}
-            videoId={`${pathname}?start=5&end=6`}
+            videoId={pathname}
             title='YouTube video player'
             onPlay={onYouTubePlay}
           />

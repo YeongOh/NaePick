@@ -131,6 +131,7 @@ export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
               w.description,
               w.publicity, 
               w.created_at AS createdAt,
+              w.updated_at AS updatedAt,
               u.nickname as nickname,
               w.user_id as userId,
               ct.name as categoryName,

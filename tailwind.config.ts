@@ -71,12 +71,17 @@ const config: Config = {
             'justify-content': 'center',
           },
         },
+        modalTransition: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '100' },
+        },
       },
       animation: {
         shrinkLeft: 'shrinkLeft 0.4s ease-in-out forwards',
         shrinkRight: 'shrinkRight 0.4s ease-in-out forwards',
         expandLeft: 'expandLeft 0.5s ease-in-out forwards',
         expandRight: 'expandRight 0.5s ease-in-out forwards',
+        modalTransition: 'modalTransition 0.2s ease-in-out',
       },
     },
   },

@@ -9,15 +9,13 @@ import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 import WorldcupPickScreenSetter from '@/app/components/worldcups/worldcup-pick-screen-setter';
 
 interface Props {
-  params: { ['worldcup-id']: string; rounds: string };
+  params: { ['worldcup-id']: string };
 }
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const rounds = Number(params.rounds);
-  const [worldcupResult, comments, session] = await Promise.all([
+  const [worldcupResult, session] = await Promise.all([
     getWorldcupPickScreenByWorldcupId(worldcupId),
-    getCommentsByWorldcupId(worldcupId),
     getSession(),
   ]);
 
@@ -35,14 +33,6 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <WorldcupPickScreenSetter worldcup={worldcupResult[0]} />
-      <div className='max-w-screen-lg m-auto'>
-        <Fold worldcup={worldcupResult[0]} />
-        <CommentSection
-          worldcupId={worldcupId}
-          session={structuredClone(session)}
-          comments={comments}
-        />
-      </div>
     </>
   );
 }

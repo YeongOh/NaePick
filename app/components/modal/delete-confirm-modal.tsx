@@ -23,12 +23,12 @@ export default function DeleteConfirmModal({
       {open &&
         createPortal(
           <div
-            className='modal fixed inset-0 z-99 bg-black/80 w-screen h-screen y-scroll-hidden'
+            className='modal fixed inset-0 z-50 bg-black/80 w-screen h-screen'
             onClick={onClose}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 min-w-[400px]'
+              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 min-w-[400px] animate-modalTransition'
             >
               <div className='flex flex-col justify-between'>
                 <h2 className='text-lg font-semibold text-slate-700 mb-4'>

@@ -63,7 +63,7 @@ export default function Fold({ worldcup }: Props) {
           <div>
             <Link
               className='bg-gray-100 px-4 py-2 rounded-md mr-4'
-              href={`/worldcups/${worldcupId}/statistics`}
+              href={`/worldcups/${worldcupId}/stats`}
             >
               통계 보기
             </Link>

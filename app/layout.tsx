@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
-import Navbar from './components/navbar/navbar';
 import { Toaster } from 'react-hot-toast';
 
 const notoSansKr = Noto_Sans_KR({

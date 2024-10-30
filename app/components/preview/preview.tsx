@@ -14,7 +14,7 @@ export default function Preview({ src, alt, open, onClose }: Props) {
       {open &&
         createPortal(
           <div
-            className='fixed inset-0 z-99 bg-black/80 w-screen h-screen'
+            className='fixed inset-0 z-50 bg-black/80 w-screen h-screen'
             onClick={onClose}
           >
             <div className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>

@@ -3,29 +3,52 @@
 import { DEFAULT_ROUNDS, getNumberOfRoundsAvailable } from '@/app/constants';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import Button from '../ui/button';
+import { useRouter } from 'next/navigation';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
 
 interface Props {
   open: boolean;
-  onClose?: () => void;
   onRoundSubmit: (round: number) => void;
   worldcupId?: string;
   numberOfCandidates: number;
   title: string;
+  description: string;
+  nickname: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function StartWorldcupModal({
   open,
-  onClose,
   onRoundSubmit,
   numberOfCandidates,
   title,
+  description,
+  createdAt,
+  updatedAt,
+  nickname,
 }: Props) {
+  const router = useRouter();
   const availableRounds = getNumberOfRoundsAvailable(numberOfCandidates);
   const [round, setRound] = useState<number>(
     numberOfCandidates >= DEFAULT_ROUNDS
       ? DEFAULT_ROUNDS
       : Math.max(...availableRounds)
   );
+
+  dayjs.extend(relativeTime);
+  dayjs.locale('ko');
+
+  const createdDate = dayjs(createdAt);
+  const updatedDate = dayjs(updatedAt);
+  const isUpdated = createdDate.diff(updatedDate);
+
+  const handleRoundSubmit = () => {
+    onRoundSubmit(round);
+  };
 
   const handleRoundChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const targetRound = Number(e.target.value);
@@ -37,42 +60,47 @@ export default function StartWorldcupModal({
       {open &&
         createPortal(
           <div
-            className='modal fixed inset-0 z-99 bg-black/80 w-screen h-screen y-scroll-hidden'
-            onClick={onClose}
+            className='modal fixed inset-0 z-40 bg-black/80 w-screen h-screen'
+            onClick={() => router.back()}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-4 min-w-[320px]'
+              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 min-w-[400px] animate-modalTransition'
             >
-              <div className='flex flex-col items-center justify-between'>
-                <h2 className='text-lg font-semibold m-4'>{title}</h2>
+              <div>
+                <div className='flex justify-between text-base text-gray-500 items-center my-3'>
+                  <div>크리에이터: {nickname}</div>
+                  <div>
+                    {isUpdated
+                      ? `${createdDate.fromNow()} 업데이트`
+                      : `${updatedDate.fromNow()} 생성`}
+                  </div>
+                </div>
+                <p className='text-base text-slate-700 max-w-[300px] mb-4'>
+                  {description}
+                </p>
+                <p className='text-base text-gray-500 mb-3'>
+                  총 {numberOfCandidates}명의 후보가 대기중입니다.
+                </p>
                 <select
                   id={`${title} round`}
                   name='round'
-                  className={`w-full text-center flex-1 peer block cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-4 text-base`}
+                  className={`w-full text-center peer cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-4 text-base text-slate-700 font-semibold`}
                   defaultValue={round}
                   onChange={handleRoundChange}
                 >
-                  {availableRounds.map((round) => (
-                    <option key={round} value={round}>
-                      {`${round}강`}
-                    </option>
-                  ))}
+                  {availableRounds
+                    .sort((a, b) => b - a)
+                    .map((round) => (
+                      <option key={round} value={round}>
+                        무작위 {`${round}명`} 선택
+                      </option>
+                    ))}
                 </select>
-                <div className='flex w-full gap-4'>
-                  <button
-                    className='flex-1 text-primary-500 text-base px-4 py-2 text-center'
-                    onClick={onClose}
-                  >
-                    돌아가기
-                  </button>
-                  <button
-                    className='flex-1 text-base bg-primary-500 text-center text-white px-4 py-2 rounded'
-                    onClick={() => onRoundSubmit(round)}
-                  >
-                    시작하기!
-                  </button>
-                </div>
+
+                <Button variant='primary' onClick={handleRoundSubmit}>
+                  시작하기!
+                </Button>
               </div>
             </div>
           </div>,

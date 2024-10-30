@@ -5,19 +5,17 @@ import { usePathname } from 'next/navigation';
 
 interface Props {
   href: string;
-  pathToHighlight?: string;
   children: React.ReactNode;
 }
 
-export default function NavbarLink({ href, pathToHighlight, children }: Props) {
+export default function NavbarLink({ href, children }: Props) {
   const pathname = usePathname();
 
   return (
     <Link
       href={href}
       className={`relaitve ${
-        pathname.startsWith(pathToHighlight || '') &&
-        'font-semibold text-primary-500'
+        pathname.startsWith(href) && 'font-semibold text-primary-500'
       }`}
     >
       {children}
