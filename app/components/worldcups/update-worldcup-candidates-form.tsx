@@ -36,6 +36,7 @@ import UpdateWorldcupCandidateVideo from './update-worldcup-candidate-video';
 import ResponsiveMedia from '../media/responsive-media';
 import { IoLogoYoutube } from 'react-icons/io';
 import { SiImgur } from 'react-icons/si';
+import Button from '../ui/button';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -122,8 +123,12 @@ export default function UpdateWorldcupCandidatesForm({
     onError,
   });
 
-  const handleUpdateWorldcupCandidates = async (formData: FormData) => {
+  const handleUpdateWorldcupCandidates = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     try {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
       const formObject = Object.fromEntries(formData);
       delete formObject[videoURL];
 
@@ -224,187 +229,184 @@ export default function UpdateWorldcupCandidatesForm({
   const handleOnChangeUpdateVideoInputIndex = (index: number | null) => {
     setShowVideoInputIndex(index);
   };
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter') e.preventDefault();
+  };
 
   return (
     <>
-      <form action={handleUpdateWorldcupCandidates}>
-        <div className='rounded-md bg-gray-50 p-6'>
-          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-            썸네일 미리보기
-          </h2>
-          <div className='flex flex-col items-center justify-center'>
-            <div className='p-4 w-[330px]'>
-              <div className='h-[170px]'>
-                <CardThumbnail worldcupCard={worldcup} />
-              </div>
+      <form
+        onSubmit={handleUpdateWorldcupCandidates}
+        className='rounded-md bg-gray-50 p-6 mb-20'
+        onKeyDown={handleFormKeyDown}
+      >
+        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+          썸네일 미리보기
+        </h2>
+        <div className='flex flex-col items-center justify-center'>
+          <div className='p-4 w-[330px]'>
+            <div className='h-[170px]'>
+              <CardThumbnail worldcupCard={worldcup} />
             </div>
-            <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
-              <MdInfo size={'1.5em'} className='text-primary-500' />
-              썸네일은 우승을 많이 한 후보들로 업데이트 됩니다.
-            </span>
           </div>
-          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-            후보 이미지 추가
-          </h2>
-          <div
-            className='cursor-pointer border rounded-md mb-4 text-base bg-white p-4'
-            {...getRootProps()}
+          <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
+            <MdInfo size={'1.5em'} className='text-primary-500' />
+            썸네일은 우승을 많이 한 후보들로 업데이트 됩니다.
+          </span>
+        </div>
+        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+          후보 이미지 추가
+        </h2>
+        <div
+          className='cursor-pointer border rounded-md mb-4 text-base bg-white p-4'
+          {...getRootProps()}
+        >
+          <input {...getInputProps()} />
+          <div className='flex items-center justify-center gap-2'>
+            <FaFileUpload size={'1.5em'} className='text-primary-500' />
+            <p className='text-slate-700'>
+              이미지 파일을 드랍하거나 클릭해서 업로드
+            </p>
+          </div>
+        </div>
+        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+          후보 동영상 추가
+        </h2>
+        <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center mb-4 relative'>
+          <input
+            id='videoURL'
+            name='videoURL'
+            className='block w-[92%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
+            type='url'
+            placeholder='https://(주소입력)'
+            value={videoURL}
+            onChange={(e) => setVideoURL(e.target.value)}
+            autoComplete='off'
+          />
+          <button
+            type='button'
+            onClick={handleVideoUpload}
+            className='absolute px-3 py-1 bg-primary-500 text-white right-2 rounded'
           >
-            <input {...getInputProps()} />
-            <div className='flex items-center justify-center gap-2'>
-              <FaFileUpload size={'1.5em'} className='text-primary-500' />
-              <p className='text-slate-700'>
-                이미지 파일을 드랍하거나 클릭해서 업로드
-              </p>
-            </div>
-          </div>
-          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-            후보 동영상 추가
-          </h2>
-          <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center mb-4 relative'>
-            <input
-              id='videoURL'
-              name='videoURL'
-              className='block w-[92%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
-              type='url'
-              placeholder='https://(주소입력)'
-              value={videoURL}
-              onChange={(e) => setVideoURL(e.target.value)}
-              autoComplete='off'
-            />
-            <button
-              type='button'
-              onClick={handleVideoUpload}
-              className='absolute px-3 py-1 bg-primary-500 text-white right-2 rounded'
-            >
-              추가
-            </button>
-          </div>
-          <div className='text-base mb-6 text-gray-700'>
-            <h2 className='font-semibold'>지원 형식</h2>
-            <ul>
-              <li className='flex items-center gap-1'>
-                <SiImgur color='green' size={'1.2rem'} /> Imgur:
-                https://imgur.com/i6uyHNs
-              </li>
-              <li className='flex items-center gap-1'>
-                <IoLogoYoutube color='red' size={'1.2rem'} />
-                YouTube: https://youtube.com/watch?v=LV3vxkZpUjk
-              </li>
-              <li className='flex items-center gap-1'>
-                <img
-                  src={CHZZK_THUMBNAIL_URL}
-                  width={20}
-                  height={20}
-                  alt={'CHZZK logo'}
-                />
-                치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
-              </li>
-              <li className=''>
-                - Imgur, 치지직 썸네일 생성은 약 3~5초가 소요됩니다.
-              </li>
-            </ul>
-          </div>
-          <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-            후보 {candidates.length}명
-          </h2>
+            추가
+          </button>
+        </div>
+        <div className='text-base mb-6 text-gray-700'>
+          <h2 className='font-semibold'>지원 형식</h2>
           <ul>
-            {candidates
-              .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
-              .map((candidate, candidateIndex) => (
-                <li key={`${candidate.candidateId}/${candidate.pathname}`}>
-                  <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
-                    <div className='relative w-[64px] h-[64px] cursor-pointer'>
-                      <ResponsiveThumbnailImage
-                        pathname={candidate.pathname}
-                        name={candidate.name}
-                        mediaType={candidate.mediaType}
-                        thumbnailURL={candidate?.thumbnailURL}
-                        onClick={() => {
-                          console.log('hello');
-                          setSelectedCandidateToPreviewIndex(
-                            candidateIndex === selectedCandidateToPreviewIndex
-                              ? null
-                              : candidateIndex
-                          );
-                        }}
-                        size='small'
-                      />
-                    </div>
-                    <div className='w-full flex'>
-                      <input
-                        className='flex-1 ml-2 mr-1 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
-                        id={candidate.name}
-                        name={candidate.candidateId}
-                        type='text'
-                        defaultValue={candidate.name}
-                        placeholder={candidate.name}
-                        autoComplete='off'
-                        maxLength={CANDIDATE_NAME_MAX_LENGTH}
-                      />
-                      <div className='flex items-center gap-1'>
-                        <div className='relative'>
-                          <UpdateWorldcupCandidateVideo
-                            worldcupId={worldcup.worldcupId}
-                            candidateId={candidate.candidateId}
-                            originalPathname={candidate.pathname}
-                            mediaType={candidate.mediaType}
-                            candidateIndex={candidateIndex}
-                            onChangeVideoInputIndex={
-                              handleOnChangeUpdateVideoInputIndex
-                            }
-                            showVideoURLInput={
-                              showUpdateVideoInputIndex === candidateIndex
-                            }
-                          />
-                        </div>
-                        <UpdateWorldcupCandidateImageDropzone
+            <li className='flex items-center gap-1'>
+              <SiImgur color='green' size={'1.2rem'} /> Imgur:
+              https://imgur.com/i6uyHNs
+            </li>
+            <li className='flex items-center gap-1'>
+              <IoLogoYoutube color='red' size={'1.2rem'} />
+              YouTube: https://youtube.com/watch?v=LV3vxkZpUjk
+            </li>
+            <li className='flex items-center gap-1'>
+              <img
+                src={CHZZK_THUMBNAIL_URL}
+                width={20}
+                height={20}
+                alt={'CHZZK logo'}
+              />
+              치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
+            </li>
+            <li className=''>
+              - Imgur, 치지직 썸네일 생성은 약 3~5초가 소요됩니다.
+            </li>
+          </ul>
+        </div>
+        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
+          후보 {candidates.length}명
+        </h2>
+        <ul>
+          {candidates
+            .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
+            .map((candidate, candidateIndex) => (
+              <li key={`${candidate.candidateId}/${candidate.pathname}`}>
+                <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
+                  <div className='relative w-[64px] h-[64px] cursor-pointer'>
+                    <ResponsiveThumbnailImage
+                      pathname={candidate.pathname}
+                      name={candidate.name}
+                      mediaType={candidate.mediaType}
+                      thumbnailURL={candidate?.thumbnailURL}
+                      onClick={() => {
+                        console.log('hello');
+                        setSelectedCandidateToPreviewIndex(
+                          candidateIndex === selectedCandidateToPreviewIndex
+                            ? null
+                            : candidateIndex
+                        );
+                      }}
+                      size='small'
+                    />
+                  </div>
+                  <div className='w-full flex'>
+                    <input
+                      className='flex-1 ml-2 mr-1 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
+                      id={candidate.name}
+                      name={candidate.candidateId}
+                      type='text'
+                      defaultValue={candidate.name}
+                      placeholder={candidate.name}
+                      autoComplete='off'
+                      maxLength={CANDIDATE_NAME_MAX_LENGTH}
+                    />
+                    <div className='flex items-center gap-1'>
+                      <div className='relative'>
+                        <UpdateWorldcupCandidateVideo
                           worldcupId={worldcup.worldcupId}
                           candidateId={candidate.candidateId}
                           originalPathname={candidate.pathname}
                           mediaType={candidate.mediaType}
+                          candidateIndex={candidateIndex}
+                          onChangeVideoInputIndex={
+                            handleOnChangeUpdateVideoInputIndex
+                          }
+                          showVideoURLInput={
+                            showUpdateVideoInputIndex === candidateIndex
+                          }
                         />
-                        <button
-                          type='button'
-                          className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2'
-                          onClick={() => {
-                            setSelectedCandidateToDelete(candidate);
-                            setShowDeleteConfirmModal(true);
-                          }}
-                        >
-                          <div className='flex items-center gap-1'>
-                            <MdDelete className='text-red-500' size={'1.3em'} />
-                            <span>삭제</span>
-                          </div>
-                        </button>
                       </div>
-                    </div>
-                  </div>
-                  {selectedCandidateToPreviewIndex === candidateIndex && (
-                    <div className='w-full flex justify-center my-8 h-[400px] bg-black'>
-                      <ResponsiveMedia
-                        lowerHeight={false}
-                        pathname={candidate.pathname}
-                        name={candidate.name}
+                      <UpdateWorldcupCandidateImageDropzone
+                        worldcupId={worldcup.worldcupId}
+                        candidateId={candidate.candidateId}
+                        originalPathname={candidate.pathname}
                         mediaType={candidate.mediaType}
                       />
+                      <button
+                        type='button'
+                        className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2'
+                        onClick={() => {
+                          setSelectedCandidateToDelete(candidate);
+                          setShowDeleteConfirmModal(true);
+                        }}
+                      >
+                        <div className='flex items-center gap-1'>
+                          <MdDelete className='text-red-500' size={'1.3em'} />
+                          <span>삭제</span>
+                        </div>
+                      </button>
                     </div>
-                  )}
-                </li>
-              ))}
-          </ul>
-        </div>
-        <div className='flex gap-4 m-4 justify-end'>
-          <button className='bg-primary-500 px-4 flex h-12 items-center rounded-lg text-white font-semibold'>
-            저장
-          </button>
-          <Link
-            href={'/'}
-            className='bg-gray-100 px-4 flex h-12 items-center rounded-lg font-semibold text-gray-600'
-          >
-            취소
-          </Link>
-        </div>
+                  </div>
+                </div>
+                {selectedCandidateToPreviewIndex === candidateIndex && (
+                  <div className='w-full flex justify-center my-8 h-[400px] bg-black'>
+                    <ResponsiveMedia
+                      lowerHeight={false}
+                      pathname={candidate.pathname}
+                      name={candidate.name}
+                      mediaType={candidate.mediaType}
+                    />
+                  </div>
+                )}
+              </li>
+            ))}
+        </ul>
+        <Button className='mt-8' variant='primary'>
+          이상형 월드컵 후보 이름 저장
+        </Button>
       </form>
       <DeleteConfirmModal
         open={showDeleteConfirmModal}

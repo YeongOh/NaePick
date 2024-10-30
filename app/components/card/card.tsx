@@ -5,22 +5,22 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import Link from 'next/link';
 import CardEllipsis from './card-ellipsis';
-import CardUpdateLink from '../card-extensions/card-update-link';
+import CardUpdateLink from './card-update-link';
 
 export interface CardProps {
   worldcupCard: WorldcupCard;
   children?: React.ReactNode;
-  openMenubar: boolean;
-  onOpenMenubar: () => void;
-  onCloseMenubar: () => void;
+  openDropdownMenu: boolean;
+  onOpenDropdownMenu: () => void;
+  onCloseDropdownMenu: () => void;
   extended?: boolean;
 }
 
 export default function Card({
   worldcupCard,
-  openMenubar,
-  onOpenMenubar,
-  onCloseMenubar,
+  openDropdownMenu,
+  onOpenDropdownMenu,
+  onCloseDropdownMenu,
   extended,
 }: CardProps) {
   dayjs.extend(relativeTime);
@@ -49,9 +49,9 @@ export default function Card({
               <CardEllipsis
                 worldcupId={worldcupCard.worldcupId}
                 title={worldcupCard.title}
-                openMenubar={openMenubar}
-                onOpenMenubar={onOpenMenubar}
-                onCloseMenubar={onCloseMenubar}
+                openDropdownMenu={openDropdownMenu}
+                onOpenDropdownMenu={onOpenDropdownMenu}
+                onCloseDropdownMenu={onCloseDropdownMenu}
               />
             </div>
             <div className='flex items-center justify-between w-full'>

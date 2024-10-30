@@ -1,7 +1,7 @@
 import { getSession } from '@/app/lib/actions/session';
 import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import CommentSection from '@/app/components/comment/comment-section';
-import Fold from '@/app/components/fold/fold';
+import Fold from '@/app/components/fold';
 import WorldcupPickScreen from '@/app/components/worldcups/worldcup-pick-screen';
 import { notFound, redirect } from 'next/navigation';
 import { getRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';

@@ -22,7 +22,7 @@ export default function Button({
   return (
     <button
       onClick={onClick}
-      className={`w-full font-semibold py-3 px-2 rounded ${classNameResult}`}
+      className={`w-full text-base font-semibold py-3 px-2 rounded ${classNameResult}`}
     >
       {children}
     </button>

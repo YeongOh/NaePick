@@ -12,10 +12,21 @@ export default function SignupForm() {
   const initialState: SignupState = { message: null, errors: {} };
   const [state, submitSignupForm] = useFormState(signup, initialState);
 
+  const handleSignupFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    submitSignupForm(formData);
+  };
+
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter') e.preventDefault();
+  };
+
   return (
     <form
-      action={submitSignupForm}
+      onSubmit={handleSignupFormSubmit}
       className='rounded-md flex flex-col w-full -translate-y-1/4'
+      onKeyDown={handleFormKeyDown}
     >
       <Link
         href='/'

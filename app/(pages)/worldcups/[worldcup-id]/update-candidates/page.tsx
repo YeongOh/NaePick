@@ -20,14 +20,10 @@ export default async function Page({ params }: Props) {
     getSession(),
   ]);
 
-  console.log(candidates);
-  console.log(worldcupResult);
-
   if (!worldcupResult || !worldcupResult[0]) notFound();
   if (!candidates) notFound();
   if (worldcupResult[0].userId !== session.userId) redirect('/forbidden');
 
-  console.log(worldcupResult[0]);
   return (
     <div className='max-w-3xl m-auto'>
       <WorldcupFormTab

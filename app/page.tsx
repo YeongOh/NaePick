@@ -1,6 +1,6 @@
 import { getPublicWorldcupCards } from './lib/data/worldcups';
 import 'dayjs/locale/ko';
-import CardGrid from './components/card-grid/card-grid';
+import CardGrid from './components/card/card-grid';
 import Navbar from './components/navbar/navbar';
 
 export default async function Home() {

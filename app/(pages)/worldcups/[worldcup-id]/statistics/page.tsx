@@ -1,7 +1,7 @@
 import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound } from 'next/navigation';
-import Fold from '@/app/components/fold/fold';
+import Fold from '@/app/components/fold';
 import CommentSection from '@/app/components/comment/comment-section';
 import { getSession } from '@/app/lib/actions/session';
 import { getCommentsByWorldcupId } from '@/app/lib/data/comments';

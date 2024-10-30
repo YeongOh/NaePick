@@ -1,22 +1,21 @@
 'use client';
 
 import { HiEllipsisVertical } from 'react-icons/hi2';
-import Menubar from '../menubar/menubar';
-import { forwardRef, useEffect, useRef } from 'react';
+import DropdownMenu from '../dropdown-menu';
 
 interface Props {
   worldcupId: string;
   title: string;
-  openMenubar: boolean;
-  onOpenMenubar: () => void;
-  onCloseMenubar: () => void;
+  openDropdownMenu: boolean;
+  onOpenDropdownMenu: () => void;
+  onCloseDropdownMenu: () => void;
 }
 
 export default function CardEllipsis({
   worldcupId,
-  openMenubar,
-  onOpenMenubar,
-  onCloseMenubar,
+  openDropdownMenu,
+  onOpenDropdownMenu,
+  onCloseDropdownMenu,
   title,
 }: Props) {
   return (
@@ -29,17 +28,17 @@ export default function CardEllipsis({
           className=''
           size={'1.5rem'}
           onClick={() => {
-            if (!openMenubar) {
-              onOpenMenubar();
+            if (!openDropdownMenu) {
+              onOpenDropdownMenu();
             } else {
-              onCloseMenubar();
+              onCloseDropdownMenu();
             }
           }}
         />
       </button>
-      <Menubar
+      <DropdownMenu
         worldcupId={worldcupId}
-        openMenubar={openMenubar}
+        openDropdownMenu={openDropdownMenu}
         title={title}
       />
     </div>

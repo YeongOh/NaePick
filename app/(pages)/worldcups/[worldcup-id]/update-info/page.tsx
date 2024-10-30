@@ -23,16 +23,18 @@ export default async function Page({ params }: Props) {
   if (worldcupResult[0].userId !== session.userId) redirect('/forbidden');
 
   return (
-    <div className='max-w-3xl m-auto'>
-      <WorldcupFormTab
-        worldcupId={worldcupId}
-        disabled={null}
-        highlight='info'
-      />
-      <UpdateWorldcupInfoForm
-        worldcup={worldcupResult[0]}
-        categories={categories}
-      />
-    </div>
+    <>
+      <div className='max-w-3xl m-auto flex flex-col'>
+        <WorldcupFormTab
+          worldcupId={worldcupId}
+          disabled={null}
+          highlight='info'
+        />
+        <UpdateWorldcupInfoForm
+          worldcup={worldcupResult[0]}
+          categories={categories}
+        />
+      </div>
+    </>
   );
 }

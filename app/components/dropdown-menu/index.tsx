@@ -1,23 +1,24 @@
 import Link from 'next/link';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
-import { forwardRef, useState } from 'react';
+import { useState } from 'react';
 
 interface Props {
-  openMenubar: boolean;
+  openDropdownMenu: boolean;
   worldcupId: string;
   title: string;
 }
 
-const Menubar = forwardRef<HTMLDivElement, Props>(function Menubar(
-  { openMenubar, worldcupId, title }: Props,
-  ref
-) {
+export default function DropdownMenu({
+  openDropdownMenu,
+  worldcupId,
+  title,
+}: Props) {
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
 
   return (
     <>
-      {openMenubar && (
-        <div ref={ref} className='menubar'>
+      {openDropdownMenu && (
+        <div className='menubar'>
           <ul className='absolute border bg-white rounded-lg flex flex-col w-[150px] text-left text-base shadow cursor-pointer text-slate-700 p-2'>
             <Link
               className='p-2 hover:bg-gray-100'
@@ -51,6 +52,4 @@ const Menubar = forwardRef<HTMLDivElement, Props>(function Menubar(
       )}
     </>
   );
-});
-
-export default Menubar;
+}

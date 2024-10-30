@@ -1,7 +1,7 @@
 'use client';
 
 import { WorldcupCard } from '@/app/lib/definitions';
-import Card from '../card/card';
+import Card from './card';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -10,7 +10,9 @@ interface Props {
 }
 
 export default function CardGrid({ worldcupCards, extended }: Props) {
-  const [menubarIndex, setMenubarIndex] = useState<number | null>(null);
+  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(
+    null
+  );
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -19,12 +21,12 @@ export default function CardGrid({ worldcupCards, extended }: Props) {
       !target.closest('.menubar-toggle') &&
       !target.closest('.modal')
     ) {
-      setMenubarIndex(null);
+      setDropdownMenuIndex(null);
     }
   };
 
   useEffect(() => {
-    if (menubarIndex !== null) {
+    if (dropdownMenuIndex !== null) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -32,7 +34,7 @@ export default function CardGrid({ worldcupCards, extended }: Props) {
 
     // Cleanup listener on component unmount
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [menubarIndex]);
+  }, [dropdownMenuIndex]);
 
   return (
     <ul className='flex flex-wrap mt-6'>
@@ -40,9 +42,9 @@ export default function CardGrid({ worldcupCards, extended }: Props) {
         <Card
           key={worldcup.worldcupId}
           worldcupCard={worldcup}
-          openMenubar={menubarIndex === index}
-          onOpenMenubar={() => setMenubarIndex(index)}
-          onCloseMenubar={() => setMenubarIndex(null)}
+          openDropdownMenu={dropdownMenuIndex === index}
+          onOpenDropdownMenu={() => setDropdownMenuIndex(index)}
+          onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
           extended={extended}
         />
       ))}

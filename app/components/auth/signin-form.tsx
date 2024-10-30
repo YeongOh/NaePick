@@ -9,11 +9,17 @@ import Button from '../ui/button';
 
 export default function SigninForm() {
   const initialState: SigninState = { message: null, errors: {} };
-  const [state, signinAction] = useFormState(signin, initialState);
+  const [state, submitSignin] = useFormState(signin, initialState);
+
+  const handleSigninSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    submitSignin(formData);
+  };
 
   return (
     <form
-      action={signinAction}
+      onSubmit={handleSigninSubmit}
       className='rounded-md flex flex-col w-full -translate-y-1/4'
     >
       <Link

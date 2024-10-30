@@ -25,15 +25,22 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
   const [nickname, setNickname] = useState<string>(session.nickname);
   const [changePassword, setChangePassword] = useState<boolean>(false);
 
-  const handleUpdateUserFormSubmit = (formData: FormData) => {
+  const handleUpdateUserFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     formData.append('changePassword', String(changePassword));
     submitUpdateUserForm(formData);
   };
 
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter') e.preventDefault();
+  };
+
   return (
     <form
-      action={handleUpdateUserFormSubmit}
+      onSubmit={handleUpdateUserFormSubmit}
       className='rounded-md flex flex-col w-full -translate-y-20'
+      onKeyDown={handleFormKeyDown}
     >
       <Link
         href='/'
@@ -111,9 +118,9 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
       </Button>
       <Link
         href='/'
-        className='mt-2 w-full text-center font-semibold py-3 px-2 rounde border bg-white hover:bg-gray-50 transition-colors text-slate-700 rounded'
+        className='mt-2 w-full text-center text-base font-semibold py-3 px-2 rounde border bg-white hover:bg-gray-50 transition-colors text-slate-700 rounded'
       >
-        취소
+        돌아가기
       </Link>
     </form>
   );
