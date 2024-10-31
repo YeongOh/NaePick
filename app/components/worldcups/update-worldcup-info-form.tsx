@@ -125,7 +125,7 @@ export default function UpdateWorldcupInfoForm({
                 name='publicity'
                 type='radio'
                 value='public'
-                className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-700 focus:ring-2'
+                className='accent-primary-500 cursor-pointer border-gray-300 bg-gray-100 text-gray-700 focus:ring-2'
                 onClick={() => setPublicity('public')}
                 aria-describedby='publicity-error'
                 defaultChecked={publicity === 'public'}
@@ -148,7 +148,7 @@ export default function UpdateWorldcupInfoForm({
                 type='radio'
                 value='unlisted'
                 onClick={() => setPublicity('unlisted')}
-                className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
+                className='accent-primary-500 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
                 aria-describedby='publicity-error'
                 defaultChecked={publicity === 'unlisted'}
               />
@@ -170,7 +170,7 @@ export default function UpdateWorldcupInfoForm({
                 type='radio'
                 value='private'
                 onClick={() => setPublicity('private')}
-                className='h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
+                className='accent-primary-500 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
                 aria-describedby='publicity-error'
                 defaultChecked={publicity === 'private'}
               />

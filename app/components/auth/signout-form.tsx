@@ -27,6 +27,8 @@ export default function SignoutForm() {
         onClick={() => router.back()}
         variant='primary'
         className='mb-2'
+        aria-label='Go back'
+        role='link'
       >
         돌아가기
       </Button>

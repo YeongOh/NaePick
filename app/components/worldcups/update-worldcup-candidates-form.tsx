@@ -4,6 +4,7 @@
 import {
   CANDIDATE_NAME_MAX_LENGTH,
   CHZZK_THUMBNAIL_URL,
+  MIN_NUMBER_OF_CANDIDATES,
 } from '@/app/constants';
 import { createCandidate } from '@/app/lib/actions/candidates/create';
 import { updateCandidateNames } from '@/app/lib/actions/candidates/update';
@@ -19,7 +20,6 @@ import toast from 'react-hot-toast';
 import UpdateWorldcupCandidateImageDropzone from './update-worldcup-candidate-image-dropzone';
 import { deleteCandidate } from '@/app/lib/actions/candidates/delete';
 import { FaFileUpload } from 'react-icons/fa';
-import { MdDelete } from 'react-icons/md';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import { MdInfo } from 'react-icons/md';
@@ -36,6 +36,7 @@ import ResponsiveMedia from '../media/responsive-media';
 import { IoLogoYoutube } from 'react-icons/io';
 import { SiImgur } from 'react-icons/si';
 import Button from '../ui/button';
+import Spinner from '../ui/spinner';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -56,61 +57,67 @@ export default function UpdateWorldcupCandidatesForm({
     number | null
   >(null);
   const [videoURL, setVideoURL] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const worldcupId = worldcup.worldcupId;
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
       acceptedFiles.forEach(async (acceptedFile) => {
-        const filenameWithoutExtension = excludeFileExtension(
-          acceptedFile.name
-        );
-        const { signedURL, candidatePathname } =
-          await fetchCandidateImageUploadURL(
-            worldcup.worldcupId,
-            acceptedFile.path as string,
-            acceptedFile.type
+        try {
+          if (isLoading) {
+            toast.error('이미지 업로드 처리 중입니다.');
+            return;
+          }
+          setIsLoading(true);
+          const filenameWithoutExtension = excludeFileExtension(
+            acceptedFile.name
           );
-        const response = await fetch(signedURL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': acceptedFile.type,
-          },
-          body: acceptedFile,
-        });
-        if (!response.ok) {
-          throw new Error('업로드 실패');
+          const { signedURL, candidatePathname } =
+            await fetchCandidateImageUploadURL(
+              worldcup.worldcupId,
+              acceptedFile.path as string,
+              acceptedFile.type
+            );
+          const response = await fetch(signedURL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': acceptedFile.type,
+            },
+            body: acceptedFile,
+          });
+          if (!response.ok) {
+            throw new Error('업로드 실패');
+          }
+          await createCandidate({
+            candidateName: filenameWithoutExtension,
+            mediaType: 'cdn_img',
+            candidatePathname,
+            worldcupId,
+          });
+          toast.success('업로드에 성공했습니다!');
+        } catch (error) {
+          toast.error('오류가 발생했습니다.');
+        } finally {
+          setIsLoading(false);
         }
-        await createCandidate({
-          candidateName: filenameWithoutExtension,
-          mediaType: 'cdn_img',
-          candidatePathname,
-          worldcupId,
-        });
-        toast.success('업로드에 성공했습니다!');
       });
     },
     [worldcup, worldcupId]
   );
 
   const onError = (error: Error) => {
-    // 에러 처리 세분화
-    toast.error(error.message);
+    toast.error('오류가 발생했습니다.');
   };
 
   const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
-    // 최대 파일 개수 제한 오류 출력
-    // 최대 파일 사이즈 제한 오류 출력
-    // 지원하지 않는 파일 사이즈 제한 오류 출력
-    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 넘었습니다.');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 초과했습니다.');
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    // 2mb
-    maxSize: 2097152,
-    // maxFiles: 100,
+    maxSize: 10485760,
+    maxFiles: 10,
     accept: {
-      'image/png': [], // 'gif' 아직 미지원
+      'image/png': [],
       'image/jpg': [],
       'image/jpeg': [],
       'image/webp': [],
@@ -132,7 +139,7 @@ export default function UpdateWorldcupCandidatesForm({
       delete formObject[videoURL];
 
       await updateCandidateNames(worldcupId, formObject);
-      toast.success('저장되었습니다!');
+      toast.success('저장되었습니다.');
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -143,7 +150,6 @@ export default function UpdateWorldcupCandidatesForm({
       if (!selectedCandidateToDelete) {
         throw new Error('선택된 후보가 없습니다.');
       }
-      // S3에 저장하고 있는 오브젝트 삭제
       if (
         selectedCandidateToDelete.mediaType === 'cdn_img' ||
         selectedCandidateToDelete.mediaType === 'cdn_video'
@@ -165,15 +171,19 @@ export default function UpdateWorldcupCandidatesForm({
 
   const handleVideoUpload = async () => {
     try {
-      const UrlObject = new URL(videoURL);
-      if (UrlObject.protocol != 'https:') {
-        toast.error('https부터 시작하는 주소를 입력해주세요.');
+      if (isLoading) {
+        toast.error('동영상을 업로드 처리 중입니다.');
         return;
       }
-
+      const UrlObject = new URL(videoURL);
+      if (UrlObject.protocol != 'https:') {
+        toast.error('https로 시작하는 주소를 입력해 주세요.');
+        return;
+      }
       const hostname = UrlObject.hostname;
       const cleanURL = UrlObject.toString();
 
+      setIsLoading(true);
       if (hostname === 'imgur.com' || hostname === 'www.imgur.com') {
         const candidateURL = await downloadImgurUploadS3(cleanURL, worldcupId);
         await createCandidate({
@@ -190,7 +200,7 @@ export default function UpdateWorldcupCandidatesForm({
       ) {
         const youtubeVideoId = extractYoutubeId(cleanURL);
         if (youtubeVideoId === null) {
-          throw new Error('유튜브 주소가 올바른지 확인해주세요!');
+          throw new Error('유튜브 주소가 올바른지 확인해 주세요.');
         }
         const youtubeVideoURL = `https://www.youtube.com/watch?v=${youtubeVideoId}`;
         const youtubeVideoTitle = await fetchYoutubeTitle(youtubeVideoURL);
@@ -217,11 +227,13 @@ export default function UpdateWorldcupCandidatesForm({
           worldcupId,
         });
       } else {
-        throw new Error('주소가 올바른지 확인해주세요!');
+        throw new Error('주소가 올바른지 확인해 주세요.');
       }
       setVideoURL('');
     } catch (error) {
       toast.error('잘못된 URL입니다.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -257,7 +269,7 @@ export default function UpdateWorldcupCandidatesForm({
           후보 이미지 추가
         </h2>
         <div
-          className='cursor-pointer border rounded-md mb-4 text-base bg-white p-4'
+          className='relative cursor-pointer border rounded-md mb-4 text-base bg-white p-4 hover:bg-gray-50 transition-colors'
           {...getRootProps()}
         >
           <input {...getInputProps()} />
@@ -268,14 +280,23 @@ export default function UpdateWorldcupCandidatesForm({
             </p>
           </div>
         </div>
+        <div className='text-base mb-6 text-gray-500'>
+          <h2 className='font-semibold text-slate-500 mb-2'>
+            이미지 업로드 안내
+          </h2>
+          <p className='ml-2'>- 파일 크기 제한은 1MB입니다.</p>
+          <p className='ml-2'>
+            - 한 번에 업로드 가능한 파일 개수는 10개입니다.
+          </p>
+        </div>
         <h2 className='font-semibold text-slate-700 mb-2 text-base'>
           후보 동영상 추가
         </h2>
-        <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center mb-4 relative'>
+        <div className='cursor-pointer border rounded-md text-base bg-gray-100 p-2 flex items-center mb-4 relative'>
           <input
             id='videoURL'
             name='videoURL'
-            className='block w-[92%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
+            className='block w-[91%] rounded-md border border-gray-200 p-2 placeholder:text-gray-500 focus:outline-primary-500'
             type='url'
             placeholder='https://(주소입력)'
             value={videoURL}
@@ -285,14 +306,14 @@ export default function UpdateWorldcupCandidatesForm({
           <button
             type='button'
             onClick={handleVideoUpload}
-            className='absolute px-3 py-1 bg-primary-500 text-white right-2 rounded'
+            className='absolute px-4 py-2 bg-primary-500 text-white right-2 rounded hover:bg-primary-700 transition-colors font-semibold'
           >
             추가
           </button>
         </div>
-        <div className='text-base mb-6 text-gray-700'>
-          <h2 className='font-semibold'>지원 형식</h2>
-          <ul>
+        <div className='text-base mb-6 text-gray-500'>
+          <h2 className='font-semibold text-gray-500 mb-2'>동영상 주소 형식</h2>
+          <ul className='pl-2'>
             <li className='flex items-center gap-1'>
               <SiImgur color='green' size={'1.2rem'} /> Imgur:
               https://imgur.com/i6uyHNs
@@ -311,19 +332,32 @@ export default function UpdateWorldcupCandidatesForm({
               치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
             </li>
             <li className=''>
-              - Imgur, 치지직 썸네일 생성은 약 3~5초가 소요됩니다.
+              - Imgur, 치지직 썸네일 생성에는 최소 3~5초가 걸릴 수 있습니다.
             </li>
           </ul>
         </div>
         <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-          후보 {candidates.length}명
+          {candidates.length === 0
+            ? '후보를 추가해보세요!'
+            : `후보 ${candidates.length}명`}
         </h2>
+        {candidates.length < MIN_NUMBER_OF_CANDIDATES ? (
+          <p className='text-base text-gray-500 pl-2 mb-4'>
+            - {MIN_NUMBER_OF_CANDIDATES - candidates.length}명을 더 추가하면
+            이상형 월드컵을 시작할 준비가 완료됩니다.
+          </p>
+        ) : null}
+        {isLoading ? (
+          <div className='flex justify-center items-center border rounded bg-gray-100 my-4 h-[64px] w-full animate-pulse'>
+            <Spinner />
+          </div>
+        ) : null}
         <ul>
           {candidates
             .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
             .map((candidate, candidateIndex) => (
               <li key={`${candidate.candidateId}/${candidate.pathname}`}>
-                <div className='flex items-center border rounded-md mb-4 overflow-hidden'>
+                <div className='flex items-center border rounded-md mb-4 overflow-hidden bg-gray-100'>
                   <div className='relative w-[64px] h-[64px] cursor-pointer'>
                     <ResponsiveThumbnailImage
                       pathname={candidate.pathname}
@@ -343,7 +377,7 @@ export default function UpdateWorldcupCandidatesForm({
                   </div>
                   <div className='w-full flex'>
                     <input
-                      className='flex-1 ml-2 mr-1 pl-4 text-base placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
+                      className='flex-1 ml-2 mr-1 pl-4 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
                       id={candidate.name}
                       name={candidate.candidateId}
                       type='text'
@@ -376,16 +410,13 @@ export default function UpdateWorldcupCandidatesForm({
                       />
                       <button
                         type='button'
-                        className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2'
+                        className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2 hover:bg-gray-100 transition-colors'
                         onClick={() => {
                           setSelectedCandidateToDelete(candidate);
                           setShowDeleteConfirmModal(true);
                         }}
                       >
-                        <div className='flex items-center gap-1'>
-                          <MdDelete className='text-red-500' size={'1.3em'} />
-                          <span>삭제</span>
-                        </div>
+                        삭제
                       </button>
                     </div>
                   </div>

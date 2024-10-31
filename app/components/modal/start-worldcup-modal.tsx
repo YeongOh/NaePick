@@ -1,6 +1,10 @@
 'use client';
 
-import { DEFAULT_ROUNDS, getNumberOfRoundsAvailable } from '@/app/constants';
+import {
+  DEFAULT_ROUNDS,
+  getNumberOfRoundsAvailable,
+  MIN_NUMBER_OF_CANDIDATES,
+} from '@/app/constants';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import Button from '../ui/button';
@@ -38,6 +42,7 @@ export default function StartWorldcupModal({
       ? DEFAULT_ROUNDS
       : Math.max(...availableRounds)
   );
+  const notEnoughCandidates = numberOfCandidates < MIN_NUMBER_OF_CANDIDATES;
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
@@ -65,7 +70,7 @@ export default function StartWorldcupModal({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 min-w-[400px] animate-modalTransition'
+              className='fixed inset-0 m-auto border bg-white rounded-xl p-6 min-w-[420px] h-fit w-fit animate-modalTransition'
             >
               <div>
                 <div className='flex justify-between text-base text-gray-500 items-center my-3'>
@@ -80,27 +85,46 @@ export default function StartWorldcupModal({
                   {description}
                 </p>
                 <p className='text-base text-gray-500 mb-3'>
-                  총 {numberOfCandidates}명의 후보가 대기중입니다.
+                  {notEnoughCandidates
+                    ? '후보 수가 충분하지 않아 시작할 수 없습니다.'
+                    : `총 ${numberOfCandidates}명의 후보가 대기 중입니다.`}
                 </p>
                 <select
                   id={`${title} round`}
                   name='round'
-                  className={`w-full text-center peer cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-4 text-base text-slate-700 font-semibold`}
+                  className={`w-full text-center peer cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-2 text-base text-slate-700 font-semibold disabled:bg-gray-300`}
                   defaultValue={round}
                   onChange={handleRoundChange}
+                  disabled={notEnoughCandidates}
                 >
-                  {availableRounds
-                    .sort((a, b) => b - a)
-                    .map((round) => (
-                      <option key={round} value={round}>
-                        무작위 {`${round}명`} 선택
-                      </option>
-                    ))}
+                  {notEnoughCandidates ? (
+                    <option key={0}>
+                      후보가 최소 {MIN_NUMBER_OF_CANDIDATES}명 필요합니다.
+                    </option>
+                  ) : (
+                    availableRounds
+                      .sort((a, b) => b - a)
+                      .map((round) => (
+                        <option key={round} value={round}>
+                          무작위 후보 {round}명을 선택합니다.
+                        </option>
+                      ))
+                  )}
                 </select>
-
-                <Button variant='primary' onClick={handleRoundSubmit}>
-                  시작하기!
-                </Button>
+                {notEnoughCandidates ? (
+                  <Button
+                    variant='primary'
+                    aria-label='Go back'
+                    role='link'
+                    onClick={() => router.back()}
+                  >
+                    돌아가기
+                  </Button>
+                ) : (
+                  <Button variant='primary' onClick={handleRoundSubmit}>
+                    시작하기!
+                  </Button>
+                )}
               </div>
             </div>
           </div>,

@@ -4,6 +4,7 @@ interface Props {
   onClick?: () => void;
   children: React.ReactNode;
   type?: 'submit' | 'reset' | 'button' | undefined;
+  role?: string;
 }
 
 export default function Button({
@@ -12,6 +13,7 @@ export default function Button({
   onClick,
   children,
   type,
+  role,
 }: Props) {
   let classNameResult = className;
   if (variant === 'primary')
@@ -26,6 +28,7 @@ export default function Button({
 
   return (
     <button
+      role={role}
       type={type}
       onClick={onClick}
       className={`w-full text-base font-semibold py-3 px-2 rounded ${classNameResult}`}

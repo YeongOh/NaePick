@@ -74,6 +74,14 @@ export default function WorldcupPickScreen({
   return (
     <>
       <section className='relative flex bg-black h-[calc(100vh-62px)]'>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-500 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+            picked ? 'hidden' : ''
+          }`}
+        >
+          VS
+        </div>
         <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
           <h2 className='flex justify-center items-center text-white text-2clamp p-2 font-bold'>
             {worldcup.title} {getRoundsDescription(round)}
@@ -96,10 +104,10 @@ export default function WorldcupPickScreen({
             handlePick('left');
           }}
           className={`w-1/2 relative cursor-pointer flex justify-end ${
-            picked === 'left' && 'animate-expandLeft'
-          } ${picked === 'right' && 'animate-shrinkRight'}`}
+            picked === 'left' ? 'animate-expandLeft' : ''
+          } ${picked === 'right' ? 'animate-shrinkRight' : ''}`}
         >
-          {picked !== 'right' && (
+          {picked !== 'right' ? (
             <ResponsiveMedia
               lowerHeight={true}
               pathname={leftCandidate.pathname}
@@ -108,7 +116,7 @@ export default function WorldcupPickScreen({
               ref={leftYoutubeRef}
               onYouTubePlay={(e) => setLeftYouTubePlayer(e.target)}
             />
-          )}
+          ) : null}
           {!isFinished && picked !== 'right' && (
             <figcaption
               className={`${
@@ -118,14 +126,6 @@ export default function WorldcupPickScreen({
               {leftCandidate.name}
             </figcaption>
           )}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`absolute top-1/2 cursor-default translate-x-1/2 -translate-y-1/2 text-primary-500 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
-              picked && 'hidden'
-            }`}
-          >
-            VS
-          </div>
         </figure>
         <figure
           onMouseOver={handleOnMouseOverRightYouTube}
@@ -134,10 +134,10 @@ export default function WorldcupPickScreen({
             handlePick('right');
           }}
           className={`w-1/2 relative cursor-pointer flex justify-start ${
-            picked === 'left' && 'animate-shrinkLeft'
-          } ${picked === 'right' && 'animate-expandRight'}`}
+            picked === 'left' ? 'animate-shrinkLeft' : ''
+          } ${picked === 'right' ? 'animate-expandRight' : ''}`}
         >
-          {picked !== 'left' && (
+          {picked !== 'left' ? (
             <ResponsiveMedia
               lowerHeight={true}
               pathname={rightCandidate.pathname}
@@ -146,8 +146,8 @@ export default function WorldcupPickScreen({
               ref={rightYoutubeRef}
               onYouTubePlay={(e) => setRightYouTubePlayer(e.target)}
             />
-          )}
-          {!isFinished && picked !== 'left' && (
+          ) : null}
+          {!isFinished && picked !== 'left' ? (
             <figcaption
               className={`${
                 picked ? 'left-1/2' : 'left-1/4'
@@ -155,7 +155,7 @@ export default function WorldcupPickScreen({
             >
               {rightCandidate.name}
             </figcaption>
-          )}
+          ) : null}
         </figure>
       </section>
     </>

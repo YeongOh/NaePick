@@ -19,7 +19,7 @@ export default async function Page({ params }: Props) {
     getSession(),
   ]);
 
-  if (!worldcupResult) {
+  if (!worldcupResult || !worldcupResult[0]) {
     notFound();
   }
 

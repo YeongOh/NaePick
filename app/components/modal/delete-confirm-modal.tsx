@@ -28,7 +28,7 @@ export default function DeleteConfirmModal({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 min-w-[400px] animate-modalTransition'
+              className='fixed inset-0 m-auto border bg-white rounded-xl p-6 w-[420px] h-fit animate-modalTransition'
             >
               <div className='flex flex-col justify-between'>
                 <h2 className='text-lg font-semibold text-slate-700 mb-4'>

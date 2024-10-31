@@ -84,7 +84,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='changePassword'
           name='changePassword'
           checked={changePassword}
-          className='cursor-pointer'
+          className='cursor-pointer accent-primary-500'
           onChange={() => setChangePassword((prev) => !prev)}
         />
         <label
@@ -123,6 +123,8 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
         onClick={() => router.back()}
         variant='outline'
         className='mt-2'
+        aria-label='Go back'
+        role='link'
       >
         돌아가기
       </Button>

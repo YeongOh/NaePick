@@ -11,6 +11,8 @@ export const CANDIDATE_ID_LENGTH = 8; // => 2M
 export const COMMENT_ID_LENGTH = 8;
 export const OBJECT_ID_LENGTH = 6;
 
+export const MIN_NUMBER_OF_CANDIDATES = 2;
+
 // Create Post Form Validation
 export const WORLDCUP_TITLE_MIN_LENGTH = 2;
 export const WORLDCUP_TITLE_MAX_LENGTH = 60;
@@ -51,7 +53,7 @@ export const CHZZK_THUMBNAIL_URL =
 export function getNumberOfRoundsAvailable(
   numberOfCandidates: number
 ): number[] {
-  const options = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
+  const options = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
   const result = options.filter((option) => option <= numberOfCandidates);
   return result;
 }
