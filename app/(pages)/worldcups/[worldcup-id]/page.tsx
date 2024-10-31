@@ -14,12 +14,15 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcupResult, session] = await Promise.all([
+  const [worldcupResult, comments, session] = await Promise.all([
     getWorldcupPickScreenByWorldcupId(worldcupId),
+    getCommentsByWorldcupId(worldcupId),
     getSession(),
   ]);
 
-  if (!worldcupResult || !worldcupResult[0]) {
+  console.log(worldcupResult);
+  console.log(comments);
+  if (!worldcupResult || !worldcupResult[0] || !comments) {
     notFound();
   }
 
@@ -32,7 +35,10 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <WorldcupPickScreenSetter worldcup={worldcupResult[0]} />
+      <WorldcupPickScreenSetter
+        worldcup={worldcupResult[0]}
+        comments={comments}
+      />
     </>
   );
 }

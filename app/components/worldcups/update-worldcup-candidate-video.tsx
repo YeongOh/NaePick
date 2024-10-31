@@ -130,7 +130,7 @@ export default function UpdateWorldcupCandidateVideo({
         동영상 수정
       </button>
       {showVideoURLInput && !isLoading ? (
-        <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center absolute right-28 bottom-0 translate-x-1/3 w-[500px]'>
+        <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center absolute right-28 bottom-0 translate-x-1/3 w-[500px] z-40'>
           <input
             className='block w-[75%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
             id='videoURL'

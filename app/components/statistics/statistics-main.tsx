@@ -18,8 +18,6 @@ export default function StatisticsMain({ candidates, worldcup }: Props) {
     number | null
   >(null);
 
-  dayjs().format();
-
   const candidatesWithWinrate = candidates
     .map((candidate) => ({
       ...candidate,

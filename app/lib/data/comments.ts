@@ -12,7 +12,8 @@ export async function getCommentsByWorldcupId(worldcupId: string) {
             c.text as text,
             c.created_at as createdAt,
             c.updated_at as updatedAt,
-            u.nickname as nickname
+            u.nickname as nickname,
+            c.is_anonymous as isAnonymous
          FROM comment c
          LEFT JOIN user u ON u.user_id = c.user_id
          WHERE c.worldcup_id = ?;`,

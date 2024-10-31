@@ -52,10 +52,14 @@ const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'youtube' && (
-        <div className='size-full flex items-center justify-center'>
+        <div
+          className={`size-full flex justify-center ${
+            lowerHeight ? '' : 'items-center'
+          }`}
+        >
           <YouTube
             className={`w-full max-h-full ${
-              lowerHeight ? 'h-[80%]' : 'h-full'
+              lowerHeight ? 'h-[85%]' : 'h-full'
             }`}
             opts={{
               height: '100%',
@@ -79,8 +83,13 @@ const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'chzzk' && (
-        <div className='size-full flex items-center justify-center'>
+        <div
+          className={`w-full ${
+            lowerHeight ? 'h-[85%]' : 'h-full'
+          } flex items-center justify-center`}
+        >
           <iframe
+            className='size-full'
             onClick={(e) => e.stopPropagation()}
             src={`https://chzzk.naver.com/embed/clip/${pathname}`}
             title='CHZZK Player'

@@ -1,6 +1,6 @@
 import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import StatisticsMain from '@/app/components/statistics/statistics-main';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Fold from '@/app/components/fold';
 import CommentSection from '@/app/components/comment/comment-section';
 import { getSession } from '@/app/lib/actions/session';
@@ -23,6 +23,15 @@ export default async function Page({ params }: Props) {
 
   if (worldcupResult && worldcupResult[0] && candidatesStatistics) {
     const worldcup = worldcupResult[0];
+    if (
+      worldcup.publicity === 'private' &&
+      worldcup.userId !== session?.userId
+    ) {
+      redirect('/forbidden');
+    }
+
+    // TODO: 챔피언 4개 미만인지 확인
+
     return (
       <>
         <div className='bg-gray-50'>
@@ -33,11 +42,7 @@ export default async function Page({ params }: Props) {
               worldcup={worldcup}
             />
 
-            <CommentSection
-              worldcupId={worldcupId}
-              session={structuredClone(session)}
-              comments={comments}
-            />
+            <CommentSection worldcupId={worldcupId} comments={comments} />
           </div>
         </div>
       </>

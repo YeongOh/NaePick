@@ -122,7 +122,7 @@ export default function StartWorldcupModal({
                   </Button>
                 ) : (
                   <Button variant='primary' onClick={handleRoundSubmit}>
-                    시작하기!
+                    시작
                   </Button>
                 )}
               </div>

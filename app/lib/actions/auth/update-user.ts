@@ -19,13 +19,13 @@ const FormSchema = z
   .object({
     nickname: z
       .string()
+      .trim()
       .min(NICKNAME_MIN_LENGTH, {
         message: `아이디는 ${NICKNAME_MIN_LENGTH}글자 이상이어야 합니다.`,
       })
       .max(NICKNAME_MAX_LENGTH, {
         message: `${NICKNAME_MAX_LENGTH}자 이하이어야 합니다.`,
-      })
-      .trim(),
+      }),
     oldPassword: z.string(),
     changePassword: z.boolean(),
     newPassword: z
@@ -41,9 +41,8 @@ const FormSchema = z
       .regex(/[^a-zA-Z0-9]/, {
         message: '최소 한 개의 특수문자를 포함해야 합니다.',
       })
-      .trim()
       .nullable(),
-    confirmNewPassword: z.string().trim().nullable(),
+    confirmNewPassword: z.string().nullable(),
   })
   .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: '패스워드가 일치하지 않습니다.',

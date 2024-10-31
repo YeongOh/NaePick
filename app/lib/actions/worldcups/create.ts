@@ -11,7 +11,6 @@ import {
 import { getSession } from '../session';
 import { pool } from '../../db';
 import { nanoid } from 'nanoid';
-import { revalidatePath } from 'next/cache';
 
 const CreatePostFormSchema = z.object({
   title: z

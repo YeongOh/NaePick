@@ -10,7 +10,6 @@ import {
   CANDIDATE_NAME_MAX_LENGTH,
 } from '@/app/constants';
 import { MediaType } from '../../definitions';
-import { redirect } from 'next/navigation';
 
 interface CandidateParameters {
   worldcupId: string;

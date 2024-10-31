@@ -22,20 +22,20 @@ const FormSchema = z
   .object({
     email: z
       .string()
+      .trim()
       .email({ message: '이메일이 올바르지 않습니다.' })
       .max(EMAIL_MAX_LENGTH, {
         message: `${EMAIL_MAX_LENGTH}자 이하이어야 합니다.`,
-      })
-      .trim(),
+      }),
     nickname: z
       .string()
+      .trim()
       .min(NICKNAME_MIN_LENGTH, {
         message: `닉네임은 ${NICKNAME_MIN_LENGTH}자 이상이어야 합니다.`,
       })
       .max(NICKNAME_MAX_LENGTH, {
         message: `${NICKNAME_MAX_LENGTH}자 이하이어야 합니다.`,
-      })
-      .trim(),
+      }),
     password: z
       .string()
       .min(PASSWORD_MIN_LENGTH, {
@@ -48,8 +48,7 @@ const FormSchema = z
       .regex(/[0-9]/, { message: '최소 한 개의 숫자를 포함해야 합니다.' })
       .regex(/[^a-zA-Z0-9]/, {
         message: '최소 한 개의 특수 문자를 포함해야 합니다.',
-      })
-      .trim(),
+      }),
     confirmPassword: z.string().trim(),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -10,12 +10,16 @@ interface Props {
   defaultCandidates: Candidate[];
   worldcup: Worldcup;
   startingRound: number;
+  onWorldcupEnd: () => void;
+  className: string;
 }
 
 export default function WorldcupPickScreen({
   defaultCandidates,
   worldcup,
   startingRound,
+  onWorldcupEnd,
+  className,
 }: Props) {
   const [candidates, setCandidates] = useState<Candidate[]>(
     defaultCandidates.slice(0, startingRound)
@@ -37,7 +41,7 @@ export default function WorldcupPickScreen({
   ];
   const isFinished = round === 2 && picked;
 
-  function handlePick(target: 'left' | 'right') {
+  const handlePick = async (target: 'left' | 'right') => {
     const winner = target === 'left' ? leftCandidate : rightCandidate;
     const loser = target === 'left' ? rightCandidate : leftCandidate;
     const winnerCandidateId = winner.candidateId;
@@ -49,7 +53,8 @@ export default function WorldcupPickScreen({
         ...matchResult,
         { winnerCandidateId, loserCandidateId },
       ];
-      submitMatchResult(matchResultToSubmit, worldcup.worldcupId);
+      await submitMatchResult(matchResultToSubmit, worldcup.worldcupId);
+      onWorldcupEnd();
       return;
     }
 
@@ -59,21 +64,28 @@ export default function WorldcupPickScreen({
       setMatchResult([...matchResult, { winnerCandidateId, loserCandidateId }]);
       setPicked(undefined);
     }, 2000);
-  }
+  };
 
-  function handleOnMouseOverLeftYouTube() {
+  const handleOnMouseOverLeftYouTube = () => {
     if (rightYouTubePlayer) rightYouTubePlayer.mute();
     if (leftYouTubePlayer) leftYouTubePlayer.unMute();
-  }
+  };
 
-  function handleOnMouseOverRightYouTube() {
+  const handleOnMouseOverRightYouTube = () => {
     if (leftYouTubePlayer) leftYouTubePlayer.mute();
     if (rightYouTubePlayer) rightYouTubePlayer.unMute();
-  }
+  };
 
   return (
     <>
-      <section className='relative flex bg-black h-[calc(100vh-62px)]'>
+      <section
+        className={`relative flex bg-black h-[calc(100vh-62px)] ${className}`}
+      >
+        <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
+          <h2 className='text-center text-white text-2clamp font-bold'>
+            {worldcup.title} {getRoundsDescription(round)}
+          </h2>
+        </div>
         <div
           onClick={(e) => e.stopPropagation()}
           className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-500 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
@@ -82,11 +94,7 @@ export default function WorldcupPickScreen({
         >
           VS
         </div>
-        <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
-          <h2 className='flex justify-center items-center text-white text-2clamp p-2 font-bold'>
-            {worldcup.title} {getRoundsDescription(round)}
-          </h2>
-        </div>
+
         {isFinished ? (
           <div className='absolute left-1/2 bottom-1/4 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
             <h2 className='flex justify-center items-center text-white text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
@@ -120,8 +128,8 @@ export default function WorldcupPickScreen({
           {!isFinished && picked !== 'right' && (
             <figcaption
               className={`${
-                picked ? 'right-1/2' : 'right-1/4'
-              } text-white absolute text-center bottom-1/4 text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+                picked ? 'right-1/2' : 'right-[20%]'
+              } text-white min-h-24 absolute text-right bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
             >
               {leftCandidate.name}
             </figcaption>
@@ -150,8 +158,8 @@ export default function WorldcupPickScreen({
           {!isFinished && picked !== 'left' ? (
             <figcaption
               className={`${
-                picked ? 'left-1/2' : 'left-1/4'
-              } text-white absolute  -translate-x-1/2 text-center bottom-1/4 text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+                picked ? 'left-1/2' : 'left-[20%]'
+              } text-white min-h-24 absolute text-left bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
             >
               {rightCandidate.name}
             </figcaption>

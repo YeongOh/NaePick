@@ -63,7 +63,9 @@ export default function Input({
       />
       <label
         htmlFor={id}
-        className={`absolute top-[28%] left-4 text-gray-500 text-base bg-white transition cursor-text ${
+        className={`${
+          error ? 'text-red-500' : 'text-gray-500'
+        } absolute top-[28%] left-4 text-base bg-white transition cursor-text ${
           focused || hasValue || defaultValue || value
             ? '-translate-y-6 -translate-x-1 text-primary-500'
             : ''

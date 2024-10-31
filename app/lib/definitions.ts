@@ -62,6 +62,7 @@ export interface Comment extends QueryResult {
   text: string;
   createdAt: string;
   updatedAt: string;
+  isAnonymous: boolean;
 }
 
 export interface MatchResult {

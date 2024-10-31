@@ -1,22 +1,24 @@
-interface Props {
+import Link from 'next/link';
+
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  href: string;
   className?: string;
   variant: 'primary' | 'outline' | 'ghost';
   onClick?: () => void;
   children: React.ReactNode;
-  type?: 'submit' | 'reset' | 'button' | undefined;
-  role?: string;
   size?: 'small' | 'medium' | 'large';
 }
 
-export default function Button({
+export default function LinkButton({
   className = '',
   variant,
   onClick,
   children,
-  type,
   role,
+  href,
   size = 'medium',
-}: Props) {
+  ...props
+}: LinkProps) {
   let classNameResult = className;
   if (variant === 'primary')
     classNameResult +=
@@ -32,13 +34,13 @@ export default function Button({
   if (size === 'medium') classNameResult += ' py-3 px-2';
 
   return (
-    <button
-      role={role}
-      type={type}
+    <Link
+      href={href}
       onClick={onClick}
-      className={`w-full text-base font-semibold rounded ${classNameResult}`}
+      className={`w-full text-center text-base font-semibold rounded ${classNameResult}`}
+      {...props}
     >
       {children}
-    </button>
+    </Link>
   );
 }

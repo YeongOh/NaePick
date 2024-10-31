@@ -185,6 +185,7 @@ async function seedComment() {
         worldcup_id VARCHAR(10) NOT NULL,
         parent_comment_id VARCHAR(10) DEFAULT NULL,
         user_id VARCHAR(10) DEFAULT NULL,
+        is_anonymous BOOLEAN DEFAULT FALSE,
         text VARCHAR(300) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

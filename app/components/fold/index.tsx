@@ -44,12 +44,12 @@ export default function Fold({ worldcup }: Props) {
               <p className='text-lg font-semibold mb-2'>{nickname}</p>
               <p>
                 <span className='mr-2 font-semibold'>
-                  {dayjs(createdAt).format('YYYY. MM.DD.')}
+                  {dayjs(createdAt).format('YYYY. MM. DD.')}
                 </span>
                 {isUpdated ? (
                   <span
                     className='text-gray-500'
-                    title={dayjs(updatedAt).format('YYYY. MM.DD. HH시 MM분')}
+                    title={dayjs(updatedAt).format('YYYY. MM. DD. HH시 MM분')}
                   >
                     (업데이트: {dayjs(updatedAt).fromNow()})
                   </span>

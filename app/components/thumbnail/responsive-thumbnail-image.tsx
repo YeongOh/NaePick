@@ -1,10 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-import { VIDEO_ORIGIN } from '@/app/constants';
 import { getYoutubeThumbnailURL } from '@/app/lib/actions/videos/youtube';
 import { MediaType } from '@/app/lib/definitions';
 import MyImage from '@/app/components/ui/my-image';
 import { mp4toJpg } from '@/app/utils/utils';
-import { useState } from 'react';
 
 interface Props {
   onClick?: () => void;

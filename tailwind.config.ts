@@ -19,8 +19,8 @@ const config: Config = {
       '5xl': ['2.25rem', '2.5rem'],
       '6xl': ['3rem', '3.25rem'],
       '7xl': ['3.75rem', '4rem'],
-      clamp: 'clamp(0.8rem, 1.4vw + 0.8rem, 1.5rem)',
-      '2clamp': 'clamp(1.3rem, 1.4vw + 1.3rem, 2.5rem)',
+      clamp: 'clamp(1.2rem, 1.4vw + 1.2rem, 2.2rem)',
+      '2clamp': 'clamp(1.3rem, 1.4vw + 1.6rem, 2.8rem)',
       '3clamp': 'clamp(2.5rem, 1.4vw + 2.2rem, 4rem)',
     },
     extend: {
