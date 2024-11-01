@@ -1,7 +1,7 @@
 'use client';
 
-import { HiEllipsisVertical } from 'react-icons/hi2';
-import DropdownMenu from '../dropdown-menu';
+import DropdownMenu from '../dropdown-menu/dropdown-menu';
+import { EllipsisVertical } from 'lucide-react';
 
 interface Props {
   worldcupId: string;
@@ -22,19 +22,16 @@ export default function CardEllipsis({
     <div className='relative'>
       <button
         type='button'
-        className='menubar-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-[40px] h-[40px] flex justify-center items-center relative'
+        className='menubar-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center relative'
+        onClick={() => {
+          if (!openDropdownMenu) {
+            onOpenDropdownMenu();
+          } else {
+            onCloseDropdownMenu();
+          }
+        }}
       >
-        <HiEllipsisVertical
-          className=''
-          size={'1.5rem'}
-          onClick={() => {
-            if (!openDropdownMenu) {
-              onOpenDropdownMenu();
-            } else {
-              onCloseDropdownMenu();
-            }
-          }}
-        />
+        <EllipsisVertical size='1.2rem' />
       </button>
       <DropdownMenu
         worldcupId={worldcupId}

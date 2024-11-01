@@ -12,6 +12,7 @@ import LinkButton from '../ui/link-button';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
+import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 
 const StartWorldcupModal = dynamic(
   () => import('../modal/start-worldcup-modal'),
@@ -65,9 +66,9 @@ export default function WorldcupPickScreenSetter({
   if (isSelectingRounds) {
     return (
       <>
-        <section className='flex bg-black h-[calc(100vh-62px)]'>
+        <section className='relative flex bg-black h-[calc(100vh-62px)]'>
           <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
-            <h2 className='text-center text-white text-2clamp p-2 font-bold'>
+            <h2 className='text-center text-white text-2clamp font-bold'>
               {worldcup.title}{' '}
               {notEnoughCandidates ? (
                 <>
@@ -115,23 +116,32 @@ export default function WorldcupPickScreenSetter({
             <div className='flex mb-4 gap-1'>
               <LinkButton
                 href={`/worldcups/${worldcup.worldcupId}/stats`}
+                className='flex justify-center items-center gap-1'
                 variant='primary'
                 size='small'
               >
+                <ChartNoAxesColumnDecreasing size='1.2rem' color='#FFFFFF' />
                 랭킹 보기
               </LinkButton>
-              <Button variant='outline' size='small'>
+              <Button
+                className='flex justify-center items-center gap-1'
+                variant='outline'
+                size='small'
+              >
+                <Share color='#000000' size='1.2rem' />
                 공유 하기
               </Button>
               <Button
                 onClick={handleWorldcupRestart}
                 variant='ghost'
                 size='small'
+                className='flex justify-center items-center gap-1'
               >
+                <RotateCcw color='#334155' size='1.2rem' />
                 다시 하기
               </Button>
             </div>
-            <div className='text-base text-orange-400 font-semibold mb-1'>
+            <div className='text-md text-slate-700 font-semibold mb-1'>
               {worldcup.nickname}
             </div>
             <div className='text-sm text-gray-500 mb-2'>
@@ -144,7 +154,7 @@ export default function WorldcupPickScreenSetter({
                 )
               </span>
             </div>
-            <p className='text-base text-gray-500 mb-10 min-h-16'>
+            <p className='text-base text-slate-700 mb-10 min-h-16'>
               {worldcup.description}
             </p>
           </section>

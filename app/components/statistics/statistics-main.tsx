@@ -1,146 +1,160 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CandidateWithStatistics, Worldcup } from '@/app/lib/definitions';
+import {
+  CandidateWithStatistics,
+  Comment,
+  Worldcup,
+} from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
 import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
-import dayjs from 'dayjs';
-import ThumbnailWinrateOverlay from '../thumbnail/thumbnail-winrate-overlay';
 import ResponsiveMedia from '../media/responsive-media';
+import CommentSection from '../comment/comment-section';
+import Button from '../ui/button';
+import LinkButton from '../ui/link-button';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/ko';
+import { getCandidateStatisticsByWorldcupIdAndPageNumber } from '@/app/lib/data/statistics';
+import Pagination from '../pagination/pagination';
 
 interface Props {
   candidates: CandidateWithStatistics[];
   worldcup: Worldcup;
+  comments: Comment[];
 }
 
-export default function StatisticsMain({ candidates, worldcup }: Props) {
-  const [selectedCandidateIndex, setSelectedCandidateIndex] = useState<
-    number | null
-  >(null);
+export default function StatisticsMain({
+  candidates: defaultCandidates,
+  worldcup,
+  comments,
+}: Props) {
+  const [selectedCandidateIndex, setSelectedCandidateIndex] = useState(0);
+  const [candidates, setCandidates] = useState(defaultCandidates);
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
-  const candidatesWithWinrate = candidates
-    .map((candidate) => ({
-      ...candidate,
-      winrate: calculateWinRate(
-        candidate.numberOfWins,
-        candidate.numberOfLosses
-      ),
-      championRate: calculateWinRate(
-        candidate.numberOfTrophies,
-        candidate.numberOfLosses
-      ),
-    }))
-    .sort((a, b) => b.winrate - a.winrate);
+  const selectedCandidate = candidates[selectedCandidateIndex];
+  const createdDate = dayjs(worldcup.createdAt);
+  const updatedDate = dayjs(worldcup.updatedAt);
+  const isUpdated = createdDate.diff(updatedDate);
 
-  const handleShowDetailsOnClick = async (
-    candidateIndex: number,
-    candidateId: string
-  ) => {
-    if (candidateIndex === selectedCandidateIndex) {
-      setSelectedCandidateIndex(null);
-    } else {
-      setSelectedCandidateIndex(candidateIndex);
+  const handleShowDetailsOnClick = async (candidateIndex: number) => {
+    setSelectedCandidateIndex(candidateIndex);
+  };
+
+  const totalPages = Math.ceil((worldcup.numberOfCandidates || 0) / 10);
+  const handlePageNumberOnClick = async (pageNumber: number) => {
+    setCurrentPageNumber(pageNumber);
+    const candidateData = await getCandidateStatisticsByWorldcupIdAndPageNumber(
+      worldcup.worldcupId,
+      pageNumber
+    );
+    if (candidateData) {
+      setCandidates(candidateData);
+      setSelectedCandidateIndex(0);
     }
   };
-  const selectedCandidate =
-    selectedCandidateIndex !== null
-      ? candidatesWithWinrate[selectedCandidateIndex]
-      : null;
 
   return (
-    <section className=''>
-      <ul className='relative flex justify-center flex-wrap h-full p-8 gap-1'>
-        {candidatesWithWinrate.slice(0, 5).map((candidate, i) => {
-          const isSelected = i === selectedCandidateIndex;
-          let borderClassName = 'border-black';
-          if (i == 0) borderClassName = 'border-yellow-500 border-2';
-          if (i == 1) borderClassName = 'border-gray-300 border-2';
-          if (i == 2) borderClassName = 'border-yellow-800 border-2';
-          return (
-            <li
-              key={candidate.candidateId + i}
-              onClick={() => {
-                handleShowDetailsOnClick(i, candidate.candidateId);
-              }}
-              className={`border ${borderClassName} relative group w-[150px] h-[250px] overflow-hidden rounded-md transition-transform cursor-pointer select-none ${
-                isSelected ? '-translate-y-5' : 'hover:-translate-y-3'
-              }`}
-            >
-              <ThumbnailWinrateOverlay
-                candidate={candidate}
-                isSelected={isSelected}
-              />
-              <ResponsiveThumbnailImage
-                name={candidate.name}
-                mediaType={candidate.mediaType}
-                pathname={candidate.pathname}
-                thumbnailURL={candidate.thumbnailURL}
-                size='large'
-              />
-            </li>
-          );
-        })}
-      </ul>
-      {selectedCandidate && (
-        <div>
-          <h2 className='text-slate-700 font-semibold text-3xl m-2 text-center'>
-            {(selectedCandidateIndex as number) + 1}등 -{' '}
-            {selectedCandidate.name}
-          </h2>
-          <div className='bg-black w-full'>
-            <div className='w-full h-[400px] flex justify-center'>
-              <ResponsiveMedia
-                pathname={selectedCandidate?.pathname as string}
-                name={selectedCandidate?.name as string}
-                mediaType={selectedCandidate?.mediaType!}
-                allowVideoControl
-              />
+    <div className='flex'>
+      <section className='w-[24rem] p-2 bg-gray-200'>
+        <div className='p-2 bg-gray-200'>
+          <ul className='overflow-hidden rounded'>
+            <div className='flex items-center text-sm border-b  bg-gray-50 h-8 text-gray-500'>
+              <div className='w-12 text-center'>순위</div>
+              <div className='w-16 overflow-hidden rounded'></div>
+              <div className='flex-1 text-left ml-4'>이름</div>
+              <div className='w-20 mr-4 text-center'>승률</div>
             </div>
+            {candidates.map((candidate, i) => {
+              const isSelected = i === selectedCandidateIndex;
+              return (
+                <li
+                  className={`flex items-center text-base py-1 border-b cursor-pointer transition-colors ${
+                    isSelected
+                      ? 'bg-primary-200'
+                      : 'bg-white hover:bg-primary-50'
+                  }`}
+                  key={candidate.candidateId + i}
+                  onClick={() => handleShowDetailsOnClick(i)}
+                >
+                  <div className='w-12 text-center text-gray-500'>
+                    {(currentPageNumber - 1) * 10 + i + 1}
+                  </div>
+                  <div className='w-16 h-16 overflow-hidden rounded'>
+                    <ResponsiveThumbnailImage
+                      name={candidate.name}
+                      mediaType={candidate.mediaType}
+                      pathname={candidate.pathname}
+                      thumbnailURL={candidate.thumbnailURL}
+                      size='small'
+                    />
+                  </div>
+                  <div className='flex-1 text-left ml-4 font-semibold text-slate-700'>
+                    {candidate.name}
+                  </div>
+                  <div className='w-20 mr-4 text-center text-slate-700'>
+                    {(candidate.winRate * 100).toFixed(1)}%
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          <div className='overflow-hidden rounded-bl rounded-br'>
+            <Pagination
+              totalPages={totalPages}
+              currentPageNumber={currentPageNumber}
+              range={2}
+              onPageNumberClick={handlePageNumberOnClick}
+            />
           </div>
-          <h2 className='text-slate-700 font-semibold text-xl m-2 text-center'>
-            <span className='mr-4'>
-              Win/Loss {selectedCandidate.winrate.toFixed(1)}% (
-              {selectedCandidate.numberOfWins}W -{' '}
-              {selectedCandidate.numberOfLosses}L){' '}
-            </span>
-            <span>
-              Champion {selectedCandidate.championRate.toFixed(1)}% (
-              {selectedCandidate.numberOfTrophies}W)
-            </span>
-          </h2>
+        </div>
+      </section>
+      {selectedCandidate && (
+        <div className='flex-1 bg-black/90 h-[calc(100vh-62px)] flex justify-center items-center'>
+          <ResponsiveMedia
+            pathname={selectedCandidate?.pathname as string}
+            name={selectedCandidate?.name as string}
+            mediaType={selectedCandidate?.mediaType!}
+            allowVideoControl
+          />
         </div>
       )}
-      <div className='p-8 flex justify-center flex-wrap'>
-        <ul className='relative flex justify-center h-full p-8 gap-1'>
-          {candidatesWithWinrate.slice(5, 11).map((candidate, i) => {
-            const isSelected = i + 5 === selectedCandidateIndex;
-            return (
-              <li
-                key={candidate.candidateId + i}
-                onClick={() => {
-                  handleShowDetailsOnClick(i + 5, candidate.candidateId);
-                }}
-                className={`border border-black relative group w-[150px] h-[250px] overflow-hidden rounded-md transition-transform cursor-pointer select-none ${
-                  isSelected ? '-translate-y-5' : 'hover:-translate-y-3'
-                }`}
-              >
-                <ThumbnailWinrateOverlay
-                  candidate={candidate}
-                  isSelected={isSelected}
-                />
-                <ResponsiveThumbnailImage
-                  name={candidate.name}
-                  mediaType={candidate.mediaType}
-                  pathname={candidate.pathname}
-                  thumbnailURL={candidate.thumbnailURL}
-                  size='large'
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </section>
+      <section className='p-8 w-[31rem] bg-white'>
+        <div className='flex mb-4 gap-1'>
+          <LinkButton
+            href={`/worldcups/${worldcup.worldcupId}/stats`}
+            variant='primary'
+            size='small'
+          >
+            랭킹 보기
+          </LinkButton>
+          <Button variant='outline' size='small'>
+            공유 하기
+          </Button>
+          <Button variant='ghost' size='small'>
+            다시 하기
+          </Button>
+        </div>
+        <div className='text-md text-slate-700 font-semibold mb-1'>
+          {worldcup.nickname}
+        </div>
+        <div className='text-sm text-gray-500 mb-2'>
+          {createdDate.format('YYYY년 MM월 MM일')}{' '}
+          <span title={updatedDate.format('YYYY년 MM월 MM일')}>
+            (
+            {isUpdated
+              ? `${updatedDate.fromNow()} 업데이트`
+              : `${updatedDate.fromNow()} 업데이트`}
+            )
+          </span>
+        </div>
+        <p className='text-base text-slate-700 mb-10 min-h-16'>
+          {worldcup.description}
+        </p>
+        <CommentSection worldcupId={worldcup.worldcupId} comments={comments} />
+      </section>
+    </div>
   );
 }
 

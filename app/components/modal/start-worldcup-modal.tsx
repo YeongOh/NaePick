@@ -73,18 +73,20 @@ export default function StartWorldcupModal({
               className='fixed inset-0 m-auto border bg-white rounded-xl p-6 min-w-[420px] h-fit w-fit animate-modalTransition'
             >
               <div>
-                <div className='flex justify-between text-base text-gray-500 items-center my-3'>
-                  <div>크리에이터: {nickname}</div>
-                  <div>
+                <div className='mb-3 flex items-end'>
+                  <span className='text-md text-slate-700 font-semibold'>
+                    {nickname}
+                  </span>
+                  <span className='text-sm ml-2 text-gray-500'>
                     {isUpdated
-                      ? `${createdDate.fromNow()} 업데이트`
-                      : `${updatedDate.fromNow()} 생성`}
-                  </div>
+                      ? `${updatedDate.fromNow()} 업데이트`
+                      : `${createdDate.fromNow()} 생성`}
+                  </span>
                 </div>
-                <p className='text-base text-slate-700 max-w-[300px] mb-4'>
+                <p className='text-base text-slate-700 max-w-[19rem] mb-4'>
                   {description}
                 </p>
-                <p className='text-base text-gray-500 mb-3'>
+                <p className='text-sm text-gray-500 mb-2'>
                   {notEnoughCandidates
                     ? '후보 수가 충분하지 않아 시작할 수 없습니다.'
                     : `총 ${numberOfCandidates}명의 후보가 대기 중입니다.`}
@@ -121,7 +123,11 @@ export default function StartWorldcupModal({
                     돌아가기
                   </Button>
                 ) : (
-                  <Button variant='primary' onClick={handleRoundSubmit}>
+                  <Button
+                    variant='primary'
+                    onClick={handleRoundSubmit}
+                    className='flex justify-center items-center gap-1'
+                  >
                     시작
                   </Button>
                 )}

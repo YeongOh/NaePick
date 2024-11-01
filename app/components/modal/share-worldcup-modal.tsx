@@ -4,7 +4,6 @@ import { DOMAIN } from '@/app/constants';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
-import Button from '../ui/button';
 
 interface Props {
   open: boolean;
@@ -42,7 +41,7 @@ export default function ShareWorldcupModal({
               onClick={(e) => e.stopPropagation()}
               className='fixed inset-0 m-auto border w-[420px] h-fit bg-white p-4 rounded-xl animate-modalTransition'
             >
-              <h2 className='font-semibold text-center mb-4'>
+              <h2 className='font-semibold text-center mb-4 text-md'>
                 {title} 공유하기
               </h2>
               <div className='flex flex-col items-center justify-between'>

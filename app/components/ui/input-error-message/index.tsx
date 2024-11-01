@@ -1,4 +1,4 @@
-import { MdErrorOutline } from 'react-icons/md';
+import { Info } from 'lucide-react';
 
 interface Props {
   className?: string;
@@ -22,7 +22,7 @@ export default function InputErrorMessage({
           key={replacedErrorMessage ? replacedErrorMessage : errorMsg}
           className={`flex items-center gap-1 text-red-500 text-base ${className}`}
         >
-          <MdErrorOutline size={'1.2rem'} />
+          <Info color='#ef4444' size='1.2rem' />
           {replacedErrorMessage ? replacedErrorMessage : errorMsg}
         </p>
       ))}

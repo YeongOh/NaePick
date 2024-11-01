@@ -19,10 +19,8 @@ import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
 import toast from 'react-hot-toast';
 import UpdateWorldcupCandidateImageDropzone from './update-worldcup-candidate-image-dropzone';
 import { deleteCandidate } from '@/app/lib/actions/candidates/delete';
-import { FaFileUpload } from 'react-icons/fa';
 import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
-import { MdInfo } from 'react-icons/md';
 import { downloadImgurUploadS3 } from '@/app/lib/actions/videos/imgur';
 import {
   extractYoutubeId,
@@ -37,6 +35,7 @@ import { IoLogoYoutube } from 'react-icons/io';
 import { SiImgur } from 'react-icons/si';
 import Button from '../ui/button';
 import Spinner from '../ui/spinner';
+import { ImageUp, Info } from 'lucide-react';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -261,7 +260,7 @@ export default function UpdateWorldcupCandidatesForm({
             </div>
           </div>
           <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
-            <MdInfo size={'1.5em'} className='text-primary-500' />
+            <Info color='#6d6d6d' size='1.2rem' />
             썸네일은 우승을 많이 한 후보들로 업데이트 됩니다.
           </span>
         </div>
@@ -274,7 +273,7 @@ export default function UpdateWorldcupCandidatesForm({
         >
           <input {...getInputProps()} />
           <div className='flex items-center justify-center gap-2'>
-            <FaFileUpload size={'1.5em'} className='text-primary-500' />
+            <ImageUp color='#6d6d6d' size='1.2rem' />
             <p className='text-slate-700'>
               이미지 파일을 드랍하거나 클릭해서 업로드
             </p>

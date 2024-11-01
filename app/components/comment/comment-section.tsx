@@ -11,6 +11,7 @@ import 'dayjs/locale/ko';
 import TextArea from '../ui/textarea';
 import Button from '../ui/button';
 import InputErrorMessage from '../ui/input-error-message';
+import { Pencil } from 'lucide-react';
 
 interface Props {
   worldcupId: string;
@@ -55,14 +56,18 @@ export default function CommentSection({
           name='text'
           value={text}
           error={state.errors?.text}
-          className={`p-2 mb-2`}
+          className={`p-2 mb-1`}
           onChange={(e) => setText(e.target.value)}
           placeholder='댓글 내용'
-          rows={3}
+          rows={1}
           autoFocus
         />
-        <InputErrorMessage className='mb-2' errors={state.errors?.text} />
-        <Button variant='primary' className='my-2'>
+        <InputErrorMessage className='mb-1' errors={state.errors?.text} />
+        <Button
+          variant='primary'
+          className='flex justify-center items-center gap-1 my-1'
+        >
+          <Pencil color='#FFFFFF' size='1.2rem' />
           댓글 추가하기
         </Button>
       </form>

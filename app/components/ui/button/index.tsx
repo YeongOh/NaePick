@@ -20,13 +20,13 @@ export default function Button({
   let classNameResult = className;
   if (variant === 'primary')
     classNameResult +=
-      ' bg-primary-500 hover:bg-primary-700 transition-colors text-white';
+      ' bg-primary-500 hover:bg-primary-700 active:bg-primary-800 transition-colors text-white';
   if (variant === 'outline')
     classNameResult +=
-      ' border bg-white hover:bg-gray-50 transition-colors text-slate-700';
+      ' border bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors text-slate-700';
   if (variant === 'ghost')
     classNameResult +=
-      ' bg-white hover:bg-gray-50 transition-colors text-slate-700';
+      ' bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors text-slate-700';
 
   if (size === 'small') classNameResult += ' py-2 px-1';
   if (size === 'medium') classNameResult += ' py-3 px-2';
