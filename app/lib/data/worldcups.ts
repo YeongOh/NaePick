@@ -61,7 +61,7 @@ export async function getPublicWorldcupCards(pageNumber: number) {
     if (result.length != 0) {
       return { data: result, hasNextPage: true };
     } else {
-      return { data: [], hasNextPage: false };
+      return { data: null, hasNextPage: false };
     }
   } catch (err) {
     console.log(err);

@@ -13,6 +13,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
+import Fold from '../fold/fold';
+import ShareWorldcupModal from '../modal/share-worldcup-modal';
 
 const StartWorldcupModal = dynamic(
   () => import('../modal/start-worldcup-modal'),
@@ -36,6 +38,7 @@ export default function WorldcupPickScreenSetter({
   const [openStartWorldcupModal, setOpenStartWorldcupModal] =
     useState<boolean>(true);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
 
   const notEnoughCandidates =
     (worldcup.numberOfCandidates as number) < MIN_NUMBER_OF_CANDIDATES;
@@ -59,9 +62,6 @@ export default function WorldcupPickScreenSetter({
     setOpenStartWorldcupModal(true);
     setIsSelectingRounds(true);
   };
-
-  dayjs.extend(relativeTime);
-  dayjs.locale('ko');
 
   if (isSelectingRounds) {
     return (
@@ -113,7 +113,12 @@ export default function WorldcupPickScreenSetter({
       {showSidebar ? (
         <div className='p-8 w-[31rem] bg-white'>
           <section>
-            <div className='flex mb-4 gap-1'>
+            <Fold
+              nickname={worldcup.nickname}
+              createdAt={worldcup.createdAt}
+              updatedAt={worldcup.updatedAt}
+              description={worldcup.description}
+            >
               <LinkButton
                 href={`/worldcups/${worldcup.worldcupId}/stats`}
                 className='flex justify-center items-center gap-1'
@@ -127,10 +132,17 @@ export default function WorldcupPickScreenSetter({
                 className='flex justify-center items-center gap-1'
                 variant='outline'
                 size='small'
+                onClick={() => setShareWorldcupModal(true)}
               >
                 <Share color='#000000' size='1.2rem' />
                 공유 하기
               </Button>
+              <ShareWorldcupModal
+                open={shareWorldcupModal}
+                onClose={() => setShareWorldcupModal(false)}
+                title={worldcup.title}
+                worldcupId={worldcup.worldcupId}
+              />
               <Button
                 onClick={handleWorldcupRestart}
                 variant='ghost'
@@ -140,23 +152,7 @@ export default function WorldcupPickScreenSetter({
                 <RotateCcw color='#334155' size='1.2rem' />
                 다시 하기
               </Button>
-            </div>
-            <div className='text-md text-slate-700 font-semibold mb-1'>
-              {worldcup.nickname}
-            </div>
-            <div className='text-sm text-gray-500 mb-2'>
-              {createdDate.format('YYYY년 MM월 MM일')}{' '}
-              <span title={updatedDate.format('YYYY년 MM월 MM일')}>
-                (
-                {isUpdated
-                  ? `${updatedDate.fromNow()} 업데이트`
-                  : `${updatedDate.fromNow()} 업데이트`}
-                )
-              </span>
-            </div>
-            <p className='text-base text-slate-700 mb-10 min-h-16'>
-              {worldcup.description}
-            </p>
+            </Fold>
           </section>
           <CommentSection
             comments={comments}

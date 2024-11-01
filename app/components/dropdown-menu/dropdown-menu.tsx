@@ -34,7 +34,7 @@ export default function DropdownMenu({
             </Link>
             <button
               className='p-2 hover:bg-gray-100 text-left'
-              onClick={(e) => setShareWorldcupModal(true)}
+              onClick={() => setShareWorldcupModal(true)}
             >
               공유
             </button>

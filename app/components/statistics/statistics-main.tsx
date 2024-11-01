@@ -12,11 +12,12 @@ import ResponsiveMedia from '../media/responsive-media';
 import CommentSection from '../comment/comment-section';
 import Button from '../ui/button';
 import LinkButton from '../ui/link-button';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
+
 import { getCandidateStatisticsByWorldcupIdAndPageNumber } from '@/app/lib/data/statistics';
 import Pagination from '../pagination/pagination';
+import Fold from '../fold/fold';
+import { Globe, RotateCcw, Share } from 'lucide-react';
+import ShareWorldcupModal from '../modal/share-worldcup-modal';
 
 interface Props {
   candidates: CandidateWithStatistics[];
@@ -32,11 +33,9 @@ export default function StatisticsMain({
   const [selectedCandidateIndex, setSelectedCandidateIndex] = useState(0);
   const [candidates, setCandidates] = useState(defaultCandidates);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
 
   const selectedCandidate = candidates[selectedCandidateIndex];
-  const createdDate = dayjs(worldcup.createdAt);
-  const updatedDate = dayjs(worldcup.updatedAt);
-  const isUpdated = createdDate.diff(updatedDate);
 
   const handleShowDetailsOnClick = async (candidateIndex: number) => {
     setSelectedCandidateIndex(candidateIndex);
@@ -121,37 +120,45 @@ export default function StatisticsMain({
         </div>
       )}
       <section className='p-8 w-[31rem] bg-white'>
-        <div className='flex mb-4 gap-1'>
+        <Fold
+          nickname={worldcup.nickname}
+          createdAt={worldcup.createdAt}
+          updatedAt={worldcup.updatedAt}
+          description={worldcup.description}
+        >
           <LinkButton
-            href={`/worldcups/${worldcup.worldcupId}/stats`}
+            className='flex justify-center items-center gap-1'
+            href={`/`}
             variant='primary'
             size='small'
           >
-            랭킹 보기
+            <Globe size='1.2rem' />새 월드컵 찾기
           </LinkButton>
-          <Button variant='outline' size='small'>
+          <Button
+            className='flex justify-center items-center gap-1'
+            variant='outline'
+            size='small'
+            onClick={() => setShareWorldcupModal(true)}
+          >
+            <Share color='#000000' size='1.2rem' />
             공유 하기
           </Button>
-          <Button variant='ghost' size='small'>
+          <ShareWorldcupModal
+            open={shareWorldcupModal}
+            onClose={() => setShareWorldcupModal(false)}
+            title={worldcup.title}
+            worldcupId={worldcup.worldcupId}
+          />
+          <LinkButton
+            href={`/worldcups/${worldcup.worldcupId}`}
+            variant='ghost'
+            size='small'
+            className='flex justify-center items-center gap-1'
+          >
+            <RotateCcw color='#334155' size='1.2rem' />
             다시 하기
-          </Button>
-        </div>
-        <div className='text-md text-slate-700 font-semibold mb-1'>
-          {worldcup.nickname}
-        </div>
-        <div className='text-sm text-gray-500 mb-2'>
-          {createdDate.format('YYYY년 MM월 MM일')}{' '}
-          <span title={updatedDate.format('YYYY년 MM월 MM일')}>
-            (
-            {isUpdated
-              ? `${updatedDate.fromNow()} 업데이트`
-              : `${updatedDate.fromNow()} 업데이트`}
-            )
-          </span>
-        </div>
-        <p className='text-base text-slate-700 mb-10 min-h-16'>
-          {worldcup.description}
-        </p>
+          </LinkButton>
+        </Fold>
         <CommentSection worldcupId={worldcup.worldcupId} comments={comments} />
       </section>
     </div>
