@@ -24,6 +24,12 @@ const config: Config = {
       '3clamp': 'clamp(2.5rem, 1.4vw + 2.2rem, 4rem)',
     },
     extend: {
+      gridTemplateColumns: {
+        'card-12rem': 'repeat(auto-fit, minmax(12rem, 1fr))',
+        'card-14rem': 'repeat(auto-fit, minmax(14rem, 1fr))',
+        'card-16rem': 'repeat(auto-fit, minmax(16rem, 1fr))',
+        'card-18rem': 'repeat(auto-fit, minmax(18rem, 1fr))',
+      },
       extend: {
         transitionProperty: {
           width: 'width',

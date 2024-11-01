@@ -22,7 +22,7 @@ export default function CardThumbnail({ worldcupCard }: Props) {
   return (
     <>
       <div
-        className={`inline-flex bg-black w-full h-[175px] overflow-hidden rounded-xl`}
+        className={`inline-flex bg-black w-full h-44 overflow-hidden sm:rounded-xl`}
       >
         {leftCandidatePathname && (
           <>

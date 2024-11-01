@@ -6,6 +6,8 @@ import 'dayjs/locale/ko';
 import Link from 'next/link';
 import CardEllipsis from './card-ellipsis';
 import CardUpdateLink from './card-update-link';
+import { useRouter } from 'next/navigation';
+import { forwardRef, useState } from 'react';
 
 export interface CardProps {
   worldcupCard: WorldcupCard;
@@ -16,23 +18,50 @@ export interface CardProps {
   extended?: boolean;
 }
 
-export default function Card({
-  worldcupCard,
-  openDropdownMenu,
-  onOpenDropdownMenu,
-  onCloseDropdownMenu,
-  extended,
-}: CardProps) {
+const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
+  {
+    worldcupCard,
+    openDropdownMenu,
+    onOpenDropdownMenu,
+    onCloseDropdownMenu,
+    extended,
+  }: CardProps,
+  ref
+) {
+  const [isActive, setIsActive] = useState(false);
+  const router = useRouter();
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
+  const createdAt = dayjs(worldcupCard.createdAt);
+
   return (
-    <li className='p-4 w-[330px] mb-4'>
-      <div className='h-[230px]'>
-        <Link href={`/worldcups/${worldcupCard.worldcupId}`}>
+    <li
+      ref={ref}
+      className={`hover:bg-gray-100 rounded-xl cursor-pointer pb-4 lg:m-2 md:p-2 ${
+        isActive ? `active:bg-primary-200` : ''
+      }`}
+      onMouseDown={(e) => {
+        if (
+          e.target instanceof HTMLElement &&
+          !e.target.classList.contains('menubar-toggle')
+        )
+          setIsActive(true);
+      }}
+      onMouseUp={() => setIsActive(false)}
+      onClick={() => {
+        router.push(`/worldcups/${worldcupCard.worldcupId}`);
+      }}
+    >
+      <div>
+        <Link
+          tabIndex={-1}
+          href={`/worldcups/${worldcupCard.worldcupId}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           <CardThumbnail worldcupCard={worldcupCard} />
         </Link>
-        <div className='flex items-end justify-between'>
+        <div className='flex items-end justify-between p-1 md:p-0'>
           <div className='flex-1'>
             <div className='flex items-center'>
               <Link
@@ -40,7 +69,7 @@ export default function Card({
                 href={`/worldcups/${worldcupCard.worldcupId}`}
               >
                 <h2
-                  className='text-lg font-bold line-clamp-2 my-1.5 text-slate-700 hover:underline cursor-pointer'
+                  className='text-md font-bold line-clamp-2 my-1.5 text-slate-700 hover:underline cursor-pointer'
                   title={worldcupCard.title}
                 >
                   {worldcupCard.title}
@@ -55,13 +84,13 @@ export default function Card({
               />
             </div>
             <div className='flex items-center justify-between w-full'>
-              <div className='text-base text-gray-500'>
+              <div className='text-md text-gray-500'>
                 <span>{worldcupCard.nickname}</span>
                 <span
                   className='ml-2'
-                  title={dayjs(worldcupCard.createdAt).toString()}
+                  title={createdAt.format('YYYY년 MM월 DD일')}
                 >
-                  {dayjs(worldcupCard.createdAt).fromNow()}
+                  {createdAt.fromNow()}
                 </span>
               </div>
             </div>
@@ -71,4 +100,6 @@ export default function Card({
       {extended && <CardUpdateLink worldcupId={worldcupCard.worldcupId} />}
     </li>
   );
-}
+});
+
+export default Card;

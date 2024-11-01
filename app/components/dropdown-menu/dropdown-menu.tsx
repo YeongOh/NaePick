@@ -18,8 +18,8 @@ export default function DropdownMenu({
   return (
     <>
       {openDropdownMenu && (
-        <div className='menubar'>
-          <ul className='absolute border bg-white rounded-lg flex flex-col w-[150px] text-left text-base shadow cursor-pointer text-slate-700 p-2 z-50 animate-modalTransition'>
+        <div className='menubar' onClick={(e) => e.stopPropagation()}>
+          <ul className='absolute right-0 border bg-white rounded-lg flex flex-col w-36 text-left text-base shadow cursor-pointer text-slate-700 p-2 z-50 animate-modalTransition'>
             <Link
               className='p-2 hover:bg-gray-100'
               href={`/worldcups/${worldcupId}`}
@@ -34,10 +34,7 @@ export default function DropdownMenu({
             </Link>
             <button
               className='p-2 hover:bg-gray-100 text-left'
-              onClick={() => {
-                console.log('here');
-                setShareWorldcupModal(true);
-              }}
+              onClick={(e) => setShareWorldcupModal(true)}
             >
               공유
             </button>

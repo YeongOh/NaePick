@@ -81,7 +81,7 @@ export default function WorldcupPickScreen({
       <section
         className={`relative flex bg-black h-[calc(100vh-62px)] ${className}`}
       >
-        <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
+        <div className='absolute left-1/2 -translate-x-1/2 bg-black/30 z-50 w-full'>
           <h2 className='text-center text-white text-2clamp font-bold'>
             {worldcup.title} {getRoundsDescription(round)}
           </h2>

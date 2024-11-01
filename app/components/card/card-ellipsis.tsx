@@ -22,8 +22,9 @@ export default function CardEllipsis({
     <div className='relative'>
       <button
         type='button'
-        className='menubar-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center relative'
-        onClick={() => {
+        className={`menubar-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center relative`}
+        onClick={(e) => {
+          e.stopPropagation();
           if (!openDropdownMenu) {
             onOpenDropdownMenu();
           } else {

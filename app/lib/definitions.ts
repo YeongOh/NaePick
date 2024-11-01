@@ -46,6 +46,7 @@ export interface CandidateWithStatistics extends Candidate {
   numberOfWins: number;
   numberOfLosses: number;
   numberOfTrophies: number;
+  winRate: number;
 }
 
 export interface Category extends QueryResult {

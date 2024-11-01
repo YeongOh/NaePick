@@ -4,7 +4,7 @@ import { FieldPacket } from 'mysql2/promise';
 import { WorldcupCard, Worldcup, Category } from '../definitions';
 import { pool } from '../db';
 
-export async function getPublicWorldcupCards() {
+export async function getPublicWorldcupCards(pageNumber: number) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -53,12 +53,16 @@ export async function getPublicWorldcupCards() {
               LEFT JOIN media_type AS rmt ON rcm.media_type_id = rmt.media_type_id
 
               WHERE w.publicity = 'public'
-              ORDER BY w.created_at DESC;`
+              ORDER BY w.created_at DESC
+              LIMIT 6 OFFSET ?;`,
+      [(pageNumber - 1) * 6]
     );
 
-    console.log(result);
-
-    return result;
+    if (result.length != 0) {
+      return { data: result, hasNextPage: true };
+    } else {
+      return { data: [], hasNextPage: false };
+    }
   } catch (err) {
     console.log(err);
   }
