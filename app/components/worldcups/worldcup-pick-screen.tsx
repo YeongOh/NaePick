@@ -81,11 +81,9 @@ export default function WorldcupPickScreen({
       <section
         className={`relative flex bg-black h-[calc(100vh-62px)] ${className}`}
       >
-        <div className='absolute left-1/2 -translate-x-1/2 bg-black/30 z-50 w-full'>
-          <h2 className='text-center text-white text-2clamp font-bold'>
-            {worldcup.title} {getRoundsDescription(round)}
-          </h2>
-        </div>
+        <h2 className='absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold'>
+          {worldcup.title} {getRoundsDescription(round)}
+        </h2>
         <div
           onClick={(e) => e.stopPropagation()}
           className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-500 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
@@ -111,7 +109,7 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('left');
           }}
-          className={`w-1/2 relative cursor-pointer flex justify-end ${
+          className={`h-full w-1/2 relative cursor-pointer flex justify-end ${
             picked === 'left' ? 'animate-expandLeft' : ''
           } ${picked === 'right' ? 'animate-shrinkRight' : ''}`}
         >
@@ -141,7 +139,7 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('right');
           }}
-          className={`w-1/2 relative cursor-pointer flex justify-start ${
+          className={`h-full w-1/2 relative cursor-pointer flex justify-start ${
             picked === 'left' ? 'animate-shrinkLeft' : ''
           } ${picked === 'right' ? 'animate-expandRight' : ''}`}
         >

@@ -38,10 +38,11 @@ export default function Pagination({
             key={`page-number ${pageNumber}`}
             className={`w-10 h-10 rounded ${
               isSelected
-                ? 'bg-primary-500 text-white font-semibold'
+                ? 'bg-primary-500 text-white font-semibold cursor-default'
                 : 'bg-white hover:bg-gray-50 active:bg-gray-100'
             }`}
             onClick={() => onPageNumberClick(pageNumber)}
+            tabIndex={isSelected ? -1 : 0}
           >
             {pageNumber}
           </button>

@@ -10,7 +10,6 @@ import CommentSection from '../comment/comment-section';
 import Button from '../ui/button';
 import LinkButton from '../ui/link-button';
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import Fold from '../fold/fold';
@@ -54,7 +53,7 @@ export default function WorldcupPickScreenSetter({
     setIsSelectingRounds(false);
   };
 
-  const handleOnWorldcupEnd = async () => {
+  const handleOnWorldcupEnd = () => {
     setShowSidebar(true);
   };
 
@@ -67,21 +66,19 @@ export default function WorldcupPickScreenSetter({
     return (
       <>
         <section className='relative flex bg-black h-[calc(100vh-62px)]'>
-          <div className='absolute left-1/2 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full'>
-            <h2 className='text-center text-white text-2clamp font-bold'>
-              {worldcup.title}{' '}
-              {notEnoughCandidates ? (
-                <>
-                  <br />
-                  준비 중인 이상형 월드컵입니다.
-                </>
-              ) : (
-                <>
-                  <br />곧 시작됩니다!
-                </>
-              )}
-            </h2>
-          </div>
+          <h1 className='absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold'>
+            {worldcup.title}{' '}
+            {notEnoughCandidates ? (
+              <>
+                <br />
+                준비 중인 이상형 월드컵입니다.
+              </>
+            ) : (
+              <>
+                <br />곧 시작됩니다!
+              </>
+            )}
+          </h1>
           <StartWorldcupModal
             nickname={worldcup.nickname}
             title={worldcup.title}

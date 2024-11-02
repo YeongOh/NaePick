@@ -36,6 +36,8 @@ export default function StatisticsMain({
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
 
   const selectedCandidate = candidates[selectedCandidateIndex];
+  const currentRank =
+    (currentPageNumber - 1) * 10 + (selectedCandidateIndex + 1);
 
   const handleShowDetailsOnClick = async (candidateIndex: number) => {
     setSelectedCandidateIndex(candidateIndex);
@@ -109,16 +111,28 @@ export default function StatisticsMain({
           </div>
         </div>
       </section>
-      {selectedCandidate && (
-        <div className='flex-1 bg-black/90 h-[calc(100vh-62px)] flex justify-center items-center'>
-          <ResponsiveMedia
-            pathname={selectedCandidate?.pathname as string}
-            name={selectedCandidate?.name as string}
-            mediaType={selectedCandidate?.mediaType!}
-            allowVideoControl
-          />
-        </div>
-      )}
+      <div className='flex-1 bg-black/90 h-[calc(100vh-62px)] flex justify-center items-center relative'>
+        <h1 className='absolute top-0 bg-black/50 w-full text-center text-white text-2clamp font-bold'>
+          {worldcup.title}
+        </h1>
+        {selectedCandidate ? (
+          <>
+            <h2 className='absolute top-16 w-full text-center text-white text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+              {currentRank}등 {selectedCandidate.name}
+            </h2>
+            <ResponsiveMedia
+              pathname={selectedCandidate?.pathname as string}
+              name={selectedCandidate?.name as string}
+              mediaType={selectedCandidate?.mediaType!}
+              allowVideoControl
+            />
+          </>
+        ) : (
+          <h2 className='absolute top-1/2 -translate-y-1/2 text-center text-white text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]'>
+            아직 후보가 존재하지 않습니다.
+          </h2>
+        )}
+      </div>
       <section className='p-8 w-[31rem] bg-white'>
         <Fold
           nickname={worldcup.nickname}

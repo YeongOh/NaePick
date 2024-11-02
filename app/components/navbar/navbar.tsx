@@ -3,11 +3,19 @@ import Link from 'next/link';
 import SignoutButtion from '../auth/signout-button';
 import NavbarLink from './navbar-link';
 
-export default async function Navbar() {
+interface Props {
+  screenMode?: boolean;
+}
+
+export default async function Navbar({ screenMode }: Props) {
   const session = await getSession();
 
   return (
-    <nav className='p-4 gap-4 border border-b-1'>
+    <nav
+      className={`p-4 gap-4 border border-b-1 ${
+        screenMode ? 'bg-black/90 border-black/90' : ''
+      }`}
+    >
       <div className='flex items-center justify-between max-w-screen-2xl m-auto'>
         <Link href={'/'}>
           <div className='font-bold text-2xl text-primary-500'>NaePick</div>
