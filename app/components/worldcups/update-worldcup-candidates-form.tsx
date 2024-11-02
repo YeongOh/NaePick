@@ -61,47 +61,54 @@ export default function UpdateWorldcupCandidatesForm({
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
+      const imageUploadPromises: Promise<void>[] = [];
+
       acceptedFiles.forEach(async (acceptedFile) => {
-        try {
-          if (isLoading) {
-            toast.error('이미지 업로드 처리 중입니다.');
-            return;
-          }
-          setIsLoading(true);
-          const filenameWithoutExtension = excludeFileExtension(
-            acceptedFile.name
-          );
-          const { signedURL, candidatePathname } =
-            await fetchCandidateImageUploadURL(
-              worldcup.worldcupId,
-              acceptedFile.path as string,
-              acceptedFile.type
-            );
-          const response = await fetch(signedURL, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': acceptedFile.type,
-            },
-            body: acceptedFile,
-          });
-          if (!response.ok) {
-            throw new Error('업로드 실패');
-          }
-          await createCandidate({
-            candidateName: filenameWithoutExtension,
-            mediaType: 'cdn_img',
-            candidatePathname,
-            worldcupId,
-          });
-          toast.success('업로드에 성공했습니다!');
-        } catch (error) {
-          toast.error('오류가 발생했습니다.');
-        } finally {
-          setIsLoading(false);
+        if (isLoading) {
+          toast.error('이미지 업로드 처리 중입니다.');
+          return;
         }
+        setIsLoading(true);
+        imageUploadPromises.push(uploadImage(acceptedFile, worldcupId));
       });
+
+      try {
+        toast.success(`이미지 업로드 중입니다.`);
+        await Promise.all(imageUploadPromises);
+        toast.success(`이미지 업로드에 성공했습니다!`);
+      } catch (error) {
+        toast.error('오류가 발생했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+
+      async function uploadImage(file: FileWithPath, worldcupId: string) {
+        const filenameWithoutExtension = excludeFileExtension(file.name);
+        const { signedURL, candidatePathname } =
+          await fetchCandidateImageUploadURL(
+            worldcupId,
+            file.path as string,
+            file.type
+          );
+        const response = await fetch(signedURL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type,
+          },
+          body: file,
+        });
+        if (!response.ok) {
+          throw new Error('업로드 실패');
+        }
+        await createCandidate({
+          candidateName: filenameWithoutExtension,
+          mediaType: 'cdn_img',
+          candidatePathname,
+          worldcupId,
+        });
+      }
     },
-    [worldcup, worldcupId]
+    [isLoading, worldcupId]
   );
 
   const onError = (error: Error) => {
