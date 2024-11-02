@@ -12,6 +12,7 @@ import TextArea from '../ui/textarea';
 import Button from '../ui/button';
 import InputErrorMessage from '../ui/input-error-message';
 import { Pencil } from 'lucide-react';
+import ToggleableP from '../ui/toggleable-p';
 
 interface Props {
   worldcupId: string;
@@ -98,14 +99,11 @@ export default function CommentSection({
                   {getRelativeDate(comment.createdAt)}
                 </span>
               </div>
-              <div className='text-base text-slate-700 pl-1'>
-                {comment.text.split('\n').map((line, index) => (
-                  <React.Fragment key={`comment.commentId-${index}`}>
-                    {line}
-                    <br />
-                  </React.Fragment>
-                ))}
-              </div>
+              <ToggleableP
+                className={'text-slate-700'}
+                text={comment.text}
+                numberOfLines={3}
+              />
             </li>
           ))}
         </ul>

@@ -21,6 +21,7 @@ import {
 import Input from '../ui/input';
 import InputErrorMessage from '../ui/input-error-message';
 import Button from '../ui/button';
+import TextArea from '../ui/textarea';
 
 interface Props {
   categories: Category[];
@@ -53,6 +54,7 @@ export default function UpdateWorldcupInfoForm({
   };
 
   const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.target instanceof HTMLTextAreaElement) return;
     if (e.key === 'Enter') e.preventDefault();
   };
 
@@ -94,15 +96,14 @@ export default function UpdateWorldcupInfoForm({
           {WORLDCUP_DESCRIPTION_MAX_LENGTH}자)
         </label>
       </div>
-      <Input
+      <TextArea
         id='description'
         name='description'
-        type='text'
-        className='p-4 mb-2'
-        placeholder={`설명`}
-        error={state.errors?.description}
+        className={`p-2 mb-1`}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        placeholder='설명'
+        rows={3}
       />
       <div className='mb-4'>
         <InputErrorMessage errors={state.errors?.description} />

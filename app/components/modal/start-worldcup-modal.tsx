@@ -5,13 +5,14 @@ import {
   getNumberOfRoundsAvailable,
   MIN_NUMBER_OF_CANDIDATES,
 } from '@/app/constants';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import Button from '../ui/button';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
+import ToggleableP from '../ui/toggleable-p';
 
 interface Props {
   open: boolean;
@@ -70,7 +71,7 @@ export default function StartWorldcupModal({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed inset-0 m-auto border bg-white rounded-xl p-6 min-w-[420px] h-fit w-fit animate-modalTransition'
+              className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 w-[26rem] animate-modalTransition'
             >
               <div>
                 <div className='mb-3 flex items-end'>
@@ -83,9 +84,13 @@ export default function StartWorldcupModal({
                       : `${createdDate.fromNow()} 생성`}
                   </span>
                 </div>
-                <p className='text-base text-slate-700 max-w-[19rem] mb-4'>
-                  {description}
-                </p>
+                <div className='mb-2'>
+                  <ToggleableP
+                    className={'text-slate-700 w-full'}
+                    text={description}
+                    numberOfLines={5}
+                  />
+                </div>
                 <p className='text-sm text-gray-500 mb-2'>
                   {notEnoughCandidates
                     ? '후보 수가 충분하지 않아 시작할 수 없습니다.'

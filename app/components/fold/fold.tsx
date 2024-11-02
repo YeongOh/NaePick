@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
+import ToggleableP from '../ui/toggleable-p';
 
 interface Props {
   nickname: string;
@@ -37,7 +38,13 @@ export default function Fold({
           )
         </span>
       </div>
-      <p className='text-base text-slate-700 mb-10 min-h-16'>{description}</p>
+      <div className='mb-5'>
+        <ToggleableP
+          className='text-slate-700 w-full'
+          numberOfLines={6}
+          text={description}
+        />
+      </div>
     </>
   );
 }

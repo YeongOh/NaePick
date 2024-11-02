@@ -25,7 +25,10 @@ export default function CardUpdateLink({ worldcupId }: Props) {
 
   return (
     <>
-      <div className='mt-4 flex gap-2 text-base'>
+      <div
+        className='mt-4 flex gap-2 text-base'
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           className='flex-1 text-red-500'
           onClick={() => setShowDeleteWorldcupConfirmModal(true)}
