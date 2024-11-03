@@ -28,7 +28,7 @@ export interface WorldcupCard extends Worldcup {
   leftCandidatePathname: string;
   leftCandidateMediaType: MediaType;
   rightCandidateName: string;
-  rightCandidatePahtname: string;
+  rightCandidatePathname: string;
   rightCandidateMediaType: MediaType;
 }
 

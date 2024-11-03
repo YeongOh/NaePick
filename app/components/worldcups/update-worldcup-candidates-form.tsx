@@ -63,18 +63,18 @@ export default function UpdateWorldcupCandidatesForm({
     async (acceptedFiles: FileWithPath[]) => {
       const imageUploadPromises: Promise<void>[] = [];
 
+      if (isLoading) {
+        toast.error('이미지 업로드 처리 중입니다.');
+        return;
+      }
+      setIsLoading(true);
       acceptedFiles.forEach(async (acceptedFile) => {
-        if (isLoading) {
-          toast.error('이미지 업로드 처리 중입니다.');
-          return;
-        }
-        setIsLoading(true);
         imageUploadPromises.push(uploadImage(acceptedFile, worldcupId));
       });
 
       try {
         toast.success(`이미지 업로드 중입니다.`);
-        await Promise.all(imageUploadPromises);
+        await Promise.allSettled(imageUploadPromises);
         toast.success(`이미지 업로드에 성공했습니다!`);
       } catch (error) {
         toast.error('오류가 발생했습니다.');
