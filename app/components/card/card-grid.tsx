@@ -1,6 +1,6 @@
 'use client';
 
-import { WorldcupCard } from '@/app/lib/definitions';
+import { InfiniteScrollData, WorldcupCard } from '@/app/lib/definitions';
 import Card from './card';
 import { useEffect, useRef, useState } from 'react';
 import { getPublicWorldcupCards } from '@/app/lib/data/worldcups';
@@ -8,21 +8,20 @@ import { getPublicWorldcupCards } from '@/app/lib/data/worldcups';
 interface Props {
   worldcupCards: WorldcupCard[];
   extended?: boolean;
-  hasNextPageProp: boolean;
+  cursor: string | null;
 }
 
 export default function CardGrid({
   worldcupCards,
   extended,
-  hasNextPageProp,
+  cursor: cursorProp,
 }: Props) {
   const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(
     null
   );
-  const [page, setPage] = useState(1);
   const [cards, setCards] = useState(worldcupCards);
   const [isFetching, setIsFetching] = useState(false);
-  const [hasNextPage, setHasNextPage] = useState(hasNextPageProp);
+  const [lastCursor, setLastCursor] = useState<string | null>(cursorProp);
   const ref = useRef(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -47,26 +46,23 @@ export default function CardGrid({
   }, [dropdownMenuIndex]);
 
   useEffect(() => {
-    async function getNextCards() {
-      setIsFetching(true);
-      const { data, hasNextPage: responseHasNextPage }: any =
-        await getPublicWorldcupCards(page + 1);
-      if (data) {
-        setCards((prev) => [...prev, ...data]);
-      }
-      setHasNextPage(responseHasNextPage);
-      console.log('fetching ', page + 1);
-      setIsFetching(false);
-      setPage((prev) => prev + 1);
-    }
-
-    const handleIntersect = (
+    const handleIntersect = async (
       entries: IntersectionObserverEntry[],
       observer: IntersectionObserver
     ) => {
-      if (entries[0].isIntersecting && !isFetching && hasNextPage) {
+      if (entries[0].isIntersecting && !isFetching && lastCursor) {
         observer.unobserve(entries[0].target);
-        getNextCards();
+        setIsFetching(true);
+        const result = await getPublicWorldcupCards(lastCursor);
+        if (!result) {
+          throw new Error();
+        }
+        const { data, cursor } = result;
+        if (data) {
+          setCards((prev) => [...prev, ...data]);
+        }
+        setLastCursor(cursor);
+        setIsFetching(false);
       }
     };
 
@@ -82,7 +78,7 @@ export default function CardGrid({
       console.log('disconnect');
       observer.disconnect();
     };
-  }, [hasNextPage, isFetching, page]);
+  }, [isFetching, lastCursor]);
 
   return (
     <ul className='grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4'>

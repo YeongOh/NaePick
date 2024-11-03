@@ -1,74 +1,77 @@
 'use server';
 
 import { COMMENT_ID_LENGTH, COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { z } from 'zod';
 import { pool } from '../../db';
 import { getSession } from '../session';
 import { nanoid } from 'nanoid';
-import { revalidatePath } from 'next/cache';
+import { Comment } from '../../definitions';
 
-const FormSchema = z.object({
-  worldcupId: z.string(),
-  userId: z.string().optional(),
-  text: z
-    .string()
-    .trim()
-    .min(1, {
-      message: `내용을 입력해주세요.`,
-    })
-    .max(COMMENT_TEXT_MAX_LENGTH, {
-      message: `내용은 ${COMMENT_TEXT_MAX_LENGTH}자 이하이어야 합니다.`,
-    }),
-});
-
-export type CommentState = {
-  errors?: CommentError;
+export type CreateCommentResponse = {
+  errors?: {
+    text?: string[];
+  };
   message?: string | null;
-  nickname?: string;
+  newComment?: Comment | null;
 };
 
-export type CommentError = {
-  text?: string[];
-  worldcupId?: string[];
-};
-
-export async function createComment(state: CommentState, formData: FormData) {
+export async function createComment(textInput: string, worldcupId: string) {
   const session = await getSession();
 
-  const validatedFields = FormSchema.safeParse({
-    userId: session.userId,
-    worldcupId: formData.get('worldcupId'),
-    text: formData.get('text'),
-  });
+  const text = textInput.trim();
 
-  console.log(formData);
-
-  console.log(validatedFields);
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: '누락된 항목이 있습니다.',
-    };
+  if (text.length === 0) {
+    const textError = { text: ['댓글은 공백 제외 한 자 이상이어야합니다.'] };
+    return { errors: textError };
   }
 
-  const { userId, text, worldcupId } = validatedFields.data;
+  if (text.length > COMMENT_TEXT_MAX_LENGTH) {
+    const textError = {
+      text: [`댓글은 ${COMMENT_TEXT_MAX_LENGTH} 이하여야합니다.`],
+    };
+    return { errors: textError };
+  }
+
+  const userId = session?.userId;
 
   try {
     const commentId = nanoid(COMMENT_ID_LENGTH);
 
+    console.log('go');
     if (!userId) {
       const [result, fields] = await pool.query(
         `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous) 
       VALUES (?, ?, ?, ?, ?)`,
         [commentId, worldcupId, null, text, true]
       );
+      const newComment = {
+        worldcupId,
+        nickname: null,
+        commentId,
+        userId: null,
+        text,
+        isAnonymous: true,
+        createdAt: String(new Date()),
+        updatedAt: String(new Date()),
+      };
+      return { newComment };
     } else {
+      const nickname = session?.nickname;
       const [result, fields] = await pool.query(
         `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous) 
     VALUES (?, ?, ?, ?, ?)`,
         [commentId, worldcupId, userId, text, false]
       );
+      const newComment = {
+        worldcupId,
+        nickname,
+        commentId,
+        userId,
+        text,
+        isAnonymous: false,
+        createdAt: String(new Date()),
+        updatedAt: String(new Date()),
+      };
+      return { newComment };
     }
   } catch (error) {
     console.log(error);
@@ -76,7 +79,4 @@ export async function createComment(state: CommentState, formData: FormData) {
       message: '댓글 추가에 실패했습니다',
     };
   }
-
-  revalidatePath(`/worldcups/${worldcupId}`);
-  return { nickname: session.nickname };
 }

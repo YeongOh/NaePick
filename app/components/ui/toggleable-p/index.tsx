@@ -12,12 +12,10 @@ export default function ToggleableP({ text, numberOfLines, className }: Props) {
 
   useEffect(() => {
     if (ref.current && ref.current.clientHeight > numberOfLines * 20) {
-      console.log('hello');
       setShowMore(false);
     }
   }, []);
 
-  console.log(text);
   return (
     <>
       <p

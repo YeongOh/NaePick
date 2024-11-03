@@ -1,6 +1,11 @@
 'use client';
 
-import { Candidate, Comment, Worldcup } from '@/app/lib/definitions';
+import {
+  Candidate,
+  Comment,
+  InfiniteScrollData,
+  Worldcup,
+} from '@/app/lib/definitions';
 import { useState } from 'react';
 import WorldcupPickScreen from './worldcup-pick-screen';
 import { getRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
@@ -24,12 +29,12 @@ const StartWorldcupModal = dynamic(
 
 interface Props {
   worldcup: Worldcup;
-  comments: Comment[];
+  commentData: InfiniteScrollData<Comment>;
 }
 
 export default function WorldcupPickScreenSetter({
   worldcup,
-  comments,
+  commentData,
 }: Props) {
   const [isSelectingRounds, setIsSelectingRounds] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -152,8 +157,9 @@ export default function WorldcupPickScreenSetter({
             </Fold>
           </section>
           <CommentSection
-            comments={comments}
+            comments={commentData.data as Comment[]}
             worldcupId={worldcup.worldcupId}
+            cursor={commentData.cursor as string}
           />
         </div>
       ) : null}

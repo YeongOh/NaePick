@@ -1,9 +1,12 @@
 'use client';
 
-import { CommentState, createComment } from '@/app/lib/actions/comments/create';
+import {
+  CreateCommentResponse,
+  createComment,
+} from '@/app/lib/actions/comments/create';
 import { Comment } from '@/app/lib/definitions';
 import { getRelativeDate, sortDate } from '@/app/utils/date';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormState } from 'react-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -13,36 +16,96 @@ import Button from '../ui/button';
 import InputErrorMessage from '../ui/input-error-message';
 import { Pencil } from 'lucide-react';
 import ToggleableP from '../ui/toggleable-p';
+import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 
 interface Props {
   worldcupId: string;
-  comments?: Comment[];
+  comments: Comment[];
   className?: string;
+  cursor: string;
 }
 
 export default function CommentSection({
   worldcupId,
-  comments,
   className,
+  comments: commentsProp,
+  cursor: cursorProp,
 }: Props) {
-  const initialState: CommentState = { message: null, errors: {} };
-  const [state, submitCommentForm] = useFormState(createComment, initialState);
+  const [state, setState] = useState<CreateCommentResponse>({ errors: {} });
+  // const [state, submitCommentForm] = useFormState(createComment, initialState);
   const [text, setText] = useState('');
+  const [isFetching, setIsFetching] = useState(false);
+  const [comments, setComments] = useState(commentsProp);
+  const [lastCursor, setLastCursor] = useState<string | null>(cursorProp);
+  const ref = useRef(null);
 
   const sortedComments = comments?.sort((a, b) =>
     sortDate(a.createdAt, b.createdAt, 'newest')
   );
+  console.log(commentsProp);
+  console.log(lastCursor);
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
-  const handleCommentFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCommentFormSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.append('worldcupId', worldcupId);
-    submitCommentForm(formData);
+    const result = await createComment(text, worldcupId);
+    if (!result) {
+      // error
+      return;
+    }
+    const { newComment, errors } = result;
+    if (errors) {
+      setState({ errors });
+    } else {
+      setState({ errors: {} });
+    }
+    if (newComment) {
+      setComments((prev) => [...prev, newComment] as Comment[]);
+    }
+    console.log(result);
     setText('');
   };
+
+  useEffect(() => {
+    const handleIntersect = async (
+      entries: IntersectionObserverEntry[],
+      observer: IntersectionObserver
+    ) => {
+      if (entries[0].isIntersecting && !isFetching && lastCursor) {
+        observer.unobserve(entries[0].target);
+        setIsFetching(true);
+        const result = await getCommentsByWorldcupId(worldcupId, lastCursor);
+        if (!result) {
+          throw new Error();
+        }
+        console.log(result);
+        const { data, cursor } = result;
+        console.log(cursor);
+        if (data) {
+          setComments((prev) => [...prev, ...data]);
+        }
+        setLastCursor(cursor);
+        setIsFetching(false);
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold: 0.5,
+    });
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      console.log('disconnect');
+      observer.disconnect();
+    };
+  }, [lastCursor, isFetching, worldcupId]);
 
   return (
     <section className={`${className} bg-white`}>
@@ -75,7 +138,11 @@ export default function CommentSection({
       {comments ? (
         <ul>
           {sortedComments?.map((comment, index) => (
-            <li className='mb-2' key={comment.commentId}>
+            <li
+              className='mb-2'
+              key={comment.commentId}
+              ref={index === sortedComments.length - 1 ? ref : null}
+            >
               <div className='mb-1'>
                 <span
                   className={`mr-4 font-semibold text-base ${

@@ -1,10 +1,15 @@
 'use server';
 
 import { FieldPacket } from 'mysql2/promise';
-import { WorldcupCard, Worldcup, Category } from '../definitions';
+import {
+  WorldcupCard,
+  Worldcup,
+  Category,
+  InfiniteScrollData,
+} from '../definitions';
 import { pool } from '../db';
 
-export async function getPublicWorldcupCards(pageNumber: number) {
+export async function getPublicWorldcupCards(cursor?: string) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -52,16 +57,26 @@ export async function getPublicWorldcupCards(pageNumber: number) {
               LEFT JOIN candidate_media AS rcm ON rcm.candidate_id = rc.candidate_id
               LEFT JOIN media_type AS rmt ON rcm.media_type_id = rmt.media_type_id
 
-              WHERE w.publicity = 'public'
+              WHERE w.publicity = 'public' AND w.created_at < ?
               ORDER BY w.created_at DESC
-              LIMIT 6 OFFSET ?;`,
-      [(pageNumber - 1) * 6]
+              LIMIT 20;`,
+      [cursor || new Date()]
     );
+    console.log(result);
 
-    if (result.length != 0) {
-      return { data: result, hasNextPage: true };
+    if (result.length === 0) {
+      const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
+        data: null,
+        cursor: null,
+      };
+      return infiniteScrollData;
     } else {
-      return { data: null, hasNextPage: false };
+      const lastTimestamp = result.at(-1)?.createdAt || null;
+      const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
+        data: result,
+        cursor: lastTimestamp,
+      };
+      return infiniteScrollData;
     }
   } catch (err) {
     console.log(err);

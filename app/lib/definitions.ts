@@ -57,13 +57,18 @@ export interface Category extends QueryResult {
 export interface Comment extends QueryResult {
   commentId: string;
   worldcupId: string;
-  parentCommentId: string;
+  parentCommentId?: string;
   userId: string;
   nickname: string;
   text: string;
   createdAt: string;
   updatedAt: string;
   isAnonymous: boolean;
+}
+
+export interface InfiniteScrollData<T> {
+  data: T[] | null;
+  cursor: string | null;
 }
 
 export interface MatchResult {
