@@ -79,7 +79,7 @@ export default function WorldcupPickScreen({
       <section
         className={`relative flex bg-black h-[calc(100vh-62px)] ${className}`}
       >
-        <h2 className='absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold'>
+        <h2 className='absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold pointer-events-none'>
           {worldcup.title} {getRoundsDescription(round)}
         </h2>
         <div
@@ -107,7 +107,7 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('left');
           }}
-          className={`h-full w-1/2 relative cursor-pointer flex justify-end ${
+          className={`group h-full w-1/2 relative flex justify-end ${
             picked === 'left' ? 'animate-expandLeft' : ''
           } ${picked === 'right' ? 'animate-shrinkRight' : ''}`}
         >
@@ -124,7 +124,7 @@ export default function WorldcupPickScreen({
             <figcaption
               className={`${
                 picked ? 'right-1/2' : 'right-[20%]'
-              } text-white min-h-24 absolute text-right bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              } pointer-events-none group-hover:text-primary-300 group-active:text-primary-500 transition-colors text-white min-h-24 absolute text-right bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
             >
               {leftCandidate.name}
             </figcaption>
@@ -136,7 +136,7 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('right');
           }}
-          className={`h-full w-1/2 relative cursor-pointer flex justify-start ${
+          className={`group h-full w-1/2 relative cursor-pointer flex justify-start ${
             picked === 'left' ? 'animate-shrinkLeft' : ''
           } ${picked === 'right' ? 'animate-expandRight' : ''}`}
         >
@@ -153,7 +153,7 @@ export default function WorldcupPickScreen({
             <figcaption
               className={`${
                 picked ? 'left-1/2' : 'left-[20%]'
-              } text-white min-h-24 absolute text-left bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+              } pointer-events-none group-hover:text-primary-300 group-active:text-primary-500 transition-colors text-white min-h-24 absolute text-left bottom-1/4 text-clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
             >
               {rightCandidate.name}
             </figcaption>

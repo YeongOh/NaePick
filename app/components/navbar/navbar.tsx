@@ -12,15 +12,27 @@ export default async function Navbar({ screenMode }: Props) {
 
   return (
     <nav
-      className={`p-4 gap-4 border border-b-1 ${
-        screenMode ? 'bg-black/90 border-black/90' : ''
+      className={`p-4 gap-4 ${
+        screenMode
+          ? 'bg-[#0f0f0f] border-0'
+          : 'border border-t-0 border-l-0 border-r-0 border-b-1'
       }`}
     >
       <div className='flex items-center justify-between max-w-screen-2xl m-auto'>
         <Link href={'/'}>
-          <div className='font-bold text-2xl text-primary-500'>NaePick</div>
+          <div
+            className={`font-bold text-2xl ${
+              screenMode ? 'text-white' : 'text-primary-500'
+            }`}
+          >
+            NaePick
+          </div>
         </Link>
-        <div className='flex gap-4 items-center text-base font-semibold text-slate-600'>
+        <div
+          className={`flex gap-4 items-center text-base font-semibold text-slate-600 ${
+            screenMode ? 'text-white/90' : 'text-primary-500'
+          }`}
+        >
           <NavbarLink href={`/worldcups/create`}>월드컵 만들기</NavbarLink>
           {session?.userId ? (
             <>

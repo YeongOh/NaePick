@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 import WorldcupPickScreenSetter from '@/app/components/worldcups/worldcup-pick-screen-setter';
 import { Comment, InfiniteScrollData } from '@/app/lib/definitions';
+import Navbar from '@/app/components/navbar/navbar';
 
 interface Props {
   params: { ['worldcup-id']: string };
@@ -30,6 +31,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
+      <Navbar screenMode />
       <WorldcupPickScreenSetter
         worldcup={worldcupResult[0]}
         commentData={commentData as InfiniteScrollData<Comment>}

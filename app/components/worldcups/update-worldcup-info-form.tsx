@@ -22,6 +22,7 @@ import Input from '../ui/input';
 import InputErrorMessage from '../ui/input-error-message';
 import Button from '../ui/button';
 import TextArea from '../ui/textarea';
+import LinkButton from '../ui/link-button';
 
 interface Props {
   categories: Category[];
@@ -227,9 +228,14 @@ export default function UpdateWorldcupInfoForm({
         </select>
       </div>
       <InputErrorMessage errors={state.errors?.categoryId} />
-      <Button className='mt-4' variant='primary'>
-        이상형 월드컵 수정하기
-      </Button>
+      <Button variant='primary'>이상형 월드컵 수정하기</Button>
+      <LinkButton
+        href={`/worldcups/${worldcup.worldcupId}`}
+        className='mt-2'
+        variant='outline'
+      >
+        이상형 월드컵 확인하기
+      </LinkButton>
     </form>
   );
 }

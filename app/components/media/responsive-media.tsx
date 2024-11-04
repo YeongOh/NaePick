@@ -38,10 +38,8 @@ const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
     youtubeStartTime = Number(timeTokens[0].slice(2)); // s=0
     youtubeEndTime = Number(timeTokens[1].slice(2)); // e=0
   }
-  console.log(youtubeEndTime);
 
   const handleYouTubeEnd = (e: YouTubeEvent) => {
-    console.log(youTubePlayer);
     youTubePlayer.seekTo(youtubeStartTime);
     youTubePlayer.playVideo();
   };

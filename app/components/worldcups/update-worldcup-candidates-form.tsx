@@ -36,6 +36,7 @@ import { SiImgur } from 'react-icons/si';
 import Button from '../ui/button';
 import Spinner from '../ui/spinner';
 import { ImageUp, Info } from 'lucide-react';
+import LinkButton from '../ui/link-button';
 
 interface Props {
   worldcup: WorldcupCard;
@@ -509,6 +510,15 @@ export default function UpdateWorldcupCandidatesForm({
         <Button className='mt-8' variant='primary'>
           이상형 월드컵 후보 이름 저장
         </Button>
+        <div className='flex'>
+          <LinkButton
+            href={`/worldcups/${worldcup.worldcupId}`}
+            className='mt-2'
+            variant='outline'
+          >
+            이상형 월드컵 확인하기
+          </LinkButton>
+        </div>
       </form>
       <DeleteConfirmModal
         open={showDeleteConfirmModal}
