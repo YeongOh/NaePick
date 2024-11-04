@@ -39,12 +39,12 @@ export default function StatisticsMain({
   const selectedCandidate = candidates[selectedCandidateIndex];
   const currentRank =
     (currentPageNumber - 1) * 10 + (selectedCandidateIndex + 1);
+  const totalPages = Math.ceil((worldcup.numberOfCandidates || 0) / 10);
 
   const handleShowDetailsOnClick = async (candidateIndex: number) => {
     setSelectedCandidateIndex(candidateIndex);
   };
 
-  const totalPages = Math.ceil((worldcup.numberOfCandidates || 0) / 10);
   const handlePageNumberOnClick = async (pageNumber: number) => {
     setCurrentPageNumber(pageNumber);
     const candidateData = await getCandidateStatisticsByWorldcupIdAndPageNumber(
@@ -104,6 +104,7 @@ export default function StatisticsMain({
           </ul>
           <div className='overflow-hidden rounded-bl rounded-br'>
             <Pagination
+              className='bg-white'
               totalPages={totalPages}
               currentPageNumber={currentPageNumber}
               range={2}
@@ -183,14 +184,4 @@ export default function StatisticsMain({
       </section>
     </div>
   );
-}
-
-function calculateWinRate(
-  numberOfWins: number,
-  numberOfLosses: number
-): number {
-  if (numberOfWins === 0) {
-    return 0;
-  }
-  return (numberOfWins / (numberOfLosses + numberOfWins)) * 100;
 }

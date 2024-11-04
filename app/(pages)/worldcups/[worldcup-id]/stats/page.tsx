@@ -34,8 +34,6 @@ export default async function Page({ params }: Props) {
       redirect('/forbidden');
     }
 
-    // TODO: 챔피언 4개 미만인지 확인
-
     return (
       <div>
         <StatisticsMain

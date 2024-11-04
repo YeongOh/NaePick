@@ -49,7 +49,7 @@ export async function fetchImageUploadUrl(key: string, fileType: string) {
     };
     const command = new PutObjectCommand(params);
     const urlResult = await getSignedUrl(S3client, command, {
-      expiresIn: 6000,
+      expiresIn: 300, // 5분
     });
 
     return urlResult;

@@ -19,7 +19,6 @@ import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
 import toast from 'react-hot-toast';
 import UpdateWorldcupCandidateImageDropzone from './update-worldcup-candidate-image-dropzone';
 import { deleteCandidate } from '@/app/lib/actions/candidates/delete';
-import { sortDate } from '@/app/utils/date';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import { downloadImgurUploadS3 } from '@/app/lib/actions/videos/imgur';
 import {
@@ -37,15 +36,20 @@ import Button from '../ui/button';
 import Spinner from '../ui/spinner';
 import { ImageUp, Info } from 'lucide-react';
 import LinkButton from '../ui/link-button';
+import Pagination from '../pagination/pagination';
+import { getCandidatesToUpdateByWorldcupId } from '@/app/lib/data/candidates';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   worldcup: WorldcupCard;
   candidates: Candidate[];
+  pageNumber: number;
 }
 
 export default function UpdateWorldcupCandidatesForm({
   worldcup,
   candidates,
+  pageNumber,
 }: Props) {
   const [selectedCandidateToDelete, setSelectedCandidateToDelete] =
     useState<Candidate | null>(null);
@@ -61,6 +65,8 @@ export default function UpdateWorldcupCandidatesForm({
   const [youtubeEndTime, setShowYoutubeEndTime] = useState(0);
   const [videoURL, setVideoURL] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const totalPages = Math.ceil((worldcup.numberOfCandidates || 0) / 10);
   const worldcupId = worldcup.worldcupId;
 
   const onDrop = useCallback(
@@ -146,7 +152,6 @@ export default function UpdateWorldcupCandidatesForm({
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
       const formObject = Object.fromEntries(formData);
-      delete formObject[videoURL];
 
       await updateCandidateNames(worldcupId, formObject);
       toast.success('저장되었습니다.');
@@ -180,11 +185,12 @@ export default function UpdateWorldcupCandidatesForm({
   };
 
   const handleYouTube = (text: string) => {
+    const trimText = text.trim();
     if (
-      text.startsWith('https://youtube.com') ||
-      text.startsWith('https://youtu.be') ||
-      text.startsWith('https://www.youtube.com') ||
-      text.startsWith('https://www.youtu.be')
+      trimText.startsWith('https://youtube.com') ||
+      trimText.startsWith('https://youtu.be') ||
+      trimText.startsWith('https://www.youtube.com') ||
+      trimText.startsWith('https://www.youtu.be')
     ) {
       setShowYoutubeTimeInput(true);
     } else {
@@ -267,6 +273,12 @@ export default function UpdateWorldcupCandidatesForm({
     }
   };
 
+  const handlePageNumberOnClick = async (pageNumber: number) => {
+    router.push(`/worldcups/${worldcupId}/update-candidates/${pageNumber}`, {
+      scroll: false,
+    });
+  };
+
   const handleOnChangeUpdateVideoInputIndex = (index: number | null) => {
     setShowVideoInputIndex(index);
   };
@@ -326,7 +338,6 @@ export default function UpdateWorldcupCandidatesForm({
         <div className='cursor-pointer border rounded-md text-base bg-gray-100 p-2 flex items-center mb-4 relative'>
           <input
             id='videoURL'
-            name='videoURL'
             className='block w-[91%] rounded-md border border-gray-200 p-2 placeholder:text-gray-500 focus:outline-primary-500'
             type='url'
             placeholder='https://(주소입력)'
@@ -411,14 +422,14 @@ export default function UpdateWorldcupCandidatesForm({
           </ul>
         </div>
         <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-          {candidates.length === 0
+          {worldcup.numberOfCandidates === 0
             ? '후보를 추가해보세요!'
-            : `후보 ${candidates.length}명`}
+            : `후보 ${worldcup.numberOfCandidates}명`}
         </h2>
-        {candidates.length < MIN_NUMBER_OF_CANDIDATES ? (
+        {worldcup.numberOfCandidates < MIN_NUMBER_OF_CANDIDATES ? (
           <p className='text-base text-gray-500 pl-2 mb-4'>
-            - {MIN_NUMBER_OF_CANDIDATES - candidates.length}명을 더 추가하면
-            이상형 월드컵을 시작할 준비가 완료됩니다.
+            - {MIN_NUMBER_OF_CANDIDATES - worldcup.numberOfCandidates}명을 더
+            추가하면 이상형 월드컵을 시작할 준비가 완료됩니다.
           </p>
         ) : null}
         {isLoading ? (
@@ -427,86 +438,93 @@ export default function UpdateWorldcupCandidatesForm({
           </div>
         ) : null}
         <ul>
-          {candidates
-            .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
-            .map((candidate, candidateIndex) => (
-              <li key={`${candidate.candidateId}/${candidate.pathname}`}>
-                <div className='flex items-center border mb-4 bg-gray-100'>
-                  <div className='relative w-[64px] h-[64px] cursor-pointer'>
-                    <ResponsiveThumbnailImage
-                      pathname={candidate.pathname}
-                      name={candidate.name}
-                      mediaType={candidate.mediaType}
-                      thumbnailURL={candidate?.thumbnailURL}
-                      onClick={() => {
-                        console.log('hello');
-                        setSelectedCandidateToPreviewIndex(
-                          candidateIndex === selectedCandidateToPreviewIndex
-                            ? null
-                            : candidateIndex
-                        );
-                      }}
-                      size='small'
-                    />
-                  </div>
-                  <div className='w-full flex'>
-                    <input
-                      className='flex-1 ml-2 mr-1 pl-4 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
-                      id={candidate.name}
-                      name={candidate.candidateId}
-                      type='text'
-                      defaultValue={candidate.name}
-                      placeholder={candidate.name}
-                      autoComplete='off'
-                      maxLength={CANDIDATE_NAME_MAX_LENGTH}
-                    />
-                    <div className='flex items-center gap-1'>
-                      <div className='relative'>
-                        <UpdateWorldcupCandidateVideo
-                          worldcupId={worldcup.worldcupId}
-                          candidateId={candidate.candidateId}
-                          originalPathname={candidate.pathname}
-                          mediaType={candidate.mediaType}
-                          candidateIndex={candidateIndex}
-                          onChangeVideoInputIndex={
-                            handleOnChangeUpdateVideoInputIndex
-                          }
-                          showVideoURLInput={
-                            showUpdateVideoInputIndex === candidateIndex
-                          }
-                        />
-                      </div>
-                      <UpdateWorldcupCandidateImageDropzone
+          {candidates.map((candidate, candidateIndex) => (
+            <li key={`${candidate.candidateId}/${candidate.pathname}`}>
+              <div className='flex items-center border mb-4 bg-gray-100'>
+                <div className='relative w-[64px] h-[64px] cursor-pointer'>
+                  <ResponsiveThumbnailImage
+                    pathname={candidate.pathname}
+                    name={candidate.name}
+                    mediaType={candidate.mediaType}
+                    thumbnailURL={candidate?.thumbnailURL}
+                    onClick={() => {
+                      console.log('hello');
+                      setSelectedCandidateToPreviewIndex(
+                        candidateIndex === selectedCandidateToPreviewIndex
+                          ? null
+                          : candidateIndex
+                      );
+                    }}
+                    size='small'
+                  />
+                </div>
+                <div className='w-full flex'>
+                  <input
+                    className='flex-1 ml-2 mr-1 pl-4 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500  border rounded-md'
+                    id={candidate.name}
+                    name={candidate.candidateId}
+                    type='text'
+                    defaultValue={candidate.name}
+                    placeholder={candidate.name}
+                    autoComplete='off'
+                    maxLength={CANDIDATE_NAME_MAX_LENGTH}
+                  />
+                  <div className='flex items-center gap-1'>
+                    <div className='relative'>
+                      <UpdateWorldcupCandidateVideo
                         worldcupId={worldcup.worldcupId}
                         candidateId={candidate.candidateId}
                         originalPathname={candidate.pathname}
                         mediaType={candidate.mediaType}
+                        candidateIndex={candidateIndex}
+                        onChangeVideoInputIndex={
+                          handleOnChangeUpdateVideoInputIndex
+                        }
+                        showVideoURLInput={
+                          showUpdateVideoInputIndex === candidateIndex
+                        }
                       />
-                      <button
-                        type='button'
-                        className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2 hover:bg-gray-100 transition-colors'
-                        onClick={() => {
-                          setSelectedCandidateToDelete(candidate);
-                          setShowDeleteConfirmModal(true);
-                        }}
-                      >
-                        삭제
-                      </button>
                     </div>
-                  </div>
-                </div>
-                {selectedCandidateToPreviewIndex === candidateIndex && (
-                  <div className='w-full flex justify-center my-8 h-[400px] bg-black'>
-                    <ResponsiveMedia
-                      pathname={candidate.pathname}
-                      name={candidate.name}
+                    <UpdateWorldcupCandidateImageDropzone
+                      worldcupId={worldcup.worldcupId}
+                      candidateId={candidate.candidateId}
+                      originalPathname={candidate.pathname}
                       mediaType={candidate.mediaType}
                     />
+                    <button
+                      type='button'
+                      className='text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2 hover:bg-gray-100 transition-colors'
+                      onClick={() => {
+                        setSelectedCandidateToDelete(candidate);
+                        setShowDeleteConfirmModal(true);
+                      }}
+                    >
+                      삭제
+                    </button>
                   </div>
-                )}
-              </li>
-            ))}
+                </div>
+              </div>
+              {selectedCandidateToPreviewIndex === candidateIndex && (
+                <div className='w-full flex justify-center my-8 h-[400px] bg-black'>
+                  <ResponsiveMedia
+                    pathname={candidate.pathname}
+                    name={candidate.name}
+                    mediaType={candidate.mediaType}
+                  />
+                </div>
+              )}
+            </li>
+          ))}
         </ul>
+        <div className='overflow-hidden rounded-bl rounded-br'>
+          <Pagination
+            className='bg-gray-50'
+            totalPages={totalPages}
+            currentPageNumber={pageNumber}
+            range={2}
+            onPageNumberClick={handlePageNumberOnClick}
+          />
+        </div>
         <Button className='mt-8' variant='primary'>
           이상형 월드컵 후보 이름 저장
         </Button>

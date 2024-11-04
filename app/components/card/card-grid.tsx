@@ -1,6 +1,6 @@
 'use client';
 
-import { InfiniteScrollData, WorldcupCard } from '@/app/lib/definitions';
+import { WorldcupCard } from '@/app/lib/definitions';
 import Card from './card';
 import { useEffect, useRef, useState } from 'react';
 import { getPublicWorldcupCards } from '@/app/lib/data/worldcups';
@@ -75,24 +75,26 @@ export default function CardGrid({
     }
 
     return () => {
-      console.log('disconnect');
       observer.disconnect();
     };
   }, [isFetching, lastCursor]);
 
   return (
-    <ul className='grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4'>
-      {cards.map((worldcup, index: number) => (
-        <Card
-          ref={index === cards.length - 1 ? ref : null}
-          key={worldcup.worldcupId}
-          worldcupCard={worldcup}
-          openDropdownMenu={dropdownMenuIndex === index}
-          onOpenDropdownMenu={() => setDropdownMenuIndex(index)}
-          onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
-          extended={extended}
-        />
-      ))}
-    </ul>
+    <>
+      <ul className='grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4'>
+        {cards.map((worldcup, index: number) => (
+          <Card
+            ref={index === cards.length - 1 ? ref : null}
+            key={worldcup.worldcupId}
+            worldcupCard={worldcup}
+            openDropdownMenu={dropdownMenuIndex === index}
+            onOpenDropdownMenu={() => setDropdownMenuIndex(index)}
+            onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
+            extended={extended}
+          />
+        ))}
+      </ul>
+      <footer className='h-16'></footer>
+    </>
   );
 }

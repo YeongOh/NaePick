@@ -36,7 +36,10 @@ export async function getRandomCandidatesByWorldcupId(
   }
 }
 
-export async function getCandidatesToUpdateByWorldcupId(worldcupId: string) {
+export async function getCandidatesToUpdateByWorldcupId(
+  worldcupId: string,
+  pageNumber = 1
+) {
   try {
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
       `SELECT c.candidate_id AS candidateId,
@@ -48,8 +51,10 @@ export async function getCandidatesToUpdateByWorldcupId(worldcupId: string) {
         FROM candidate c
         JOIN candidate_media cm ON c.candidate_id = cm.candidate_id
         JOIN media_type t ON t.media_type_id = cm.media_type_id
-        WHERE c.worldcup_id = ?;`,
-      [worldcupId]
+        WHERE c.worldcup_id = ?
+        ORDER BY c.created_at DESC
+        LIMIT 10 OFFSET ?;`,
+      [worldcupId, (pageNumber - 1) * 10]
     );
     console.log(result);
 

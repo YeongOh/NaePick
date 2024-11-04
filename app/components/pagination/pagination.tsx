@@ -5,6 +5,7 @@ interface Props {
   currentPageNumber: number;
   range: number;
   onPageNumberClick: (page: number) => void;
+  className?: string;
 }
 
 export default function Pagination({
@@ -12,6 +13,7 @@ export default function Pagination({
   currentPageNumber,
   range,
   onPageNumberClick,
+  className,
 }: Props) {
   const lowerEnd =
     currentPageNumber - range < 1 ? 1 : currentPageNumber - range;
@@ -21,12 +23,16 @@ export default function Pagination({
       : currentPageNumber + range;
 
   return (
-    <div className='bg-white h-12 flex items-center justify-center gap-1 text-base text-slate-700'>
+    <div
+      className={`h-12 flex items-center justify-center gap-1 text-base text-slate-700 ${className}`}
+    >
       <button
+        type='button'
         disabled={currentPageNumber === 1}
         className={`w-14 h-10 rounded flex justify-center items-center ${
           currentPageNumber === 1 ? '' : 'hover:bg-gray-50'
         }`}
+        onClick={() => onPageNumberClick(currentPageNumber - 1)}
       >
         <ChevronLeft color={currentPageNumber === 1 ? '#e5e7eb ' : undefined} />
       </button>
@@ -35,6 +41,7 @@ export default function Pagination({
         const isSelected = pageNumber === currentPageNumber;
         return (
           <button
+            type='button'
             key={`page-number ${pageNumber}`}
             className={`w-10 h-10 rounded ${
               isSelected
@@ -49,10 +56,12 @@ export default function Pagination({
         );
       })}
       <button
+        type='button'
         disabled={currentPageNumber === totalPages}
         className={`w-14 h-10 rounded flex justify-center items-center ${
           currentPageNumber === 1 ? '' : 'hover:bg-gray-50'
         }`}
+        onClick={() => onPageNumberClick(currentPageNumber + 1)}
       >
         <ChevronRight
           color={currentPageNumber === totalPages ? '#e5e7eb ' : undefined}

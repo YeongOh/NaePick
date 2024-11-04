@@ -38,7 +38,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
   return (
     <li
       ref={ref}
-      className={`hover:bg-gray-100 rounded-xl cursor-pointer pb-4 lg:m-2 md:p-2 ${
+      className={`hover:bg-gray-100 transition-colors rounded-xl cursor-pointer pb-4 lg:m-2 md:p-2 ${
         isActive ? `active:bg-primary-200` : ''
       }`}
       onMouseDown={(e) => {

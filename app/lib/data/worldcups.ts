@@ -93,6 +93,10 @@ export async function getWorldcupCardByWorldcupId(worldcupId: string) {
               w.created_at AS createdAt,
               u.user_id AS userId,
               u.nickname AS nickname,
+
+              (SELECT COUNT(c.candidate_id) 
+              FROM candidate c
+              WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates,
         
               lc.name AS leftCandidateName,
               lmt.type AS leftCandidateMediaType,
@@ -107,7 +111,7 @@ export async function getWorldcupCardByWorldcupId(worldcupId: string) {
               FROM worldcup w
 
               LEFT JOIN user u ON w.user_id = u.user_id
-              
+
               LEFT JOIN LATERAL (
                 SELECT mr.winner_candidate_id AS candidate_id
                 FROM match_result mr

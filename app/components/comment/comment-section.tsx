@@ -101,7 +101,6 @@ export default function CommentSection({
     }
 
     return () => {
-      console.log('disconnect');
       observer.disconnect();
     };
   }, [lastCursor, isFetching, worldcupId]);

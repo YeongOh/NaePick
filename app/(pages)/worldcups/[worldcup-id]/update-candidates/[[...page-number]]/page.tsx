@@ -9,16 +9,18 @@ import {
 import { notFound, redirect } from 'next/navigation';
 
 interface Props {
-  params: { 'worldcup-id': string };
+  params: { 'worldcup-id': string; 'page-number': String };
 }
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
+  const pageNumber = Number(params['page-number']) || 1;
   const [worldcupResult, candidates, session] = await Promise.all([
     getWorldcupCardByWorldcupId(worldcupId),
-    getCandidatesToUpdateByWorldcupId(worldcupId),
+    getCandidatesToUpdateByWorldcupId(worldcupId, pageNumber),
     getSession(),
   ]);
+  console.log('he');
 
   if (!worldcupResult || !worldcupResult[0]) notFound();
   if (!candidates) notFound();
@@ -34,6 +36,7 @@ export default async function Page({ params }: Props) {
       <UpdateWorldcupCandidatesForm
         worldcup={worldcupResult[0]}
         candidates={candidates}
+        pageNumber={pageNumber}
       />
     </div>
   );
