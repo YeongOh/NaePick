@@ -3,9 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import { getWorldcupsByUserId as getWorldcupCardsByUserId } from '@/app/lib/data/worldcups';
 import { getSession } from '@/app/lib/actions/session';
-import CardUpdateLink from '@/app/components/card/card-update-link';
-import Card from '@/app/components/card/card';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import CardGrid from '@/app/components/card/card-grid';
 
 interface Props {
@@ -14,8 +12,8 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const userId = params['user-id'];
-  const [allWorldcupCardsByUser, session] = await Promise.all([
-    getWorldcupCardsByUserId(userId),
+  const [result, session] = await Promise.all([
+    getWorldcupCardsByUserId(null, userId),
     getSession(),
   ]);
   dayjs.extend(relativeTime);
@@ -24,12 +22,24 @@ export default async function Page({ params }: Props) {
   if (session?.userId !== userId) {
     redirect('/forbidden');
   }
+  if (!result) {
+    notFound();
+  }
+
+  // TODO : no result?
+  const { cursor, data } = result;
 
   return (
     <section className='max-w-screen-2xl m-auto'>
-      {allWorldcupCardsByUser && (
-        <CardGrid worldcupCards={allWorldcupCardsByUser} extended />
-      )}
+      {data ? (
+        <CardGrid
+          worldcupCards={data}
+          cursor={cursor}
+          getNextCardsFunc={getWorldcupCardsByUserId}
+          nextCardsArgs={[userId]}
+          extended
+        />
+      ) : null}
     </section>
   );
 }

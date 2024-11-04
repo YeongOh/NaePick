@@ -84,12 +84,12 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='changePassword'
           name='changePassword'
           checked={changePassword}
-          className='cursor-pointer'
+          className='cursor-pointer peer/change-password'
           onChange={() => setChangePassword((prev) => !prev)}
         />
         <label
           htmlFor='changePassword'
-          className='font-semibold text-base text-slate-700 cursor-pointer'
+          className='font-semibold text-base text-gray-500 peer-checked/change-password:text-primary-500 cursor-pointer'
         >
           비밀번호 변경
         </label>

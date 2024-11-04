@@ -5,7 +5,7 @@ import Navbar from './components/navbar/navbar';
 import { notFound } from 'next/navigation';
 
 export default async function Home() {
-  const result = await getPublicWorldcupCards();
+  const result = await getPublicWorldcupCards(null);
 
   if (!result) {
     notFound();
@@ -17,8 +17,13 @@ export default async function Home() {
     <>
       <Navbar />
       <section className='max-w-screen-2xl m-auto'>
-        {data ? <CardGrid worldcupCards={data} cursor={cursor} /> : null}
-        {/* 로딩 스피너 혹은 해당하는 월드컵이 없습니다 UI표시 */}
+        {data ? (
+          <CardGrid
+            worldcupCards={data}
+            cursor={cursor}
+            getNextCardsFunc={getPublicWorldcupCards}
+          />
+        ) : null}
       </section>
     </>
   );

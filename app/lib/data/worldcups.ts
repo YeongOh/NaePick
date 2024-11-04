@@ -9,7 +9,7 @@ import {
 } from '../definitions';
 import { pool } from '../db';
 
-export async function getPublicWorldcupCards(cursor?: string) {
+export async function getPublicWorldcupCards(cursor: string | null) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -178,8 +178,10 @@ export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
   }
 }
 
-// TODO:
-export async function getWorldcupsByUserId(userId: string) {
+export async function getWorldcupsByUserId(
+  cursor: string | null,
+  userId: string
+) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -227,14 +229,26 @@ export async function getWorldcupsByUserId(userId: string) {
               LEFT JOIN candidate_media AS rcm ON rcm.candidate_id = rc.candidate_id
               LEFT JOIN media_type AS rmt ON rcm.media_type_id = rmt.media_type_id
 
-              WHERE u.user_id = ?
-              ORDER BY w.created_at DESC;`,
-      [userId]
+              WHERE u.user_id = ? AND w.created_at < ?
+              ORDER BY w.created_at DESC
+              LIMIT 20;`,
+      [userId, cursor || new Date()]
     );
 
-    console.log(result);
-
-    return result;
+    if (result.length === 0) {
+      const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
+        data: null,
+        cursor: null,
+      };
+      return infiniteScrollData;
+    } else {
+      const lastTimestamp = result.at(-1)?.createdAt || null;
+      const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
+        data: result,
+        cursor: lastTimestamp,
+      };
+      return infiniteScrollData;
+    }
   } catch (err) {
     console.log(err);
   }

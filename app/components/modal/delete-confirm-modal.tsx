@@ -24,7 +24,10 @@ export default function DeleteConfirmModal({
         createPortal(
           <div
             className='modal fixed inset-0 z-50 bg-black/80 w-screen h-screen'
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
@@ -39,7 +42,7 @@ export default function DeleteConfirmModal({
                 </p>
                 <div className='flex w-full gap-2 justify-end'>
                   <button
-                    className='text-primary-500 text-base px-4 py-2 text-center border rounded'
+                    className='text-slate-700 text-base px-4 py-2 text-center border rounded'
                     onClick={onClose}
                   >
                     취소

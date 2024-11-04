@@ -125,18 +125,14 @@ export default function UpdateWorldcupInfoForm({
                 name='publicity'
                 type='radio'
                 value='public'
-                className='cursor-pointer border-gray-300 bg-gray-100 text-gray-700 focus:ring-2'
+                className='cursor-pointer border-gray-300 bg-gray-100 peer/public'
                 onClick={() => setPublicity('public')}
                 aria-describedby='publicity-error'
                 defaultChecked={publicity === 'public'}
               />
               <label
                 htmlFor='public'
-                className={`ml-2 cursor-pointer text-base ${
-                  publicity === 'public'
-                    ? 'font-semibold text-gray-700'
-                    : 'text-gray-500'
-                }`}
+                className='ml-2 cursor-pointer text-gray-500 text-base peer-checked/public:text-primary-500 peer-checked/public:font-semibold'
               >
                 전체 공개
               </label>
@@ -148,17 +144,13 @@ export default function UpdateWorldcupInfoForm({
                 type='radio'
                 value='unlisted'
                 onClick={() => setPublicity('unlisted')}
-                className='cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2'
+                className='cursor-pointer border-gray-300 bg-gray-100 peer/unlisted'
                 aria-describedby='publicity-error'
                 defaultChecked={publicity === 'unlisted'}
               />
               <label
                 htmlFor='unlisted'
-                className={`ml-2 cursor-pointer text-base ${
-                  publicity === 'unlisted'
-                    ? 'font-semibold text-gray-700'
-                    : 'text-gray-500'
-                }`}
+                className='ml-2 cursor-pointer text-base text-gray-500 peer-checked/unlisted:text-primary-500 peer-checked/unlisted:font-semibold'
               >
                 미등록
               </label>
@@ -170,17 +162,13 @@ export default function UpdateWorldcupInfoForm({
                 type='radio'
                 value='private'
                 onClick={() => setPublicity('private')}
-                className='cursor-pointer bg-gray-100 text-gray-600 focus:ring-2'
+                className='cursor-pointer border-gray-300 bg-gray-100 peer/private'
                 aria-describedby='publicity-error'
                 defaultChecked={publicity === 'private'}
               />
               <label
                 htmlFor='private'
-                className={`ml-2 cursor-pointer text-base ${
-                  publicity === 'private'
-                    ? 'font-semibold text-gray-700'
-                    : 'text-gray-500'
-                }`}
+                className='ml-2 cursor-pointer text-gray-500 text-base peer-checked/private:text-primary-500 peer-checked/private:font-semibold'
               >
                 비공개
               </label>

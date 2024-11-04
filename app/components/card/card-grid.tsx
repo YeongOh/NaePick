@@ -1,34 +1,42 @@
 'use client';
 
-import { WorldcupCard } from '@/app/lib/definitions';
+import { InfiniteScrollData, WorldcupCard } from '@/app/lib/definitions';
 import Card from './card';
 import { useEffect, useRef, useState } from 'react';
-import { getPublicWorldcupCards } from '@/app/lib/data/worldcups';
+
+type FetchCardsFunc = (
+  cursor: string | null,
+  ...args: any[]
+) => Promise<InfiniteScrollData<WorldcupCard> | undefined>;
 
 interface Props {
   worldcupCards: WorldcupCard[];
   extended?: boolean;
-  cursor: string | null;
+  cursor?: string | null;
+  getNextCardsFunc: FetchCardsFunc;
+  nextCardsArgs?: string[];
 }
 
 export default function CardGrid({
   worldcupCards,
   extended,
-  cursor: cursorProp,
+  getNextCardsFunc,
+  nextCardsArgs,
+  cursor: cursorProp = null,
 }: Props) {
   const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(
     null
   );
-  const [cards, setCards] = useState(worldcupCards);
   const [isFetching, setIsFetching] = useState(false);
   const [lastCursor, setLastCursor] = useState<string | null>(cursorProp);
+  const [fetchedCards, setFetchedCards] = useState<WorldcupCard[]>([]);
   const ref = useRef(null);
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (
-      !target.closest('.menubar') &&
-      !target.closest('.menubar-toggle') &&
+      !target.closest('.dropdown-menu') &&
+      !target.closest('.dropdown-menu-toggle') &&
       !target.closest('.modal')
     ) {
       setDropdownMenuIndex(null);
@@ -53,13 +61,19 @@ export default function CardGrid({
       if (entries[0].isIntersecting && !isFetching && lastCursor) {
         observer.unobserve(entries[0].target);
         setIsFetching(true);
-        const result = await getPublicWorldcupCards(lastCursor);
+        let result;
+        if (nextCardsArgs && nextCardsArgs.length) {
+          result = await getNextCardsFunc(lastCursor, ...nextCardsArgs);
+        } else {
+          result = await getNextCardsFunc(lastCursor);
+        }
         if (!result) {
           throw new Error();
         }
+        console.log('fetched');
         const { data, cursor } = result;
         if (data) {
-          setCards((prev) => [...prev, ...data]);
+          setFetchedCards((prev) => [...prev, ...data]);
         }
         setLastCursor(cursor);
         setIsFetching(false);
@@ -77,14 +91,35 @@ export default function CardGrid({
     return () => {
       observer.disconnect();
     };
-  }, [isFetching, lastCursor]);
+  }, [isFetching, lastCursor, getNextCardsFunc, nextCardsArgs]);
 
   return (
     <>
       <ul className='grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4'>
-        {cards.map((worldcup, index: number) => (
+        {worldcupCards.map((worldcup, index: number) => (
           <Card
-            ref={index === cards.length - 1 ? ref : null}
+            ref={
+              worldcupCards.length + fetchedCards.length <= 20 &&
+              index === worldcupCards.length - 1
+                ? ref
+                : null
+            }
+            key={worldcup.worldcupId}
+            worldcupCard={worldcup}
+            openDropdownMenu={dropdownMenuIndex === index}
+            onOpenDropdownMenu={() => setDropdownMenuIndex(index)}
+            onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
+            extended={extended}
+          />
+        ))}
+        {fetchedCards.map((worldcup, index: number) => (
+          <Card
+            ref={
+              worldcupCards.length + fetchedCards.length > 20 &&
+              index === worldcupCards.length - 1
+                ? ref
+                : null
+            }
             key={worldcup.worldcupId}
             worldcupCard={worldcup}
             openDropdownMenu={dropdownMenuIndex === index}

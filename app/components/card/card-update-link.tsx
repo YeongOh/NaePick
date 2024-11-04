@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import toast from 'react-hot-toast';
+import LinkButton from '../ui/link-button';
+import Button from '../ui/button';
 
 interface Props {
   worldcupId: string;
@@ -29,18 +31,20 @@ export default function CardUpdateLink({ worldcupId }: Props) {
         className='mt-4 flex gap-2 text-base'
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          className='flex-1 text-red-500'
-          onClick={() => setShowDeleteWorldcupConfirmModal(true)}
-        >
-          삭제
-        </button>
-        <Link
-          className='flex-1 p-2 text-primary-500 bg-gray-100 rounded text-center'
-          href={`/worldcups/${worldcupId}/update-info`}
-        >
-          수정
-        </Link>
+        <div className='flex justify-end items-center gap-2 w-full'>
+          <button
+            onClick={() => setShowDeleteWorldcupConfirmModal(true)}
+            className='card-button card-link w-20 text-base font-semibold rounded  border bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors text-red-500 py-2 px-1'
+          >
+            삭제 하기
+          </button>
+          <Link
+            href={`/worldcups/${worldcupId}/update-info`}
+            className='card-button text-center card-link w-20 text-base font-semibold rounded  border hover:bg-primary-600 active:bg-primary-700 transition-colors text-white bg-primary-500 py-2 px-1'
+          >
+            수정하기
+          </Link>
+        </div>
       </div>
       <DeleteConfirmModal
         open={showDeleteWorldcupConfirmModal}

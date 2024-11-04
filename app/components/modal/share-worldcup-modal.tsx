@@ -35,7 +35,10 @@ export default function ShareWorldcupModal({
         createPortal(
           <div
             className='modal fixed inset-0 z-50 bg-black/30 w-screen h-screen'
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
@@ -47,7 +50,7 @@ export default function ShareWorldcupModal({
               <div className='flex flex-col items-center justify-between'>
                 <div className='relative w-full text-base border bg-gray-50 rounded-lg p-4 whitespace-nowrap overflow-hidden'>
                   <input
-                    className='w-[80%] bg-gray-50'
+                    className='w-[80%] bg-gray-50 focus:outline-primary-500'
                     ref={focusedRef}
                     onBlur={() => {
                       focusedRef.current = null;
@@ -57,7 +60,7 @@ export default function ShareWorldcupModal({
                   />
                   <button
                     onClick={handleCopyShareLInk}
-                    className='absolute top-2 right-2 bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-700 transition-colors'
+                    className='absolute top-2 right-2 bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600 active:bg-primary-700 transition-colors'
                   >
                     복사
                   </button>

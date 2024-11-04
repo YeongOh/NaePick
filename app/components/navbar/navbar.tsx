@@ -33,11 +33,13 @@ export default async function Navbar({ screenMode }: Props) {
             screenMode ? 'text-white/90' : 'text-primary-500'
           }`}
         >
-          <NavbarLink href={`/worldcups/create`}>월드컵 만들기</NavbarLink>
+          <NavbarLink href={`/worldcups/create`}>
+            이상형 월드컵 만들기
+          </NavbarLink>
           {session?.userId ? (
             <>
               <NavbarLink href={`/worldcups/users/${session.userId}`}>
-                내 월드컵 관리
+                내 이상형 월드컵 관리
               </NavbarLink>
               <NavbarLink href={'/update-user'}>회원정보 수정</NavbarLink>
               <SignoutButtion />

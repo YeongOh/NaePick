@@ -38,18 +38,24 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
   return (
     <li
       ref={ref}
-      className={`hover:bg-primary-100 transition-colors rounded-xl cursor-pointer pb-4 lg:m-2 md:p-2 ${
-        isActive ? `active:bg-primary-200` : ''
+      className={`transition-colors rounded-xl cursor-pointer pb-4 lg:m-2 md:p-2 ${
+        isActive ? `active:bg-primary-100` : ''
       }`}
       onMouseDown={(e) => {
         if (
           e.target instanceof HTMLElement &&
-          !e.target.classList.contains('menubar-toggle')
-        )
+          !e.target.classList.contains('dropdown-menu-toggle') &&
+          !e.target.classList.contains('dropdown-menu') &&
+          !e.target.classList.contains('dropdown-button') &&
+          !e.target.classList.contains('card-button')
+        ) {
           setIsActive(true);
+        } else {
+          setIsActive(false);
+        }
       }}
-      onMouseUp={() => setIsActive(false)}
-      onClick={() => {
+      onClick={(e) => {
+        console.log(e.target);
         router.push(`/worldcups/${worldcupCard.worldcupId}`);
       }}
     >

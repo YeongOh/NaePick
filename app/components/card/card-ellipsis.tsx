@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import DropdownMenu from '../dropdown-menu/dropdown-menu';
 import { EllipsisVertical } from 'lucide-react';
+import ShareWorldcupModal from '../modal/share-worldcup-modal';
 
 interface Props {
   worldcupId: string;
@@ -18,27 +20,45 @@ export default function CardEllipsis({
   onCloseDropdownMenu,
   title,
 }: Props) {
+  const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
+
+  const handleShareWorldcupModal = () => {
+    setShareWorldcupModal(true);
+    onCloseDropdownMenu();
+  };
+
   return (
-    <div className='relative'>
-      <button
-        type='button'
-        className={`menubar-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center relative`}
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!openDropdownMenu) {
-            onOpenDropdownMenu();
-          } else {
-            onCloseDropdownMenu();
-          }
-        }}
-      >
-        <EllipsisVertical size='1.2rem' />
-      </button>
-      <DropdownMenu
-        worldcupId={worldcupId}
-        openDropdownMenu={openDropdownMenu}
-        title={title}
-      />
-    </div>
+    <>
+      <div className='relative'>
+        <button
+          type='button'
+          className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center relative`}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!openDropdownMenu) {
+              onOpenDropdownMenu();
+            } else {
+              onCloseDropdownMenu();
+            }
+          }}
+        >
+          <EllipsisVertical size='1.2rem' />
+        </button>
+        <DropdownMenu
+          worldcupId={worldcupId}
+          openDropdownMenu={openDropdownMenu}
+          onOpenShareWorldcupModal={handleShareWorldcupModal}
+          title={title}
+        />
+      </div>
+      {shareWorldcupModal && (
+        <ShareWorldcupModal
+          open={shareWorldcupModal}
+          onClose={() => setShareWorldcupModal(false)}
+          worldcupId={worldcupId}
+          title={title}
+        />
+      )}
+    </>
   );
 }
