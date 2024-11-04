@@ -24,7 +24,7 @@ export default function TextArea({
       <label
         htmlFor={id}
         className={`${
-          error ? 'text-red-500' : 'text-gray-500'
+          error ? 'text-red-500' : 'text-primary-500'
         } absolute top-3 left-4 text-base bg-white transition cursor-text -translate-y-6 -translate-x-1`}
       >
         {placeholder}

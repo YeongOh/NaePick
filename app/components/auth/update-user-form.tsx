@@ -84,7 +84,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
           id='changePassword'
           name='changePassword'
           checked={changePassword}
-          className='cursor-pointer accent-primary-500'
+          className='cursor-pointer'
           onChange={() => setChangePassword((prev) => !prev)}
         />
         <label

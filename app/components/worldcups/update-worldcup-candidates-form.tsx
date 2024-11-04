@@ -351,7 +351,7 @@ export default function UpdateWorldcupCandidatesForm({
           <button
             type='button'
             onClick={handleVideoUpload}
-            className='absolute px-4 py-2 bg-primary-500 text-white right-2 rounded hover:bg-primary-700 transition-colors font-semibold'
+            className='absolute px-4 py-2 bg-primary-500 text-white right-2 rounded hover:bg-primary-600 active:bg-primary-700 transition-colors font-semibold'
           >
             추가
           </button>

@@ -187,7 +187,7 @@ export default function UpdateWorldcupCandidateVideo({
                     mediaType,
                   })
                 }
-                className='px-3 py-1 bg-primary-500 text-white right-2 rounded hover:bg-primary-700 transition-colors'
+                className='px-3 py-1 bg-primary-500 text-white right-2 rounded hover:bg-primary-600 active:bg-primary-700 transition-colors'
               >
                 입력
               </button>

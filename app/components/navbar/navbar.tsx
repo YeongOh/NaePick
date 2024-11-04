@@ -22,7 +22,7 @@ export default async function Navbar({ screenMode }: Props) {
         <Link href={'/'}>
           <div
             className={`font-bold text-2xl ${
-              screenMode ? 'text-white' : 'text-primary-500'
+              screenMode ? 'text-primary-300' : 'text-primary-500'
             }`}
           >
             NaePick

@@ -31,11 +31,7 @@ export default function Fold({
       <div className='text-sm text-gray-500 mb-2'>
         {createdDate.format('YYYY년 MM월 MM일')}{' '}
         <span title={updatedDate.format('YYYY년 MM월 MM일')}>
-          (
-          {isUpdated
-            ? `${updatedDate.fromNow()} 업데이트`
-            : `${updatedDate.fromNow()} 업데이트`}
-          )
+          {isUpdated ? `(${updatedDate.fromNow()} 업데이트)` : ``}
         </span>
       </div>
       <div className='mb-5'>

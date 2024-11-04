@@ -84,7 +84,7 @@ export default function WorldcupPickScreen({
         </h2>
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-500 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+          className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-300 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
             picked ? 'hidden' : ''
           }`}
         >

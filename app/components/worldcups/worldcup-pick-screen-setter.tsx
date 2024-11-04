@@ -95,10 +95,6 @@ export default function WorldcupPickScreenSetter({ worldcup }: Props) {
     );
   }
 
-  const createdDate = dayjs(worldcup.createdAt);
-  const updatedDate = dayjs(worldcup.updatedAt);
-  const isUpdated = createdDate.diff(updatedDate);
-
   return (
     <div className='flex bg-black/95'>
       <WorldcupPickScreen

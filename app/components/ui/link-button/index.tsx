@@ -22,7 +22,7 @@ export default function LinkButton({
   let classNameResult = className;
   if (variant === 'primary')
     classNameResult +=
-      ' bg-primary-500 hover:bg-primary-700 active:bg-primary-800  transition-colors text-white';
+      ' bg-primary-500 hover:bg-primary-600 active:bg-primary-700  transition-colors text-white';
   if (variant === 'outline')
     classNameResult +=
       ' border bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors text-slate-700';
