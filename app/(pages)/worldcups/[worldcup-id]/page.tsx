@@ -1,9 +1,7 @@
 import { getSession } from '@/app/lib/actions/session';
 import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import { notFound, redirect } from 'next/navigation';
-import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 import WorldcupPickScreenSetter from '@/app/components/worldcups/worldcup-pick-screen-setter';
-import { Comment, InfiniteScrollData } from '@/app/lib/definitions';
 import Navbar from '@/app/components/navbar/navbar';
 
 interface Props {
@@ -12,9 +10,8 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcupResult, commentData, session] = await Promise.all([
+  const [worldcupResult, session] = await Promise.all([
     getWorldcupPickScreenByWorldcupId(worldcupId),
-    getCommentsByWorldcupId(worldcupId),
     getSession(),
   ]);
 
@@ -32,10 +29,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <Navbar screenMode />
-      <WorldcupPickScreenSetter
-        worldcup={worldcupResult[0]}
-        commentData={commentData as InfiniteScrollData<Comment>}
-      />
+      <WorldcupPickScreenSetter worldcup={worldcupResult[0]} />
     </>
   );
 }

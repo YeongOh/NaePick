@@ -1,12 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  CandidateWithStatistics,
-  Comment,
-  InfiniteScrollData,
-  Worldcup,
-} from '@/app/lib/definitions';
+import { CandidateWithStatistics, Worldcup } from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
 import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
 import ResponsiveMedia from '../media/responsive-media';
@@ -14,31 +9,29 @@ import CommentSection from '../comment/comment-section';
 import Button from '../ui/button';
 import LinkButton from '../ui/link-button';
 
-import { getCandidateStatisticsByWorldcupIdAndPageNumber } from '@/app/lib/data/statistics';
 import Pagination from '../pagination/pagination';
 import Fold from '../fold/fold';
 import { Globe, RotateCcw, Share } from 'lucide-react';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   candidates: CandidateWithStatistics[];
   worldcup: Worldcup;
-  commentData: InfiniteScrollData<Comment>;
+  pageNumber: number;
 }
 
 export default function StatisticsMain({
-  candidates: defaultCandidates,
+  candidates,
   worldcup,
-  commentData,
+  pageNumber,
 }: Props) {
   const [selectedCandidateIndex, setSelectedCandidateIndex] = useState(0);
-  const [candidates, setCandidates] = useState(defaultCandidates);
-  const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
+  const router = useRouter();
 
   const selectedCandidate = candidates[selectedCandidateIndex];
-  const currentRank =
-    (currentPageNumber - 1) * 10 + (selectedCandidateIndex + 1);
+  const currentRank = (pageNumber - 1) * 10 + (selectedCandidateIndex + 1);
   const totalPages = Math.ceil((worldcup.numberOfCandidates || 0) / 10);
 
   const handleShowDetailsOnClick = async (candidateIndex: number) => {
@@ -46,15 +39,9 @@ export default function StatisticsMain({
   };
 
   const handlePageNumberOnClick = async (pageNumber: number) => {
-    setCurrentPageNumber(pageNumber);
-    const candidateData = await getCandidateStatisticsByWorldcupIdAndPageNumber(
-      worldcup.worldcupId,
-      pageNumber
-    );
-    if (candidateData) {
-      setCandidates(candidateData);
-      setSelectedCandidateIndex(0);
-    }
+    router.push(`/worldcups/${worldcup.worldcupId}/stats/${pageNumber}`, {
+      scroll: false,
+    });
   };
 
   return (
@@ -81,7 +68,7 @@ export default function StatisticsMain({
                   onClick={() => handleShowDetailsOnClick(i)}
                 >
                   <div className='w-12 text-center text-gray-500'>
-                    {(currentPageNumber - 1) * 10 + i + 1}
+                    {(pageNumber - 1) * 10 + i + 1}
                   </div>
                   <div className='w-16 h-16 overflow-hidden rounded'>
                     <ResponsiveThumbnailImage
@@ -106,7 +93,7 @@ export default function StatisticsMain({
             <Pagination
               className='bg-white'
               totalPages={totalPages}
-              currentPageNumber={currentPageNumber}
+              currentPageNumber={pageNumber}
               range={2}
               onPageNumberClick={handlePageNumberOnClick}
             />
@@ -135,7 +122,7 @@ export default function StatisticsMain({
           </h2>
         )}
       </div>
-      <section className='p-8 w-[31rem] bg-white'>
+      <section className='p-8 w-[31rem] bg-white h-[calc(100vh-62px)] overflow-y-scroll'>
         <Fold
           nickname={worldcup.nickname}
           createdAt={worldcup.createdAt}
@@ -176,10 +163,8 @@ export default function StatisticsMain({
           </LinkButton>
         </Fold>
         <CommentSection
-          numberOfComments={worldcup.numberOfCandidates}
+          numberOfComments={worldcup.numberOfComments}
           worldcupId={worldcup.worldcupId}
-          comments={commentData.data as Comment[]}
-          cursor={commentData.cursor as string}
         />
       </section>
     </div>

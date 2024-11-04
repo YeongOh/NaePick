@@ -2,10 +2,7 @@ import UpdateWorldcupCandidatesForm from '@/app/components/worldcups/update-worl
 import WorldcupFormTab from '@/app/components/worldcups/worldcup-form-tab';
 import { getSession } from '@/app/lib/actions/session';
 import { getCandidatesToUpdateByWorldcupId } from '@/app/lib/data/candidates';
-import {
-  getAllCategories,
-  getWorldcupCardByWorldcupId,
-} from '@/app/lib/data/worldcups';
+import { getWorldcupCardByWorldcupId } from '@/app/lib/data/worldcups';
 import { notFound, redirect } from 'next/navigation';
 
 interface Props {
@@ -20,7 +17,6 @@ export default async function Page({ params }: Props) {
     getCandidatesToUpdateByWorldcupId(worldcupId, pageNumber),
     getSession(),
   ]);
-  console.log('he');
 
   if (!worldcupResult || !worldcupResult[0]) notFound();
   if (!candidates) notFound();

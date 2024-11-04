@@ -20,25 +20,31 @@ import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 interface Props {
   numberOfComments: number;
   worldcupId: string;
-  comments: Comment[];
   className?: string;
-  cursor: string;
 }
 
 export default function CommentSection({
   numberOfComments,
   worldcupId,
   className,
-  comments: commentsProp,
-  cursor: cursorProp,
 }: Props) {
   const [state, setState] = useState<CreateCommentResponse>({ errors: {} });
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(false);
-  const [comments, setComments] = useState(commentsProp || []);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [numberOfNewComments, setNumberOfNewComments] = useState(0);
-  const [lastCursor, setLastCursor] = useState<string | null>(cursorProp);
+  const [lastCursor, setLastCursor] = useState<string | null>(null);
   const ref = useRef(null);
+
+  useEffect(() => {
+    getCommentsByWorldcupId(worldcupId).then((result) => {
+      if (result) {
+        const { data, cursor } = result;
+        setComments(data || []);
+        setLastCursor(cursor);
+      }
+    });
+  }, []);
 
   const sortedComments = comments?.sort((a, b) =>
     sortDate(a.createdAt, b.createdAt, 'newest')
@@ -81,9 +87,7 @@ export default function CommentSection({
         if (!result) {
           throw new Error();
         }
-        console.log(result);
         const { data, cursor } = result;
-        console.log(cursor);
         if (data) {
           setComments((prev) => [...prev, ...data]);
         }

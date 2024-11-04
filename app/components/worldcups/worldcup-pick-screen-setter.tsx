@@ -29,13 +29,9 @@ const StartWorldcupModal = dynamic(
 
 interface Props {
   worldcup: Worldcup;
-  commentData: InfiniteScrollData<Comment>;
 }
 
-export default function WorldcupPickScreenSetter({
-  worldcup,
-  commentData,
-}: Props) {
+export default function WorldcupPickScreenSetter({ worldcup }: Props) {
   const [isSelectingRounds, setIsSelectingRounds] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [round, setRounds] = useState<number | null>(null);
@@ -113,7 +109,7 @@ export default function WorldcupPickScreenSetter({
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className='p-8 w-[31rem] bg-white'>
+        <div className='p-8 w-[31rem] bg-white h-[calc(100vh-62px)] overflow-y-scroll'>
           <section>
             <Fold
               nickname={worldcup.nickname}
@@ -158,9 +154,7 @@ export default function WorldcupPickScreenSetter({
           </section>
           <CommentSection
             numberOfComments={worldcup.numberOfComments}
-            comments={commentData.data as Comment[]}
             worldcupId={worldcup.worldcupId}
-            cursor={commentData.cursor as string}
           />
         </div>
       ) : null}
