@@ -19,7 +19,8 @@ export interface Worldcup extends QueryResult {
   userId: string;
   categoryId: number;
   createdAt: string;
-  numberOfCandidates?: number;
+  numberOfCandidates: number;
+  numberOfComments: number;
 }
 
 export interface WorldcupCard extends Worldcup {

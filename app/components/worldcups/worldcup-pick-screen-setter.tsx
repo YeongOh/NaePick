@@ -91,7 +91,7 @@ export default function WorldcupPickScreenSetter({
             open={openStartWorldcupModal}
             createdAt={worldcup.createdAt}
             updatedAt={worldcup.updatedAt}
-            numberOfCandidates={worldcup.numberOfCandidates as number}
+            numberOfCandidates={worldcup.numberOfCandidates}
             onRoundSubmit={handleRoundSumbit}
           />
         </section>
@@ -157,6 +157,7 @@ export default function WorldcupPickScreenSetter({
             </Fold>
           </section>
           <CommentSection
+            numberOfComments={worldcup.numberOfComments}
             comments={commentData.data as Comment[]}
             worldcupId={worldcup.worldcupId}
             cursor={commentData.cursor as string}

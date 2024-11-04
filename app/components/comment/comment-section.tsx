@@ -7,7 +7,6 @@ import {
 import { Comment } from '@/app/lib/definitions';
 import { getRelativeDate, sortDate } from '@/app/utils/date';
 import React, { useEffect, useRef, useState } from 'react';
-import { useFormState } from 'react-dom';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
@@ -19,6 +18,7 @@ import ToggleableP from '../ui/toggleable-p';
 import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 
 interface Props {
+  numberOfComments: number;
   worldcupId: string;
   comments: Comment[];
   className?: string;
@@ -26,16 +26,17 @@ interface Props {
 }
 
 export default function CommentSection({
+  numberOfComments,
   worldcupId,
   className,
   comments: commentsProp,
   cursor: cursorProp,
 }: Props) {
   const [state, setState] = useState<CreateCommentResponse>({ errors: {} });
-  // const [state, submitCommentForm] = useFormState(createComment, initialState);
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [comments, setComments] = useState(commentsProp || []);
+  const [numberOfNewComments, setNumberOfNewComments] = useState(0);
   const [lastCursor, setLastCursor] = useState<string | null>(cursorProp);
   const ref = useRef(null);
 
@@ -63,6 +64,7 @@ export default function CommentSection({
     }
     if (newComment) {
       setComments((prev) => [...prev, newComment] as Comment[]);
+      setNumberOfNewComments((prev) => prev + 1);
     }
     setText('');
   };
@@ -104,11 +106,13 @@ export default function CommentSection({
     };
   }, [lastCursor, isFetching, worldcupId]);
 
+  const totalNumberOfComments = numberOfComments + numberOfNewComments;
+
   return (
     <section className={`${className} bg-white`}>
       <div className='my-4 text-base text-slate-700 font-semibold'>
-        {comments && comments.length > 0
-          ? `댓글 ${comments.length}개`
+        {totalNumberOfComments > 0
+          ? `댓글 ${totalNumberOfComments}개`
           : `댓글을 남겨주세요.`}
       </div>
       <form onSubmit={handleCommentFormSubmit}>

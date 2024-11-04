@@ -175,6 +175,7 @@ export default function StatisticsMain({
           </LinkButton>
         </Fold>
         <CommentSection
+          numberOfComments={worldcup.numberOfCandidates}
           worldcupId={worldcup.worldcupId}
           comments={commentData.data as Comment[]}
           cursor={commentData.cursor as string}

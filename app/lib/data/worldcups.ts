@@ -156,7 +156,10 @@ export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
               ct.name as categoryName,
               (SELECT COUNT(c.candidate_id) 
               FROM candidate c
-              WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates
+              WHERE c.worldcup_id = w.worldcup_id) AS numberOfCandidates,
+              (SELECT COUNT(cm.comment_id) 
+              FROM comment cm
+              WHERE cm.worldcup_id = w.worldcup_id) AS numberOfComments
       FROM worldcup w
       LEFT JOIN category ct ON ct.category_id = w.category_id
       LEFT JOIN user u ON w.user_id = u.user_id
