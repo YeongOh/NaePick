@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Navbar from './components/navbar/navbar';
+import LinkButton from './components/ui/link-button';
 
 export default function NotFound() {
   return (
@@ -14,15 +15,19 @@ export default function NotFound() {
             <p className='mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white'>
               페이지를 찾을 수 없습니다.
             </p>
-            <p className='mb-4 text-lg font-light text-gray-500 dark:text-gray-400'>
+            <div className='mb-4 text-lg font-light text-gray-500 dark:text-gray-400'>
               죄송합니다. 홈으로 돌아가시겠습니까?
-            </p>
-            <Link
-              href='/'
-              className='inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4'
-            >
-              돌아가기
-            </Link>
+            </div>
+            <div className='my-4 w-full flex justify-center items-center'>
+              <LinkButton
+                href='/'
+                variant='primary'
+                size='large'
+                className='block w-24'
+              >
+                돌아가기
+              </LinkButton>
+            </div>
           </div>
         </div>
       </section>

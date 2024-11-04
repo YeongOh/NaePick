@@ -203,6 +203,32 @@ async function seedComment() {
   }
 }
 
+async function seedSession() {
+  try {
+    const [results, fields] = await pool.query(
+      `CREATE TABLE IF NOT EXISTS comment (
+        comment_id VARCHAR(10) NOT NULL,
+        worldcup_id VARCHAR(10) NOT NULL,
+        parent_comment_id VARCHAR(10) DEFAULT NULL,
+        user_id VARCHAR(10) DEFAULT NULL,
+        is_anonymous BOOLEAN DEFAULT FALSE,
+        text VARCHAR(300) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (comment_id),
+        FOREIGN KEY (worldcup_id) REFERENCES worldcup(worldcup_id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES worldcup(user_id) ON DELETE SET NULL,
+        FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id)
+      );`
+    );
+
+    console.log(results);
+    console.log(fields);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function GET() {
   try {
     await seedCategory();

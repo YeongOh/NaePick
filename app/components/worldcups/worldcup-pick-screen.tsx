@@ -2,9 +2,9 @@
 
 import { submitMatchResult } from '@/app/lib/actions/statistics/create-match-result';
 import { Candidate, MatchResult, Worldcup } from '@/app/lib/definitions';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import ResponsiveMedia from '../media/responsive-media';
-import YouTube, { YouTubePlayer } from 'react-youtube';
+import { YouTubePlayer } from 'react-youtube';
 
 interface Props {
   defaultCandidates: Candidate[];
@@ -26,8 +26,6 @@ export default function WorldcupPickScreen({
   );
   const [matchResult, setMatchResult] = useState<MatchResult[]>([]);
   const [picked, setPicked] = useState<'left' | 'right'>();
-  const leftYoutubeRef = useRef<YouTube | null>(null);
-  const rightYoutubeRef = useRef<YouTube | null>(null);
   const [leftYouTubePlayer, setLeftYouTubePlayer] =
     useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] =
@@ -119,7 +117,6 @@ export default function WorldcupPickScreen({
               pathname={leftCandidate.pathname}
               mediaType={leftCandidate.mediaType}
               name={leftCandidate.name}
-              ref={leftYoutubeRef}
               onYouTubePlay={(e) => setLeftYouTubePlayer(e.target)}
             />
           ) : null}
@@ -149,7 +146,6 @@ export default function WorldcupPickScreen({
               pathname={rightCandidate.pathname}
               mediaType={rightCandidate.mediaType}
               name={rightCandidate.name}
-              ref={rightYoutubeRef}
               onYouTubePlay={(e) => setRightYouTubePlayer(e.target)}
             />
           ) : null}

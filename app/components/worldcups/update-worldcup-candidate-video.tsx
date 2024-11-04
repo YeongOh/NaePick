@@ -9,6 +9,7 @@ import { deleteCandidateObject } from '@/app/lib/bucket';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import Spinner from '../ui/spinner';
+import { IoLogoYoutube } from 'react-icons/io';
 
 interface Props {
   originalPathname: string;
@@ -38,6 +39,22 @@ export default function UpdateWorldcupCandidateVideo({
 }: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [videoURL, setVideoURL] = useState<string>('');
+  const [showYoutubeTimeInput, setShowYoutubeTimeInput] = useState(false);
+  const [youtubeStartTime, setShowYoutubeStartTime] = useState(0);
+  const [youtubeEndTime, setShowYoutubeEndTime] = useState(0);
+
+  const handleYouTube = (text: string) => {
+    if (
+      text.startsWith('https://youtube.com') ||
+      text.startsWith('https://youtu.be') ||
+      text.startsWith('https://www.youtube.com') ||
+      text.startsWith('https://www.youtu.be')
+    ) {
+      setShowYoutubeTimeInput(true);
+    } else {
+      setShowYoutubeTimeInput(false);
+    }
+  };
 
   const handleUpdateVideo = async ({
     originalPathname,
@@ -78,13 +95,20 @@ export default function UpdateWorldcupCandidateVideo({
         if (youtubeVideoId === null) {
           throw new Error('유튜브 주소가 올바른지 확인 해주세요.');
         }
+        const youtubeVideoIdWithLoop =
+          youtubeStartTime === 0 && youtubeEndTime === 0
+            ? null
+            : youtubeVideoId + `?s=${youtubeStartTime}&e=${youtubeEndTime}`;
 
         await updateCandidateVideoURL({
           mediaType: 'youtube',
-          candidatePathname: youtubeVideoId,
+          candidatePathname: youtubeVideoIdWithLoop || youtubeVideoId,
           candidateId,
           worldcupId,
         });
+        setShowYoutubeTimeInput(false);
+        setShowYoutubeStartTime(0);
+        setShowYoutubeEndTime(0);
       } else if (
         cleanURL.startsWith('https://chzzk.naver.com/clips') ||
         cleanURL.startsWith('https://chzzk.naver.com/embed/clip')
@@ -130,41 +154,84 @@ export default function UpdateWorldcupCandidateVideo({
         동영상 수정
       </button>
       {showVideoURLInput && !isLoading ? (
-        <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center absolute right-28 bottom-0 translate-x-1/3 w-[500px] z-40'>
-          <input
-            className='block w-[75%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
-            id='videoURL'
-            name='videoURL'
-            type='url'
-            placeholder='https://(주소입력)'
-            value={videoURL}
-            onChange={(e) => setVideoURL(e.target.value)}
-            autoComplete='off'
-          />
-          <div className='absolute flex items-center gap-1 right-2'>
-            <button
-              type='button'
-              onClick={() => onChangeVideoInputIndex(null)}
-              className='px-3 py-1 right-[40px] text-gray-500 border bg-white rounded hover:bg-gray-100 transition-colors'
-            >
-              취소
-            </button>
-            <button
-              type='button'
-              onClick={() =>
-                handleUpdateVideo({
-                  originalPathname,
-                  worldcupId,
-                  candidateId,
-                  mediaType,
-                })
-              }
-              className='px-3 py-1 bg-primary-500 text-white right-2 rounded hover:bg-primary-700 transition-colors'
-            >
-              입력
-            </button>
+        <>
+          <div className='cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center absolute right-28 bottom-0 translate-x-1/3 w-[500px] z-40'>
+            <input
+              className='block w-[75%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500'
+              id='videoURL'
+              name='videoURL'
+              type='url'
+              placeholder='https://(주소입력)'
+              value={videoURL}
+              onChange={(e) => {
+                setVideoURL(e.target.value);
+                handleYouTube(e.target.value);
+              }}
+              autoComplete='off'
+            />
+            <div className='absolute flex items-center gap-1 right-2'>
+              <button
+                type='button'
+                onClick={() => onChangeVideoInputIndex(null)}
+                className='px-3 py-1 right-[40px] text-gray-500 border bg-white rounded hover:bg-gray-100 transition-colors'
+              >
+                취소
+              </button>
+              <button
+                type='button'
+                onClick={() =>
+                  handleUpdateVideo({
+                    originalPathname,
+                    worldcupId,
+                    candidateId,
+                    mediaType,
+                  })
+                }
+                className='px-3 py-1 bg-primary-500 text-white right-2 rounded hover:bg-primary-700 transition-colors'
+              >
+                입력
+              </button>
+            </div>
           </div>
-        </div>
+          {showYoutubeTimeInput && (
+            <div className='absolute text-base text-slate-700 mb-2 z-50 w-96 right-0'>
+              <div className='bg-gray-100 border rounded w-full'>
+                <div className='font-semibold p-2 text-center'>
+                  유튜브 구간 반복 설정
+                </div>
+                <div className='flex items-center gap-1 mb-2 justify-center'>
+                  <IoLogoYoutube color='red' size={'1.2rem'} />
+                  <label htmlFor='youtubeStartTime' className='text-gray-500'>
+                    시작 시간 (초) :{' '}
+                  </label>
+                  <input
+                    className='block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500'
+                    id='youtubeStartTime'
+                    type='number'
+                    value={youtubeStartTime}
+                    onChange={(e) =>
+                      setShowYoutubeStartTime(Number(e.target.value))
+                    }
+                    min={0}
+                    placeholder='0'
+                  />
+                  <div className='text-gray-500'>종료 시간 (초) : </div>
+                  <input
+                    className='block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500'
+                    id='youtubeEndTime'
+                    type='number'
+                    value={youtubeEndTime}
+                    onChange={(e) =>
+                      setShowYoutubeEndTime(Number(e.target.value))
+                    }
+                    placeholder='0'
+                    min={0}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       ) : null}
     </>
   );

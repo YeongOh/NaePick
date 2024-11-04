@@ -20,7 +20,6 @@ export function extractYoutubeId(youtubeURL: string) {
   // https://www.youtu.be/fqabW3WRUbw?si=Eh8vPRuXYNgeVC2n
   try {
     const urlObj = new URL(youtubeURL);
-    let videoId = null;
 
     // Check for the different URL formats
     if (urlObj.hostname.includes('youtube.com')) {
@@ -48,12 +47,17 @@ export function getYoutubeThumbnailURL(
   resolution: 'small' | 'medium' | 'large'
 ) {
   if (youtubeID === '') return '';
+
+  let youtubeIDwithoutLoop = youtubeID;
+  if (youtubeID.includes('?')) {
+    youtubeIDwithoutLoop = youtubeID.split('?')[0];
+  }
   if (resolution === 'small')
-    return `https://img.youtube.com/vi/${youtubeID}/mqdefault.jpg`;
+    return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/mqdefault.jpg`;
   if (resolution === 'medium')
-    return `https://img.youtube.com/vi/${youtubeID}/hqdefault.jpg`;
+    return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/hqdefault.jpg`;
   // 초고화질 보류
-  //return `https://img.youtube.com/vi/${youtubeID}/maxresdefault`
+  //return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/maxresdefault`
   if (resolution === 'large')
-    return `https://img.youtube.com/vi/${youtubeID}/hqdefault.jpg`;
+    return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/hqdefault.jpg`;
 }

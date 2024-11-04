@@ -55,6 +55,9 @@ export default function UpdateWorldcupCandidatesForm({
   const [showUpdateVideoInputIndex, setShowVideoInputIndex] = useState<
     number | null
   >(null);
+  const [showYoutubeTimeInput, setShowYoutubeTimeInput] = useState(false);
+  const [youtubeStartTime, setShowYoutubeStartTime] = useState(0);
+  const [youtubeEndTime, setShowYoutubeEndTime] = useState(0);
   const [videoURL, setVideoURL] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const worldcupId = worldcup.worldcupId;
@@ -175,6 +178,19 @@ export default function UpdateWorldcupCandidatesForm({
     }
   };
 
+  const handleYouTube = (text: string) => {
+    if (
+      text.startsWith('https://youtube.com') ||
+      text.startsWith('https://youtu.be') ||
+      text.startsWith('https://www.youtube.com') ||
+      text.startsWith('https://www.youtu.be')
+    ) {
+      setShowYoutubeTimeInput(true);
+    } else {
+      setShowYoutubeTimeInput(false);
+    }
+  };
+
   const handleVideoUpload = async () => {
     try {
       if (isLoading) {
@@ -210,13 +226,20 @@ export default function UpdateWorldcupCandidatesForm({
         }
         const youtubeVideoURL = `https://www.youtube.com/watch?v=${youtubeVideoId}`;
         const youtubeVideoTitle = await fetchYoutubeTitle(youtubeVideoURL);
+        const youtubeVideoIdWithLoop =
+          youtubeStartTime === 0 && youtubeEndTime === 0
+            ? null
+            : youtubeVideoId + `?s=${youtubeStartTime}&e=${youtubeEndTime}`;
 
         await createCandidate({
           candidateName: youtubeVideoTitle ?? '유튜브 동영상',
-          candidatePathname: youtubeVideoId,
+          candidatePathname: youtubeVideoIdWithLoop || youtubeVideoId,
           mediaType: 'youtube',
           worldcupId,
         });
+        setShowYoutubeTimeInput(false);
+        setShowYoutubeStartTime(0);
+        setShowYoutubeEndTime(0);
       } else if (
         cleanURL.startsWith('https://chzzk.naver.com/clips') ||
         cleanURL.startsWith('https://chzzk.naver.com/embed/clip')
@@ -298,6 +321,7 @@ export default function UpdateWorldcupCandidatesForm({
         <h2 className='font-semibold text-slate-700 mb-2 text-base'>
           후보 동영상 추가
         </h2>
+
         <div className='cursor-pointer border rounded-md text-base bg-gray-100 p-2 flex items-center mb-4 relative'>
           <input
             id='videoURL'
@@ -306,7 +330,10 @@ export default function UpdateWorldcupCandidatesForm({
             type='url'
             placeholder='https://(주소입력)'
             value={videoURL}
-            onChange={(e) => setVideoURL(e.target.value)}
+            onChange={(e) => {
+              setVideoURL(e.target.value);
+              handleYouTube(e.target.value);
+            }}
             autoComplete='off'
           />
           <button
@@ -317,6 +344,42 @@ export default function UpdateWorldcupCandidatesForm({
             추가
           </button>
         </div>
+        {showYoutubeTimeInput && (
+          <div className='text-base text-slate-700 mb-2'>
+            <div>
+              <div className='font-semibold mb-2'>유튜브 구간 반복 설정</div>
+              <div className='flex items-center gap-1 bg-gray-100 p-2 justify-center border rounded'>
+                <IoLogoYoutube color='red' size={'1.2rem'} />
+                <label htmlFor='youtubeStartTime' className='text-gray-500'>
+                  시작 시간 (초) :{' '}
+                </label>
+                <input
+                  className='block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500'
+                  id='youtubeStartTime'
+                  type='number'
+                  value={youtubeStartTime}
+                  onChange={(e) =>
+                    setShowYoutubeStartTime(Number(e.target.value))
+                  }
+                  min={0}
+                  placeholder='0'
+                />
+                <div className='text-gray-500'>종료 시간 (초) : </div>
+                <input
+                  className='block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500'
+                  id='youtubeEndTime'
+                  type='number'
+                  value={youtubeEndTime}
+                  onChange={(e) =>
+                    setShowYoutubeEndTime(Number(e.target.value))
+                  }
+                  placeholder='0'
+                  min={0}
+                />
+              </div>
+            </div>
+          </div>
+        )}
         <div className='text-base mb-6 text-gray-500'>
           <h2 className='font-semibold text-gray-500 mb-2'>동영상 주소 형식</h2>
           <ul className='pl-2'>
@@ -339,6 +402,10 @@ export default function UpdateWorldcupCandidatesForm({
             </li>
             <li className=''>
               - Imgur, 치지직 썸네일 생성에는 최소 3~5초가 걸릴 수 있습니다.
+            </li>
+            <li className=''>
+              - 유튜브 주소 입력 시 시작, 종료 시간을 입력하는 설정이
+              팝업됩니다.
             </li>
           </ul>
         </div>
@@ -363,7 +430,7 @@ export default function UpdateWorldcupCandidatesForm({
             .sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'))
             .map((candidate, candidateIndex) => (
               <li key={`${candidate.candidateId}/${candidate.pathname}`}>
-                <div className='flex items-center border rounded-md mb-4 overflow-hidden bg-gray-100'>
+                <div className='flex items-center border mb-4 bg-gray-100'>
                   <div className='relative w-[64px] h-[64px] cursor-pointer'>
                     <ResponsiveThumbnailImage
                       pathname={candidate.pathname}

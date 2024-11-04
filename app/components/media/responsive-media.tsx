@@ -1,7 +1,7 @@
 import { MediaType } from '@/app/lib/definitions';
 import MyImage from '@/app/components/ui/my-image';
-import { forwardRef } from 'react';
-import YouTube, { YouTubeEvent } from 'react-youtube';
+import { forwardRef, useState } from 'react';
+import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 
 interface Props {
   lowerHeight?: boolean;
@@ -10,6 +10,7 @@ interface Props {
   mediaType: MediaType;
   allowVideoControl?: boolean;
   onYouTubePlay?: (e: YouTubeEvent) => void;
+  onYouTubeEnd?: (e: YouTubeEvent) => void;
 }
 
 const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
@@ -23,6 +24,28 @@ const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
   }: Props,
   ref
 ) {
+  const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer | null>(
+    null
+  );
+
+  let youtubePathname = pathname;
+  let youtubeStartTime = 0;
+  let youtubeEndTime = 0;
+  if (mediaType === 'youtube' && pathname.includes('?')) {
+    const tokens = youtubePathname.split('?'); // id?s=0&e=0
+    youtubePathname = tokens[0];
+    const timeTokens = tokens[1].split('&'); // s=0&e=0
+    youtubeStartTime = Number(timeTokens[0].slice(2)); // s=0
+    youtubeEndTime = Number(timeTokens[1].slice(2)); // e=0
+  }
+  console.log(youtubeEndTime);
+
+  const handleYouTubeEnd = (e: YouTubeEvent) => {
+    console.log(youTubePlayer);
+    youTubePlayer.seekTo(youtubeStartTime);
+    youTubePlayer.playVideo();
+  };
+
   return (
     <>
       {mediaType === 'cdn_video' && (
@@ -70,15 +93,29 @@ const ResponsiveMedia = forwardRef<YouTube, Props>(function ResponsiveMedia(
                 rel: 0,
                 playsinline: 1,
                 color: 'white',
-                // start: 5,
-                // end: 8,
+                start: youtubeStartTime,
+                end: youtubeEndTime,
               },
             }}
             ref={ref}
-            id={pathname}
-            videoId={pathname}
+            id={youtubePathname}
+            videoId={youtubePathname}
             title='YouTube video player'
-            onPlay={onYouTubePlay}
+            onPlay={(e: YouTubeEvent) => {
+              if (!youTubePlayer) {
+                setYouTubePlayer(e.target);
+              }
+              if (onYouTubePlay) {
+                onYouTubePlay(e);
+              }
+            }}
+            onEnd={(e: YouTubeEvent) => {
+              if (!youTubePlayer) {
+                setYouTubePlayer(e.target);
+              }
+
+              handleYouTubeEnd(e);
+            }}
           />
         </div>
       )}
