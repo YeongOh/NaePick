@@ -35,15 +35,13 @@ export default function CommentSection({
   // const [state, submitCommentForm] = useFormState(createComment, initialState);
   const [text, setText] = useState('');
   const [isFetching, setIsFetching] = useState(false);
-  const [comments, setComments] = useState(commentsProp);
+  const [comments, setComments] = useState(commentsProp || []);
   const [lastCursor, setLastCursor] = useState<string | null>(cursorProp);
   const ref = useRef(null);
 
   const sortedComments = comments?.sort((a, b) =>
     sortDate(a.createdAt, b.createdAt, 'newest')
   );
-  console.log(commentsProp);
-  console.log(lastCursor);
 
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
@@ -66,7 +64,6 @@ export default function CommentSection({
     if (newComment) {
       setComments((prev) => [...prev, newComment] as Comment[]);
     }
-    console.log(result);
     setText('');
   };
 

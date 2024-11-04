@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/app/lib/actions/session';
 import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
 import { getCandidateStatisticsByWorldcupIdAndPageNumber } from '@/app/lib/data/statistics';
+import { Comment, InfiniteScrollData } from '@/app/lib/definitions';
 
 interface Props {
   params: { ['worldcup-id']: string };
@@ -11,7 +12,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcupResult, candidatesStatistics, comments, session] =
+  const [worldcupResult, candidatesStatistics, commentsData, session] =
     await Promise.all([
       getWorldcupPickScreenByWorldcupId(worldcupId),
       getCandidateStatisticsByWorldcupIdAndPageNumber(worldcupId, 1),
@@ -19,7 +20,12 @@ export default async function Page({ params }: Props) {
       getSession(),
     ]);
 
-  if (worldcupResult && worldcupResult[0] && candidatesStatistics && comments) {
+  if (
+    worldcupResult &&
+    worldcupResult[0] &&
+    candidatesStatistics &&
+    commentsData
+  ) {
     const worldcup = worldcupResult[0];
     if (
       worldcup.publicity === 'private' &&
@@ -35,7 +41,7 @@ export default async function Page({ params }: Props) {
         <StatisticsMain
           candidates={candidatesStatistics}
           worldcup={worldcup}
-          comments={comments}
+          commentData={commentsData as InfiniteScrollData<Comment>}
         />
       </div>
     );

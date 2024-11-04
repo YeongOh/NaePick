@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   CandidateWithStatistics,
   Comment,
+  InfiniteScrollData,
   Worldcup,
 } from '@/app/lib/definitions';
 import 'dayjs/locale/ko';
@@ -22,13 +23,13 @@ import ShareWorldcupModal from '../modal/share-worldcup-modal';
 interface Props {
   candidates: CandidateWithStatistics[];
   worldcup: Worldcup;
-  comments: Comment[];
+  commentData: InfiniteScrollData<Comment>;
 }
 
 export default function StatisticsMain({
   candidates: defaultCandidates,
   worldcup,
-  comments,
+  commentData,
 }: Props) {
   const [selectedCandidateIndex, setSelectedCandidateIndex] = useState(0);
   const [candidates, setCandidates] = useState(defaultCandidates);
@@ -173,7 +174,11 @@ export default function StatisticsMain({
             다시 하기
           </LinkButton>
         </Fold>
-        <CommentSection worldcupId={worldcup.worldcupId} comments={comments} />
+        <CommentSection
+          worldcupId={worldcup.worldcupId}
+          comments={commentData.data as Comment[]}
+          cursor={commentData.cursor as string}
+        />
       </section>
     </div>
   );
