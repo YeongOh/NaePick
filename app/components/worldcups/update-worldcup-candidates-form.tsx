@@ -37,7 +37,6 @@ import Spinner from '../ui/spinner';
 import { ImageUp, Info } from 'lucide-react';
 import LinkButton from '../ui/link-button';
 import Pagination from '../pagination/pagination';
-import { getCandidatesToUpdateByWorldcupId } from '@/app/lib/data/candidates';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -298,20 +297,6 @@ export default function UpdateWorldcupCandidatesForm({
         onKeyDown={handleFormKeyDown}
       >
         <h2 className='font-semibold text-slate-700 mb-2 text-base'>
-          썸네일 미리보기
-        </h2>
-        <div className='flex flex-col items-center justify-center'>
-          <div className='p-4 w-[330px]'>
-            <div className='h-[170px]'>
-              <CardThumbnail worldcupCard={worldcup} />
-            </div>
-          </div>
-          <span className='text-base text-slate-700 mb-8 flex items-center gap-1'>
-            <Info color='#6d6d6d' size='1.2rem' />
-            썸네일은 우승을 많이 한 후보들로 업데이트 됩니다.
-          </span>
-        </div>
-        <h2 className='font-semibold text-slate-700 mb-2 text-base'>
           후보 이미지 추가
         </h2>
         <div
@@ -322,17 +307,18 @@ export default function UpdateWorldcupCandidatesForm({
           <div className='flex items-center justify-center gap-2'>
             <ImageUp color='#6d6d6d' size='1.2rem' />
             <p className='text-slate-700'>
-              이미지 파일을 드랍하거나 클릭해서 업로드
+              이미지 파일을 드롭하거나 클릭해서 업로드
             </p>
           </div>
         </div>
-        <div className='text-base mb-6 text-gray-500'>
-          <h2 className='font-semibold text-slate-500 mb-2'>
+        <div className='text-base mb-6 text-slate-500'>
+          <h2 className='font-semibold text-slate-500 mb-2 flex items-center gap-1'>
+            <Info size={'1rem'} />
             이미지 업로드 안내
           </h2>
           <p className='ml-2'>- 파일 크기 제한은 1MB입니다.</p>
           <p className='ml-2'>
-            - 한 번에 업로드 가능한 파일 개수는 10개입니다.
+            - 한 번에 업로드할 수 있는 파일 개수는 10개입니다.
           </p>
         </div>
         <h2 className='font-semibold text-slate-700 mb-2 text-base'>
@@ -396,8 +382,11 @@ export default function UpdateWorldcupCandidatesForm({
             </div>
           </div>
         )}
-        <div className='text-base mb-6 text-gray-500'>
-          <h2 className='font-semibold text-gray-500 mb-2'>동영상 주소 형식</h2>
+        <div className='text-base mb-6 text-slate-500'>
+          <h2 className='font-semibold text-slate-500 mb-2 flex items-center gap-1'>
+            <Info size={'1rem'} />
+            동영상 주소 형식
+          </h2>
           <ul className='pl-2'>
             <li className='flex items-center gap-1'>
               <SiImgur color='green' size={'1.2rem'} /> Imgur:
@@ -417,10 +406,10 @@ export default function UpdateWorldcupCandidatesForm({
               치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
             </li>
             <li className=''>
-              - Imgur, 치지직 썸네일 생성에는 최소 3~5초가 걸릴 수 있습니다.
+              - Imgur와 치지직의 썸네일 생성에는 최소 3~5초가 걸릴 수 있습니다.
             </li>
             <li className=''>
-              - 유튜브 주소 입력 시 시작, 종료 시간을 입력하는 설정이
+              - 유튜브 주소를 입력할 시 시작 및 종료 시간을 입력하는 설정이
               팝업됩니다.
             </li>
           </ul>
@@ -519,15 +508,17 @@ export default function UpdateWorldcupCandidatesForm({
             </li>
           ))}
         </ul>
-        <div className='overflow-hidden rounded-bl rounded-br'>
-          <Pagination
-            className='bg-gray-50'
-            totalPages={totalPages}
-            currentPageNumber={pageNumber}
-            range={2}
-            onPageNumberClick={handlePageNumberOnClick}
-          />
-        </div>
+        {totalPages > 0 ? (
+          <div className='overflow-hidden rounded-bl rounded-br'>
+            <Pagination
+              className='bg-gray-50'
+              totalPages={totalPages}
+              currentPageNumber={pageNumber}
+              range={2}
+              onPageNumberClick={handlePageNumberOnClick}
+            />
+          </div>
+        ) : null}
         <Button className='mt-8' variant='primary'>
           이상형 월드컵 후보 이름 저장
         </Button>

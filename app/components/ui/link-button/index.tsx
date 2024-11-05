@@ -32,7 +32,7 @@ export default function LinkButton({
 
   if (size === 'small') classNameResult += ' py-2 px-1';
   if (size === 'medium') classNameResult += ' py-3 px-2';
-  if (size === 'large') classNameResult += ' py-4 px-3 text-lg rounded-lg';
+  if (size === 'large') classNameResult += ' py-3 px-3 text-lg rounded-lg';
 
   return (
     <Link

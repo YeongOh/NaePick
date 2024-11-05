@@ -6,7 +6,7 @@ import { getPaginationCandidateStatisticsByWorldcupId } from '@/app/lib/data/sta
 import Navbar from '@/app/components/navbar/navbar';
 
 interface Props {
-  params: { 'worldcup-id': string; 'page-number': String };
+  params: { 'worldcup-id': string; 'page-number': string };
 }
 
 export default async function Page({ params }: Props) {

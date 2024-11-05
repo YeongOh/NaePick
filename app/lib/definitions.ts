@@ -67,9 +67,9 @@ export interface Comment extends QueryResult {
   isAnonymous: boolean;
 }
 
-export interface InfiniteScrollData<T> {
+export interface InfiniteScrollData<T, V> {
   data: T[] | null;
-  cursor: string | null;
+  cursor: V | null;
 }
 
 export interface MatchResult {
@@ -94,11 +94,25 @@ export function translateCategory(categoryName: string): string {
     case 'athletes':
       return '운동선수';
     case 'celebrities':
-      return '유명인';
+      return '연예인';
     case 'idols':
       return '아이돌';
     case 'other':
       return '기타';
+    case 'actors':
+      return '배우';
+    case 'streamers':
+      return '스트리머';
+    case 'songs':
+      return '노래';
+    case 'manga':
+      return '만화';
+    case 'singers':
+      return '가수';
+    case 'webtoons':
+      return '웹툰';
+    case 'youtubers':
+      return '유튜버';
     default:
       return '오류';
   }

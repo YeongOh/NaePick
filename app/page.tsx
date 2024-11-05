@@ -1,11 +1,11 @@
-import { getInfinitePublicWorldcupCards } from './lib/data/worldcups';
+import { getInfiniteLatestWorldcupCards } from './lib/data/worldcups';
 import 'dayjs/locale/ko';
-import CardGrid from './components/card/card-grid';
 import Navbar from './components/navbar/navbar';
 import { notFound } from 'next/navigation';
+import Main from './components/main/main';
 
 export default async function Home() {
-  const result = await getInfinitePublicWorldcupCards(null);
+  const result = await getInfiniteLatestWorldcupCards(null);
 
   if (!result) {
     notFound();
@@ -16,15 +16,7 @@ export default async function Home() {
   return (
     <>
       <Navbar />
-      <section className='max-w-screen-2xl m-auto'>
-        {data ? (
-          <CardGrid
-            worldcupCards={data}
-            cursor={cursor}
-            getNextCardsFunc={getInfinitePublicWorldcupCards}
-          />
-        ) : null}
-      </section>
+      <Main initialWorldcupCards={data} params='latest' cursor={cursor} />
     </>
   );
 }

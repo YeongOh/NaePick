@@ -116,12 +116,24 @@ async function seedCategory() {
 async function seedCategoryData() {
   try {
     const insertedCategories = await Promise.all(
-      ['animations', 'athletes', 'celebrities', 'idols', 'other'].map(
-        (category) =>
-          pool.query(
-            `INSERT INTO Category (name)
+      [
+        'animations',
+        'athletes',
+        'celebrities',
+        'idols',
+        'other',
+        'actors',
+        'streamers',
+        'songs',
+        'webtoons',
+        'manga',
+        'singers',
+        'youtubers',
+      ].map((category) =>
+        pool.query(
+          `INSERT INTO Category (name)
                   VALUES ('${category}');`
-          )
+        )
       )
     );
 
