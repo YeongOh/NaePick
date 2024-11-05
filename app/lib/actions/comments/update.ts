@@ -34,7 +34,6 @@ export async function updateComment(commentId: string, newText: string) {
             `,
       [newText, commentId]
     );
-    console.log(result);
   } catch (error) {
     console.log(error);
     throw new Error('댓글 삭제 실패...');

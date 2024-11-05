@@ -48,7 +48,6 @@ export async function getCandidateStatisticsByWorldcupIdAndPageNumber(
   LIMIT 10 OFFSET ?;`,
         [worldcupId, (pageNumber - 1) * 10]
       );
-    console.log(result);
 
     return result;
   } catch (err) {

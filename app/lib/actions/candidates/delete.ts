@@ -21,7 +21,6 @@ export async function deleteCandidate(candidateId: string, worldcupId: string) {
         `,
       [candidateId]
     );
-    console.log(result);
   } catch (error) {
     console.log(error);
     throw new Error('후보 삭제 실패...');

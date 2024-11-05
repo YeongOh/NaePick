@@ -9,8 +9,6 @@ export async function getCommentsByWorldcupId(
   cursor?: string
 ) {
   try {
-    console.log(cursor);
-    console.log('date is', new Date());
     const [result, meta]: [Comment[], FieldPacket[]] = await pool.query(
       `SELECT c.comment_id as commentId,
             c.user_id as userId,
@@ -26,7 +24,6 @@ export async function getCommentsByWorldcupId(
          LIMIT 20;`,
       [worldcupId, cursor || new Date()]
     );
-    console.log('comment is');
 
     if (result.length === 0) {
       const infiniteScrollData: InfiniteScrollData<Comment> = {

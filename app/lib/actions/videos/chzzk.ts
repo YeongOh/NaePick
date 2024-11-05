@@ -20,17 +20,12 @@ export async function crawlChzzkThumbnailURL(
       'div.embed_player_text_wrap__P6O1t a.embed_player_title__X5lxP'
     ).text();
     const textContentForThumbnail = $('div.pzp-pc__poster style').text();
-    console.log('yo');
-    console.log(chzzkClipTitle);
-    console.log(textContentForThumbnail);
 
     const chzzkThumbnailURL = textContentForThumbnail?.slice(
       textContentForThumbnail?.indexOf('https://video-phinf.pstatic.net/'),
       textContentForThumbnail?.lastIndexOf('.jpg') + 4
     );
-    console.log('yo2');
 
-    console.log('yo4', chzzkThumbnailURL, chzzkClipTitle);
     return { chzzkThumbnailURL, chzzkClipTitle };
   } catch (error) {
     console.error('Error fetching or parsing page:', error);

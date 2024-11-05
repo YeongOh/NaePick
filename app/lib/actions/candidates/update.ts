@@ -30,7 +30,6 @@ export async function updateCandidateNames(
         `,
         [candidateName, candidateId]
       );
-      console.log(result);
     }
   } catch (error) {
     console.log(error);
@@ -64,7 +63,6 @@ export async function updateCandidateImageURL(
             `,
       [candidatePathname, 'cdn_img', null, candidateId]
     );
-    console.log(result);
   } catch (error) {
     console.log(error);
   }
@@ -105,7 +103,6 @@ export async function updateCandidateVideoURL({
             `,
       [candidatePathname, mediaType, thumbnailURL, candidateId]
     );
-    console.log(result);
   } catch (error) {
     console.log(error);
   }

@@ -11,7 +11,6 @@ export async function getRandomCandidatesByWorldcupId(
   try {
     const roundForSQL = round === typeof 'string' ? Number(round) : round;
 
-    console.log(worldcupId, round);
     // rand() 이용한 정렬은 인덱스를 이용하지 않기에 데이터가 많을 경우 성능 저하
     const [result, meta]: [Candidate[], FieldPacket[]] = await pool.query(
       `SELECT c.candidate_id AS candidateId,
@@ -28,7 +27,6 @@ export async function getRandomCandidatesByWorldcupId(
         LIMIT ?;`,
       [worldcupId, roundForSQL]
     );
-    console.log(result);
 
     return result;
   } catch (err) {
@@ -56,7 +54,6 @@ export async function getCandidatesToUpdateByWorldcupId(
         LIMIT 10 OFFSET ?;`,
       [worldcupId, (pageNumber - 1) * 10]
     );
-    console.log(result);
 
     return result;
   } catch (err) {

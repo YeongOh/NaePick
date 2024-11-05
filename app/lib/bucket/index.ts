@@ -36,7 +36,6 @@ export async function fetchCandidateImageUploadURL(
     };
   } catch (error) {
     console.log(error);
-    throw new Error('이미지 업로드 실패...');
   }
 }
 
@@ -54,8 +53,7 @@ export async function fetchImageUploadUrl(key: string, fileType: string) {
 
     return urlResult;
   } catch (error) {
-    console.log('s3 image upload url');
-    throw new Error('S3 Image upload signedUrl fetch fail');
+    console.log(error);
   }
 }
 
@@ -69,8 +67,7 @@ export async function listAllS3ImgObjects(key: string) {
     const { Contents } = await S3client.send(command);
     return Contents;
   } catch (error) {
-    console.log('s3 image upload url');
-    throw new Error('S3 Image upload signedUrl fetch fail');
+    console.log(error);
   }
 }
 
@@ -84,8 +81,7 @@ export async function listAllS3VideoObjects(key: string) {
     const { Contents } = await S3client.send(command);
     return Contents;
   } catch (error) {
-    console.log('s3 image upload url');
-    throw new Error('S3 Image upload signedUrl fetch fail');
+    console.log(error);
   }
 }
 
@@ -124,7 +120,6 @@ export async function deleteCandidateObject(
     }
   } catch (error) {
     console.log(error);
-    throw new Error('이미지 삭제 실패...');
   }
 }
 

@@ -27,9 +27,7 @@ export async function createCandidate({
   thumbnailURL,
 }: CandidateParameters) {
   try {
-    console.log('-1');
     const session = await getSession();
-    console.log('0');
     if (!session?.userId) {
       throw new Error('로그인을 해주세요.');
     }
@@ -42,7 +40,6 @@ export async function createCandidate({
 
     const candidateId = nanoid(CANDIDATE_ID_LENGTH);
 
-    console.log('1');
     await pool.query('START TRANSACTION');
     const [result1, fields1] = await pool.query(
       `
@@ -53,7 +50,6 @@ export async function createCandidate({
         `,
       [candidateId, worldcupId, candidateName]
     );
-    console.log(result1);
     const [result, fields] = await pool.query(
       `
         INSERT INTO candidate_media
@@ -64,7 +60,6 @@ export async function createCandidate({
       [candidateId, candidatePathname, mediaType, thumbnailURL ?? null]
     );
     await pool.query('COMMIT');
-    console.log(result);
   } catch (error) {
     await pool.query('ROLLBACK');
     console.log(error);

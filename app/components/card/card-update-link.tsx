@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import toast from 'react-hot-toast';
-import LinkButton from '../ui/link-button';
-import Button from '../ui/button';
 
 interface Props {
   worldcupId: string;

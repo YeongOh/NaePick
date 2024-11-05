@@ -69,13 +69,10 @@ export async function signin(state: SigninState, formData: FormData) {
       };
     }
 
-    console.log(user);
     const { userId, nickname } = user;
-    console.log(userId, nickname);
 
     await createSession({ userId, nickname, email });
   } catch (error) {
-    console.log(error);
     return {
       message: '로그인에 실패했습니다. (e4).',
     };

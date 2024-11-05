@@ -36,7 +36,6 @@ export async function createComment(textInput: string, worldcupId: string) {
   try {
     const commentId = nanoid(COMMENT_ID_LENGTH);
 
-    console.log('go');
     if (!userId) {
       const [result, fields] = await pool.query(
         `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous) 

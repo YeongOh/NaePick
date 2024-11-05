@@ -53,5 +53,4 @@ export async function deleteWorldcup(worldcupId: string) {
     console.log(err);
   }
   revalidatePath(`/worldcups/users/${session.userId}`);
-  redirect(`/worldcups/users/${session.userId}`);
 }

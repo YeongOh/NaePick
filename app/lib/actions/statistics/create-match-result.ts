@@ -32,7 +32,6 @@ export async function submitMatchResult(
     });
 
     const result = await Promise.all(insertPromises);
-    console.log(result);
     await connection.commit();
   } catch (error) {
     console.log(error);

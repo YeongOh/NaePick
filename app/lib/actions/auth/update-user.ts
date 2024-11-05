@@ -72,8 +72,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   });
 
   if (!validatedFields.success) {
-    console.log('누락');
-    console.log(validatedFields.error.flatten().fieldErrors);
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: '누락된 항목이 있습니다.',
@@ -129,7 +127,6 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
           [nickname, session.userId]
         );
       if (duplicatedUserResult?.[0]) {
-        console.log(5);
         return {
           errors: {
             nickname: ['이미 존재하는 닉네임입니다.'],

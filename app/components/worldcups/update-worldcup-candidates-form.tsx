@@ -448,7 +448,6 @@ export default function UpdateWorldcupCandidatesForm({
                     mediaType={candidate.mediaType}
                     thumbnailURL={candidate?.thumbnailURL}
                     onClick={() => {
-                      console.log('hello');
                       setSelectedCandidateToPreviewIndex(
                         candidateIndex === selectedCandidateToPreviewIndex
                           ? null

@@ -70,7 +70,6 @@ export default function CardGrid({
         if (!result) {
           throw new Error();
         }
-        console.log('fetched');
         const { data, cursor } = result;
         if (data) {
           setFetchedCards((prev) => [...prev, ...data]);

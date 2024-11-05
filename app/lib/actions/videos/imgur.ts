@@ -27,10 +27,7 @@ export async function downloadImgurUploadS3(
   const passThrough = new PassThrough();
   nodeStream.pipe(passThrough);
   const contentType = response.headers.get('Content-Type') as string;
-  console.log(originalVideoURL);
-  console.dir(response.headers, { depth: null });
   const contentLength = response.headers.get('content-length');
-  console.log(contentLength);
   // mp4 upload => content type = video/mp4
   if (contentType !== 'video/mp4') {
     throw new Error(
@@ -97,18 +94,10 @@ export async function testImgurAPI() {
   var myHeaders = new Headers();
   myHeaders.append('Authorization', `Client-ID ${process.env.IMGUR_CLIENT_ID}`);
 
-  // var formdata = new FormData();
-
   var requestOptions = {
     method: 'GET',
     headers: myHeaders,
-    // redirect: 'follow',
   };
-
-  //   fetch('https://api.imgur.com/3/album/2HukUxt', requestOptions)
-  //     .then((response) => response.json())
-  //     .then((result) => console.dir(result, { depth: null }))
-  //     .catch((error) => console.log('error', error));
 
   fetch('https://api.imgur.com/3/image/i6uyHNs', requestOptions)
     .then((response) => response.json())

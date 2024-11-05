@@ -55,7 +55,6 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
         }
       }}
       onClick={(e) => {
-        console.log(e.target);
         router.push(`/worldcups/${worldcupCard.worldcupId}`);
       }}
     >

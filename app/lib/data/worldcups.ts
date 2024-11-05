@@ -62,7 +62,6 @@ export async function getPublicWorldcupCards(cursor: string | null) {
               LIMIT 20;`,
       [cursor || new Date()]
     );
-    console.log(result);
 
     if (result.length === 0) {
       const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
@@ -139,7 +138,6 @@ export async function getWorldcupCardByWorldcupId(worldcupId: string) {
               WHERE w.worldcup_id = ?;`,
       [worldcupId]
     );
-    console.log(result);
     return result;
   } catch (err) {
     console.log(err);
@@ -170,7 +168,6 @@ export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
       WHERE w.worldcup_id = ?;`,
       [worldcupId]
     );
-    console.log(result);
 
     return result;
   } catch (err) {
