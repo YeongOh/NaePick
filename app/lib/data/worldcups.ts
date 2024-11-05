@@ -29,15 +29,13 @@ export async function getInfinitePopularWorldcupCards(cursor: number | null) {
               rcm.pathname AS rightCandidatePathname,
               rcm.thumbnail_url AS rightCandidateThumbnailURL,
 
-              mrc.match_count AS matchCount
+              COALESCE(mrc.match_count, 0) AS matchCount
 
               FROM worldcup w
 
-              JOIN 
+              LEFT JOIN 
                 (SELECT mr.worldcup_id, count(mr.worldcup_id) AS match_count FROM match_result mr
-	              GROUP BY mr.worldcup_id
-	              ORDER BY match_count DESC
-	              LIMIT 20 OFFSET ?) mrc ON w.worldcup_id = mrc.worldcup_id
+	              GROUP BY mr.worldcup_id) mrc ON w.worldcup_id = mrc.worldcup_id
 
               LEFT JOIN user u ON w.user_id = u.user_id
               
@@ -66,11 +64,10 @@ export async function getInfinitePopularWorldcupCards(cursor: number | null) {
               LEFT JOIN media_type AS rmt ON rcm.media_type_id = rmt.media_type_id
 
               WHERE w.publicity = 'public'
-              ORDER BY mrc.match_count DESC
-              LIMIT 20;`,
+              ORDER BY mrc.match_count DESC, w.created_At DESC
+              LIMIT 20 OFFSET ?;`,
       [(cursor || 0) * 20]
     );
-    console.log(cursor);
 
     if (result.length === 0) {
       const infiniteScrollData: InfiniteScrollData<WorldcupCard, number> = {
@@ -102,6 +99,7 @@ export async function getInfinitePopularWorldcupCardsByCategory(
               w.publicity, 
               w.created_at AS createdAt,
               u.nickname as nickname,
+              c.name as categoryName,
         
               lc.name AS leftCandidateName,
               lmt.type AS leftCandidateMediaType,
@@ -113,15 +111,13 @@ export async function getInfinitePopularWorldcupCardsByCategory(
               rcm.pathname AS rightCandidatePathname,
               rcm.thumbnail_url AS rightCandidateThumbnailURL,
 
-              mrc.match_count AS matchCount
+              COALESCE(mrc.match_count, 0) AS matchCount
 
               FROM worldcup w
 
-              JOIN 
+              LEFT JOIN 
                 (SELECT mr.worldcup_id, count(mr.worldcup_id) AS match_count FROM match_result mr
-	              GROUP BY mr.worldcup_id
-	              ORDER BY match_count DESC
-	              LIMIT 20 OFFSET ?) mrc ON w.worldcup_id = mrc.worldcup_id
+	              GROUP BY mr.worldcup_id) mrc ON w.worldcup_id = mrc.worldcup_id
               
               JOIN category c ON w.category_id = c.category_id AND c.name = ?
 
@@ -152,13 +148,10 @@ export async function getInfinitePopularWorldcupCardsByCategory(
               LEFT JOIN media_type AS rmt ON rcm.media_type_id = rmt.media_type_id
 
               WHERE w.publicity = 'public'
-              ORDER BY mrc.match_count DESC
-              LIMIT 20;`,
-      [(cursor || 0) * 20, categoryName]
+              ORDER BY mrc.match_count DESC, w.created_at DESC
+	            LIMIT 20 OFFSET ?`,
+      [categoryName, (cursor || 0) * 20]
     );
-    console.log(result);
-    console.log(cursor);
-    console.log(categoryName);
 
     if (result.length === 0) {
       const infiniteScrollData: InfiniteScrollData<WorldcupCard, number> = {
@@ -231,7 +224,6 @@ export async function getInfiniteLatestWorldcupCards(cursor: string | null) {
               LIMIT 20;`,
       [cursor || new Date()]
     );
-    console.log('fetched', cursor);
 
     if (result.length === 0) {
       const infiniteScrollData: InfiniteScrollData<WorldcupCard, string> = {
@@ -432,10 +424,17 @@ export async function getPaginationWorldcupsByUserId(
 
 export async function getAllCategories() {
   try {
-    const [result, meta]: [Category[], FieldPacket[]] = await pool.query(
-      `SELECT category_id as categoryId,
-              name as name
-      FROM category;`
+    const [result, meta]: [
+      (Category & { categoryCount: number })[],
+      FieldPacket[]
+    ] = await pool.query(
+      `SELECT c.category_id as categoryId,
+              c.name as name,
+              COALESCE(wc.category_count, 0) as categoryCount
+      FROM category c
+      LEFT JOIN
+       (SELECT w.category_id, count(w.category_id) AS category_count
+       FROM worldcup w GROUP BY w.category_id) wc on wc.category_id = c.category_id;`
     );
 
     return result;

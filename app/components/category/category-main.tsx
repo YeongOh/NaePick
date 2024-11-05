@@ -10,9 +10,9 @@ interface Props {
 export default function CategoryMain({ categories }: Props) {
   return (
     <section className='max-w-screen-2xl m-auto'>
-      <MainNav />
-      <ul className='grid grid-cols-category-13rem justify-center gap-4 mt-4'>
-        {categories.map(({ categoryId, name }) => (
+      <h1 className='font-semibold text-primary-500 text-xl mt-6'>카테고리</h1>
+      <ul className='grid grid-cols-category-12rem justify-center gap-4'>
+        {categories.map(({ categoryId, name, categoryCount }) => (
           <Link
             href={`/category/${name}`}
             key={`category-${categoryId}`}
@@ -25,9 +25,16 @@ export default function CategoryMain({ categories }: Props) {
                 alt={translateCategory(name)}
               />
             </div>
-            <h2 className='text-lg font-semibold text-slate p-1'>
-              {translateCategory(name)}
-            </h2>
+            <div className='p-1 text-base'>
+              <h2 className='font-semibold text-slate-700'>
+                {translateCategory(name)}
+              </h2>
+              {categoryCount > 0 ? (
+                <div className='text-gray-500 text-sm'>
+                  월드컵 {categoryCount}개
+                </div>
+              ) : null}
+            </div>
           </Link>
         ))}
       </ul>

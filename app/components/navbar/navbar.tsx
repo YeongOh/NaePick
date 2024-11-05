@@ -33,6 +33,7 @@ export default async function Navbar({ screenMode }: Props) {
             screenMode ? 'text-white/90' : 'text-primary-500'
           }`}
         >
+          <NavbarLink href={`/category`}>카테고리</NavbarLink>
           <NavbarLink href={`/worldcups/create`}>
             이상형 월드컵 만들기
           </NavbarLink>

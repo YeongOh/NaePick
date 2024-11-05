@@ -1,11 +1,11 @@
-import { getInfiniteLatestWorldcupCards } from './lib/data/worldcups';
+import { getInfinitePopularWorldcupCards } from './lib/data/worldcups';
 import 'dayjs/locale/ko';
 import Navbar from './components/navbar/navbar';
 import { notFound } from 'next/navigation';
 import Main from './components/main/main';
 
 export default async function Home() {
-  const result = await getInfiniteLatestWorldcupCards(null);
+  const result = await getInfinitePopularWorldcupCards(null);
 
   if (!result) {
     notFound();
@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <>
       <Navbar />
-      <Main initialWorldcupCards={data} params='latest' cursor={cursor} />
+      <Main initialWorldcupCards={data} params='popular' cursor={cursor} />
     </>
   );
 }

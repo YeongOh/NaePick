@@ -9,6 +9,7 @@ import { WorldcupCard } from '@/app/lib/definitions';
 import { useEffect, useRef, useState } from 'react';
 import CardGrid from '../card/card-grid';
 import MainNav from './main-nav';
+import CardGridEmpty from '../card/card-grid-empty';
 
 interface Props {
   params: 'latest' | 'popular' | 'popularCategory';
@@ -98,16 +99,20 @@ export default function Main({
 
   return (
     <section className='max-w-screen-2xl m-auto'>
-      <MainNav />
       {initialWorldcupCards ? (
-        <CardGrid
-          ref={lastCardRef}
-          worldcupCards={[...initialWorldcupCards, ...fetchedCards]}
-          dropdownMenuIndex={dropdownMenuIndex}
-          onOpenDropdownMenu={(index) => setDropdownMenuIndex(index)}
-          onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
-        />
-      ) : null}
+        <>
+          <MainNav />
+          <CardGrid
+            ref={lastCardRef}
+            worldcupCards={[...initialWorldcupCards, ...fetchedCards]}
+            dropdownMenuIndex={dropdownMenuIndex}
+            onOpenDropdownMenu={(index) => setDropdownMenuIndex(index)}
+            onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
+          />
+        </>
+      ) : (
+        <CardGridEmpty />
+      )}
       <footer className='h-16'></footer>
     </section>
   );

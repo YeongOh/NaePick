@@ -29,7 +29,7 @@ const config: Config = {
         'card-14rem': 'repeat(auto-fill, minmax(14rem, 1fr))',
         'card-16rem': 'repeat(auto-fill, minmax(16rem, 1fr))',
         'card-18rem': 'repeat(auto-fill, minmax(18rem, 1fr))',
-        'category-13rem': 'repeat(auto-fill, minmax(13rem, 1fr))',
+        'category-12rem': 'repeat(auto-fill, minmax(12rem, 1fr))',
       },
 
       extend: {

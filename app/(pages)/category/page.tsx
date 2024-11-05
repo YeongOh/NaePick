@@ -9,7 +9,6 @@ export default async function Page() {
   if (!categories) {
     notFound();
   }
-  console.log(categories);
 
   return (
     <>

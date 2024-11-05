@@ -1,4 +1,4 @@
-import { WorldcupCard } from '@/app/lib/definitions';
+import { translatePublicity, WorldcupCard } from '@/app/lib/definitions';
 import CardThumbnail from './card-thumbnail';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -97,6 +97,11 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
                 >
                   {createdAt.fromNow()}
                 </span>
+                {extended ? (
+                  <span className='ml-2'>
+                    {translatePublicity(worldcupCard.publicity)}
+                  </span>
+                ) : null}
               </div>
             </div>
           </div>

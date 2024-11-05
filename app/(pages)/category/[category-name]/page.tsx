@@ -26,7 +26,7 @@ export default async function Page({ params }: Props) {
       <Navbar />
       <Main
         initialWorldcupCards={data}
-        params='popular'
+        params='popularCategory'
         cursor={cursor}
         funcArgs={categoryName}
       />

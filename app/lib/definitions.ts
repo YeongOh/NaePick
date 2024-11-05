@@ -118,6 +118,19 @@ export function translateCategory(categoryName: string): string {
   }
 }
 
+export function translatePublicity(publicity: string): string {
+  switch (publicity) {
+    case 'public':
+      return '전체 공개';
+    case 'unlisted':
+      return '미등록';
+    case 'private':
+      return '비공개';
+    default:
+      return '오류';
+  }
+}
+
 // ex : https://supabase.com/docs/guides/auth/users
 
 const sevenDays = 60 * 60 * 24 * 7;
