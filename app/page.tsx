@@ -1,11 +1,11 @@
-import { getPublicWorldcupCards } from './lib/data/worldcups';
+import { getInfinitePublicWorldcupCards } from './lib/data/worldcups';
 import 'dayjs/locale/ko';
 import CardGrid from './components/card/card-grid';
 import Navbar from './components/navbar/navbar';
 import { notFound } from 'next/navigation';
 
 export default async function Home() {
-  const result = await getPublicWorldcupCards(null);
+  const result = await getInfinitePublicWorldcupCards(null);
 
   if (!result) {
     notFound();
@@ -21,7 +21,7 @@ export default async function Home() {
           <CardGrid
             worldcupCards={data}
             cursor={cursor}
-            getNextCardsFunc={getPublicWorldcupCards}
+            getNextCardsFunc={getInfinitePublicWorldcupCards}
           />
         ) : null}
       </section>

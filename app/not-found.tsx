@@ -8,7 +8,7 @@ export default function NotFound() {
       <Navbar />
       <section className='bg-white dark:bg-gray-900'>
         <div className='py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6'>
-          <div className='mx-auto max-w-screen-sm text-center'>
+          <div className='flex flex-col mx-auto justify-center items-center max-w-screen-sm text-center'>
             <h1 className='mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500'>
               404
             </h1>
@@ -16,15 +16,10 @@ export default function NotFound() {
               페이지를 찾을 수 없습니다.
             </p>
             <div className='mb-4 text-lg font-light text-gray-500 dark:text-gray-400'>
-              죄송합니다. 홈으로 돌아가시겠습니까?
+              홈으로 돌아가시겠습니까?
             </div>
-            <div className='my-4 w-full flex justify-center items-center'>
-              <LinkButton
-                href='/'
-                variant='primary'
-                size='large'
-                className='block w-24'
-              >
+            <div className='my-4 w-24 flex justify-center items-center'>
+              <LinkButton href='/' variant='primary' size='large'>
                 돌아가기
               </LinkButton>
             </div>

@@ -4,7 +4,7 @@ import { FieldPacket } from 'mysql2';
 import { CandidateWithStatistics } from '../definitions';
 import { pool } from '../db';
 
-export async function getCandidateStatisticsByWorldcupIdAndPageNumber(
+export async function getPaginationCandidateStatisticsByWorldcupId(
   worldcupId: string,
   pageNumber: number
 ) {

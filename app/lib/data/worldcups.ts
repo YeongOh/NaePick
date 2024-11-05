@@ -9,7 +9,7 @@ import {
 } from '../definitions';
 import { pool } from '../db';
 
-export async function getPublicWorldcupCards(cursor: string | null) {
+export async function getInfinitePublicWorldcupCards(cursor: string | null) {
   try {
     const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
       `SELECT w.worldcup_id as worldcupId,
@@ -175,8 +175,30 @@ export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
   }
 }
 
-export async function getWorldcupsByUserId(
-  cursor: string | null,
+export async function getWorldcupPageCountByUserId(
+  userId: string
+): Promise<number> {
+  try {
+    const [result]: [{ count: number }[], FieldPacket[]] = await pool.query(
+      `SELECT COUNT(*) AS count
+       FROM worldcup w
+       WHERE w.user_id = ?;`,
+      [userId]
+    );
+
+    const totalItems = result[0].count;
+    const itemsPerPage = 10;
+    const pageCount = Math.ceil(totalItems / itemsPerPage);
+
+    return pageCount;
+  } catch (err) {
+    console.log(err);
+    return 0;
+  }
+}
+
+export async function getPaginationWorldcupsByUserId(
+  pageNumber: number,
   userId: string
 ) {
   try {
@@ -226,26 +248,13 @@ export async function getWorldcupsByUserId(
               LEFT JOIN candidate_media AS rcm ON rcm.candidate_id = rc.candidate_id
               LEFT JOIN media_type AS rmt ON rcm.media_type_id = rmt.media_type_id
 
-              WHERE u.user_id = ? AND w.created_at < ?
+              WHERE u.user_id = ?
               ORDER BY w.created_at DESC
-              LIMIT 20;`,
-      [userId, cursor || new Date()]
+              LIMIT 10 OFFSET ?;`,
+      [userId, (pageNumber - 1) * 10]
     );
 
-    if (result.length === 0) {
-      const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
-        data: null,
-        cursor: null,
-      };
-      return infiniteScrollData;
-    } else {
-      const lastTimestamp = result.at(-1)?.createdAt || null;
-      const infiniteScrollData: InfiniteScrollData<WorldcupCard> = {
-        data: result,
-        cursor: lastTimestamp,
-      };
-      return infiniteScrollData;
-    }
+    return result;
   } catch (err) {
     console.log(err);
   }

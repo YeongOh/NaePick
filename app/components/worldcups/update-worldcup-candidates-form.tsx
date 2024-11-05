@@ -94,12 +94,16 @@ export default function UpdateWorldcupCandidatesForm({
 
       async function uploadImage(file: FileWithPath, worldcupId: string) {
         const filenameWithoutExtension = excludeFileExtension(file.name);
-        const { signedURL, candidatePathname } =
-          await fetchCandidateImageUploadURL(
-            worldcupId,
-            file.path as string,
-            file.type
-          );
+        const result = await fetchCandidateImageUploadURL(
+          worldcupId,
+          file.path as string,
+          file.type
+        );
+        if (!result?.signedURL) {
+          throw new Error('업로드 실패');
+        }
+        const { signedURL, candidatePathname } = result;
+
         const response = await fetch(signedURL, {
           method: 'PUT',
           headers: {
