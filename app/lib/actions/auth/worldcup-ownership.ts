@@ -3,6 +3,8 @@
 import { FieldPacket } from 'mysql2';
 import { pool } from '../../db';
 import { Worldcup } from '../../definitions';
+import { redirect } from 'next/navigation';
+import { deleteSession } from '../session';
 
 export async function validateWorldcupOwnership(
   worldcupId: string,
@@ -15,8 +17,13 @@ export async function validateWorldcupOwnership(
     [worldcupId]
   );
 
-  if (!worldcup || worldcup[0].userId !== userId) {
-    throw new Error('권한이 없습니다.');
+  if (!worldcup) {
+    throw new Error('월드컵을 찾지 못했습니다.');
+  }
+
+  if (worldcup[0].userId !== userId) {
+    await deleteSession();
+    redirect('/signin');
   }
 
   return true;

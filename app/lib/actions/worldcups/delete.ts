@@ -3,7 +3,6 @@
 import { revalidatePath } from 'next/cache';
 import { getSession } from '../session';
 import { pool } from '../../db';
-import { redirect } from 'next/navigation';
 import {
   deleteImgObject,
   deleteVideoObject,
@@ -40,7 +39,6 @@ export async function deleteWorldcup(worldcupId: string) {
         deleteObjectPromises.push(deleteVideoObject(Key as string))
       );
     }
-    console.log(videoObjects);
     const result = await Promise.all(deleteObjectPromises);
 
     // ON DELETE CASCADE로 관련 있는 모든 로우 한번에 삭제

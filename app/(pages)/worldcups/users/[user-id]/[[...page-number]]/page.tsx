@@ -1,9 +1,5 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
 import {
   getPaginationWorldcupsByUserId,
-  getPaginationWorldcupsByUserId as getWorldcupCardsByUserId,
   getWorldcupPageCountByUserId,
 } from '@/app/lib/data/worldcups';
 import { getSession } from '@/app/lib/actions/session';

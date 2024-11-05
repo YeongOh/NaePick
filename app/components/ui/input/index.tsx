@@ -48,7 +48,7 @@ export default function Input({
         id={id}
         name={name}
         type={type}
-        className={`text-base block w-full rounded-lg border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500 text-slate-700
+        className={`text-base block w-full rounded-lg border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500 text-slate-700 disabled:bg-gray-100
         ${error ? 'outline outline-2 outline-red-500' : ''} ${className}`}
         aria-describedby={`${id}-error`}
         autoComplete='off'
@@ -65,10 +65,10 @@ export default function Input({
         htmlFor={id}
         className={`${
           error ? 'text-red-500' : 'text-gray-500'
-        } absolute top-[28%] left-4 text-base bg-white transition cursor-text ${
+        } absolute top-[28%] left-4 text-base transition cursor-text ${
           focused || hasValue || defaultValue || value
-            ? '-translate-y-6 -translate-x-1 text-primary-500'
-            : ''
+            ? '-translate-y-6 -translate-x-1 text-primary-500 bg-white'
+            : 'bg-transparent'
         }`}
       >
         {placeholder}

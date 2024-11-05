@@ -6,6 +6,7 @@ import {
 import UpdateWorldcupInfoForm from '@/app/components/worldcups/update-worldcup-info-form';
 import { notFound, redirect } from 'next/navigation';
 import WorldcupFormTab from '@/app/components/worldcups/worldcup-form-tab';
+import Navbar from '@/app/components/navbar/navbar';
 
 interface Props {
   params: { 'worldcup-id': string };
@@ -24,6 +25,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
+      <Navbar />
       <div className='max-w-xl m-auto flex flex-col'>
         <WorldcupFormTab
           worldcupId={worldcupId}

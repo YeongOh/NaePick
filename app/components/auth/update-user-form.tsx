@@ -4,28 +4,31 @@ import {
   updateUser,
   UpdateUserState,
 } from '@/app/lib/actions/auth/update-user';
-import { SessionData } from '@/app/lib/definitions';
-import { IronSession } from 'iron-session';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import Input from '../ui/input';
 import InputErrorMessage from '../ui/input-error-message';
 import Button from '../ui/button';
 import { useRouter } from 'next/navigation';
 
-// TODO:가지고 있는 토큰으로 확인하지말고 서버에 세션 확인 후 => 정보 새로 받기
-interface Props {
-  stringifiedSession: string;
-}
-
-export default function UpdateUserForm({ stringifiedSession }: Props) {
-  const session: IronSession<SessionData> = JSON.parse(stringifiedSession);
+export default function UpdateUserForm() {
   const initialState: UpdateUserState = { message: null, errors: {} };
   const [state, submitUpdateUserForm] = useFormState(updateUser, initialState);
-  const [nickname, setNickname] = useState<string>(session.nickname);
+  const [nickname, setNickname] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [changePassword, setChangePassword] = useState<boolean>(false);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/user')
+      .then((response) => response.json())
+      .then(({ email, nickname }) => {
+        setNickname(nickname);
+        setEmail(email);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   const handleUpdateUserFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,7 +58,7 @@ export default function UpdateUserForm({ stringifiedSession }: Props) {
         name='email'
         type='email'
         className={`p-4 mb-2`}
-        defaultValue={session.email}
+        defaultValue={email}
         placeholder={'이메일 주소'}
         disabled
         readOnly

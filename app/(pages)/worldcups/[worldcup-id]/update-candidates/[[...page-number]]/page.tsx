@@ -1,3 +1,4 @@
+import Navbar from '@/app/components/navbar/navbar';
 import UpdateWorldcupCandidatesForm from '@/app/components/worldcups/update-worldcup-candidates-form';
 import WorldcupFormTab from '@/app/components/worldcups/worldcup-form-tab';
 import { getSession } from '@/app/lib/actions/session';
@@ -23,17 +24,20 @@ export default async function Page({ params }: Props) {
   if (worldcupResult[0].userId !== session.userId) redirect('/forbidden');
 
   return (
-    <div className='max-w-3xl m-auto'>
-      <WorldcupFormTab
-        worldcupId={worldcupId}
-        disabled={null}
-        highlight='candidates'
-      />
-      <UpdateWorldcupCandidatesForm
-        worldcup={worldcupResult[0]}
-        candidates={candidates}
-        pageNumber={pageNumber}
-      />
-    </div>
+    <>
+      <Navbar />
+      <div className='max-w-3xl m-auto'>
+        <WorldcupFormTab
+          worldcupId={worldcupId}
+          disabled={null}
+          highlight='candidates'
+        />
+        <UpdateWorldcupCandidatesForm
+          worldcup={worldcupResult[0]}
+          candidates={candidates}
+          pageNumber={pageNumber}
+        />
+      </div>
+    </>
   );
 }

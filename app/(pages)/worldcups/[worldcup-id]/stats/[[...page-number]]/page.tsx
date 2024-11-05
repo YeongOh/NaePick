@@ -3,6 +3,7 @@ import StatisticsMain from '@/app/components/statistics/statistics-main';
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/app/lib/actions/session';
 import { getPaginationCandidateStatisticsByWorldcupId } from '@/app/lib/data/statistics';
+import Navbar from '@/app/components/navbar/navbar';
 
 interface Props {
   params: { 'worldcup-id': string; 'page-number': String };
@@ -27,13 +28,16 @@ export default async function Page({ params }: Props) {
     }
 
     return (
-      <div>
-        <StatisticsMain
-          candidates={candidatesStatistics}
-          worldcup={worldcup}
-          pageNumber={pageNumber}
-        />
-      </div>
+      <>
+        <Navbar />
+        <div>
+          <StatisticsMain
+            candidates={candidatesStatistics}
+            worldcup={worldcup}
+            pageNumber={pageNumber}
+          />
+        </div>
+      </>
     );
   } else {
     notFound();
