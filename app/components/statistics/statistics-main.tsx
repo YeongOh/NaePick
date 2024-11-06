@@ -124,12 +124,13 @@ export default function StatisticsMain({
           </h2>
         )}
       </div>
-      <section className='p-8 w-[31rem] bg-white h-[calc(100vh-62px)] overflow-y-scroll'>
+      <section className='p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll'>
         <Fold
           nickname={worldcup.nickname}
           createdAt={worldcup.createdAt}
           updatedAt={worldcup.updatedAt}
           description={worldcup.description}
+          profilePathname={worldcup.profilePathname}
         >
           <LinkButton
             className='flex justify-center items-center gap-1'

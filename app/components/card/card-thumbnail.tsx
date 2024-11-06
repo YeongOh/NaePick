@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { WorldcupCard } from '@/app/lib/definitions';
-import MyImage from '@/app/components/ui/my-image';
 import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
 
 interface Props {

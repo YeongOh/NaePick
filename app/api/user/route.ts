@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
   try {
     const [result] = await pool.query(
-      'SELECT email, nickname FROM user WHERE user_id = ?',
+      'SELECT email FROM user WHERE user_id = ?',
       [userId]
     );
 
@@ -28,9 +28,9 @@ export async function GET(request: Request) {
       });
     }
 
-    const { email, nickname } = result[0];
+    const { email } = result[0];
 
-    return new Response(JSON.stringify({ email, nickname }), {
+    return new Response(JSON.stringify({ email }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

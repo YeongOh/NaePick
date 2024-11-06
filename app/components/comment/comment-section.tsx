@@ -22,6 +22,7 @@ import { deleteComment } from '@/app/lib/actions/comments/delete';
 import toast from 'react-hot-toast';
 import { updateComment } from '@/app/lib/actions/comments/update';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
+import ProfileImage from '../ui/profile-image';
 
 interface Props {
   numberOfComments: number;
@@ -219,7 +220,7 @@ export default function CommentSection({
         <InputErrorMessage className='mb-1' errors={state.errors?.text} />
         <Button
           variant='primary'
-          className='flex justify-center items-center gap-1 my-1'
+          className='flex justify-center items-center gap-1 mt-1 mb-4'
         >
           <Pencil color='#FFFFFF' size='1.2rem' />
           댓글 추가하기
@@ -229,11 +230,18 @@ export default function CommentSection({
         <ul>
           {sortedComments?.map((comment, index) => (
             <li
-              className='mb-2'
+              className='mb-4'
               key={comment.commentId}
               ref={index === sortedComments.length - 1 ? ref : null}
             >
               <div className='flex justify-between'>
+                <div className='mt-2 mr-3'>
+                  <ProfileImage
+                    profilePathname={comment.profilePathname}
+                    size='small'
+                    alt={comment.nickname}
+                  />
+                </div>
                 <div className='w-full'>
                   <div className='mb-1'>
                     <span
@@ -282,7 +290,7 @@ export default function CommentSection({
                         rows={2}
                       />
                       <div className='flex w-full justify-end'>
-                        <div className='w-1/3 flex'>
+                        <div className='w-1/3 flex gap-2'>
                           <Button
                             type='button'
                             onClick={() => setUpdateCommentId(null)}

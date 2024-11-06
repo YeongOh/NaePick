@@ -39,12 +39,15 @@ export async function signin(state: SigninState, formData: FormData) {
 
   try {
     const [result, fields]: [
-      Pick<User, 'userId' | 'email' | 'password' | 'nickname'>[] &
+      Pick<
+        User,
+        'userId' | 'email' | 'password' | 'nickname' | 'profilePathname'
+      >[] &
         RowDataPacket[],
       FieldPacket[]
     ] = await pool.query(
       `SELECT user_id AS userId,
-              nickname, password, email
+              nickname, password, email, profile_pathname as profilePathname
       FROM user
       WHERE email = ?;`,
       [email]
@@ -69,9 +72,9 @@ export async function signin(state: SigninState, formData: FormData) {
       };
     }
 
-    const { userId, nickname } = user;
+    const { userId, nickname, profilePathname } = user;
 
-    await createSession({ userId, nickname, email });
+    await createSession({ userId, nickname, profilePathname });
   } catch (error) {
     return {
       message: '로그인에 실패했습니다. (e4).',

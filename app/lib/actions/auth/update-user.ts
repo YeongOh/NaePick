@@ -13,7 +13,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { User } from '../../definitions';
 import { pool } from '../../db';
-import { createSession, getSession } from '../session';
+import { createSession, deleteSession, getSession } from '../session';
 
 const FormSchema = z
   .object({
@@ -93,10 +93,10 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     await connection.beginTransaction();
 
     const [result, fields]: [
-      Pick<User, 'email' | 'nickname' | 'password'>[] & RowDataPacket[],
+      Pick<User, 'nickname' | 'password'>[] & RowDataPacket[],
       FieldPacket[]
     ] = await connection.query(
-      `SELECT email, nickname, password
+      `SELECT nickname, password
         FROM user
         WHERE user_id = ?;`,
       [session.userId]
@@ -167,4 +167,29 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   }
   revalidatePath('/');
   redirect('/');
+}
+
+export async function updateUserProfileImage(
+  userId: string,
+  profilePathname: string | null
+) {
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      return {
+        message: '현재 로그인된 상태가 아닙니다.',
+      };
+    }
+
+    await pool.query(
+      `UPDATE user
+        SET profile_pathname = ?
+        WHERE user_id = ?;`,
+      [profilePathname, userId]
+    );
+    await createSession({ ...session, profilePathname });
+  } catch (error) {
+    console.log(error);
+  }
+  revalidatePath('/update-user');
 }

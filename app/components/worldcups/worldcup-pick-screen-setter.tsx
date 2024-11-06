@@ -65,7 +65,7 @@ export default function WorldcupPickScreenSetter({ worldcup, userId }: Props) {
   if (isSelectingRounds) {
     return (
       <>
-        <section className='relative flex bg-black h-[calc(100vh-62px)]'>
+        <section className='relative flex bg-black h-[calc(100vh-68px)]'>
           <h1 className='absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold'>
             {worldcup.title}{' '}
             {notEnoughCandidates ? (
@@ -87,6 +87,7 @@ export default function WorldcupPickScreenSetter({ worldcup, userId }: Props) {
             createdAt={worldcup.createdAt}
             updatedAt={worldcup.updatedAt}
             numberOfCandidates={worldcup.numberOfCandidates}
+            profilePathname={worldcup.profilePathname}
             onRoundSubmit={handleRoundSumbit}
           />
         </section>
@@ -104,13 +105,14 @@ export default function WorldcupPickScreenSetter({ worldcup, userId }: Props) {
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className='p-8 w-[31rem] bg-white h-[calc(100vh-62px)] overflow-y-scroll'>
+        <div className='p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll'>
           <section>
             <Fold
               nickname={worldcup.nickname}
               createdAt={worldcup.createdAt}
               updatedAt={worldcup.updatedAt}
               description={worldcup.description}
+              profilePathname={worldcup.profilePathname}
             >
               <LinkButton
                 href={`/worldcups/${worldcup.worldcupId}/stats`}

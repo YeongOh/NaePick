@@ -152,6 +152,7 @@ async function seedUser() {
         email VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        profile_pathname VARCHAR(50) DEFAULT NULL,
         PRIMARY KEY (user_id),
         UNIQUE (email),
         UNIQUE (nickname)

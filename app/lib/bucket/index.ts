@@ -10,10 +10,11 @@ import path from 'path';
 import { getSession } from '../actions/session';
 import { validateWorldcupOwnership } from '../actions/auth/worldcup-ownership';
 import { nanoid } from 'nanoid';
-import { OBJECT_ID_LENGTH } from '../../constants';
+import { OBJECT_ID_LENGTH, USER_ID_LENGTH } from '../../constants';
 import { MediaType } from '../definitions';
 import { mp4toJpg } from '../../utils/utils';
 import { ImageBucket, S3client, videoBucket } from './config';
+import { pool } from '../db';
 
 export async function fetchCandidateImageUploadURL(
   worldcupId: string,
@@ -31,7 +32,7 @@ export async function fetchCandidateImageUploadURL(
     const key = `worldcups/${worldcupId}/${objectId}${path.extname(imagePath)}`;
 
     return {
-      signedURL: await fetchImageUploadUrl(key, fileType),
+      signedURL: await fetchImageUploadURL(key, fileType),
       candidatePathname: key,
     };
   } catch (error) {
@@ -39,7 +40,29 @@ export async function fetchCandidateImageUploadURL(
   }
 }
 
-export async function fetchImageUploadUrl(key: string, fileType: string) {
+export async function fetchProfileImageUploadURL(
+  imagePath: string,
+  fileType: string
+) {
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('로그인을 해주세요.');
+    }
+
+    const objectId = nanoid(USER_ID_LENGTH);
+    const key = `profile/${objectId}${path.extname(imagePath)}`;
+
+    return {
+      signedURL: await fetchImageUploadURL(key, fileType),
+      profilePathname: key,
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function fetchImageUploadURL(key: string, fileType: string) {
   try {
     const params = {
       Bucket: ImageBucket,
@@ -118,6 +141,35 @@ export async function deleteCandidateObject(
         })
       );
     }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteProfileImage(
+  userId: string,
+  deleteProfilePathname: string
+) {
+  try {
+    const [result, meta] = await pool.query(
+      `SELECT profile_pathname as profilePathname FROM user where user_id = ?`,
+      [userId]
+    );
+    if (!result[0]) {
+      throw new Error('존재하지 않는 아이디');
+    }
+    const { profilePathname } = result[0];
+    console.log(deleteProfilePathname);
+    console.log(profilePathname);
+    if (deleteProfilePathname !== profilePathname) {
+      throw new Error('잘못된 프로필 이미지 삭제 요청');
+    }
+    await S3client.send(
+      new DeleteObjectCommand({
+        Bucket: ImageBucket,
+        Key: deleteProfilePathname,
+      })
+    );
   } catch (error) {
     console.log(error);
   }

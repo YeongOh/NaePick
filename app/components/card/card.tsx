@@ -8,6 +8,8 @@ import CardEllipsis from './card-ellipsis';
 import CardUpdateLink from './card-update-link';
 import { useRouter } from 'next/navigation';
 import { forwardRef, useState } from 'react';
+import MyImage from '../ui/my-image';
+import ProfileImage from '../ui/profile-image';
 
 export interface CardProps {
   worldcupCard: WorldcupCard;
@@ -38,7 +40,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
   return (
     <li
       ref={ref}
-      className={`transition-colors rounded-xl cursor-pointer pb-4 lg:m-2 md:p-2 ${
+      className={`transition-colors rounded-xl cursor-pointer mb-4 p-1 ${
         isActive ? `active:bg-primary-100` : ''
       }`}
       onMouseDown={(e) => {
@@ -68,18 +70,32 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
         </Link>
         <div className='flex items-end justify-between p-1 md:p-0'>
           <div className='flex-1'>
-            <div className='flex items-center'>
-              <Link
-                className='flex-1'
-                href={`/worldcups/${worldcupCard.worldcupId}`}
-              >
-                <h2
-                  className='text-md font-bold line-clamp-2 my-1.5 text-slate-700 hover:underline cursor-pointer'
-                  title={worldcupCard.title}
-                >
-                  {worldcupCard.title}
-                </h2>
-              </Link>
+            <div className='flex flex-start mt-2'>
+              <ProfileImage
+                alt={worldcupCard.nickname}
+                profilePathname={worldcupCard.profilePathname}
+                size='small'
+                className='mt-1 mr-2'
+              />
+              <div className='flex-1'>
+                <Link href={`/worldcups/${worldcupCard.worldcupId}`}>
+                  <h2
+                    className='text-md font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer'
+                    title={worldcupCard.title}
+                  >
+                    {worldcupCard.title}
+                  </h2>
+                </Link>
+                <div className='text-md text-gray-500'>
+                  <span>{worldcupCard.nickname}</span>
+                  <span
+                    className='ml-2'
+                    title={createdAt.format('YYYY년 MM월 DD일')}
+                  >
+                    {createdAt.fromNow()}
+                  </span>
+                </div>
+              </div>
               <CardEllipsis
                 worldcupId={worldcupCard.worldcupId}
                 title={worldcupCard.title}
@@ -89,20 +105,11 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
               />
             </div>
             <div className='flex items-center justify-between w-full'>
-              <div className='text-md text-gray-500'>
-                <span>{worldcupCard.nickname}</span>
-                <span
-                  className='ml-2'
-                  title={createdAt.format('YYYY년 MM월 DD일')}
-                >
-                  {createdAt.fromNow()}
+              {extended ? (
+                <span className='ml-2'>
+                  {translatePublicity(worldcupCard.publicity)}
                 </span>
-                {extended ? (
-                  <span className='ml-2'>
-                    {translatePublicity(worldcupCard.publicity)}
-                  </span>
-                ) : null}
-              </div>
+              ) : null}
             </div>
           </div>
         </div>

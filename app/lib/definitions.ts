@@ -9,6 +9,7 @@ export interface User extends QueryResult {
   password: string;
   createdAt: string;
   updatedAt: string;
+  profilePathname: string;
 }
 
 export interface Worldcup extends QueryResult {
@@ -21,6 +22,7 @@ export interface Worldcup extends QueryResult {
   createdAt: string;
   numberOfCandidates: number;
   numberOfComments: number;
+  profilePathname: string;
 }
 
 export interface WorldcupCard extends Worldcup {
@@ -65,6 +67,7 @@ export interface Comment extends QueryResult {
   createdAt: string;
   updatedAt: string;
   isAnonymous: boolean;
+  profilePathname: string;
   votedFor: string;
 }
 
@@ -150,4 +153,5 @@ export const sessionOptions: SessionOptions = {
 export interface SessionData {
   userId: string;
   nickname: string;
+  profilePathname: string | null;
 }

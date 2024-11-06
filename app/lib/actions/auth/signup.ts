@@ -122,7 +122,7 @@ export async function signup(state: SignupState, formData: FormData) {
       [userId, email, nickname, hashedPassword]
     );
 
-    await createSession({ userId, nickname });
+    await createSession({ userId, nickname, profilePathname: null });
   } catch (error) {
     console.log(error);
     return {

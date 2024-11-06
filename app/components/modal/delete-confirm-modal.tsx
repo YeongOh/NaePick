@@ -42,12 +42,14 @@ export default function DeleteConfirmModal({
                 ) : null}
                 <div className='flex w-full gap-2 justify-end'>
                   <button
+                    type='button'
                     className='text-slate-700 text-base px-4 py-2 text-center border rounded'
                     onClick={onClose}
                   >
                     취소
                   </button>
                   <button
+                    type='button'
                     className='text-base font-semibold bg-red-500 text-center text-white px-4 py-2 rounded'
                     onClick={onConfirm}
                   >

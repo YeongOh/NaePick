@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import ToggleableP from '../ui/toggleable-p';
+import ProfileImage from '../ui/profile-image';
 
 interface Props {
   open: boolean;
@@ -24,6 +25,7 @@ interface Props {
   nickname: string;
   createdAt: string;
   updatedAt: string;
+  profilePathname: string;
 }
 
 export default function StartWorldcupModal({
@@ -35,6 +37,7 @@ export default function StartWorldcupModal({
   createdAt,
   updatedAt,
   nickname,
+  profilePathname,
 }: Props) {
   const router = useRouter();
   const availableRounds = getNumberOfRoundsAvailable(numberOfCandidates);
@@ -74,15 +77,23 @@ export default function StartWorldcupModal({
               className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 w-[26rem] animate-modalTransition'
             >
               <div>
-                <div className='mb-3 flex items-end'>
-                  <span className='text-md text-slate-700 font-semibold'>
-                    {nickname}
-                  </span>
-                  <span className='text-sm ml-2 text-gray-500'>
-                    {isUpdated
-                      ? `${updatedDate.fromNow()} 업데이트`
-                      : `${createdDate.fromNow()} 생성`}
-                  </span>
+                <div className='mb-2 flex items-center'>
+                  <ProfileImage
+                    profilePathname={profilePathname}
+                    className='mr-2'
+                    size='small'
+                    alt={nickname}
+                  />
+                  <div>
+                    <div className='text-md text-slate-700 font-semibold'>
+                      {nickname}
+                    </div>
+                    <div className='text-sm text-gray-500 mb-2'>
+                      {isUpdated
+                        ? `${updatedDate.fromNow()} 업데이트`
+                        : `${createdDate.fromNow()} 생성`}
+                    </div>
+                  </div>
                 </div>
                 <div className='mb-2'>
                   <ToggleableP

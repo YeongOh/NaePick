@@ -18,6 +18,7 @@ export async function getInfinitePopularWorldcupCards(cursor: number | null) {
               w.publicity, 
               w.created_at AS createdAt,
               u.nickname as nickname,
+              u.profile_pathname as profilePathname,
         
               lc.name AS leftCandidateName,
               lmt.type AS leftCandidateMediaType,
@@ -99,6 +100,7 @@ export async function getInfinitePopularWorldcupCardsByCategory(
               w.publicity, 
               w.created_at AS createdAt,
               u.nickname as nickname,
+              u.profile_pathname as profilePathname,
               c.name as categoryName,
         
               lc.name AS leftCandidateName,
@@ -180,6 +182,7 @@ export async function getInfiniteLatestWorldcupCards(cursor: string | null) {
               w.publicity, 
               w.created_at AS createdAt,
               u.nickname as nickname,
+              u.profile_pathname as profilePathname,
         
               lc.name AS leftCandidateName,
               lmt.type AS leftCandidateMediaType,
@@ -253,6 +256,7 @@ export async function getWorldcupCardByWorldcupId(worldcupId: string) {
               w.publicity, 
               w.created_at AS createdAt,
               u.user_id AS userId,
+              u.profile_pathname as profilePathname,
               u.nickname AS nickname,
 
               (SELECT COUNT(c.candidate_id) 
@@ -316,6 +320,7 @@ export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
               w.created_at AS createdAt,
               w.updated_at AS updatedAt,
               u.nickname as nickname,
+              u.profile_pathname as profilePathname,
               w.user_id as userId,
               ct.name as categoryName,
               (SELECT COUNT(c.candidate_id) 
@@ -371,6 +376,7 @@ export async function getPaginationWorldcupsByUserId(
               w.publicity, 
               w.created_at AS createdAt,
               u.nickname as nickname,
+              u.profile_pathname as profilePathname,
         
               lc.name AS leftCandidateName,
               lmt.type AS leftCandidateMediaType,

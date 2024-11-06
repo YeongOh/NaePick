@@ -16,6 +16,7 @@ export async function getCommentsByWorldcupId(
             c.created_at as createdAt,
             c.updated_at as updatedAt,
             u.nickname as nickname,
+            u.profile_pathname as profilePathname,
             c.is_anonymous as isAnonymous,
             ca.name as votedFor
          FROM comment c
