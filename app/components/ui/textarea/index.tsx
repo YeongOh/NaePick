@@ -16,6 +16,7 @@ export default function TextArea({
   return (
     <div className='relative'>
       <textarea
+        id={id}
         className={`resize-none text-base w-full rounded-lg border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500 text-slate-700
         ${error ? 'outline outline-2 outline-red-500' : ''} ${className}`}
         aria-describedby={`${id}-error`}

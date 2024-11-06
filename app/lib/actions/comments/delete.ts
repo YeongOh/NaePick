@@ -6,7 +6,7 @@ import { getSession } from '../session';
 import { FieldPacket } from 'mysql2';
 import { pool } from '../../db';
 
-export async function deleteComment(comment: Comment) {
+export async function deleteComment(commentId: string) {
   try {
     const session = await getSession();
     if (!session?.userId) {
@@ -17,7 +17,7 @@ export async function deleteComment(comment: Comment) {
       `SELECT user_id as userId 
               FROM comment
               WHERE comment_id = ?`,
-      [comment.commentId]
+      [commentId]
     );
 
     if (!commentFound || !commentFound[0]) {
@@ -31,11 +31,10 @@ export async function deleteComment(comment: Comment) {
       `DELETE FROM comment
             WHERE comment_id = ?
             `,
-      [comment.commentId]
+      [commentId]
     );
   } catch (error) {
     console.log(error);
-    throw new Error('댓글 삭제 실패...');
   }
   revalidatePath('');
 }

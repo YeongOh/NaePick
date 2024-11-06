@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  Candidate,
-  Comment,
-  InfiniteScrollData,
-  Worldcup,
-} from '@/app/lib/definitions';
+import { Candidate, Worldcup } from '@/app/lib/definitions';
 import { useState } from 'react';
 import WorldcupPickScreen from './worldcup-pick-screen';
 import { getRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
@@ -14,7 +9,6 @@ import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import CommentSection from '../comment/comment-section';
 import Button from '../ui/button';
 import LinkButton from '../ui/link-button';
-import dayjs from 'dayjs';
 import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import Fold from '../fold/fold';
@@ -29,9 +23,10 @@ const StartWorldcupModal = dynamic(
 
 interface Props {
   worldcup: Worldcup;
+  userId?: string;
 }
 
-export default function WorldcupPickScreenSetter({ worldcup }: Props) {
+export default function WorldcupPickScreenSetter({ worldcup, userId }: Props) {
   const [isSelectingRounds, setIsSelectingRounds] = useState<boolean>(true);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [round, setRounds] = useState<number | null>(null);
@@ -39,6 +34,9 @@ export default function WorldcupPickScreenSetter({ worldcup }: Props) {
     useState<boolean>(true);
   const [showSidebar, setShowSidebar] = useState(false);
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
+  const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<
+    string | null
+  >(null);
 
   const notEnoughCandidates =
     (worldcup.numberOfCandidates as number) < MIN_NUMBER_OF_CANDIDATES;
@@ -54,7 +52,8 @@ export default function WorldcupPickScreenSetter({ worldcup }: Props) {
     setIsSelectingRounds(false);
   };
 
-  const handleOnWorldcupEnd = () => {
+  const handleOnWorldcupEnd = (finalWinnerCandidateId: string) => {
+    setFinalWinnerCandidateId(finalWinnerCandidateId);
     setShowSidebar(true);
   };
 
@@ -151,6 +150,8 @@ export default function WorldcupPickScreenSetter({ worldcup }: Props) {
           <CommentSection
             numberOfComments={worldcup.numberOfComments}
             worldcupId={worldcup.worldcupId}
+            finalWinnerCandidateId={finalWinnerCandidateId}
+            userId={userId}
           />
         </div>
       ) : null}

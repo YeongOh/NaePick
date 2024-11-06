@@ -10,7 +10,7 @@ interface Props {
   defaultCandidates: Candidate[];
   worldcup: Worldcup;
   startingRound: number;
-  onWorldcupEnd: () => void;
+  onWorldcupEnd: (finalWinnerCandidateId: string) => void;
   className: string;
 }
 
@@ -52,7 +52,7 @@ export default function WorldcupPickScreen({
         { winnerCandidateId, loserCandidateId },
       ];
       await submitMatchResult(matchResultToSubmit, worldcup.worldcupId);
-      onWorldcupEnd();
+      onWorldcupEnd(winnerCandidateId);
       return;
     }
 

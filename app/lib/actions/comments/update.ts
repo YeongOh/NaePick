@@ -36,7 +36,6 @@ export async function updateComment(commentId: string, newText: string) {
     );
   } catch (error) {
     console.log(error);
-    throw new Error('댓글 삭제 실패...');
   }
   revalidatePath('');
 }

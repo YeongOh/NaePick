@@ -35,6 +35,7 @@ export default async function Page({ params }: Props) {
             candidates={candidatesStatistics}
             worldcup={worldcup}
             pageNumber={pageNumber}
+            userId={session?.userId}
           />
         </div>
       </>

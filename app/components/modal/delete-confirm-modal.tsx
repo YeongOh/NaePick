@@ -37,9 +37,9 @@ export default function DeleteConfirmModal({
                 <h2 className='text-lg font-semibold text-slate-700 mb-4'>
                   {title}
                 </h2>
-                <p className='text-base text-slate-500 h-[50px]'>
-                  {description}
-                </p>
+                {description ? (
+                  <p className='text-base text-slate-500 h-[50px]'></p>
+                ) : null}
                 <div className='flex w-full gap-2 justify-end'>
                   <button
                     className='text-slate-700 text-base px-4 py-2 text-center border rounded'

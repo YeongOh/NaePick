@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import DropdownMenu from '../dropdown-menu/dropdown-menu';
+import CardDropdownMenu from './card-dropdown-menu';
 import { EllipsisVertical } from 'lucide-react';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
 
@@ -32,7 +32,7 @@ export default function CardEllipsis({
       <div className='relative'>
         <button
           type='button'
-          className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center relative`}
+          className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center`}
           onClick={(e) => {
             e.stopPropagation();
             if (!openDropdownMenu) {
@@ -44,7 +44,7 @@ export default function CardEllipsis({
         >
           <EllipsisVertical size='1.2rem' />
         </button>
-        <DropdownMenu
+        <CardDropdownMenu
           worldcupId={worldcupId}
           openDropdownMenu={openDropdownMenu}
           onOpenShareWorldcupModal={handleShareWorldcupModal}

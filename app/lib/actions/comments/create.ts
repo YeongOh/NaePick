@@ -14,7 +14,11 @@ export type CreateCommentResponse = {
   newComment?: Comment | null;
 };
 
-export async function createComment(textInput: string, worldcupId: string) {
+export async function createComment(
+  textInput: string,
+  worldcupId: string,
+  votedCandidateId: string | null = null
+) {
   const session = await getSession();
 
   const text = textInput.trim();
@@ -36,11 +40,23 @@ export async function createComment(textInput: string, worldcupId: string) {
   try {
     const commentId = nanoid(COMMENT_ID_LENGTH);
 
+    let votedFor = null;
+
+    if (votedCandidateId) {
+      const [result, fields] = await pool.query(
+        `SELECT name FROM candidate WHERE candidate_id = ?`,
+        [votedCandidateId]
+      );
+      if (result && result[0]) {
+        votedFor = result[0].name;
+      }
+    }
+
     if (!userId) {
       const [result, fields] = await pool.query(
-        `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous) 
-      VALUES (?, ?, ?, ?, ?)`,
-        [commentId, worldcupId, null, text, true]
+        `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous, voted_candidate_id) 
+      VALUES (?, ?, ?, ?, ?, ?)`,
+        [commentId, worldcupId, null, text, true, votedCandidateId]
       );
       const newComment = {
         worldcupId,
@@ -48,17 +64,19 @@ export async function createComment(textInput: string, worldcupId: string) {
         commentId,
         userId: null,
         text,
+        votedFor,
         isAnonymous: true,
         createdAt: String(new Date()),
         updatedAt: String(new Date()),
       };
+      console.log(newComment);
       return { newComment };
     } else {
       const nickname = session?.nickname;
       const [result, fields] = await pool.query(
-        `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous) 
-    VALUES (?, ?, ?, ?, ?)`,
-        [commentId, worldcupId, userId, text, false]
+        `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous, voted_candidate_id) 
+    VALUES (?, ?, ?, ?, ?, ?)`,
+        [commentId, worldcupId, userId, text, false, votedCandidateId]
       );
       const newComment = {
         worldcupId,
@@ -66,10 +84,12 @@ export async function createComment(textInput: string, worldcupId: string) {
         commentId,
         userId,
         text,
+        votedFor,
         isAnonymous: false,
         createdAt: String(new Date()),
         updatedAt: String(new Date()),
       };
+      console.log(newComment);
       return { newComment };
     }
   } catch (error) {

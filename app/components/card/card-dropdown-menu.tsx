@@ -10,7 +10,7 @@ interface Props {
   onOpenShareWorldcupModal: () => void;
 }
 
-export default function DropdownMenu({
+export default function CardDropdownMenu({
   openDropdownMenu,
   worldcupId,
   onOpenShareWorldcupModal,

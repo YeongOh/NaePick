@@ -19,12 +19,14 @@ interface Props {
   candidates: CandidateWithStatistics[];
   worldcup: Worldcup;
   pageNumber: number;
+  userId?: string;
 }
 
 export default function StatisticsMain({
   candidates,
   worldcup,
   pageNumber,
+  userId,
 }: Props) {
   const [selectedCandidateIndex, setSelectedCandidateIndex] = useState(0);
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
@@ -165,6 +167,7 @@ export default function StatisticsMain({
         <CommentSection
           numberOfComments={worldcup.numberOfComments}
           worldcupId={worldcup.worldcupId}
+          userId={userId}
         />
       </section>
     </div>

@@ -162,7 +162,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
     await connection.rollback();
     console.log(error);
     return {
-      message: '회원가입에 실패했습니다. (e4).',
+      message: '회원정보 수정에 실패했습니다. (e4).',
     };
   }
   revalidatePath('/');

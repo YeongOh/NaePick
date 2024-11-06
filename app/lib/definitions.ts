@@ -65,6 +65,7 @@ export interface Comment extends QueryResult {
   createdAt: string;
   updatedAt: string;
   isAnonymous: boolean;
+  votedFor: string;
 }
 
 export interface InfiniteScrollData<T, V> {

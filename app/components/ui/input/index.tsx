@@ -48,8 +48,8 @@ export default function Input({
         id={id}
         name={name}
         type={type}
-        className={`text-base block w-full rounded-lg border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500 text-slate-700 disabled:bg-gray-100
-        ${error ? 'outline outline-2 outline-red-500' : ''} ${className}`}
+        className={`text-base block w-full rounded-lg border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500 text-slate-700 disabled:bg-gray-100 
+        ${error ? 'outline outline-2 outline-red-500' : ''} ${className || ''}`}
         aria-describedby={`${id}-error`}
         autoComplete='off'
         autoFocus={autoFocus}

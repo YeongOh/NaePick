@@ -29,7 +29,10 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <Navbar screenMode />
-      <WorldcupPickScreenSetter worldcup={worldcupResult[0]} />
+      <WorldcupPickScreenSetter
+        worldcup={worldcupResult[0]}
+        userId={session?.userId}
+      />
     </>
   );
 }

@@ -13,20 +13,30 @@ import 'dayjs/locale/ko';
 import TextArea from '../ui/textarea';
 import Button from '../ui/button';
 import InputErrorMessage from '../ui/input-error-message';
-import { Pencil } from 'lucide-react';
+import { EllipsisVertical, Pencil } from 'lucide-react';
 import ToggleableP from '../ui/toggleable-p';
 import { getCommentsByWorldcupId } from '@/app/lib/data/comments';
+import CommentDropdownMenu from './comment-dropdown-menu';
+import DeleteConfirmModal from '../modal/delete-confirm-modal';
+import { deleteComment } from '@/app/lib/actions/comments/delete';
+import toast from 'react-hot-toast';
+import { updateComment } from '@/app/lib/actions/comments/update';
+import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 
 interface Props {
   numberOfComments: number;
   worldcupId: string;
   className?: string;
+  finalWinnerCandidateId?: string | null;
+  userId?: string;
 }
 
 export default function CommentSection({
   numberOfComments,
   worldcupId,
   className,
+  userId,
+  finalWinnerCandidateId = null,
 }: Props) {
   const [state, setState] = useState<CreateCommentResponse>({ errors: {} });
   const [text, setText] = useState('');
@@ -35,6 +45,32 @@ export default function CommentSection({
   const [numberOfNewComments, setNumberOfNewComments] = useState(0);
   const [lastCursor, setLastCursor] = useState<string | null>(null);
   const ref = useRef(null);
+  const [dropdownMenuId, setDropdownMenuId] = useState<string | null>(null);
+  const [openDeleteConfirmModal, setOpenDeleteConfirmModal] =
+    useState<boolean>(false);
+  const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
+  const [newText, setNewText] = useState('');
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (
+      !target.closest('.dropdown-menu') &&
+      !target.closest('.dropdown-menu-toggle') &&
+      !target.closest('.modal')
+    ) {
+      setDropdownMenuId(null);
+    }
+  };
+
+  useEffect(() => {
+    if (dropdownMenuId !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownMenuId]);
 
   useEffect(() => {
     getCommentsByWorldcupId(worldcupId).then((result) => {
@@ -44,7 +80,7 @@ export default function CommentSection({
         setLastCursor(cursor);
       }
     });
-  }, []);
+  }, [worldcupId]);
 
   const sortedComments = comments?.sort((a, b) =>
     sortDate(a.createdAt, b.createdAt, 'newest')
@@ -53,11 +89,61 @@ export default function CommentSection({
   dayjs.extend(relativeTime);
   dayjs.locale('ko');
 
+  const handleDeleteComment = async () => {
+    const targetCommentId = dropdownMenuId;
+    try {
+      if (!targetCommentId) return;
+
+      await deleteComment(targetCommentId);
+      const newComments = comments.filter(
+        (comment) => comment.commentId != targetCommentId
+      );
+      setComments(newComments);
+      toast.success('댓글이 삭제되었습니다.');
+    } catch (error) {
+      toast.error('댓글을 삭제하지 못했습니다.');
+    } finally {
+      setOpenDeleteConfirmModal(false);
+      setDropdownMenuId(null);
+    }
+  };
+
+  const handleEditTextSubmit = async () => {
+    try {
+      if (!updateCommentId) return;
+      if (newText.length <= 0) {
+        toast.error('최소 0자 이상이어야 합니다.');
+        return;
+      }
+      if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
+        toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
+        return;
+      }
+
+      await updateComment(updateCommentId, newText);
+      const newComments = comments.map((comment) =>
+        comment.commentId === updateCommentId
+          ? { ...comment, text: newText }
+          : comment
+      );
+      setComments(newComments);
+      setNewText('');
+      setUpdateCommentId(null);
+      toast.success('댓글이 수정되었습니다.');
+    } catch (error) {
+      toast.error('댓글을 수정하지 못했습니다.');
+    }
+  };
+
   const handleCommentFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-    const result = await createComment(text, worldcupId);
+    const result = await createComment(
+      text,
+      worldcupId,
+      finalWinnerCandidateId
+    );
     if (!result) {
       // error
       return;
@@ -127,7 +213,7 @@ export default function CommentSection({
           className={`p-2 mb-1`}
           onChange={(e) => setText(e.target.value)}
           placeholder='댓글 내용'
-          rows={1}
+          rows={2}
           autoFocus
         />
         <InputErrorMessage className='mb-1' errors={state.errors?.text} />
@@ -147,38 +233,119 @@ export default function CommentSection({
               key={comment.commentId}
               ref={index === sortedComments.length - 1 ? ref : null}
             >
-              <div className='mb-1'>
-                <span
-                  className={`mr-4 font-semibold text-base ${
-                    !comment.isAnonymous && comment.nickname
-                      ? 'text-slate-700'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  {comment.isAnonymous
-                    ? '익명'
-                    : comment.nickname
-                    ? comment.nickname
-                    : '탈퇴한 회원'}
-                </span>
-                <span
-                  className='text-sm text-gray-500'
-                  title={dayjs(comment.createdAt).format(
-                    'YYYY년 MM월 DD일 HH시 MM분'
+              <div className='flex justify-between'>
+                <div className='w-full'>
+                  <div className='mb-1'>
+                    <span
+                      className={`mr-3 font-semibold text-base ${
+                        !comment.isAnonymous && comment.nickname
+                          ? 'text-slate-700'
+                          : 'text-gray-500'
+                      }`}
+                    >
+                      {comment.isAnonymous
+                        ? '익명'
+                        : comment.nickname
+                        ? comment.nickname
+                        : '탈퇴한 회원'}
+                    </span>
+                    {comment.votedFor ? (
+                      <span className='text-sm text-gray-500'>
+                        {comment.votedFor}
+                        {'  -  '}
+                      </span>
+                    ) : null}
+                    <span
+                      className='text-sm text-gray-500'
+                      title={dayjs(comment.createdAt).format(
+                        'YYYY년 MM월 DD일 HH시 MM분'
+                      )}
+                    >
+                      {getRelativeDate(comment.createdAt)}
+                    </span>
+                  </div>
+                  {updateCommentId !== comment.commentId ? (
+                    <ToggleableP
+                      className={'text-slate-700'}
+                      text={comment.text}
+                      numberOfLines={3}
+                    />
+                  ) : (
+                    <>
+                      <TextArea
+                        id='editText'
+                        name='editText'
+                        value={newText}
+                        error={state.errors?.text}
+                        className={`p-2 mb-1`}
+                        onChange={(e) => setNewText(e.target.value)}
+                        rows={2}
+                      />
+                      <div className='flex w-full justify-end'>
+                        <div className='w-1/3 flex'>
+                          <Button
+                            type='button'
+                            onClick={() => setUpdateCommentId(null)}
+                            variant='ghost'
+                          >
+                            취소
+                          </Button>
+                          <Button
+                            type='button'
+                            variant='primary'
+                            onClick={handleEditTextSubmit}
+                          >
+                            확인
+                          </Button>
+                        </div>
+                      </div>
+                    </>
                   )}
-                >
-                  {getRelativeDate(comment.createdAt)}
-                </span>
+                </div>
+                {comment.userId === userId ? (
+                  <div className='relative w-10 h-10 mt-2'>
+                    <button
+                      type='button'
+                      className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 rounded-full w-10 h-10 flex justify-center items-center`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (comment.commentId !== dropdownMenuId) {
+                          setDropdownMenuId(comment.commentId);
+                        } else {
+                          setDropdownMenuId(null);
+                        }
+                      }}
+                    >
+                      <EllipsisVertical size='1.2rem' />
+                    </button>
+                    <CommentDropdownMenu
+                      openDropdownMenu={comment.commentId === dropdownMenuId}
+                      onOpenDeleteCommentModal={() =>
+                        setOpenDeleteConfirmModal(true)
+                      }
+                      startEditComment={() => {
+                        setNewText(comment.text);
+                        setUpdateCommentId(comment.commentId);
+                        setDropdownMenuId(null);
+                      }}
+                    />
+                  </div>
+                ) : null}
               </div>
-              <ToggleableP
-                className={'text-slate-700'}
-                text={comment.text}
-                numberOfLines={3}
-              />
             </li>
           ))}
         </ul>
       ) : null}
+      <DeleteConfirmModal
+        title={'해당 댓글을 정말로 삭제하시겠습니까?'}
+        description={''}
+        open={!!openDeleteConfirmModal}
+        onClose={() => {
+          setOpenDeleteConfirmModal(false);
+          setDropdownMenuId(null);
+        }}
+        onConfirm={handleDeleteComment}
+      />
     </section>
   );
 }
