@@ -80,13 +80,13 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
               <div className='flex-1'>
                 <Link href={`/worldcups/${worldcupCard.worldcupId}`}>
                   <h2
-                    className='text-md font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer'
+                    className='text-base font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer mb-1'
                     title={worldcupCard.title}
                   >
                     {worldcupCard.title}
                   </h2>
                 </Link>
-                <div className='text-md text-gray-500'>
+                <div className='text-md text-gray-500 flex items-center'>
                   <span>{worldcupCard.nickname}</span>
                   <span
                     className='ml-2'
@@ -94,6 +94,11 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
                   >
                     {createdAt.fromNow()}
                   </span>
+                  {extended ? (
+                    <span className='ml-2'>
+                      {translatePublicity(worldcupCard.publicity)}
+                    </span>
+                  ) : null}
                 </div>
               </div>
               <CardEllipsis
@@ -104,13 +109,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
                 onCloseDropdownMenu={onCloseDropdownMenu}
               />
             </div>
-            <div className='flex items-center justify-between w-full'>
-              {extended ? (
-                <span className='ml-2'>
-                  {translatePublicity(worldcupCard.publicity)}
-                </span>
-              ) : null}
-            </div>
+            <div className='flex items-center justify-between w-full'></div>
           </div>
         </div>
       </div>

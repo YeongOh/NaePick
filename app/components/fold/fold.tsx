@@ -36,7 +36,9 @@ export default function Fold({
           alt={nickname}
         />
         <div>
-          <div className='text-md text-slate-700 font-semibold'>{nickname}</div>
+          <div className='text-base text-slate-700 font-semibold'>
+            {nickname}
+          </div>
           <div className='text-sm text-gray-500 mb-2'>
             {createdDate.format('YYYY년 MM월 MM일')}{' '}
             <span title={updatedDate.format('YYYY년 MM월 MM일')}>

@@ -44,7 +44,7 @@ export default function ShareWorldcupModal({
               onClick={(e) => e.stopPropagation()}
               className='fixed inset-0 m-auto border w-[420px] h-fit bg-white p-4 rounded-xl animate-modalTransition'
             >
-              <h2 className='font-semibold text-center mb-4 text-md'>
+              <h2 className='font-semibold text-center mb-4 text-lg'>
                 {title} 공유하기
               </h2>
               <div className='flex flex-col items-center justify-between'>

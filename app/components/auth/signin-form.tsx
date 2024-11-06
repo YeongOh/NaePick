@@ -29,7 +29,7 @@ export default function SigninForm() {
         NaePick
       </Link>
       <p className='text-center text-base mb-6 text-slate-700'>
-        이상형 월드컵 NaePick에 오신 걸 환영합니다!
+        이상형 월드컵 NaePick에 오신 것을 환영합니다!
       </p>
       <Input
         id='email'
@@ -53,11 +53,14 @@ export default function SigninForm() {
       <Button className='mt-4' variant='primary'>
         로그인
       </Button>
+      <div className='mt-4 text-center text-base flex gap-2 text-gray-500 justify-center'>
+        아직 회원이 아니신가요?
+      </div>
       <Link
-        className='mt-4 text-blue-600 hover:underline text-center text-base'
+        className='text-blue-600 hover:underline text-center text-base mt-1'
         href={'/signup'}
       >
-        회원가입
+        회원가입하기
       </Link>
     </form>
   );

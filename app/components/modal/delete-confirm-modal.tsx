@@ -37,20 +37,22 @@ export default function DeleteConfirmModal({
                 <h2 className='text-lg font-semibold text-slate-700 mb-4'>
                   {title}
                 </h2>
-                {description ? (
-                  <p className='text-base text-slate-500 h-[50px]'></p>
+                {description.length ? (
+                  <p className='text-base text-slate-500 h-[50px]'>
+                    {description}
+                  </p>
                 ) : null}
                 <div className='flex w-full gap-2 justify-end'>
                   <button
                     type='button'
-                    className='text-slate-700 text-base px-4 py-2 text-center border rounded'
+                    className='text-slate-700 hover:bg-gray-50 active:bg-gray-100 text-base px-4 py-2 text-center border rounded'
                     onClick={onClose}
                   >
                     취소
                   </button>
                   <button
                     type='button'
-                    className='text-base font-semibold bg-red-500 text-center text-white px-4 py-2 rounded'
+                    className='text-base font-semibold bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors text-center text-white px-4 py-2 rounded'
                     onClick={onConfirm}
                   >
                     삭제하기

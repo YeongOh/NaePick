@@ -35,8 +35,8 @@ export default function SignupForm() {
         NaePick
       </Link>
       <p className='text-center text-base mb-6 text-slate-700'>
-        이상형 월드컵 NaePick에 오신 걸 환영합니다! <br />
-        간단한 회원가입 후 이상형 월드컵을 만들어보세요!
+        이상형 월드컵 NaePick에 오신 것을 환영합니다! <br />
+        간단한 회원가입 후 이상형 월드컵을 만들어 보세요!
       </p>
       <Input
         id='email'
@@ -78,7 +78,7 @@ export default function SignupForm() {
         errors={state.errors?.confirmPassword}
       />
       <Button variant='primary' className='mt-4'>
-        가입 완료
+        가입하기
       </Button>
     </form>
   );
