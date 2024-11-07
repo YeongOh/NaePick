@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { redirect } from 'next/navigation';
 import { User } from '@/app/lib/types';
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 import { createSession } from '@/app/lib/session';
 
 const FormSchema = z.object({
@@ -44,7 +44,7 @@ export async function signin(state: SigninState, formData: FormData) {
       >[] &
         RowDataPacket[],
       FieldPacket[]
-    ] = await pool.query(
+    ] = await db.query(
       `SELECT user_id AS userId,
               nickname, password, email, profile_pathname as profilePathname
       FROM user

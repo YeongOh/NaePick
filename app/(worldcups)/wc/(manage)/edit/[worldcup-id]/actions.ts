@@ -10,7 +10,7 @@ import {
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 import { validateWorldcupOwnership } from '@/app/lib/worldcups/auth';
 
 const UpdatePostFormSchema = z.object({
@@ -77,7 +77,7 @@ export async function updateWorldcupInfo(
   try {
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    pool.query(
+    db.query(
       `UPDATE worldcup 
       SET title = ?, description = ?, publicity = ?, category_id = ?
       WHERE worldcup_id = ?`,

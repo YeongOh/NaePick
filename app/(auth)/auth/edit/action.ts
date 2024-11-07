@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 import { createSession, getSession } from '@/app/lib/session';
 import { User } from '@/app/lib/types';
 
@@ -81,7 +81,7 @@ export async function updateUser(state: UpdateUserState, formData: FormData) {
   const { nickname, oldPassword, changePassword, newPassword } =
     validatedFields.data;
 
-  const connection = await pool.getConnection();
+  const connection = await db.getConnection();
   try {
     const session = await getSession();
     if (!session?.userId) {
@@ -181,7 +181,7 @@ export async function updateUserProfileImage(
       };
     }
 
-    await pool.query(
+    await db.query(
       `UPDATE user
         SET profile_pathname = ?
         WHERE user_id = ?;`,

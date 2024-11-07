@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
-import PickScreen from './PickScreen';
+import WorldcupPickScreen from './WorldcupPickScreen';
 import Fold from '@/app/components/fold';
 import LinkButton from '@/app/components/ui/link-button';
 import Button from '@/app/components/ui/button';
@@ -34,9 +34,8 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
     useState<boolean>(true);
   const [showSidebar, setShowSidebar] = useState(false);
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
-  const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<
-    string | null
-  >(null);
+  const [finalWinnerCandidateId, setFinalWinnerCandidateId] =
+    useState<string>();
 
   const notEnoughCandidates =
     (worldcup.numberOfCandidates as number) < MIN_NUMBER_OF_CANDIDATES;
@@ -97,7 +96,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
 
   return (
     <div className='flex bg-black/95'>
-      <PickScreen
+      <WorldcupPickScreen
         className='flex-1'
         worldcup={worldcup}
         defaultCandidates={candidates}

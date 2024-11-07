@@ -1,4 +1,4 @@
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 import { SessionData, sessionOptions } from '@/app/lib/types';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const userId = session.userId;
 
   try {
-    const [result] = await pool.query(
+    const [result] = await db.query(
       'SELECT email FROM user WHERE user_id = ?',
       [userId]
     );

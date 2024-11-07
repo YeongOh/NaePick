@@ -1,8 +1,8 @@
-import { pool } from '../lib/database';
+import { db } from '../lib/database';
 
 async function seedWorldcup() {
   try {
-    const [results, fields] = await pool.query(
+    const [results, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS worldcup (
 	      worldcup_id VARCHAR(10) NOT NULL,
 	      title VARCHAR(60) NOT NULL,
@@ -26,7 +26,7 @@ async function seedWorldcup() {
 
 async function seedCandidates() {
   try {
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS candidate (
           candidate_id VARCHAR(10) NOT NULL,
           worldcup_id VARCHAR(10) DEFAULT NULL,
@@ -46,7 +46,7 @@ async function seedCandidates() {
 
 async function seedMediaType() {
   try {
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS media_type (
           media_type_id INT NOT NULL AUTO_INCREMENT,
           type VARCHAR(20) NOT NULL,
@@ -57,7 +57,7 @@ async function seedMediaType() {
 
     await Promise.all(
       ['cdn_img', 'cdn_video', 'youtube', 'chzzk'].map((type) =>
-        pool.query(
+        db.query(
           `INSERT INTO media_type (type)
                   VALUES ('${type}');`
         )
@@ -73,7 +73,7 @@ async function seedMediaType() {
 
 async function seedCandidateMedia() {
   try {
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS candidate_media (
           candidate_media_id INT NOT NULL AUTO_INCREMENT,
           candidate_id VARCHAR(10) NOT NULL,
@@ -97,7 +97,7 @@ async function seedCandidateMedia() {
 
 async function seedCategory() {
   try {
-    const [results, fields] = await pool.query(
+    const [results, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS category (
         category_id INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(20) NOT NULL,
@@ -130,7 +130,7 @@ async function seedCategoryData() {
         'singers',
         'youtubers',
       ].map((category) =>
-        pool.query(
+        db.query(
           `INSERT INTO Category (name)
                   VALUES ('${category}');`
         )
@@ -145,7 +145,7 @@ async function seedCategoryData() {
 
 async function seedUser() {
   try {
-    const [results, fields] = await pool.query(
+    const [results, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS user (
         user_id VARCHAR(10) NOT NULL,
         nickname VARCHAR(20) NOT NULL,
@@ -168,7 +168,7 @@ async function seedUser() {
 
 async function seedMatchResult() {
   try {
-    const [results, fields] = await pool.query(
+    const [results, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS match_result (
         match_result_id INT NOT NULL AUTO_INCREMENT,
         worldcup_id VARCHAR(10) NOT NULL,
@@ -192,7 +192,7 @@ async function seedMatchResult() {
 
 async function seedComment() {
   try {
-    const [results, fields] = await pool.query(
+    const [results, fields] = await db.query(
       `CREATE TABLE IF NOT EXISTS comment (
         comment_id VARCHAR(10) NOT NULL,
         worldcup_id VARCHAR(10) NOT NULL,

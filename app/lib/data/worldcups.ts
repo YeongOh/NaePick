@@ -2,11 +2,11 @@
 
 import { FieldPacket } from 'mysql2/promise';
 import { WorldcupCard, Worldcup, Category, InfiniteScrollData } from '../types';
-import { pool } from '../database';
+import { db } from '../database';
 
 export async function getInfinitePopularWorldcupCards(cursor: number | null) {
   try {
-    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await db.query(
       `SELECT w.worldcup_id as worldcupId,
               w.title as title,
               w.description as description,
@@ -88,7 +88,7 @@ export async function getInfinitePopularWorldcupCardsByCategory(
   categoryName: string
 ) {
   try {
-    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await db.query(
       `SELECT w.worldcup_id as worldcupId,
               w.title as title,
               w.description as description,
@@ -170,7 +170,7 @@ export async function getInfinitePopularWorldcupCardsByCategory(
 
 export async function getInfiniteLatestWorldcupCards(cursor: string | null) {
   try {
-    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await db.query(
       `SELECT w.worldcup_id as worldcupId,
               w.title as title,
               w.description as description,
@@ -244,7 +244,7 @@ export async function getInfiniteLatestWorldcupCards(cursor: string | null) {
 
 export async function getWorldcupCardByWorldcupId(worldcupId: string) {
   try {
-    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await db.query(
       `SELECT w.worldcup_id as worldcupId,
               w.title as title,
               w.description as description,
@@ -307,7 +307,7 @@ export async function getWorldcupCardByWorldcupId(worldcupId: string) {
 
 export async function getWorldcupPickScreenByWorldcupId(worldcupId: string) {
   try {
-    const [result, meta]: [Worldcup[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [Worldcup[], FieldPacket[]] = await db.query(
       `SELECT w.worldcup_id as worldcupId,
               w.title,
               w.description,
@@ -341,7 +341,7 @@ export async function getWorldcupPageCountByUserId(
   userId: string
 ): Promise<number> {
   try {
-    const [result]: [{ count: number }[], FieldPacket[]] = await pool.query(
+    const [result]: [{ count: number }[], FieldPacket[]] = await db.query(
       `SELECT COUNT(*) AS count
        FROM worldcup w
        WHERE w.user_id = ?;`,
@@ -364,7 +364,7 @@ export async function getPaginationWorldcupsByUserId(
   userId: string
 ) {
   try {
-    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [WorldcupCard[], FieldPacket[]] = await db.query(
       `SELECT w.worldcup_id as worldcupId,
               w.title as title,
               w.description as description,
@@ -425,7 +425,7 @@ export async function getPaginationWorldcupsByUserId(
 
 export async function getWorldcupInfoFormByWorldcupId(worldcupId: string) {
   try {
-    const [result, meta]: [Worldcup[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [Worldcup[], FieldPacket[]] = await db.query(
       `SELECT worldcup_id as worldcupId,
               user_id as userId, category_id as categoryId,
               title, description, publicity

@@ -10,7 +10,7 @@ import {
   listAllS3VideoObjects,
 } from '../storage';
 import { getSession } from '../session';
-import { pool } from '../database';
+import { db } from '../database';
 
 export async function deleteWorldcup(worldcupId: string) {
   const session = await getSession();
@@ -43,7 +43,7 @@ export async function deleteWorldcup(worldcupId: string) {
     const result = await Promise.all(deleteObjectPromises);
 
     // ON DELETE CASCADE로 관련 있는 모든 로우 한번에 삭제
-    const [worldcupDeleteResult, meta] = await pool.query(
+    const [worldcupDeleteResult, meta] = await db.query(
       `DELETE FROM worldcup
           WHERE worldcup_id = ?`,
       [worldcupId]

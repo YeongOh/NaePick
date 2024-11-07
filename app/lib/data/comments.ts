@@ -2,14 +2,14 @@
 
 import { FieldPacket } from 'mysql2';
 import { Comment, InfiniteScrollData } from '../types';
-import { pool } from '../database';
+import { db } from '../database';
 
 export async function getCommentsByWorldcupId(
   worldcupId: string,
   cursor?: string
 ) {
   try {
-    const [result, meta]: [Comment[], FieldPacket[]] = await pool.query(
+    const [result, meta]: [Comment[], FieldPacket[]] = await db.query(
       `SELECT c.comment_id as commentId,
             c.user_id as userId,
             c.text as text,

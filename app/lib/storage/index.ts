@@ -13,7 +13,7 @@ import { OBJECT_ID_LENGTH, USER_ID_LENGTH } from '../../constants';
 import { MediaType } from '../types';
 import { mp4toJpg } from '../../utils/utils';
 import { ImageBucket, S3client, videoBucket } from './config';
-import { pool } from '../database';
+import { db } from '../database';
 import { validateWorldcupOwnership } from '../worldcups/auth';
 
 export async function fetchCandidateImageUploadURL(
@@ -151,7 +151,7 @@ export async function deleteProfileImage(
   deleteProfilePathname: string
 ) {
   try {
-    const [result, meta] = await pool.query(
+    const [result, meta] = await db.query(
       `SELECT profile_pathname as profilePathname FROM user where user_id = ?`,
       [userId]
     );

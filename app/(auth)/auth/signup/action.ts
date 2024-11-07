@@ -6,17 +6,12 @@ import {
   NICKNAME_MIN_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
-  USER_ID_LENGTH,
 } from '@/app/constants';
 import { z } from 'zod';
-import bcrypt from 'bcryptjs';
-import { FieldPacket, RowDataPacket } from 'mysql2';
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { nanoid } from 'nanoid';
-import { User } from '@/app/lib/types';
-import { pool } from '@/app/lib/database';
 import { createSession } from '@/app/lib/session';
+import { findDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
+import { createUser } from '@/app/lib/auth/service';
 
 const FormSchema = z
   .object({
@@ -83,53 +78,33 @@ export async function signup(state: SignupState, formData: FormData) {
     };
   }
 
-  const { email, password, nickname } = validatedFields.data;
-
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  const { email, nickname, password } = validatedFields.data;
 
   try {
-    // 이메일이나 닉네임이 이미 사용되고 있는지 확인
-    const [duplicateResult, duplicateFields]: [
-      Pick<User, 'email' | 'nickname'>[] & RowDataPacket[],
-      FieldPacket[]
-    ] = await pool.query(
-      `SELECT email, nickname
-      FROM user
-      WHERE email = ? OR nickname = ?;`,
-      [email, nickname]
-    );
+    const usersFound = await findDuplicateEmailOrNickname(email, nickname);
 
-    const duplicateUser = duplicateResult?.[0];
-    if (duplicateUser) {
+    if (usersFound && usersFound.length) {
       const errors: SignupError = {};
-      if (nickname === duplicateUser.nickname)
-        errors.nickname = ['이미 존재하는 닉네임입니다.'];
-      if (email === duplicateUser.email)
-        errors.email = ['이미 존재하는 이메일입니다.'];
-
-      return {
-        message: '회원가입에 실패했습니다. (e1)',
-        errors,
-      };
+      usersFound.forEach((user) => {
+        if (user.email === email)
+          errors.email = ['이미 존재하는 이메일입니다.'];
+        if (user.nickname === nickname)
+          errors.nickname = ['이미 존재하는 닉네임입니다.'];
+      });
+      return { errors };
     }
 
-    const userId = nanoid(USER_ID_LENGTH);
-
-    await pool.query(
-      `INSERT INTO user (user_id, email, nickname, password)
-      VALUES (?, ?, ?, ?)`,
-      [userId, email, nickname, hashedPassword]
-    );
-
-    await createSession({ userId, nickname, profilePathname: null });
+    const newUserId = await createUser({ email, nickname, password });
+    if (!newUserId) {
+      throw new Error('회원가입 실패');
+    }
+    await createSession({ userId: newUserId, profilePathname: null, nickname });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return {
-      message: '회원가입에 실패했습니다. (e4).',
+      message: '서버 에러로 인해 회원가입에 실패했습니다.',
     };
   }
 
-  revalidatePath('/');
   redirect('/');
 }

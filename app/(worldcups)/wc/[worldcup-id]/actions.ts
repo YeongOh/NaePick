@@ -7,7 +7,7 @@ import {
   deleteComment,
   updateComment,
 } from '@/app/lib/comment/service';
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 import { getSession } from '@/app/lib/session';
 import { MatchResult } from '@/app/lib/types';
 
@@ -101,7 +101,7 @@ export async function submitMatchResult(
   matchResult: MatchResult[],
   worldcupId: string
 ) {
-  const connection = await pool.getConnection();
+  const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
 

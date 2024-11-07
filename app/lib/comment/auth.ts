@@ -1,7 +1,7 @@
 import 'server-only';
 import { Comment } from '../types';
 import { FieldPacket } from 'mysql2';
-import { pool } from '../database';
+import { db } from '../database';
 
 export const canUserEditComment = async ({
   userId,
@@ -10,7 +10,7 @@ export const canUserEditComment = async ({
   userId: string;
   commentId: string;
 }) => {
-  const [result, meta]: [Comment[], FieldPacket[]] = await pool.query(
+  const [result, meta]: [Comment[], FieldPacket[]] = await db.query(
     `SELECT user_id as userId 
                 FROM comment
                 WHERE comment_id = ?`,

@@ -3,14 +3,14 @@
 import { FieldPacket } from 'mysql2';
 import { redirect } from 'next/navigation';
 import { Worldcup } from '../types';
-import { pool } from '../database';
+import { db } from '../database';
 import { deleteSession } from '../session';
 
 export async function validateWorldcupOwnership(
   worldcupId: string,
   userId: string
 ) {
-  const [worldcup, meta]: [Worldcup[], FieldPacket[]] = await pool.query(
+  const [worldcup, meta]: [Worldcup[], FieldPacket[]] = await db.query(
     `SELECT user_id as userId 
       FROM worldcup
       WHERE worldcup_id = ?`,

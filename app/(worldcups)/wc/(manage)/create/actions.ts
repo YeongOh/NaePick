@@ -10,7 +10,7 @@ import {
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 
 const CreateWorldcupFormSchema = z.object({
   title: z
@@ -73,7 +73,7 @@ export async function createWorldcup(
   const worldcupId = nanoid(WORLDCUP_ID_LENGTH);
 
   try {
-    await pool.query(
+    await db.query(
       `INSERT INTO worldcup 
                 (worldcup_id, title, description, publicity, user_id, category_id)          
                 VALUES (?,?,?,?,?,?)`,

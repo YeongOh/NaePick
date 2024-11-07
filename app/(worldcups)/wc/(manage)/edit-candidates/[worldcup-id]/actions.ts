@@ -1,6 +1,6 @@
 'use server';
 
-import { pool } from '@/app/lib/database';
+import { db } from '@/app/lib/database';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import {
@@ -40,8 +40,8 @@ export async function createCandidate({
 
     const candidateId = nanoid(CANDIDATE_ID_LENGTH);
 
-    await pool.query('START TRANSACTION');
-    const [result1, fields1] = await pool.query(
+    await db.query('START TRANSACTION');
+    const [result1, fields1] = await db.query(
       `
         INSERT INTO candidate
         (candidate_id, worldcup_id, name)
@@ -50,7 +50,7 @@ export async function createCandidate({
         `,
       [candidateId, worldcupId, candidateName]
     );
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `
         INSERT INTO candidate_media
         (candidate_id, pathname, media_type_id, thumbnail_url)
@@ -59,9 +59,9 @@ export async function createCandidate({
         `,
       [candidateId, candidatePathname, mediaType, thumbnailURL ?? null]
     );
-    await pool.query('COMMIT');
+    await db.query('COMMIT');
   } catch (error) {
-    await pool.query('ROLLBACK');
+    await db.query('ROLLBACK');
     console.log(error);
   }
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
@@ -84,7 +84,7 @@ export async function updateCandidateNames(
     for (const [candidateId, candidateName] of Object.entries(
       candidateObjects
     )) {
-      const [result, fields] = await pool.query(
+      const [result, fields] = await db.query(
         `
         UPDATE candidate
         SET name = ?
@@ -112,7 +112,7 @@ export async function updateCandidateImageURL(
 
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `
             UPDATE candidate_media
             SET pathname = ?,
@@ -152,7 +152,7 @@ export async function updateCandidateVideoURL({
 
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `
             UPDATE candidate_media
             SET pathname = ?,
@@ -180,7 +180,7 @@ export async function deleteCandidate(candidateId: string, worldcupId: string) {
 
     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    const [result, fields] = await pool.query(
+    const [result, fields] = await db.query(
       `
         DELETE FROM candidate
         WHERE candidate_id = ?

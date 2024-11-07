@@ -14,7 +14,7 @@ interface Props {
   className: string;
 }
 
-export default function PickScreen({
+export default function WorldcupPickScreen({
   defaultCandidates,
   worldcup,
   startingRound,

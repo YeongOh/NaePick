@@ -2,7 +2,7 @@
 
 import { FieldPacket } from 'mysql2';
 import { CandidateWithStatistics } from '../types';
-import { pool } from '../database';
+import { db } from '../database';
 
 export async function getPaginationCandidateStatisticsByWorldcupId(
   worldcupId: string,
@@ -10,7 +10,7 @@ export async function getPaginationCandidateStatisticsByWorldcupId(
 ) {
   try {
     const [result, meta]: [CandidateWithStatistics[], FieldPacket[]] =
-      await pool.query(
+      await db.query(
         `WITH candidate_statistic AS (
       SELECT c.candidate_id AS candidateId, 
              c.name AS name,

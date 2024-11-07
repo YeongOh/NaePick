@@ -1,4 +1,6 @@
 import mysql from 'mysql2/promise';
+import { drizzle } from 'drizzle-orm/mysql2';
+import * as schema from './schema';
 
 // https://velog.io/@te-ing/Next.js-14-App-router-mysql-Too-many-connections-%EC%98%A4%EB%A5%98
 // https://dev.to/noclat/fixing-too-many-connections-errors-with-database-clients-stacking-in-dev-mode-with-next-js-3kpm
@@ -27,12 +29,29 @@ const registerService = (name: string, initFn: any) => {
   return initFn();
 };
 
-export const pool = registerService('mysql', () =>
-  mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: 3306,
-  })
-);
+// export const pool = registerService('mysql', () =>
+//   drizzle({
+//     client: mysql.createPool({
+//       host: process.env.DB_HOST,
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASSWORD,
+//       database: process.env.DB_DATABASE,
+//       port: Number(process.env.DB_PORT),
+//     }),
+//   })
+// );
+
+const poolConnection = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: Number(process.env.DB_PORT),
+});
+
+export const db = drizzle({
+  client: poolConnection,
+  schema,
+  mode: 'default',
+  casing: 'snake_case',
+});

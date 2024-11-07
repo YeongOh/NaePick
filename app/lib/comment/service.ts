@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { COMMENT_ID_LENGTH } from '@/app/constants';
-import { pool } from '../database';
+import { db } from '../database';
 import { nanoid } from 'nanoid';
 
 export async function createComment({
@@ -21,7 +21,7 @@ export async function createComment({
     let votedFor = null;
 
     if (votedCandidateId) {
-      const [result, fields] = await pool.query(
+      const [result, fields] = await db.query(
         `SELECT name FROM candidate WHERE candidate_id = ?`,
         [votedCandidateId]
       );
@@ -31,7 +31,7 @@ export async function createComment({
     }
     const isAnonymous = userId ? false : true;
 
-    await pool.query(
+    await db.query(
       `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous, voted_candidate_id) 
       VALUES (?, ?, ?, ?, ?, ?)`,
       [
@@ -62,7 +62,7 @@ export async function createComment({
 
 export async function deleteComment(commentId: string) {
   try {
-    await pool.query(
+    await db.query(
       `DELETE FROM comment
             WHERE comment_id = ?`,
       [commentId]
@@ -81,7 +81,7 @@ export async function updateComment({
   text: string;
 }) {
   try {
-    await pool.query(
+    await db.query(
       `UPDATE comment
        SET text = ?
        WHERE comment_id = ?`,
