@@ -16,7 +16,7 @@ export default function CardGridEmpty() {
         </div>
         <div className='flex flex-col w-48'>
           <LinkButton
-            href='/worldcups/create'
+            href='/wc/create'
             variant='primary'
             size='medium'
             className='mb-2'

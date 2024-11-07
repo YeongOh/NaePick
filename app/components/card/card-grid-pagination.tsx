@@ -1,9 +1,9 @@
 'use client';
 
-import { WorldcupCard } from '@/app/lib/definitions';
+import { WorldcupCard } from '@/app/lib/types';
 import Card from './card';
 import { useEffect, useState } from 'react';
-import Pagination from '../pagination/pagination';
+import Pagination from '../pagination';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -48,7 +48,7 @@ export default function CardGridPagination({
   }, [dropdownMenuIndex]);
 
   const handlePageNumberClick = async (pageNumber: number) => {
-    router.push(`/worldcups/users/${userId}/${pageNumber}`, {
+    router.push(`/wc/users/${userId}/${pageNumber}`, {
       scroll: false,
     });
   };

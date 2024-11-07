@@ -1,8 +1,8 @@
 'use server';
 
 import { FieldPacket } from 'mysql2';
-import { CandidateWithStatistics } from '../definitions';
-import { pool } from '../db';
+import { CandidateWithStatistics } from '../types';
+import { pool } from '../database';
 
 export async function getPaginationCandidateStatisticsByWorldcupId(
   worldcupId: string,

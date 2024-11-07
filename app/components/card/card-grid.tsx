@@ -1,6 +1,6 @@
 'use client';
 
-import { WorldcupCard } from '@/app/lib/definitions';
+import { WorldcupCard } from '@/app/lib/types';
 import Card from './card';
 import { forwardRef } from 'react';
 

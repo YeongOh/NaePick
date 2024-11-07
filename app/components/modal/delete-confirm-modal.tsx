@@ -1,7 +1,6 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import toast from 'react-hot-toast';
 
 interface Props {
   open: boolean;

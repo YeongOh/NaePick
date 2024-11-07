@@ -1,5 +1,5 @@
-import { pool } from '@/app/lib/db';
-import { SessionData, sessionOptions } from '@/app/lib/definitions';
+import { pool } from '@/app/lib/database';
+import { SessionData, sessionOptions } from '@/app/lib/types';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 

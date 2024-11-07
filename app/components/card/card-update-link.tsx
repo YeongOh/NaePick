@@ -1,10 +1,10 @@
 'use client';
 
-import { deleteWorldcup } from '@/app/lib/actions/worldcups/delete';
 import Link from 'next/link';
 import { useState } from 'react';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import toast from 'react-hot-toast';
+import { deleteWorldcup } from '@/app/lib/worldcups/service';
 
 interface Props {
   worldcupId: string;
@@ -37,7 +37,7 @@ export default function CardUpdateLink({ worldcupId }: Props) {
             삭제 하기
           </button>
           <Link
-            href={`/worldcups/${worldcupId}/update-info`}
+            href={`/wc/edit/${worldcupId}`}
             className='card-button text-center card-link w-20 text-base font-semibold rounded  border hover:bg-primary-600 active:bg-primary-700 transition-colors text-white bg-primary-500 py-2 px-1'
           >
             수정하기

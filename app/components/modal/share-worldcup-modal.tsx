@@ -25,7 +25,7 @@ export default function ShareWorldcupModal({
   }, [open]);
 
   const handleCopyShareLInk = async () => {
-    await navigator.clipboard.writeText(`${DOMAIN}/worldcups/${worldcupId}`);
+    await navigator.clipboard.writeText(`${DOMAIN}/wc/${worldcupId}`);
     toast.success('복사되었습니다.');
   };
 
@@ -55,7 +55,7 @@ export default function ShareWorldcupModal({
                     onBlur={() => {
                       focusedRef.current = null;
                     }}
-                    defaultValue={`${DOMAIN}/worldcups/${worldcupId}`}
+                    defaultValue={`${DOMAIN}/wc/${worldcupId}`}
                     readOnly
                   />
                   <button

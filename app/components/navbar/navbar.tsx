@@ -1,9 +1,9 @@
-import { getSession } from '@/app/lib/actions/session';
+import { getSession } from '@/app/lib/session';
 import Link from 'next/link';
 import NavbarLink from './navbar-link';
 import NavbarProfileImage from './navbar-profile-image';
 import LinkButton from '../ui/link-button';
-import { Pickaxe } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 
 interface Props {
   screenMode?: boolean;
@@ -28,10 +28,12 @@ export default async function Navbar({ screenMode }: Props) {
             }`}
             href={'/'}
           >
-            <Pickaxe className='mr-1' />
+            <Trophy className='mr-1' />
             NaePick
           </Link>
-          <NavbarLink href='/category'>카테고리</NavbarLink>
+          {screenMode ? null : (
+            <NavbarLink href='/category'>카테고리</NavbarLink>
+          )}
         </div>
         <div
           className={`flex gap-4 items-center text-base font-semibold text-slate-600 ${
@@ -40,7 +42,7 @@ export default async function Navbar({ screenMode }: Props) {
         >
           <div className='w-36 flex'>
             <LinkButton
-              href={`/worldcups/create`}
+              href={`/wc/create`}
               variant={session?.userId ? 'primary' : 'ghost'}
               size='small'
             >
@@ -58,7 +60,7 @@ export default async function Navbar({ screenMode }: Props) {
           ) : (
             <>
               <div className='w-24 flex'>
-                <LinkButton href={`/signin`} variant='primary' size='small'>
+                <LinkButton href={`/auth/login`} variant='primary' size='small'>
                   로그인
                 </LinkButton>
               </div>

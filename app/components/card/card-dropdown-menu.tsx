@@ -22,7 +22,7 @@ export default function CardDropdownMenu({
           <ul className='absolute right-0 border bg-white rounded-lg flex flex-col w-36 text-left text-base shadow cursor-pointer text-slate-700 p-2 z-50 animate-modalTransition'>
             <Link
               className='dropdown-button p-2 my-0.5 hover:bg-primary-100 flex items-center gap-2 rounded active:bg-primary-200'
-              href={`/worldcups/${worldcupId}/stats`}
+              href={`/wc/${worldcupId}/stats`}
             >
               <ChartNoAxesColumnDecreasing size='1.2rem' color='#334155' />
               랭킹 보기

@@ -1,13 +1,8 @@
 'use server';
 
 import { FieldPacket } from 'mysql2/promise';
-import {
-  WorldcupCard,
-  Worldcup,
-  Category,
-  InfiniteScrollData,
-} from '../definitions';
-import { pool } from '../db';
+import { WorldcupCard, Worldcup, Category, InfiniteScrollData } from '../types';
+import { pool } from '../database';
 
 export async function getInfinitePopularWorldcupCards(cursor: number | null) {
   try {
@@ -420,27 +415,6 @@ export async function getPaginationWorldcupsByUserId(
               ORDER BY w.created_at DESC
               LIMIT 10 OFFSET ?;`,
       [userId, (pageNumber - 1) * 10]
-    );
-
-    return result;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export async function getAllCategories() {
-  try {
-    const [result, meta]: [
-      (Category & { categoryCount: number })[],
-      FieldPacket[]
-    ] = await pool.query(
-      `SELECT c.category_id as categoryId,
-              c.name as name,
-              COALESCE(wc.category_count, 0) as categoryCount
-      FROM category c
-      LEFT JOIN
-       (SELECT w.category_id, count(w.category_id) AS category_count
-       FROM worldcup w GROUP BY w.category_id) wc on wc.category_id = c.category_id;`
     );
 
     return result;

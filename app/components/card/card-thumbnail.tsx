@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import { WorldcupCard } from '@/app/lib/definitions';
-import ResponsiveThumbnailImage from '../thumbnail/responsive-thumbnail-image';
+import { WorldcupCard } from '@/app/lib/types';
+import ThumbnailImage from '../ThumbnailImage';
 
 interface Props {
   worldcupCard: WorldcupCard;
@@ -24,7 +24,7 @@ export default function CardThumbnail({ worldcupCard }: Props) {
         {leftCandidatePathname ? (
           <>
             <div className='relative w-1/2 overflow-hidden sm:rounded-tl-xl sm:rounded-bl-xl'>
-              <ResponsiveThumbnailImage
+              <ThumbnailImage
                 pathname={leftCandidatePathname}
                 name={leftCandidateName}
                 mediaType={leftCandidateMediaType}
@@ -46,7 +46,7 @@ export default function CardThumbnail({ worldcupCard }: Props) {
         )}
         {rightCandidatePathname ? (
           <div className='relative w-1/2 overflow-hidden sm:rounded-tr-xl sm:rounded-br-xl'>
-            <ResponsiveThumbnailImage
+            <ThumbnailImage
               pathname={rightCandidatePathname}
               name={rightCandidateName}
               mediaType={rightCandidateMediaType}

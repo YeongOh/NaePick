@@ -1,8 +1,8 @@
 'use server';
 
 import { FieldPacket } from 'mysql2';
-import { Comment, InfiniteScrollData } from '../definitions';
-import { pool } from '../db';
+import { Comment, InfiniteScrollData } from '../types';
+import { pool } from '../database';
 
 export async function getCommentsByWorldcupId(
   worldcupId: string,

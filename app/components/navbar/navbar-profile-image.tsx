@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ProfileImage from '../ui/profile-image';
+import Avatar from '../ui/Avatar';
 import NavbarDropdownMenu from './navbar-dropdown-menu';
 
 interface Props {
@@ -45,7 +45,7 @@ export default function NavbarProfileImage({
         className='rounded-full navbar-dropdown-menu-toggle font-normal hover:outline hover:outline-primary-500 active:outline-primary-700'
         onClick={() => setOpenDropdownMenu((prev) => !prev)}
       >
-        <ProfileImage
+        <Avatar
           profilePathname={profilePathname}
           alt={nickname}
           size='medium'

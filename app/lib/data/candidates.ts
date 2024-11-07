@@ -1,8 +1,8 @@
 'use server';
 
 import { FieldPacket } from 'mysql2';
-import { pool } from '../db';
-import { Candidate } from '../definitions';
+import { pool } from '../database';
+import { Candidate } from '../types';
 
 export async function getRandomCandidatesByWorldcupId(
   worldcupId: string,

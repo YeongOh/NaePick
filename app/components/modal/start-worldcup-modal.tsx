@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import ToggleableP from '../ui/toggleable-p';
-import ProfileImage from '../ui/profile-image';
+import Avatar from '../ui/Avatar';
 
 interface Props {
   open: boolean;
@@ -78,7 +78,7 @@ export default function StartWorldcupModal({
             >
               <div>
                 <div className='mb-2 flex items-center'>
-                  <ProfileImage
+                  <Avatar
                     profilePathname={profilePathname}
                     className='mr-2'
                     size='small'

@@ -1,4 +1,4 @@
-import { translatePublicity, WorldcupCard } from '@/app/lib/definitions';
+import { translatePublicity, WorldcupCard } from '@/app/lib/types';
 import CardThumbnail from './card-thumbnail';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -9,7 +9,7 @@ import CardUpdateLink from './card-update-link';
 import { useRouter } from 'next/navigation';
 import { forwardRef, useState } from 'react';
 import MyImage from '../ui/my-image';
-import ProfileImage from '../ui/profile-image';
+import Avatar from '../ui/Avatar';
 
 export interface CardProps {
   worldcupCard: WorldcupCard;
@@ -57,13 +57,13 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
         }
       }}
       onClick={(e) => {
-        router.push(`/worldcups/${worldcupCard.worldcupId}`);
+        router.push(`/wc/${worldcupCard.worldcupId}`);
       }}
     >
       <div>
         <Link
           tabIndex={-1}
-          href={`/worldcups/${worldcupCard.worldcupId}`}
+          href={`/wc/${worldcupCard.worldcupId}`}
           onClick={(e) => e.stopPropagation()}
         >
           <CardThumbnail worldcupCard={worldcupCard} />
@@ -71,14 +71,14 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
         <div className='flex items-end justify-between p-1 md:p-0'>
           <div className='flex-1'>
             <div className='flex flex-start mt-2'>
-              <ProfileImage
+              <Avatar
                 alt={worldcupCard.nickname}
                 profilePathname={worldcupCard.profilePathname}
                 size='small'
                 className='mt-1 mr-2'
               />
               <div className='flex-1'>
-                <Link href={`/worldcups/${worldcupCard.worldcupId}`}>
+                <Link href={`/wc/${worldcupCard.worldcupId}`}>
                   <h2
                     className='text-base font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer mb-1'
                     title={worldcupCard.title}
