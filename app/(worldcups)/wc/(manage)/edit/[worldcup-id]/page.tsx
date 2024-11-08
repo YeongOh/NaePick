@@ -5,7 +5,7 @@ import Navbar from '@/app/components/navbar/navbar';
 import WorldcupFormTab from '../../components/WorldcupFormTab';
 import { getAllCategories } from '@/app/lib/category/service';
 import WorldcupForm from '../../components/WorldcupForm';
-import { findWorldcupFormByWorldcupId } from '@/app/lib/worldcups/service';
+import { getWorldcupForm } from '@/app/lib/worldcups/service';
 
 interface Props {
   params: { 'worldcup-id': string };
@@ -14,7 +14,7 @@ interface Props {
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
   const [worldcups, session, categories] = await Promise.all([
-    findWorldcupFormByWorldcupId(worldcupId),
+    getWorldcupForm(worldcupId),
     getSession(),
     getAllCategories(),
   ]);

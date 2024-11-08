@@ -1,10 +1,9 @@
-'use server';
-
+import 'server-only';
 import { db } from '../database';
 import { worldcups } from '../database/schema';
 import { eq } from 'drizzle-orm';
 
-export async function veryifyWorldcupOwner(worldcupId: string, userId: string) {
+export async function verifyWorldcupOwner(worldcupId: string, userId: string) {
   try {
     const result = await db
       .select({ ownerId: worldcups.userId })

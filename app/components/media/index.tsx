@@ -7,26 +7,17 @@ interface Props {
   lowerHeight?: boolean;
   pathname: string;
   name: string;
-  mediaType: MediaType;
+  mediaType: string;
   allowVideoControl?: boolean;
   onYouTubePlay?: (e: YouTubeEvent) => void;
   onYouTubeEnd?: (e: YouTubeEvent) => void;
 }
 
 const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
-  {
-    lowerHeight,
-    pathname,
-    name,
-    mediaType,
-    allowVideoControl,
-    onYouTubePlay,
-  }: Props,
+  { lowerHeight, pathname, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
   ref
 ) {
-  const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer | null>(
-    null
-  );
+  const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer | null>(null);
 
   let youtubePathname = pathname;
   let youtubeStartTime = 0;
@@ -47,41 +38,28 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
   return (
     <>
       {mediaType === 'cdn_video' && (
-        <div className='max-w-fit size-full'>
+        <div className="max-w-fit size-full">
           <video
-            className='w-full h-full object-contain'
+            className="w-full h-full object-contain"
             autoPlay
             playsInline
             loop
             muted
             controls={allowVideoControl}
           >
-            <source
-              src={`https://cdn.naepick.co.kr/${pathname}`}
-              type='video/mp4'
-            />
+            <source src={`https://cdn.naepick.co.kr/${pathname}`} type="video/mp4" />
           </video>
         </div>
       )}
       {mediaType === 'cdn_img' && (
-        <div className='max-w-fit size-full'>
-          <MyImage
-            className='object-contain size-full'
-            src={`${pathname}?w=1920&h=1760`}
-            alt={name}
-          />
+        <div className="max-w-fit size-full">
+          <MyImage className="object-contain size-full" src={`${pathname}?w=1920&h=1760`} alt={name} />
         </div>
       )}
       {mediaType === 'youtube' && (
-        <div
-          className={`size-full flex justify-center ${
-            lowerHeight ? '' : 'items-center'
-          }`}
-        >
+        <div className={`size-full flex justify-center ${lowerHeight ? '' : 'items-center'}`}>
           <YouTube
-            className={`w-full max-h-full ${
-              lowerHeight ? 'h-[85%]' : 'h-full'
-            }`}
+            className={`w-full max-h-full ${lowerHeight ? 'h-[85%]' : 'h-full'}`}
             opts={{
               height: '100%',
               width: '100%',
@@ -98,7 +76,7 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
             ref={ref}
             id={youtubePathname}
             videoId={youtubePathname}
-            title='YouTube video player'
+            title="YouTube video player"
             onPlay={(e: YouTubeEvent) => {
               if (!youTubePlayer) {
                 setYouTubePlayer(e.target);
@@ -118,18 +96,14 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'chzzk' && (
-        <div
-          className={`w-full ${
-            lowerHeight ? 'h-[85%]' : 'h-full'
-          } flex items-center justify-center`}
-        >
+        <div className={`w-full ${lowerHeight ? 'h-[85%]' : 'h-full'} flex items-center justify-center`}>
           <iframe
-            className='size-full'
+            className="size-full"
             onClick={(e) => e.stopPropagation()}
             src={`https://chzzk.naver.com/embed/clip/${pathname}`}
-            title='CHZZK Player'
-            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-            referrerPolicy='strict-origin-when-cross-origin'
+            title="CHZZK Player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />
         </div>

@@ -1,195 +1,166 @@
 'use server';
 
-import { db } from '@/app/lib/database';
 import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
-import {
-  CANDIDATE_ID_LENGTH,
-  CANDIDATE_NAME_MAX_LENGTH,
-} from '@/app/constants';
+import { OBJECT_ID_LENGTH } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
 import { MediaType } from '@/app/lib/types';
-import { validateWorldcupOwnership } from '@/app/lib/worldcups/auth';
+import { verifyWorldcupOwner } from '@/app/lib/worldcups/auth';
+import path from 'path';
+import { deleteImage, deleteVideo, getSignedUrlForImage } from '@/app/lib/storage';
+import {
+  createCandidate,
+  deleteCandidate,
+  updateCandidate,
+  updateCandidateNames,
+} from '@/app/lib/candidates/service';
+import { mp4toJpg } from '@/app/utils';
 
-interface CandidateParameters {
-  worldcupId: string;
-  candidateName: string;
-  candidatePathname: string;
-  mediaType: MediaType;
-  thumbnailURL?: string;
+export async function getSignedUrlForCandidateImage(worldcupId: string, fileType: string, filePath: string) {
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('올바르지 않은 접근입니다.');
+
+  const extname = path.extname(filePath);
+
+  const objectId = nanoid(OBJECT_ID_LENGTH);
+  const key = `worldcups/${worldcupId}/${objectId}${extname}`;
+
+  const url = await getSignedUrlForImage(key, fileType);
+  return { url, path: key };
 }
 
-export async function createCandidate({
+export async function createCandidateAction({
   worldcupId,
-  candidateName,
-  candidatePathname,
+  name,
+  path,
   mediaType,
-  thumbnailURL,
-}: CandidateParameters) {
-  try {
-    const session = await getSession();
-    if (!session?.userId) {
-      throw new Error('로그인을 해주세요.');
-    }
+  thumbnailUrl,
+}: {
+  worldcupId: string;
+  name: string;
+  path: string;
+  mediaType: string;
+  thumbnailUrl?: string;
+}) {
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인을 해주세요.');
 
-    await validateWorldcupOwnership(worldcupId, session.userId);
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('잘못된 접근입니다.');
 
-    if (candidateName.length > CANDIDATE_NAME_MAX_LENGTH) {
-      throw new Error('후보 이름이 글자 수 제한을 초과했습니다.');
-    }
-
-    const candidateId = nanoid(CANDIDATE_ID_LENGTH);
-
-    await db.query('START TRANSACTION');
-    const [result1, fields1] = await db.query(
-      `
-        INSERT INTO candidate
-        (candidate_id, worldcup_id, name)
-        VALUES
-        (?, ?, ?)
-        `,
-      [candidateId, worldcupId, candidateName]
-    );
-    const [result, fields] = await db.query(
-      `
-        INSERT INTO candidate_media
-        (candidate_id, pathname, media_type_id, thumbnail_url)
-        VALUES
-        (?, ?, (SELECT media_type_id FROM media_type WHERE type = ?), ?)
-        `,
-      [candidateId, candidatePathname, mediaType, thumbnailURL ?? null]
-    );
-    await db.query('COMMIT');
-  } catch (error) {
-    await db.query('ROLLBACK');
-    console.log(error);
-  }
+  await createCandidate({ worldcupId, name, path, mediaType, thumbnailUrl });
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
 }
 
-export async function updateCandidateNames(
+export async function updateCandidateNamesAction(worldcupId: string, formData: FormData) {
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인을 해주세요.');
+
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('잘못된 접근입니다.');
+
+  const formEntires = Object.fromEntries(formData);
+  const candidateNames = Object.entries(formEntires).map(([id, name]) => ({ id, name: String(name) }));
+  await updateCandidateNames(candidateNames);
+  revalidatePath(`/wc/edit-candidates/${worldcupId}`);
+}
+
+export async function deleteCandidateObject(
+  path: string,
   worldcupId: string,
-  candidateObjects: {
-    [k: string]: FormDataEntryValue;
-  }
+  mediaType: 'cdn_img' | 'cdn_video'
 ) {
-  try {
-    const session = await getSession();
-    if (!session?.userId) {
-      throw new Error('로그인을 해주세요.');
-    }
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인을 해주세요.');
 
-    await validateWorldcupOwnership(worldcupId, session.userId);
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('잘못된 접근입니다.');
 
-    for (const [candidateId, candidateName] of Object.entries(
-      candidateObjects
-    )) {
-      const [result, fields] = await db.query(
-        `
-        UPDATE candidate
-        SET name = ?
-        WHERE candidate_id = ?
-        `,
-        [candidateName, candidateId]
-      );
-    }
-  } catch (error) {
-    console.log(error);
+  if (mediaType === 'cdn_img') {
+    await deleteImage(path);
+    return;
   }
+
+  if (mediaType === 'cdn_video') {
+    await deleteVideo(path);
+    await deleteImage(mp4toJpg(path));
+    return;
+  }
+}
+
+export async function deleteCandidateAction(candidateId: string, worldcupId: string) {
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인을 해주세요.');
+
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('잘못된 접근입니다.');
+
+  await deleteCandidate(candidateId);
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
 }
 
-export async function updateCandidateImageURL(
-  worldcupId: string,
-  candidateId: string,
-  candidatePathname: string
-) {
-  try {
-    const session = await getSession();
-    if (!session?.userId) {
-      throw new Error('로그인을 해주세요.');
-    }
-
-    await validateWorldcupOwnership(worldcupId, session.userId);
-
-    const [result, fields] = await db.query(
-      `
-            UPDATE candidate_media
-            SET pathname = ?,
-                media_type_id =   
-                (SELECT media_type_id
-                FROM media_type
-                WHERE type = ?),
-                thumbnail_url = ?
-            WHERE candidate_id = ?
-            `,
-      [candidatePathname, 'cdn_img', null, candidateId]
-    );
-  } catch (error) {
-    console.log(error);
-  }
-  revalidatePath(`/wc/edit-candidates/${worldcupId}`);
-}
-
-export async function updateCandidateVideoURL({
+export async function updateCandidateAction({
   worldcupId,
   candidateId,
-  candidatePathname,
+  path,
   mediaType,
-  thumbnailURL = null,
+  thumbnailUrl,
 }: {
   worldcupId: string;
   candidateId: string;
-  candidatePathname: string;
+  path: string;
   mediaType: string;
-  thumbnailURL?: string | null;
+  thumbnailUrl?: string;
 }) {
-  try {
-    const session = await getSession();
-    if (!session?.userId) {
-      throw new Error('로그인을 해주세요.');
-    }
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인을 해주세요.');
 
-    await validateWorldcupOwnership(worldcupId, session.userId);
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('잘못된 접근입니다.');
 
-    const [result, fields] = await db.query(
-      `
-            UPDATE candidate_media
-            SET pathname = ?,
-                media_type_id =   
-                (SELECT media_type_id
-                FROM media_type
-                WHERE type = ?),
-                thumbnail_url = ?
-            WHERE candidate_id = ?
-            `,
-      [candidatePathname, mediaType, thumbnailURL, candidateId]
-    );
-  } catch (error) {
-    console.log(error);
-  }
+  await updateCandidate({ candidateId, path, mediaType, thumbnailUrl });
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
 }
 
-export async function deleteCandidate(candidateId: string, worldcupId: string) {
-  try {
-    const session = await getSession();
-    if (!session?.userId) {
-      throw new Error('로그인을 해주세요.');
-    }
+// export async function updateCandidateVideoURL({
+//   worldcupId,
+//   candidateId,
+//   candidatePathname,
+//   mediaType,
+//   thumbnailURL = null,
+// }: {
+//   worldcupId: string;
+//   candidateId: string;
+//   candidatePathname: string;
+//   mediaType: string;
+//   thumbnailURL?: string | null;
+// }) {
+//   try {
+//     const session = await getSession();
+//     if (!session?.userId) {
+//       throw new Error('로그인을 해주세요.');
+//     }
 
-    await validateWorldcupOwnership(worldcupId, session.userId);
+//     await validateWorldcupOwnership(worldcupId, session.userId);
 
-    const [result, fields] = await db.query(
-      `
-        DELETE FROM candidate
-        WHERE candidate_id = ?
-        `,
-      [candidateId]
-    );
-  } catch (error) {
-    console.log(error);
-    throw new Error('후보 삭제 실패...');
-  }
-  revalidatePath(`/wc/edit-candidates/${worldcupId}`);
-}
+//     const [result, fields] = await db.query(
+//       `
+//             UPDATE candidate_media
+//             SET pathname = ?,
+//                 media_type_id =
+//                 (SELECT media_type_id
+//                 FROM media_type
+//                 WHERE type = ?),
+//                 thumbnail_url = ?
+//             WHERE candidate_id = ?
+//             `,
+//       [candidatePathname, mediaType, thumbnailURL, candidateId]
+//     );
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
+// }

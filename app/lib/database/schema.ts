@@ -1,4 +1,6 @@
 import {
+  CANDIDATE_ID_LENGTH,
+  CANDIDATE_NAME_MAX_LENGTH,
   NICKNAME_MAX_LENGTH,
   USER_ID_LENGTH,
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
@@ -20,6 +22,11 @@ export const worldcups = table('worldcup', {
   updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
 });
 
+export const categories = table('category', {
+  id: smallint().primaryKey().autoincrement(),
+  name: varchar({ length: 20 }).notNull().unique(),
+});
+
 export const users = table('user', {
   id: varchar({ length: USER_ID_LENGTH }).primaryKey(),
   nickname: varchar({ length: NICKNAME_MAX_LENGTH }).notNull().unique(),
@@ -30,7 +37,22 @@ export const users = table('user', {
   updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
 });
 
-export const categories = table('category', {
+export const candidates = table('candidate', {
+  id: varchar({ length: CANDIDATE_ID_LENGTH }).primaryKey(),
+  name: varchar({ length: CANDIDATE_NAME_MAX_LENGTH }).notNull(),
+  path: varchar({ length: 255 }).notNull(),
+  thumbnailUrl: varchar({ length: 255 }),
+  worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
+    .notNull()
+    .references(() => worldcups.id, { onDelete: 'cascade' }),
+  mediaTypeId: smallint()
+    .notNull()
+    .references(() => mediaTypes.id),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
+});
+
+export const mediaTypes = table('media_type', {
   id: smallint().primaryKey().autoincrement(),
   name: varchar({ length: 20 }).notNull().unique(),
 });

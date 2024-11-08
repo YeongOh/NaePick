@@ -1,10 +1,4 @@
 'use server';
-
-import { revalidatePath } from 'next/cache';
-
-import { validateWorldcupOwnership } from './auth';
-import { deleteImage, deleteVideo, listAllS3ImgObjects, listAllS3VideoObjects } from '../storage';
-import { getSession } from '../session';
 import { worldcups } from '../database/schema';
 import { nanoid } from 'nanoid';
 import { WORLDCUP_ID_LENGTH } from '@/app/constants';
@@ -58,7 +52,7 @@ export async function updateWorldcup({
   }
 }
 
-export async function findWorldcupFormByWorldcupId(worldcupId: string) {
+export async function getWorldcupForm(worldcupId: string) {
   try {
     return await db
       .select({

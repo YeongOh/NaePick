@@ -10,7 +10,7 @@ import {
 import { getSession } from '@/app/lib/session';
 import { createWorldcup } from '@/app/lib/worldcups/service';
 
-export const WorldcupFormSchema = z.object({
+const WorldcupFormSchema = z.object({
   title: z
     .string()
     .min(WORLDCUP_TITLE_MIN_LENGTH, {

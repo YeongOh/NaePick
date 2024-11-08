@@ -1,5 +1,5 @@
 import { db } from '../lib/database';
-import { categories } from '../lib/database/schema';
+import { categories, mediaTypes } from '../lib/database/schema';
 
 export async function GET() {
   try {
@@ -17,6 +17,10 @@ export async function GET() {
       'youtubers',
       'other',
     ].forEach(async (name) => await db.insert(categories).values({ name }));
+
+    ['cdn_img', 'cdn_video', 'youtube', 'chzzk', 'imgur'].forEach(
+      async (name) => await db.insert(mediaTypes).values({ name })
+    );
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {
