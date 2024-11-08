@@ -1,15 +1,13 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import bcrypt from 'bcryptjs';
-import { FieldPacket, RowDataPacket } from 'mysql2';
-import { redirect } from 'next/navigation';
-import { User } from '@/app/lib/types';
-import { db } from '@/app/lib/database';
-import { createSession } from '@/app/lib/session';
+import { z } from "zod";
+import { redirect } from "next/navigation";
+import { createSession } from "@/app/lib/session";
+import { findUserWithEmail } from "@/app/lib/auth/service";
+import { verifyPassword } from "@/app/lib/auth/utils";
 
 const FormSchema = z.object({
-  email: z.string().email({ message: '올바른 이메일이 아닙니다.' }),
+  email: z.string().email({ message: "올바른 이메일이 아닙니다." }),
   password: z.string(),
 });
 
@@ -21,64 +19,49 @@ export type SigninState = {
   message?: string | null;
 };
 
-export async function signin(state: SigninState, formData: FormData) {
+export async function loginAction(state: SigninState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
+    email: formData.get("email"),
+    password: formData.get("password"),
   });
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: '누락된 항목이 있습니다.',
+      message: "필수 항목이 누락되었습니다.",
     };
   }
 
   const { email, password } = validatedFields.data;
 
   try {
-    const [result, fields]: [
-      Pick<
-        User,
-        'userId' | 'email' | 'password' | 'nickname' | 'profilePathname'
-      >[] &
-        RowDataPacket[],
-      FieldPacket[]
-    ] = await db.query(
-      `SELECT user_id AS userId,
-              nickname, password, email, profile_pathname as profilePathname
-      FROM user
-      WHERE email = ?;`,
-      [email]
-    );
-
+    const result = await findUserWithEmail(email);
+    console.log(result);
     const user = result?.[0];
-    if (!user) {
+    if (!user)
       return {
         errors: {
-          email: ['존재하지 않는 이메일입니다.'],
+          email: ["등록되지 않은 이메일입니다."],
         },
-        message: '로그인에 실패했습니다. (e1)',
       };
-    }
 
-    if ((await bcrypt.compare(password, user.password)) === false) {
+    const isValidPassword = await verifyPassword(password, user.password);
+    if (!isValidPassword)
       return {
         errors: {
-          password: ['패스워드가 틀렸습니다.'],
+          password: ["비밀번호가 틀렸습니다."],
         },
-        message: '로그인에 실패했습니다. (e2)',
       };
-    }
 
-    const { userId, nickname, profilePathname } = user;
+    const { userId, nickname, profilePath } = user;
 
-    await createSession({ userId, nickname, profilePathname });
+    await createSession({ userId, nickname, profilePath });
   } catch (error) {
+    console.error(error);
     return {
-      message: '로그인에 실패했습니다. (e4).',
+      message: "로그인에 실패하였습니다.",
     };
   }
 
-  redirect('/');
+  redirect("/");
 }

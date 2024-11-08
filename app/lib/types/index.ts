@@ -1,5 +1,5 @@
-import { RowDataPacket } from 'mysql2';
-import { SessionOptions } from 'iron-session';
+import { RowDataPacket } from "mysql2";
+import { SessionOptions } from "iron-session";
 
 export interface User extends RowDataPacket {
   userId: string;
@@ -81,57 +81,57 @@ export interface MatchResult {
   loserCandidateId: string;
 }
 
-export type MediaType = 'cdn_img' | 'cdn_video' | 'youtube' | 'chzzk';
+export type MediaType = "cdn_img" | "cdn_video" | "youtube" | "chzzk";
 
-export type Publicity = 'public' | 'private' | 'unlisted';
+export type Publicity = "public" | "private" | "unlisted";
 
 export const publicityText: { [key in Publicity]: string } = {
-  public: '모두에게 공개 됩니다.',
-  unlisted: '링크를 가지고 있는 사용자만 볼 수 있습니다.',
-  private: '만든 사용자만 볼 수 있습니다.',
+  public: "모두에게 공개 됩니다.",
+  unlisted: "링크를 가지고 있는 사용자만 볼 수 있습니다.",
+  private: "만든 사용자만 볼 수 있습니다.",
 };
 
 export function translateCategory(categoryName: string): string {
   switch (categoryName) {
-    case 'animations':
-      return '애니메이션';
-    case 'athletes':
-      return '운동선수';
-    case 'celebrities':
-      return '연예인';
-    case 'idols':
-      return '아이돌';
-    case 'other':
-      return '기타';
-    case 'actors':
-      return '배우';
-    case 'streamers':
-      return '스트리머';
-    case 'songs':
-      return '노래';
-    case 'manga':
-      return '만화';
-    case 'singers':
-      return '가수';
-    case 'webtoons':
-      return '웹툰';
-    case 'youtubers':
-      return '유튜버';
+    case "animations":
+      return "애니메이션";
+    case "athletes":
+      return "운동선수";
+    case "celebrities":
+      return "연예인";
+    case "idols":
+      return "아이돌";
+    case "other":
+      return "기타";
+    case "actors":
+      return "배우";
+    case "streamers":
+      return "스트리머";
+    case "songs":
+      return "노래";
+    case "manga":
+      return "만화";
+    case "singers":
+      return "가수";
+    case "webtoons":
+      return "웹툰";
+    case "youtubers":
+      return "유튜버";
     default:
-      return '오류';
+      return "오류";
   }
 }
 
 export function translatePublicity(publicity: string): string {
   switch (publicity) {
-    case 'public':
-      return '전체 공개';
-    case 'unlisted':
-      return '미등록';
-    case 'private':
-      return '비공개';
+    case "public":
+      return "전체 공개";
+    case "unlisted":
+      return "미등록";
+    case "private":
+      return "비공개";
     default:
-      return '오류';
+      return "오류";
   }
 }
 
@@ -141,10 +141,10 @@ const sevenDays = 60 * 60 * 24 * 7;
 
 export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_PASSWORD as string,
-  cookieName: 'iron',
+  cookieName: "iron",
   ttl: sevenDays,
   cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: sevenDays - 60,
   },
@@ -153,5 +153,5 @@ export const sessionOptions: SessionOptions = {
 export interface SessionData {
   userId: string;
   nickname: string;
-  profilePathname: string | null;
+  profilePath: string | null;
 }

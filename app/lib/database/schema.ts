@@ -1,32 +1,36 @@
 import {
-  int,
-  mysqlEnum,
-  mysqlTable,
-  smallint,
-  timestamp,
-  unique,
-  varchar,
-} from 'drizzle-orm/mysql-core';
+  NICKNAME_MAX_LENGTH,
+  USER_ID_LENGTH,
+  WORLDCUP_DESCRIPTION_MAX_LENGTH,
+  WORLDCUP_ID_LENGTH,
+  WORLDCUP_TITLE_MAX_LENGTH,
+} from '@/app/constants';
+import { mysqlEnum, mysqlTable as table, smallint, timestamp, varchar } from 'drizzle-orm/mysql-core';
 
-export const worldcup = mysqlTable('worldcup', {
-  id: varchar({ length: 10 }).primaryKey(),
-  title: varchar({ length: 10 }).notNull(),
-  description: varchar({ length: 500 }),
-  publicity: mysqlEnum(['public', 'private', 'unlisted'])
+export const worldcups = table('worldcup', {
+  id: varchar({ length: WORLDCUP_ID_LENGTH }).primaryKey(),
+  title: varchar({ length: WORLDCUP_TITLE_MAX_LENGTH }).notNull(),
+  description: varchar({ length: WORLDCUP_DESCRIPTION_MAX_LENGTH }),
+  publicity: mysqlEnum(['public', 'private', 'unlisted']).notNull().default('public'),
+  userId: varchar({ length: USER_ID_LENGTH }).references(() => users.id, { onDelete: 'set null' }),
+  categoryId: smallint()
     .notNull()
-    .default('public'),
-  userId: varchar({ length: 10 }),
-  categoryId: smallint().notNull(),
+    .references(() => categories.id),
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
 });
 
-export const user = mysqlTable('user', {
-  id: varchar({ length: 10 }).primaryKey(),
-  nickname: varchar({ length: 20 }).notNull().unique(),
+export const users = table('user', {
+  id: varchar({ length: USER_ID_LENGTH }).primaryKey(),
+  nickname: varchar({ length: NICKNAME_MAX_LENGTH }).notNull().unique(),
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }).notNull(),
   profilePath: varchar({ length: 50 }),
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
+});
+
+export const categories = table('category', {
+  id: smallint().primaryKey().autoincrement(),
+  name: varchar({ length: 20 }).notNull().unique(),
 });

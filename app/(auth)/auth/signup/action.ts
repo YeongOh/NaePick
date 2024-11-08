@@ -10,7 +10,7 @@ import {
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { createSession } from '@/app/lib/session';
-import { findDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
+import { findUsersWithDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
 import { createUser } from '@/app/lib/auth/service';
 
 const FormSchema = z
@@ -63,7 +63,7 @@ export type SignupError = {
   confirmPassword?: string[];
 };
 
-export async function signup(state: SignupState, formData: FormData) {
+export async function signupAction(state: SignupState, formData: FormData) {
   const validatedFields = FormSchema.safeParse({
     email: formData.get('email'),
     nickname: formData.get('nickname'),
@@ -74,35 +74,34 @@ export async function signup(state: SignupState, formData: FormData) {
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: '누락된 항목이 있습니다.',
+      message: '필수 항목이 누락되었습니다.',
     };
   }
 
   const { email, nickname, password } = validatedFields.data;
 
   try {
-    const usersFound = await findDuplicateEmailOrNickname(email, nickname);
+    const usersFound = await findUsersWithDuplicateEmailOrNickname(email, nickname);
 
     if (usersFound && usersFound.length) {
       const errors: SignupError = {};
       usersFound.forEach((user) => {
-        if (user.email === email)
-          errors.email = ['이미 존재하는 이메일입니다.'];
-        if (user.nickname === nickname)
-          errors.nickname = ['이미 존재하는 닉네임입니다.'];
+        if (user.email === email) errors.email = ['이미 존재하는 이메일입니다.'];
+        if (user.nickname === nickname) errors.nickname = ['이미 존재하는 닉네임입니다.'];
       });
       return { errors };
     }
 
     const newUserId = await createUser({ email, nickname, password });
     if (!newUserId) {
-      throw new Error('회원가입 실패');
+      throw new Error('회원가입에 실패했습니다.');
     }
-    await createSession({ userId: newUserId, profilePathname: null, nickname });
+
+    await createSession({ userId: newUserId, profilePath: null, nickname });
   } catch (error) {
     console.error(error);
     return {
-      message: '서버 에러로 인해 회원가입에 실패했습니다.',
+      message: '서버 오류로 인해 회원가입에 실패했습니다.',
     };
   }
 

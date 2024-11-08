@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import { useFormState } from 'react-dom';
 import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH } from '@/app/constants';
-import { signup, SignupState } from '../action';
+import { signupAction, SignupState } from '../action';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import Input from '@/app/components/ui/input';
 import Button from '@/app/components/ui/button';
 
 export default function SignupForm() {
   const initialState: SignupState = { message: null, errors: {} };
-  const [state, submitSignupForm] = useFormState(signup, initialState);
+  const [state, submitSignupForm] = useFormState(signupAction, initialState);
 
   const handleSignupFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

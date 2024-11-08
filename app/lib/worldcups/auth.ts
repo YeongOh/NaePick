@@ -1,30 +1,22 @@
 'use server';
 
-import { FieldPacket } from 'mysql2';
-import { redirect } from 'next/navigation';
-import { Worldcup } from '../types';
 import { db } from '../database';
-import { deleteSession } from '../session';
+import { worldcups } from '../database/schema';
+import { eq } from 'drizzle-orm';
 
-export async function validateWorldcupOwnership(
-  worldcupId: string,
-  userId: string
-) {
-  const [worldcup, meta]: [Worldcup[], FieldPacket[]] = await db.query(
-    `SELECT user_id as userId 
-      FROM worldcup
-      WHERE worldcup_id = ?`,
-    [worldcupId]
-  );
+export async function veryifyWorldcupOwner(worldcupId: string, userId: string) {
+  try {
+    const result = await db
+      .select({ ownerId: worldcups.userId })
+      .from(worldcups)
+      .where(eq(worldcups.id, worldcupId));
+    if (!result.length) return false;
 
-  if (!worldcup) {
-    throw new Error('월드컵을 찾지 못했습니다.');
+    if (result[0].ownerId === userId) return true;
+
+    return false;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-
-  if (worldcup[0].userId !== userId) {
-    await deleteSession();
-    redirect('/auth/login');
-  }
-
-  return true;
 }

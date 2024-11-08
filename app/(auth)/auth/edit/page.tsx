@@ -10,12 +10,8 @@ export default async function Page() {
   }
 
   return (
-    <section className='max-w-xs m-auto min-h-screen flex flex-col justify-center items-center'>
-      <EditUserForm
-        userId={session.userId}
-        nickname={session.nickname}
-        profilePathname={session.profilePathname}
-      />
+    <section className="max-w-xs m-auto min-h-screen flex flex-col justify-center items-center">
+      <EditUserForm userId={session.userId} nickname={session.nickname} profilePath={session.profilePath} />
     </section>
   );
 }

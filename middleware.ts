@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from './app/lib/session';
 
-const protectedRoutes = [
-  '/woc/create',
-  '/update-user',
-  '/edit',
-  '/edit-candidates',
-  '/wc/users',
-];
+const protectedRoutes = ['/woc/create', '/edit', '/edit-candidates', '/wc/users'];
 const publicRoutes = ['/auth/login', '/auth/signup'];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = protectedRoutes.some(
-    (publicRoute) =>
-      publicRoute === path ||
-      path.endsWith(publicRoute) ||
-      path.startsWith(publicRoute)
+    (publicRoute) => publicRoute === path || path.endsWith(publicRoute) || path.startsWith(publicRoute)
   ); // 다이나믹 path 때문에 이런식으로 확인
   const isPublicRoute = publicRoutes.includes(path);
 

@@ -220,15 +220,15 @@ async function seedComment() {
 
 export async function GET() {
   try {
-    await seedCategory();
-    await seedCategoryData();
-    await seedUser();
-    await seedWorldcup();
-    await seedCandidates();
-    await seedMediaType();
-    await seedCandidateMedia();
-    await seedMatchResult();
-    await seedComment();
+    // await seedCategory();
+    // await seedCategoryData();
+    // await seedUser();
+    // await seedWorldcup();
+    // await seedCandidates();
+    // await seedMediaType();
+    // await seedCandidateMedia();
+    // await seedMatchResult();
+    // await seedComment();
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {

@@ -5,16 +5,12 @@ import Avatar from '../ui/Avatar';
 import NavbarDropdownMenu from './navbar-dropdown-menu';
 
 interface Props {
-  profilePathname: string | null;
+  profilePath: string | null;
   nickname: string;
   userId: string;
 }
 
-export default function NavbarProfileImage({
-  profilePathname,
-  nickname,
-  userId,
-}: Props) {
+export default function NavbarProfileImage({ profilePath, nickname, userId }: Props) {
   const [openDropdownMenu, setOpenDropdownMenu] = useState(false);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -39,17 +35,13 @@ export default function NavbarProfileImage({
   }, [openDropdownMenu]);
 
   return (
-    <div className='relative'>
+    <div className="relative">
       <button
-        type='button'
-        className='rounded-full navbar-dropdown-menu-toggle font-normal hover:outline hover:outline-primary-500 active:outline-primary-700'
+        type="button"
+        className="rounded-full navbar-dropdown-menu-toggle font-normal hover:outline hover:outline-primary-500 active:outline-primary-700"
         onClick={() => setOpenDropdownMenu((prev) => !prev)}
       >
-        <Avatar
-          profilePathname={profilePathname}
-          alt={nickname}
-          size='medium'
-        />
+        <Avatar profilePath={profilePath} alt={nickname} size="medium" />
       </button>
       <NavbarDropdownMenu open={openDropdownMenu} userId={userId} />
     </div>

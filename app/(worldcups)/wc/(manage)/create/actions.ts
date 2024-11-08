@@ -2,17 +2,15 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { nanoid } from 'nanoid';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
-  WORLDCUP_ID_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
-import { db } from '@/app/lib/database';
+import { createWorldcup } from '@/app/lib/worldcups/service';
 
-const CreateWorldcupFormSchema = z.object({
+export const WorldcupFormSchema = z.object({
   title: z
     .string()
     .min(WORLDCUP_TITLE_MIN_LENGTH, {
@@ -28,12 +26,10 @@ const CreateWorldcupFormSchema = z.object({
     })
     .optional(),
   publicity: z.enum(['public', 'unlisted', 'private']),
-  categoryId: z.coerce
-    .number()
-    .positive({ message: '카테고리를 선택해주세요.' }),
+  categoryId: z.coerce.number().positive({ message: '카테고리를 선택해주세요.' }),
 });
 
-export type CreateWorldcupFormState = {
+export type WorldcupFormState = {
   errors?: {
     title?: string[];
     description?: string[];
@@ -43,11 +39,8 @@ export type CreateWorldcupFormState = {
   message?: string | null;
 };
 
-export async function createWorldcup(
-  prevState: CreateWorldcupFormState,
-  formData: FormData
-) {
-  const validatedFields = CreateWorldcupFormSchema.safeParse({
+export async function createWorldcupAction(prevState: WorldcupFormState, formData: FormData) {
+  const validatedFields = WorldcupFormSchema.safeParse({
     title: formData.get('title'),
     description: formData.get('description'),
     publicity: formData.get('publicity'),
@@ -57,7 +50,7 @@ export async function createWorldcup(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: '누락된 항목이 있습니다.',
+      message: '필수 항목이 누락되었습니다.',
     };
   }
 
@@ -70,20 +63,20 @@ export async function createWorldcup(
     };
   }
 
-  const worldcupId = nanoid(WORLDCUP_ID_LENGTH);
-
   try {
-    await db.query(
-      `INSERT INTO worldcup 
-                (worldcup_id, title, description, publicity, user_id, category_id)          
-                VALUES (?,?,?,?,?,?)`,
-      [worldcupId, title, description, publicity, session.userId, categoryId]
-    );
+    const worldcupId = await createWorldcup({
+      description: description || null,
+      userId: session.userId,
+      title,
+      publicity,
+      categoryId,
+    });
+
+    redirect(`/wc/edit-candidates/${worldcupId}`);
   } catch (error) {
     console.log(error);
     return {
-      message: '이상형 월드컵 생성에 실패했습니다.',
+      message: '이상형 월드컵을 생성하는 데 실패했습니다.',
     };
   }
-  redirect(`/wc/edit-candidates/${worldcupId}`);
 }

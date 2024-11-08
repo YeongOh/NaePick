@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write ."
+  },
+  "prettier": {
+    "printWidth": 110,
+    "singleQuote": true
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.670.0",
