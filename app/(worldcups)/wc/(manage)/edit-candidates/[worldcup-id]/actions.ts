@@ -12,7 +12,7 @@ import {
   deleteCandidate,
   updateCandidate,
   updateCandidateNames,
-} from '@/app/lib/candidates/service';
+} from '@/app/lib/candidate/service';
 import { mp4toJpg } from '@/app/utils';
 
 export async function getSignedUrlForCandidateImage(worldcupId: string, fileType: string, filePath: string) {

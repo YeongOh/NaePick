@@ -1,9 +1,10 @@
-import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import Dashboard from '@/app/(worldcups)/wc/[worldcup-id]/stats/components/Dashboard';
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/app/lib/session';
 import { getPaginationCandidateStatisticsByWorldcupId } from '@/app/lib/data/statistics';
 import Navbar from '@/app/components/navbar/navbar';
+import { getWorldcup } from '@/app/lib/worldcup/service';
+import { getCandidatesForStat } from '@/app/lib/candidate/service';
 
 interface Props {
   params: { 'worldcup-id': string };
@@ -14,19 +15,15 @@ interface Props {
 
 export default async function Page({ params, searchParams }: Props) {
   const worldcupId = params['worldcup-id'];
-  const pageNumber = Number(searchParams.page) || 1;
-  const [worldcupResult, candidatesStatistics, session] = await Promise.all([
-    getWorldcupPickScreenByWorldcupId(worldcupId),
-    getPaginationCandidateStatisticsByWorldcupId(worldcupId, pageNumber),
+  const page = Number(searchParams.page) || 1;
+  const [worldcup, stat, session] = await Promise.all([
+    getWorldcup(worldcupId),
+    getCandidatesForStat(worldcupId, page),
     getSession(),
   ]);
 
-  if (worldcupResult && worldcupResult[0] && candidatesStatistics) {
-    const worldcup = worldcupResult[0];
-    if (
-      worldcup.publicity === 'private' &&
-      worldcup.userId !== session?.userId
-    ) {
+  if (worldcup && stat) {
+    if (worldcup.publicity === 'private' && worldcup.userId !== session?.userId) {
       redirect('/forbidden');
     }
 
@@ -35,9 +32,10 @@ export default async function Page({ params, searchParams }: Props) {
         <Navbar />
         <div>
           <Dashboard
-            candidates={candidatesStatistics}
+            candidates={stat.data}
+            statCount={stat.count}
             worldcup={worldcup}
-            pageNumber={pageNumber}
+            page={page}
             userId={session?.userId}
           />
         </div>

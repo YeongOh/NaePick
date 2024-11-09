@@ -1,10 +1,10 @@
 'use client';
 
+import CardGrid from '@/app/components/card/card-grid';
+import CardGridEmpty from '@/app/components/card/card-grid-empty';
+import MainNav from '@/app/components/main/main-nav';
+import { getPopularWorldcups } from '@/app/lib/worldcup/service';
 import { useEffect, useRef, useState } from 'react';
-import CardGrid from '../card/card-grid';
-import MainNav from './main-nav';
-import CardGridEmpty from '../card/card-grid-empty';
-import { getLatestWorldcups, getPopularWorldcups } from '@/app/lib/worldcup/service';
 
 interface Cursor {
   gameCount: number;
@@ -12,15 +12,14 @@ interface Cursor {
 }
 
 interface Props {
-  worldcups: any;
-  nextCursor?: Cursor;
+  sort: 'latest' | 'popular';
 }
 
-export default function Main({ worldcups, nextCursor }: Props) {
+export default function SearchMain({ sort }: Props) {
   const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
   const [isFetching, setIsFetching] = useState(false);
-  const [cursor, setCursor] = useState<Cursor | undefined>(nextCursor);
-  const [newWorldcups, setNewWorldcups] = useState<any>([]);
+  const [cursor, setCursor] = useState<Cursor | null>();
+  const [worldcups, setWorldcups] = useState<any>([]);
   const lastWorldcupRef = useRef(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -46,17 +45,16 @@ export default function Main({ worldcups, nextCursor }: Props) {
 
   useEffect(() => {
     const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      if (entries[0].isIntersecting && !isFetching && cursor) {
+      if (entries[0].isIntersecting && !isFetching && cursor != null) {
         try {
-          observer.unobserve(entries[0].target);
           setIsFetching(true);
-
+          observer.unobserve(entries[0].target);
           const result = await getPopularWorldcups(cursor);
-
           if (!result || !result.data) throw new Error();
 
           const { data, nextCursor } = result;
-          if (data && Array.isArray(data)) setNewWorldcups((prev: any) => [...prev, ...data]);
+
+          if (data && Array.isArray(data)) setWorldcups((prev: any) => [...prev, ...data]);
 
           setCursor(nextCursor);
           setIsFetching(false);
@@ -65,6 +63,13 @@ export default function Main({ worldcups, nextCursor }: Props) {
         }
       }
     };
+
+    if (cursor === undefined) {
+      getPopularWorldcups(cursor).then((result) => {
+        setWorldcups(result?.data);
+        setCursor(result?.nextCursor);
+      });
+    }
 
     const observer = new IntersectionObserver(handleIntersect, {
       threshold: 0.5,
@@ -84,7 +89,7 @@ export default function Main({ worldcups, nextCursor }: Props) {
           <MainNav />
           <CardGrid
             ref={lastWorldcupRef}
-            worldcupCards={[...worldcups, ...newWorldcups]}
+            worldcupCards={worldcups}
             dropdownMenuIndex={dropdownMenuIndex}
             onOpenDropdownMenu={(index) => setDropdownMenuIndex(index)}
             onCloseDropdownMenu={() => setDropdownMenuIndex(null)}

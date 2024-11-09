@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { YouTubePlayer } from 'react-youtube';
 import { InferSelectModel } from 'drizzle-orm';
 import { candidates, worldcups } from '@/app/lib/database/schema';
+import { getRoundsDescription } from '../utils';
+import { submitGameResult as submitGameResult } from '../actions';
 
 type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
 type WorldcupModel = InferSelectModel<typeof worldcups> & {
@@ -30,7 +32,7 @@ export default function WorldcupPickScreen({
   className,
 }: Props) {
   const [candidates, setCandidates] = useState<CandidateModel[]>(defaultCandidates.slice(0, startingRound));
-  const [matchResult, setMatchResult] = useState<MatchResult[]>([]);
+  const [gameResult, setGameResult] = useState<{ winnerId: string; loserId: string }[]>([]);
   const [picked, setPicked] = useState<'left' | 'right'>();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
@@ -43,21 +45,21 @@ export default function WorldcupPickScreen({
   const handlePick = async (target: 'left' | 'right') => {
     const winner = target === 'left' ? leftCandidate : rightCandidate;
     const loser = target === 'left' ? rightCandidate : leftCandidate;
-    const winnerCandidateId = winner.id;
-    const loserCandidateId = loser.id;
+    const winnerId = winner.id;
+    const loserId = loser.id;
     setPicked(target);
 
     if (round == 2) {
-      const matchResultToSubmit = [...matchResult, { winnerCandidateId, loserCandidateId }];
-      // await submitMatchResult(matchResultToSubmit, worldcup.id);
-      onWorldcupEnd(winnerCandidateId);
+      const gameResults = [...gameResult, { winnerId, loserId }];
+      await submitGameResult(gameResults, worldcup.id);
+      onWorldcupEnd(winnerId);
       return;
     }
 
     setTimeout(() => {
       const newCandidates = [winner, ...candidates.toSpliced(leftIndex)];
       setCandidates(newCandidates);
-      setMatchResult([...matchResult, { winnerCandidateId, loserCandidateId }]);
+      setGameResult([...gameResult, { winnerId, loserId }]);
       setPicked(undefined);
     }, 2000);
   };
@@ -155,17 +157,4 @@ export default function WorldcupPickScreen({
       </section>
     </>
   );
-}
-
-function getRoundsDescription(round: number): string {
-  if (round <= 2) return '결승전';
-  if (round <= 4) return '준결승전';
-
-  for (const each of [8, 16, 32, 64, 128, 256, 512, 1024]) {
-    if (round <= each) {
-      return `${each}강`;
-    }
-  }
-
-  return '';
 }

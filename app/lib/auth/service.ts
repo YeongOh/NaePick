@@ -29,7 +29,7 @@ export async function createUser({
 
 export async function findUserWithEmail(email: string) {
   try {
-    return await db
+    const result = await db
       .select({
         userId: users.id,
         nickname: users.nickname,
@@ -38,6 +38,8 @@ export async function findUserWithEmail(email: string) {
       })
       .from(users)
       .where(eq(users.email, email));
+
+    return result[0] || null;
   } catch (error) {
     console.error(error);
     throw error;
@@ -46,7 +48,7 @@ export async function findUserWithEmail(email: string) {
 
 export async function findUserWithUserId(userId: string) {
   try {
-    return await db
+    const result = await db
       .select({
         nickname: users.nickname,
         profilePath: users.profilePath,
@@ -54,6 +56,8 @@ export async function findUserWithUserId(userId: string) {
       })
       .from(users)
       .where(eq(users.id, userId));
+
+    return result[0] || null;
   } catch (error) {
     console.error(error);
     throw error;
@@ -90,9 +94,25 @@ export async function updateUserProfilePath(userId: string, profilePath: string 
 
 export async function getUserProfilePath(userId: string) {
   try {
-    return await db
+    const result = await db
       .select({
         profilePath: users.profilePath,
+      })
+      .from(users)
+      .where(eq(users.id, userId));
+
+    return result[0]?.profilePath || null;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getUserEmail(userId: string) {
+  try {
+    return await db
+      .select({
+        email: users.email,
       })
       .from(users)
       .where(eq(users.id, userId));

@@ -1,6 +1,5 @@
 'use client';
 
-// import { deleteComment, updateComment } from '@/app/lib/comment/service';
 import { getRelativeDate, sortDate } from '@/app/utils/date';
 import React, { useEffect, useRef, useState } from 'react';
 import dayjs from 'dayjs';
@@ -25,7 +24,7 @@ import {
   updateCommentAction,
 } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
-import { candidates, comments } from '@/app/lib/database/schema';
+import { comments } from '@/app/lib/database/schema';
 
 type CommentModel = InferSelectModel<typeof comments> & {
   nickname: string | null;

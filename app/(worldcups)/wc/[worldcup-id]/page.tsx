@@ -11,20 +11,20 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcupResult, session] = await Promise.all([getWorldcup(worldcupId), getSession()]);
+  const [worldcup, session] = await Promise.all([getWorldcup(worldcupId), getSession()]);
 
-  if (!worldcupResult || !worldcupResult[0]) {
+  if (!worldcup) {
     notFound();
   }
 
-  if (worldcupResult[0].publicity === 'private' && session.userId !== worldcupResult[0].userId) {
+  if (worldcup.publicity === 'private' && session.userId !== worldcup.userId) {
     redirect('/forbidden');
   }
 
   return (
     <>
       <Navbar screenMode />
-      <WorldcupStarter worldcup={worldcupResult[0]} userId={session?.userId} />
+      <WorldcupStarter worldcup={worldcup} userId={session?.userId} />
     </>
   );
 }

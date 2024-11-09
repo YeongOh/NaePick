@@ -10,10 +10,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const categoryName = params['category-name'];
-  const result = await getInfinitePopularWorldcupCardsByCategory(
-    null,
-    categoryName
-  );
+  const result = await getInfinitePopularWorldcupCardsByCategory(null, categoryName);
 
   if (!result) {
     notFound();
@@ -23,13 +20,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <Navbar />
-      <Main
-        initialWorldcupCards={data}
-        params='popularCategory'
-        cursor={cursor}
-        funcArgs={categoryName}
-      />
+      <Main worldcups={data} params="popularCategory" cursor={cursor} funcArgs={categoryName} />
     </>
   );
 }

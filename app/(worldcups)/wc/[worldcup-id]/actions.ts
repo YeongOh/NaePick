@@ -1,11 +1,11 @@
 'use server';
 
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { getCandidateName } from '@/app/lib/candidates/service';
+import { getCandidateName } from '@/app/lib/candidate/service';
 import { verifyCommentOwner } from '@/app/lib/comment/auth';
 import { createComment, deleteComment, updateComment } from '@/app/lib/comment/service';
 import { db } from '@/app/lib/database';
-import { candidates, comments, mediaTypes, users } from '@/app/lib/database/schema';
+import { candidates, comments, games, mediaTypes, users } from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
 import { and, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
 
@@ -42,10 +42,10 @@ export async function createCommentAction({
     votedCandidateId,
     text: trimText,
   });
+
   let voted = null;
   if (votedCandidateId) {
-    const candidate = await getCandidateName(votedCandidateId);
-    voted = candidate[0].name;
+    voted = await getCandidateName(votedCandidateId);
   }
 
   const newComment = {
@@ -125,29 +125,26 @@ export async function deleteCommentAction(commentId: string) {
   return await deleteComment(commentId);
 }
 
-// export async function submitMatchResult(matchResult: MatchResult[], worldcupId: string) {
-//   const connection = await db.getConnection();
-//   try {
-//     await connection.beginTransaction();
+export async function submitGameResult(
+  gameResult: { winnerId: string; loserId: string }[],
+  worldcupId: string
+) {
+  try {
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < gameResult.length - 1; i++) {
+        const { winnerId, loserId } = gameResult[i];
+        await tx.insert(games).values({ worldcupId, winnerId, loserId });
+      }
 
-//     const insertPromises = matchResult.map((match, i) => {
-//       if (i === matchResult.length - 1) {
-//         const query = `INSERT INTO match_result (winner_candidate_id, loser_candidate_id, worldcup_id, is_final_match)
-//       VALUES (?, ?, ?, ?)`;
-//         return connection.query(query, [match.winnerCandidateId, match.loserCandidateId, worldcupId, true]);
-//       }
-//       const query = `INSERT INTO match_result (winner_candidate_id, loser_candidate_id, worldcup_id)
-//       VALUES (?, ?, ?)`;
-//       return connection.query(query, [match.winnerCandidateId, match.loserCandidateId, worldcupId]);
-//     });
-
-//     const result = await Promise.all(insertPromises);
-//     await connection.commit();
-//   } catch (error) {
-//     console.log(error);
-//     await connection.rollback();
-//   }
-// }
+      const { winnerId: finalWinnerId, loserId: finalLoserId } = gameResult[gameResult.length - 1];
+      await tx
+        .insert(games)
+        .values({ winnerId: finalWinnerId, loserId: finalLoserId, isFinalGame: true, worldcupId });
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export async function getRandomCandidates(worldcupId: string, round: number) {
   try {
@@ -155,6 +152,7 @@ export async function getRandomCandidates(worldcupId: string, round: number) {
       .select({ ...getTableColumns(candidates), mediaType: mediaTypes.name })
       .from(candidates)
       .innerJoin(mediaTypes, eq(mediaTypes.id, candidates.mediaTypeId))
+      .where(eq(candidates.worldcupId, worldcupId))
       .orderBy(sql`rand()`)
       .limit(round);
 

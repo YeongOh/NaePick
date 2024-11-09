@@ -24,10 +24,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
 ) {
   const [isActive, setIsActive] = useState(false);
   const router = useRouter();
-  // console.log(new Date());
 
-  // console.log(dayjs(new Date()).fromNow());
-  console.log(worldcupCard.createdAt);
   const createdAt = dayjs(worldcupCard.createdAt);
 
   return (
@@ -86,7 +83,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
                 </div>
               </div>
               <CardEllipsis
-                worldcupId={worldcupCard.worldcupId}
+                worldcupId={worldcupCard.id}
                 title={worldcupCard.title}
                 openDropdownMenu={openDropdownMenu}
                 onOpenDropdownMenu={onOpenDropdownMenu}

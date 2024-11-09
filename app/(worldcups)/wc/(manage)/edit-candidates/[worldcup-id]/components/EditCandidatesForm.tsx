@@ -387,7 +387,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
               <div className="flex items-center border mb-4 bg-gray-100">
                 <div className="relative w-16 h-16 cursor-pointer">
                   <ThumbnailImage
-                    pathname={candidate.path}
+                    path={candidate.path}
                     name={candidate.name}
                     mediaType={candidate.mediaType}
                     thumbnailURL={candidate.thumbnailUrl}

@@ -19,12 +19,15 @@ import {
   getSignedUrlForProfileImage,
   updateUserProfilePathAction,
 } from '../actions';
+import { getUserProfilePath } from '@/app/lib/auth/service';
 
 interface Props {
   nickname: string;
   profilePath: string | null;
   userId: string;
 }
+
+const fetcher = (url: string) => fetch(url).then((response) => response.json());
 
 export default function EditUserForm({ nickname, userId, profilePath }: Props) {
   const initialState: editUserState = { message: null, errors: {} };
@@ -67,6 +70,7 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
   );
 
   const handleDeleteProfileImage = async () => {
+    await deleteProfileImage(userId);
     if (profilePath === null) {
       toast.error('삭제할 프로필 이미지가 없습니다.');
       return;

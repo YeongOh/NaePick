@@ -1,9 +1,9 @@
 'use server';
-import { candidates, users, worldcups } from '../database/schema';
+import { candidates, games, mediaTypes, users, worldcups } from '../database/schema';
 import { nanoid } from 'nanoid';
 import { WORLDCUP_ID_LENGTH } from '@/app/constants';
 import { db } from '../database';
-import { asc, desc, eq, getTableColumns, gt, lt } from 'drizzle-orm';
+import { asc, desc, eq, getTableColumns, gt, lt, sql } from 'drizzle-orm';
 
 export async function createWorldcup({
   title,
@@ -54,7 +54,7 @@ export async function updateWorldcup({
 
 export async function getWorldcupForm(worldcupId: string) {
   try {
-    return await db
+    const result = await db
       .select({
         id: worldcups.id,
         title: worldcups.title,
@@ -65,24 +65,106 @@ export async function getWorldcupForm(worldcupId: string) {
       })
       .from(worldcups)
       .where(eq(worldcups.id, worldcupId));
+
+    return result[0] || null;
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-export async function getWorldcups(cursor?: string) {
-  const DATA_PER_PAGE = 3;
+export async function getLatestWorldcups(cursor?: string, category?: string) {
+  const DATA_PER_PAGE = 5;
 
   try {
-    const result = await db
-      .select()
-      .from(worldcups)
-      .where(cursor ? lt(worldcups.createdAt, cursor) : undefined)
-      .limit(DATA_PER_PAGE)
-      .orderBy(desc(worldcups.createdAt));
+    const [result] = await db.execute(sql`
+      SELECT ${worldcups.id}, ${worldcups.title}, ${worldcups.description},
+             ${worldcups.publicity}, ${worldcups.createdAt} AS createdAt,
+             ${users.nickname}, ${users.profilePath} AS profilePath,
+             lc.name AS leftName, lc.path AS leftPath, lc.thumbnail_url AS leftThumbnailUrl, lm.name as leftMediaType,
+             rc.name AS rightName, rc.path AS rightPath, rc.thumbnail_url AS rightThumbnailUrl, rm.name as rightMediaType
+      FROM ${worldcups}
+      LEFT JOIN ${users} ON ${users.id} = ${worldcups.userId}
+      LEFT JOIN LATERAL (
+        SELECT ${games.winnerId} AS id
+        FROM ${games}
+        WHERE ${games.worldcupId} = ${worldcups.id}
+        GROUP BY ${games.winnerId}
+        ORDER BY COUNT(*) DESC
+        LIMIT 1) AS lw ON TRUE
+      LEFT JOIN ${candidates} AS lc ON lc.id = lw.id
+      LEFT JOIN ${mediaTypes} AS lm ON lm.id = lc.media_type_id
+      LEFT JOIN LATERAL (
+        SELECT ${games.winnerId} AS id
+        FROM ${games}
+        WHERE ${games.worldcupId} = ${worldcups.id}
+        GROUP BY ${games.winnerId}
+        ORDER BY COUNT(*) DESC
+        LIMIT 1 OFFSET 1) AS rw ON TRUE
+      LEFT JOIN ${candidates} AS rc ON rc.id = rw.id
+      LEFT JOIN ${mediaTypes} AS rm ON rm.id = rc.media_type_id
+      ${cursor ? sql`where ${worldcups.createdAt} < ${cursor}` : sql``}
+      ORDER BY ${worldcups.createdAt} DESC
+      LIMIT ${DATA_PER_PAGE}
+      `);
+    console.log(cursor);
 
-    const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
+    const nextCursor = Array.isArray(result) && result.length ? result.at(-1)?.createdAt : undefined;
+    return { data: result, nextCursor };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getPopularWorldcups(cursor?: any, category?: string) {
+  const DATA_PER_PAGE = 5;
+
+  console.log(cursor);
+  try {
+    const [result] = await db.execute(sql`
+      SELECT ${worldcups.id}, ${worldcups.title}, ${worldcups.description},
+             ${worldcups.publicity}, ${worldcups.createdAt} AS createdAt,
+             ${users.nickname}, ${users.profilePath} AS profilePath,
+             lc.name AS leftName, lc.path AS leftPath, lc.thumbnail_url AS leftThumbnailUrl, lm.name as leftMediaType,
+             rc.name AS rightName, rc.path AS rightPath, rc.thumbnail_url AS rightThumbnailUrl, rm.name as rightMediaType,
+             COALESCE(g.game_count, 0) AS gameCount
+      FROM ${worldcups}
+      LEFT JOIN ${users} ON ${users.id} = ${worldcups.userId}
+      LEFT JOIN 
+        (SELECT ${games.worldcupId}, COUNT(${games.worldcupId}) AS game_count FROM ${games}
+	      GROUP BY ${games.worldcupId}) AS g ON ${worldcups.id} = g.worldcup_id
+      LEFT JOIN LATERAL (
+        SELECT ${games.winnerId} AS id
+        FROM ${games}
+        WHERE ${games.worldcupId} = ${worldcups.id}
+        GROUP BY ${games.winnerId}
+        ORDER BY COUNT(*) DESC
+        LIMIT 1) AS lw ON TRUE
+      LEFT JOIN ${candidates} AS lc ON lc.id = lw.id
+      LEFT JOIN ${mediaTypes} AS lm ON lm.id = lc.media_type_id
+      LEFT JOIN LATERAL (
+        SELECT ${games.winnerId} AS id
+        FROM ${games}
+        WHERE ${games.worldcupId} = ${worldcups.id}
+        GROUP BY ${games.winnerId}
+        ORDER BY COUNT(*) DESC
+        LIMIT 1 OFFSET 1) AS rw ON TRUE
+      LEFT JOIN ${candidates} AS rc ON rc.id = rw.id
+      LEFT JOIN ${mediaTypes} AS rm ON rm.id = rc.media_type_id
+      ${
+        cursor
+          ? sql`WHERE COALESCE(g.game_count, 0) < ${cursor.gameCount} 
+          OR (COALESCE(g.game_count, 0) = ${cursor.gameCount} AND ${worldcups.createdAt} < ${cursor.createdAt})`
+          : sql``
+      }
+      ORDER BY g.game_count DESC, ${worldcups.createdAt} DESC
+      LIMIT ${DATA_PER_PAGE}
+      `);
+
+    const nextCursor =
+      Array.isArray(result) && result.length
+        ? { gameCount: result.at(-1)?.gameCount as number, createdAt: result.at(-1)?.createdAt as string }
+        : null;
     return { data: result, nextCursor };
   } catch (error) {
     console.error(error);
@@ -102,7 +184,7 @@ export async function getWorldcup(worldcupId: string) {
       .leftJoin(users, eq(users.id, worldcups.userId))
       .where(eq(worldcups.id, worldcupId));
 
-    return result;
+    return result[0] || null;
   } catch (error) {
     console.error(error);
   }

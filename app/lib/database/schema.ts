@@ -17,6 +17,7 @@ import {
   varchar,
   boolean,
   AnyMySqlColumn,
+  int,
 } from 'drizzle-orm/mysql-core';
 
 export const worldcups = table('worldcup', {
@@ -83,4 +84,19 @@ export const comments = table('comment', {
   isAnonymous: boolean().notNull().default(false),
   createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
+});
+
+export const games = table('game', {
+  id: int().primaryKey().autoincrement(),
+  worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
+    .notNull()
+    .references(() => worldcups.id, { onDelete: 'cascade' }),
+  winnerId: varchar({ length: CANDIDATE_ID_LENGTH })
+    .notNull()
+    .references(() => candidates.id, { onDelete: 'cascade' }),
+  loserId: varchar({ length: CANDIDATE_ID_LENGTH })
+    .notNull()
+    .references(() => candidates.id, { onDelete: 'cascade' }),
+  isFinalGame: boolean().notNull().default(false),
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
 });

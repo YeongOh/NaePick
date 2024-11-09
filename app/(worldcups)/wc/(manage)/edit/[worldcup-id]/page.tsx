@@ -13,21 +13,21 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const worldcupId = params['worldcup-id'];
-  const [worldcups, session, categories] = await Promise.all([
+  const [worldcup, session, categories] = await Promise.all([
     getWorldcupForm(worldcupId),
     getSession(),
     getAllCategories(),
   ]);
 
-  if (!worldcups || !worldcups[0] || !categories) notFound();
-  if (worldcups[0].userId !== session.userId) redirect('/forbidden');
+  if (!worldcup || !categories) notFound();
+  if (worldcup.userId !== session.userId) redirect('/forbidden');
 
   return (
     <>
       <Navbar />
       <div className="max-w-xl m-auto flex flex-col">
         <WorldcupFormTab worldcupId={worldcupId} disabled={null} highlight="info" />
-        <WorldcupForm worldcup={worldcups[0]} categories={categories} />
+        <WorldcupForm worldcup={worldcup} categories={categories} />
       </div>
     </>
   );

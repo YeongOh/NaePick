@@ -3,7 +3,7 @@ import WorldcupFormTab from '@/app/(worldcups)/wc/(manage)/components/WorldcupFo
 import { getSession } from '@/app/lib/session';
 import { notFound, redirect } from 'next/navigation';
 import EditCandidatesForm from './components/EditCandidatesForm';
-import { getCandidatesForUpdate } from '@/app/lib/candidates/service';
+import { getCandidatesForUpdate } from '@/app/lib/candidate/service';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 
 interface Props {

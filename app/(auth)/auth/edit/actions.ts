@@ -106,8 +106,7 @@ export async function editUserAction(state: editUserState, formData: FormData) {
       };
 
     const userId = session.userId;
-    const result = await findUserWithUserId(userId);
-    const user = result?.[0];
+    const user = await findUserWithUserId(userId);
     if (!user)
       return {
         message: '회원정보를 찾지 못했습니다.',
@@ -167,10 +166,8 @@ export async function deleteProfileImage(deleteProfilePath: string) {
     const session = await getSession();
     if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
 
-    const result = await getUserProfilePath(session.userId);
-    if (!result.length) throw new Error('존재하지 않는 아이디입니다');
-
-    const { profilePath } = result[0];
+    const profilePath = await getUserProfilePath(session.userId);
+    if (!profilePath) throw new Error('존재하지 않는 아이디입니다');
 
     if (deleteProfilePath !== profilePath) throw new Error('잘못된 프로필 이미지 삭제 요청');
 
