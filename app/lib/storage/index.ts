@@ -22,7 +22,7 @@ export async function getSignedUrlForImage(key: string, fileType: string) {
   }
 }
 
-export async function listAllS3ImgObjects(key: string) {
+export async function listImageFiles(key: string) {
   try {
     const params = {
       Bucket: imageBucket,
@@ -36,7 +36,7 @@ export async function listAllS3ImgObjects(key: string) {
   }
 }
 
-export async function listAllS3VideoObjects(key: string) {
+export async function listVideoFiles(key: string) {
   try {
     const params = {
       Bucket: videoBucket,

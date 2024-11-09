@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { WorldcupCard } from '@/app/lib/types';
+import { TCard } from '@/app/lib/types';
 import ThumbnailImage from '../ThumbnailImage';
 
 interface Props {
-  worldcupCard: WorldcupCard;
+  worldcupCard: TCard;
 }
 
 export default function CardThumbnail({ worldcupCard }: Props) {

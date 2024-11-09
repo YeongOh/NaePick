@@ -1,4 +1,4 @@
-import { translatePublicity, WorldcupCard } from '@/app/lib/types';
+import { TCard, translatePublicity } from '@/app/lib/types';
 import CardThumbnail from './card-thumbnail';
 import 'dayjs/locale/ko';
 import Link from 'next/link';
@@ -10,7 +10,7 @@ import Avatar from '../ui/Avatar';
 import dayjs from '@/app/utils/dayjs';
 
 export interface CardProps {
-  worldcupCard: WorldcupCard;
+  worldcupCard: TCard;
   children?: React.ReactNode;
   openDropdownMenu: boolean;
   onOpenDropdownMenu: () => void;
@@ -59,7 +59,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
             <div className="flex flex-start mt-2">
               <Avatar
                 alt={worldcupCard.nickname}
-                profilePath={worldcupCard.profilePathname}
+                profilePath={worldcupCard.profilePath}
                 size="small"
                 className="mt-1 mr-2"
               />
@@ -94,7 +94,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
           </div>
         </div>
       </div>
-      {extended && <CardUpdateLink worldcupId={worldcupCard.worldcupId} />}
+      {extended && <CardUpdateLink worldcupId={worldcupCard.id} />}
     </li>
   );
 });

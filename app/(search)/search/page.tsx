@@ -1,4 +1,4 @@
-import SearchMain from './components/SearchMain';
+import SearchMain from '../components/SearchMain';
 
 interface Props {
   searchParams: {

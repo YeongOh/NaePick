@@ -1,7 +1,7 @@
 import Navbar from './components/navbar/navbar';
 import { notFound } from 'next/navigation';
 import Main from './components/main';
-import { getLatestWorldcups, getPopularWorldcups } from './lib/worldcup/service';
+import { getPopularWorldcups } from './(worldcups)/wc/[worldcup-id]/actions';
 
 export default async function Home() {
   const result = await getPopularWorldcups();

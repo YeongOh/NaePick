@@ -1,5 +1,4 @@
 import { getSession } from '@/app/lib/session';
-import { getWorldcupPickScreenByWorldcupId } from '@/app/lib/data/worldcups';
 import { notFound, redirect } from 'next/navigation';
 import WorldcupStarter from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupStarter';
 import Navbar from '@/app/components/navbar/navbar';

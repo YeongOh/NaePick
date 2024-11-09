@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import WorldcupPickScreen from './WorldcupPickScreen';
-import Fold from '@/app/components/fold';
+import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
 import LinkButton from '@/app/components/ui/link-button';
 import Button from '@/app/components/ui/button';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
@@ -14,12 +13,10 @@ import CommentSection from './CommentSection';
 import { getRandomCandidates } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { candidates, worldcups } from '@/app/lib/database/schema';
-
-const StartWorldcupModal = dynamic(() => import('@/app/components/modal/start-worldcup-modal'), {
-  ssr: false,
-});
+import WorldcupStarterModal from './WorldcupStarterModal';
 
 type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
+
 type WorldcupModel = InferSelectModel<typeof worldcups> & {
   candidatesCount: number;
   profilePath: string | null;
@@ -77,7 +74,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
               </>
             )}
           </h1>
-          <StartWorldcupModal
+          <WorldcupStarterModal
             nickname={worldcup.nickname}
             title={worldcup.title}
             description={worldcup.description}
@@ -105,7 +102,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
       {showSidebar ? (
         <div className="p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll">
           <section>
-            <Fold
+            <WorldcupFold
               nickname={worldcup.nickname}
               createdAt={worldcup.createdAt}
               updatedAt={worldcup.updatedAt}
@@ -145,7 +142,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
                 <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기
               </Button>
-            </Fold>
+            </WorldcupFold>
           </section>
           <CommentSection
             worldcupId={worldcup.id}

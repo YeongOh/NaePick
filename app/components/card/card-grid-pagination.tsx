@@ -1,29 +1,22 @@
 'use client';
 
-import { WorldcupCard } from '@/app/lib/types';
 import Card from './card';
 import { useEffect, useState } from 'react';
 import Pagination from '../pagination';
 import { useRouter } from 'next/navigation';
+import { TCard } from '@/app/lib/types';
 
 interface Props {
-  totalPages: number;
-  worldcupCards: WorldcupCard[];
+  count: number;
+  worldcups: TCard[];
   extended?: boolean;
-  pageNumber: number;
+  page: number;
   userId: string;
 }
 
-export default function CardGridPagination({
-  worldcupCards,
-  extended,
-  pageNumber,
-  userId,
-  totalPages,
-}: Props) {
-  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(
-    null
-  );
+export default function CardGridPagination({ worldcups, extended, page, userId, count }: Props) {
+  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
+  const totalPages = Math.ceil((count || 0) / 5);
   const router = useRouter();
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -47,18 +40,18 @@ export default function CardGridPagination({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownMenuIndex]);
 
-  const handlePageNumberClick = async (pageNumber: number) => {
-    router.push(`/wc/users/${userId}/${pageNumber}`, {
+  const handlePageNumberClick = async (page: number) => {
+    router.push(`/wc/users/${userId}?page=${page}`, {
       scroll: false,
     });
   };
 
   return (
     <>
-      <ul className='grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4'>
-        {worldcupCards.map((worldcup, index: number) => (
+      <ul className="grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4">
+        {worldcups.map((worldcup, index: number) => (
           <Card
-            key={worldcup.worldcupId}
+            key={worldcup.id}
             worldcupCard={worldcup}
             openDropdownMenu={dropdownMenuIndex === index}
             onOpenDropdownMenu={() => setDropdownMenuIndex(index)}
@@ -68,16 +61,16 @@ export default function CardGridPagination({
         ))}
       </ul>
 
-      <div className='mt-6'>
+      <div className="mt-6">
         <Pagination
           totalPages={totalPages}
-          currentPageNumber={pageNumber}
+          currentPageNumber={page}
           range={2}
           onPageNumberClick={handlePageNumberClick}
-          className=''
+          className=""
         />
       </div>
-      <footer className='h-16'></footer>
+      <footer className="h-16"></footer>
     </>
   );
 }

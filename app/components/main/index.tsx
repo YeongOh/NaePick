@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import CardGrid from '../card/card-grid';
 import MainNav from './main-nav';
 import CardGridEmpty from '../card/card-grid-empty';
-import { getLatestWorldcups, getPopularWorldcups } from '@/app/lib/worldcup/service';
+import { getPopularWorldcups } from '@/app/(worldcups)/wc/[worldcup-id]/actions';
 
 interface Cursor {
   gameCount: number;
@@ -13,13 +13,13 @@ interface Cursor {
 
 interface Props {
   worldcups: any;
-  nextCursor?: Cursor;
+  nextCursor: Cursor | null;
 }
 
 export default function Main({ worldcups, nextCursor }: Props) {
   const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
   const [isFetching, setIsFetching] = useState(false);
-  const [cursor, setCursor] = useState<Cursor | undefined>(nextCursor);
+  const [cursor, setCursor] = useState<Cursor | string | null>(nextCursor);
   const [newWorldcups, setNewWorldcups] = useState<any>([]);
   const lastWorldcupRef = useRef(null);
 

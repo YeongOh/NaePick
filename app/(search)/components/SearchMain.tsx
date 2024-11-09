@@ -1,24 +1,22 @@
 'use client';
 
+import { getWorldcups } from '@/app/(worldcups)/wc/[worldcup-id]/actions';
 import CardGrid from '@/app/components/card/card-grid';
 import CardGridEmpty from '@/app/components/card/card-grid-empty';
 import MainNav from '@/app/components/main/main-nav';
-import { getPopularWorldcups } from '@/app/lib/worldcup/service';
+import { translateCategory } from '@/app/lib/types';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-
-interface Cursor {
-  gameCount: number;
-  createdAt: string;
-}
 
 interface Props {
   sort: 'latest' | 'popular';
+  category?: string;
 }
 
-export default function SearchMain({ sort }: Props) {
+export default function SearchMain({ sort, category }: Props) {
   const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
   const [isFetching, setIsFetching] = useState(false);
-  const [cursor, setCursor] = useState<Cursor | null>();
+  const [cursor, setCursor] = useState<any>();
   const [worldcups, setWorldcups] = useState<any>([]);
   const lastWorldcupRef = useRef(null);
 
@@ -32,6 +30,11 @@ export default function SearchMain({ sort }: Props) {
       setDropdownMenuIndex(null);
     }
   };
+
+  useEffect(() => {
+    setWorldcups([]);
+    setCursor(undefined);
+  }, [sort, category]);
 
   useEffect(() => {
     if (dropdownMenuIndex !== null) {
@@ -49,7 +52,7 @@ export default function SearchMain({ sort }: Props) {
         try {
           setIsFetching(true);
           observer.unobserve(entries[0].target);
-          const result = await getPopularWorldcups(cursor);
+          const result = await getWorldcups(sort, cursor, category);
           if (!result || !result.data) throw new Error();
 
           const { data, nextCursor } = result;
@@ -65,8 +68,8 @@ export default function SearchMain({ sort }: Props) {
     };
 
     if (cursor === undefined) {
-      getPopularWorldcups(cursor).then((result) => {
-        setWorldcups(result?.data);
+      getWorldcups(sort, cursor, category).then((result) => {
+        if (result?.data) setWorldcups(result.data);
         setCursor(result?.nextCursor);
       });
     }
@@ -80,13 +83,22 @@ export default function SearchMain({ sort }: Props) {
     return () => {
       observer.disconnect();
     };
-  }, [isFetching, cursor]);
+  }, [isFetching, cursor, sort, category]);
 
   return (
     <section className="max-w-screen-2xl m-auto">
       {worldcups ? (
         <>
-          <MainNav />
+          <MainNav>
+            {category ? (
+              <Link
+                className="flex items-center justify-center bg-black/80 text-white border rounded p-2 text-base hover:bg-black/90"
+                href={sort === 'popular' ? '/' : `/search?sort=${sort}`}
+              >
+                <span className="text-white">{translateCategory(category)}</span>
+              </Link>
+            ) : null}
+          </MainNav>
           <CardGrid
             ref={lastWorldcupRef}
             worldcupCards={worldcups}

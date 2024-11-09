@@ -1,10 +1,9 @@
 import Dashboard from '@/app/(worldcups)/wc/[worldcup-id]/stats/components/Dashboard';
 import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/app/lib/session';
-import { getPaginationCandidateStatisticsByWorldcupId } from '@/app/lib/data/statistics';
 import Navbar from '@/app/components/navbar/navbar';
-import { getWorldcup } from '@/app/lib/worldcup/service';
 import { getCandidatesForStat } from '@/app/lib/candidate/service';
+import { getWorldcup } from '@/app/lib/worldcup/service';
 
 interface Props {
   params: { 'worldcup-id': string };

@@ -1,15 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
-export default function MainNav() {
+interface Props {
+  children?: React.ReactNode;
+}
+
+export default function MainNav({ children }: Props) {
   const searchParams = useSearchParams();
+  const path = usePathname();
 
   return (
-    <nav className="flex m-2 p-2 gap-2">
+    <nav className="flex m-2 p-2 gap-2 items-center">
       <Link
-        href={`/search?sort=popular`}
+        href={path === '/' || path === '/search' ? '/search?sort=popular' : `${path}?sort=popular`}
         className={`px-3 py-2 text-base rounded ${
           searchParams.get('sort') === 'popular' || !searchParams.has('sort')
             ? 'text-white bg-primary-500'
@@ -19,7 +24,7 @@ export default function MainNav() {
         인기
       </Link>
       <Link
-        href={`/search?sort=latest`}
+        href={path === '/' || path === '/search' ? '/search?sort=latest' : `${path}?sort=latest`}
         className={`px-3 py-2 text-base rounded ${
           searchParams.get('sort') === 'latest'
             ? 'text-white bg-primary-500'
@@ -28,6 +33,7 @@ export default function MainNav() {
       >
         최신
       </Link>
+      {children}
     </nav>
   );
 }

@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
-import ToggleableP from '../ui/toggleable-p';
-import Avatar from '../ui/Avatar';
+import ToggleableP from '../../../../components/ui/toggleable-p';
+import Avatar from '../../../../components/ui/Avatar';
 
 interface Props {
   nickname: string | null;
@@ -13,7 +13,14 @@ interface Props {
   profilePath: string | null;
 }
 
-export default function Fold({ nickname, createdAt, updatedAt, description, children, profilePath }: Props) {
+export default function WorldcupFold({
+  nickname,
+  createdAt,
+  updatedAt,
+  description,
+  children,
+  profilePath,
+}: Props) {
   const createdDate = dayjs(createdAt);
   const updatedDate = dayjs(updatedAt);
   const isUpdated = createdDate.diff(updatedDate);

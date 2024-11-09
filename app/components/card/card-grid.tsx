@@ -1,11 +1,11 @@
 'use client';
 
-import { WorldcupCard } from '@/app/lib/types';
-import Card from './card';
+import { TCard } from '@/app/lib/types';
 import { forwardRef } from 'react';
+import Card from './card';
 
 interface CardGridProps {
-  worldcupCards: WorldcupCard[];
+  worldcupCards: TCard[];
   extended?: boolean;
   dropdownMenuIndex: number | null;
   onOpenDropdownMenu: (index: number | null) => void;

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 import Media from '@/app/components/media';
 import Pagination from '@/app/components/pagination';
-import Fold from '@/app/components/fold';
+import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
 import LinkButton from '@/app/components/ui/link-button';
 import Button from '@/app/components/ui/button';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
@@ -128,7 +128,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
         )}
       </div>
       <section className="p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll">
-        <Fold
+        <WorldcupFold
           nickname={worldcup.nickname}
           createdAt={worldcup.createdAt}
           updatedAt={worldcup.updatedAt}
@@ -167,7 +167,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             <RotateCcw color="#334155" size="1.2rem" />
             다시 하기
           </LinkButton>
-        </Fold>
+        </WorldcupFold>
         <CommentSection worldcupId={worldcup.id} userId={userId} />
       </section>
     </div>

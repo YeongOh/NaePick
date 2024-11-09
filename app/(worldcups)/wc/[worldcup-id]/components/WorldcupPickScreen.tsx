@@ -1,7 +1,6 @@
 'use client';
 
 import Media from '@/app/components/media';
-import { Candidate, MatchResult, Worldcup } from '@/app/lib/types';
 import { useState } from 'react';
 import { YouTubePlayer } from 'react-youtube';
 import { InferSelectModel } from 'drizzle-orm';

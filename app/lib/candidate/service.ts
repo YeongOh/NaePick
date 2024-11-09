@@ -34,19 +34,6 @@ export async function getCandidatesForStat(worldcupId: string, page: number) {
   try {
     const DATA_PER_PAGE = 10;
 
-    // const stat = await db
-    //   .select({
-    //     ...getTableColumns(candidates),
-    //     mediaType: mediaTypes.name,
-    //     winCount: db.$count(games, eq(games.winnerId, candidates.id)),
-    //     lossCount: db.$count(games, eq(games.loserId, candidates.id)),
-    //     trophyCount: db.$count(games, and(eq(games.winnerId, candidates.id), eq(games.isFinalGame, true))),
-    //   })
-    //   .from(candidates)
-    //   .innerJoin(mediaTypes, eq(mediaTypes.id, candidates.mediaTypeId))
-    //   .where(eq(candidates.worldcupId, worldcupId));
-    // console.log(stat);
-
     const stat = db.$with('stat').as(
       db
         .select({

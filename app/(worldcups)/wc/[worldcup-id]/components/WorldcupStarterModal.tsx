@@ -3,13 +3,13 @@
 import { DEFAULT_ROUNDS, getNumberOfRoundsAvailable, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import Button from '../ui/button';
+import Button from '../../../../components/ui/button';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
-import ToggleableP from '../ui/toggleable-p';
-import Avatar from '../ui/Avatar';
+import ToggleableP from '../../../../components/ui/toggleable-p';
+import Avatar from '../../../../components/ui/Avatar';
 
 interface Props {
   open: boolean;
@@ -24,7 +24,7 @@ interface Props {
   profilePath: string | null;
 }
 
-export default function StartWorldcupModal({
+export default function WorldcupStarterModal({
   open,
   onRoundSubmit,
   candidatesCount,
@@ -120,7 +120,7 @@ export default function StartWorldcupModal({
                   )}
                 </select>
                 {notEnoughCandidates ? (
-                  <Button variant="primary" aria-label="Go back" role="link" onClick={() => router.back()}>
+                  <Button variant="outline" aria-label="Go back" role="link" onClick={() => router.back()}>
                     돌아가기
                   </Button>
                 ) : (

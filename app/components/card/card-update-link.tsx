@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import DeleteConfirmModal from '../modal/delete-confirm-modal';
 import toast from 'react-hot-toast';
-import { deleteWorldcup } from '@/app/lib/worldcup/service';
+import { deleteWorldcupAction } from '@/app/(worldcups)/wc/users/[user-id]/actions';
 
 interface Props {
   worldcupId: string;
@@ -15,7 +15,7 @@ export default function CardUpdateLink({ worldcupId }: Props) {
 
   const handleDeleteConfirm = async () => {
     try {
-      await deleteWorldcup(worldcupId);
+      await deleteWorldcupAction(worldcupId);
       setShowDeleteWorldcupConfirmModal(false);
     } catch (error) {
       toast.error((error as Error).message);

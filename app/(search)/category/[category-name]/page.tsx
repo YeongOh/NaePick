@@ -1,26 +1,18 @@
-import Main from '@/app/components/main';
-import Navbar from '@/app/components/navbar/navbar';
-import { getInfinitePopularWorldcupCardsByCategory } from '@/app/lib/data/worldcups';
-import 'dayjs/locale/ko';
-import { notFound } from 'next/navigation';
+import SearchMain from '../../components/SearchMain';
 
 interface Props {
+  searchParams: {
+    sort?: 'latest' | 'popular';
+  };
   params: { 'category-name': string };
 }
 
-export default async function Page({ params }: Props) {
-  const categoryName = params['category-name'];
-  const result = await getInfinitePopularWorldcupCardsByCategory(null, categoryName);
-
-  if (!result) {
-    notFound();
-  }
-
-  const { cursor, data } = result;
+export default async function Page({ searchParams, params }: Props) {
+  const category = params['category-name'];
 
   return (
     <>
-      <Main worldcups={data} params="popularCategory" cursor={cursor} funcArgs={categoryName} />
+      <SearchMain sort={searchParams.sort || 'popular'} category={category} />
     </>
   );
 }
