@@ -13,21 +13,15 @@ interface CardGridProps {
 }
 
 const CardGrid = forwardRef<HTMLLIElement, CardGridProps>(function CardGrid(
-  {
-    worldcupCards,
-    extended,
-    onOpenDropdownMenu,
-    onCloseDropdownMenu,
-    dropdownMenuIndex,
-  }: CardGridProps,
+  { worldcupCards, extended, onOpenDropdownMenu, onCloseDropdownMenu, dropdownMenuIndex }: CardGridProps,
   ref
 ) {
   return (
-    <ul className='grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4'>
+    <ul className="grid grid-cols-card-12rem sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem justify-center gap-2 mt-4">
       {worldcupCards.map((worldcup, index: number) => (
         <Card
           ref={index === worldcupCards.length - 1 ? ref : null}
-          key={worldcup.worldcupId}
+          key={worldcup.id}
           worldcupCard={worldcup}
           openDropdownMenu={dropdownMenuIndex === index}
           onOpenDropdownMenu={() => onOpenDropdownMenu(index)}

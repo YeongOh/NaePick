@@ -10,26 +10,20 @@ import { useEffect, useRef, useState } from 'react';
 import CardGrid from '../card/card-grid';
 import MainNav from './main-nav';
 import CardGridEmpty from '../card/card-grid-empty';
+import { getWorldcups } from '@/app/lib/worldcup/service';
 
 interface Props {
   params: 'latest' | 'popular' | 'popularCategory';
-  initialWorldcupCards: WorldcupCard[] | null;
-  cursor: string | number | null;
+  initialWorldcupCards: any;
+  nextCursor?: string;
   funcArgs?: string;
 }
 
-export default function Main({
-  params,
-  initialWorldcupCards,
-  cursor,
-  funcArgs,
-}: Props) {
-  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(
-    null
-  );
+export default function Main({ params, initialWorldcupCards, funcArgs, nextCursor }: Props) {
+  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
   const [isFetching, setIsFetching] = useState(false);
-  const [lastCursor, setLastCursor] = useState<string | number | null>(cursor);
-  const [fetchedCards, setFetchedCards] = useState<WorldcupCard[]>([]);
+  const [lastCursor, setLastCursor] = useState<string | undefined>(nextCursor);
+  const [fetchedCards, setFetchedCards] = useState<any>([]);
   const lastCardRef = useRef(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -54,32 +48,32 @@ export default function Main({
   }, [dropdownMenuIndex]);
 
   useEffect(() => {
-    const handleIntersect = async (
-      entries: IntersectionObserverEntry[],
-      observer: IntersectionObserver
-    ) => {
+    const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       if (entries[0].isIntersecting && !isFetching && lastCursor) {
         observer.unobserve(entries[0].target);
         setIsFetching(true);
-        let result;
-        if (params === 'popular') {
-          result = await getInfinitePopularWorldcupCards(lastCursor as number);
-        } else if (params === 'latest') {
-          result = await getInfiniteLatestWorldcupCards(lastCursor as string);
-        } else if (params === 'popularCategory') {
-          result = await getInfinitePopularWorldcupCardsByCategory(
-            lastCursor as number,
-            funcArgs as string
-          );
-        }
-        if (!result) {
+        // if (params === 'popular') {
+        //   result = await getInfinitePopularWorldcupCards(lastCursor as number);
+        // } else if (params === 'latest') {
+        //   result = await getInfiniteLatestWorldcupCards(lastCursor as string);
+        // } else if (params === 'popularCategory') {
+        //   result = await getInfinitePopularWorldcupCardsByCategory(
+        //     lastCursor as number,
+        //     funcArgs as string
+        //   );
+        // }
+        const result = await getWorldcups(lastCursor);
+        console.log(result);
+
+        if (!result || !result.data) {
           throw new Error();
         }
-        const { data, cursor } = result;
+        const { data, nextCursor } = result;
         if (data) {
-          setFetchedCards((prev) => [...prev, ...data]);
+          setFetchedCards((prev: any) => [...prev, ...data]);
         }
-        setLastCursor(cursor);
+        console.log(nextCursor);
+        setLastCursor(nextCursor);
         setIsFetching(false);
       }
     };
@@ -98,7 +92,7 @@ export default function Main({
   }, [isFetching, lastCursor]);
 
   return (
-    <section className='max-w-screen-2xl m-auto'>
+    <section className="max-w-screen-2xl m-auto">
       {initialWorldcupCards ? (
         <>
           <MainNav />
@@ -113,7 +107,7 @@ export default function Main({
       ) : (
         <CardGridEmpty />
       )}
-      <footer className='h-16'></footer>
+      <footer className="h-16"></footer>
     </section>
   );
 }

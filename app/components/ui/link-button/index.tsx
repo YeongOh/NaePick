@@ -27,8 +27,7 @@ export default function LinkButton({
     classNameResult +=
       ' border bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors text-slate-700';
   if (variant === 'ghost')
-    classNameResult +=
-      ' bg-white hover:bg-gray-50 active:bg-gray-100 transition-colors text-slate-700';
+    classNameResult += ' bg-transparent hover:bg-gray-50 active:bg-gray-100 transition-colors text-slate-700';
 
   if (size === 'small') classNameResult += ' py-2 px-1';
   if (size === 'medium') classNameResult += ' py-3 px-2';

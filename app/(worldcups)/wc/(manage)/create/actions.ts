@@ -8,7 +8,7 @@ import {
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
-import { createWorldcup } from '@/app/lib/worldcups/service';
+import { createWorldcup } from '@/app/lib/worldcup/service';
 
 const WorldcupFormSchema = z.object({
   title: z
@@ -63,20 +63,20 @@ export async function createWorldcupAction(prevState: WorldcupFormState, formDat
     };
   }
 
+  let worldcupId;
   try {
-    const worldcupId = await createWorldcup({
+    worldcupId = await createWorldcup({
       description: description || null,
       userId: session.userId,
       title,
       publicity,
       categoryId,
     });
-
-    redirect(`/wc/edit-candidates/${worldcupId}`);
   } catch (error) {
     console.log(error);
     return {
       message: '이상형 월드컵을 생성하는 데 실패했습니다.',
     };
   }
+  redirect(`/wc/edit-candidates/${worldcupId}`);
 }

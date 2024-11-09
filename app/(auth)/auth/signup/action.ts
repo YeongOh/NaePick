@@ -10,7 +10,7 @@ import {
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { createSession } from '@/app/lib/session';
-import { findUsersWithDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
+import { findUserWithDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
 import { createUser } from '@/app/lib/auth/service';
 
 const FormSchema = z
@@ -81,7 +81,7 @@ export async function signupAction(state: SignupState, formData: FormData) {
   const { email, nickname, password } = validatedFields.data;
 
   try {
-    const usersFound = await findUsersWithDuplicateEmailOrNickname(email, nickname);
+    const usersFound = await findUserWithDuplicateEmailOrNickname(email, nickname);
 
     if (usersFound && usersFound.length) {
       const errors: SignupError = {};

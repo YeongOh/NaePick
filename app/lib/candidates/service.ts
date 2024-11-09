@@ -1,5 +1,5 @@
 import 'server-only';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { db } from '../database';
 import { candidates, mediaTypes } from '../database/schema';
 import { CANDIDATE_ID_LENGTH } from '@/app/constants';
@@ -9,14 +9,10 @@ export async function getCandidatesForUpdate(worldcupId: string, page: number) {
   try {
     const DATA_PER_PAGE = 10;
 
-    const result = await db
+    const data = await db
       .select({
-        id: candidates.id,
-        name: candidates.name,
-        path: candidates.path,
-        thumbnailUrl: candidates.thumbnailUrl,
+        ...getTableColumns(candidates),
         mediaType: mediaTypes.name,
-        createdAt: candidates.createdAt,
       })
       .from(candidates)
       .innerJoin(mediaTypes, eq(candidates.mediaTypeId, mediaTypes.id))
@@ -27,7 +23,7 @@ export async function getCandidatesForUpdate(worldcupId: string, page: number) {
 
     const count = await db.$count(candidates, eq(candidates.worldcupId, worldcupId));
 
-    return { candidates: result, count };
+    return { data, count };
   } catch (error) {
     console.error(error);
     throw error;
@@ -117,6 +113,15 @@ export async function updateCandidateNames(candidateNames: { id: string; name: s
 export async function deleteCandidate(candidateId: string) {
   try {
     await db.delete(candidates).where(eq(candidates.id, candidateId));
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getCandidateName(candidateId: string) {
+  try {
+    return await db.select({ name: candidates.name }).from(candidates).where(eq(candidates.id, candidateId));
   } catch (error) {
     console.error(error);
     throw error;

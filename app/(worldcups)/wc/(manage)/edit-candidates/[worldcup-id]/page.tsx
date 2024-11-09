@@ -4,7 +4,7 @@ import { getSession } from '@/app/lib/session';
 import { notFound, redirect } from 'next/navigation';
 import EditCandidatesForm from './components/EditCandidatesForm';
 import { getCandidatesForUpdate } from '@/app/lib/candidates/service';
-import { verifyWorldcupOwner } from '@/app/lib/worldcups/auth';
+import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 
 interface Props {
   params: { 'worldcup-id': string };
@@ -28,7 +28,7 @@ export default async function Page({ params, searchParams }: Props) {
         <WorldcupFormTab worldcupId={worldcupId} disabled={null} highlight="candidates" />
         <EditCandidatesForm
           worldcupId={worldcupId}
-          candidates={result.candidates}
+          candidates={result.data}
           count={result.count}
           page={page}
         />

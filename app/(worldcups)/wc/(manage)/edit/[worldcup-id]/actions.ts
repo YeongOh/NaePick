@@ -3,8 +3,8 @@
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/app/lib/session';
-import { updateWorldcup } from '@/app/lib/worldcups/service';
-import { verifyWorldcupOwner } from '@/app/lib/worldcups/auth';
+import { updateWorldcup } from '@/app/lib/worldcup/service';
+import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,

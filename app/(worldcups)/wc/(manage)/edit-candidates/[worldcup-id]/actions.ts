@@ -4,8 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { nanoid } from 'nanoid';
 import { OBJECT_ID_LENGTH } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
-import { MediaType } from '@/app/lib/types';
-import { verifyWorldcupOwner } from '@/app/lib/worldcups/auth';
+import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import path from 'path';
 import { deleteImage, deleteVideo, getSignedUrlForImage } from '@/app/lib/storage';
 import {
@@ -124,43 +123,3 @@ export async function updateCandidateAction({
   await updateCandidate({ candidateId, path, mediaType, thumbnailUrl });
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
 }
-
-// export async function updateCandidateVideoURL({
-//   worldcupId,
-//   candidateId,
-//   candidatePathname,
-//   mediaType,
-//   thumbnailURL = null,
-// }: {
-//   worldcupId: string;
-//   candidateId: string;
-//   candidatePathname: string;
-//   mediaType: string;
-//   thumbnailURL?: string | null;
-// }) {
-//   try {
-//     const session = await getSession();
-//     if (!session?.userId) {
-//       throw new Error('로그인을 해주세요.');
-//     }
-
-//     await validateWorldcupOwnership(worldcupId, session.userId);
-
-//     const [result, fields] = await db.query(
-//       `
-//             UPDATE candidate_media
-//             SET pathname = ?,
-//                 media_type_id =
-//                 (SELECT media_type_id
-//                 FROM media_type
-//                 WHERE type = ?),
-//                 thumbnail_url = ?
-//             WHERE candidate_id = ?
-//             `,
-//       [candidatePathname, mediaType, thumbnailURL, candidateId]
-//     );
-//   } catch (error) {
-//     console.log(error);
-//   }
-//   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
-// }

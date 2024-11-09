@@ -1,8 +1,6 @@
 'use client';
 
-import { Candidate, Worldcup } from '@/app/lib/types';
 import { useState } from 'react';
-import { getRandomCandidatesByWorldcupId } from '@/app/lib/data/candidates';
 import dynamic from 'next/dynamic';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import 'dayjs/locale/ko';
@@ -13,39 +11,40 @@ import LinkButton from '@/app/components/ui/link-button';
 import Button from '@/app/components/ui/button';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
 import CommentSection from './CommentSection';
+import { getRandomCandidates } from '../actions';
+import { InferSelectModel } from 'drizzle-orm';
+import { candidates, worldcups } from '@/app/lib/database/schema';
 
-const StartWorldcupModal = dynamic(
-  () => import('@/app/components/modal/start-worldcup-modal'),
-  {
-    ssr: false,
-  }
-);
+const StartWorldcupModal = dynamic(() => import('@/app/components/modal/start-worldcup-modal'), {
+  ssr: false,
+});
+
+type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
+type WorldcupModel = InferSelectModel<typeof worldcups> & {
+  candidatesCount: number;
+  profilePath: string | null;
+  nickname: string | null;
+};
 
 interface Props {
-  worldcup: Worldcup;
+  worldcup: WorldcupModel;
   userId?: string;
 }
 
 export default function WorldcupStarter({ worldcup, userId }: Props) {
   const [isSelectingRounds, setIsSelectingRounds] = useState<boolean>(true);
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [candidates, setCandidates] = useState<CandidateModel[]>([]);
   const [round, setRounds] = useState<number | null>(null);
-  const [openStartWorldcupModal, setOpenStartWorldcupModal] =
-    useState<boolean>(true);
+  const [openStartWorldcupModal, setOpenStartWorldcupModal] = useState<boolean>(true);
   const [showSidebar, setShowSidebar] = useState(false);
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
-  const [finalWinnerCandidateId, setFinalWinnerCandidateId] =
-    useState<string>();
+  const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<string>();
 
-  const notEnoughCandidates =
-    (worldcup.numberOfCandidates as number) < MIN_NUMBER_OF_CANDIDATES;
+  const notEnoughCandidates = (worldcup.candidatesCount as number) < MIN_NUMBER_OF_CANDIDATES;
 
   const handleRoundSumbit = async (selectedRound: number) => {
     setOpenStartWorldcupModal(false);
-    const randomCandidates = await getRandomCandidatesByWorldcupId(
-      worldcup.worldcupId,
-      selectedRound
-    );
+    const randomCandidates = await getRandomCandidates(worldcup.id, selectedRound);
     setCandidates(randomCandidates || []);
     setRounds(selectedRound);
     setIsSelectingRounds(false);
@@ -64,8 +63,8 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   if (isSelectingRounds) {
     return (
       <>
-        <section className='relative flex bg-black h-[calc(100vh-68px)]'>
-          <h1 className='absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold'>
+        <section className="relative flex bg-black h-[calc(100vh-68px)]">
+          <h1 className="absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold">
             {worldcup.title}{' '}
             {notEnoughCandidates ? (
               <>
@@ -85,8 +84,8 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
             open={openStartWorldcupModal}
             createdAt={worldcup.createdAt}
             updatedAt={worldcup.updatedAt}
-            numberOfCandidates={worldcup.numberOfCandidates}
-            profilePathname={worldcup.profilePathname}
+            candidatesCount={worldcup.candidatesCount}
+            profilePath={worldcup.profilePath}
             onRoundSubmit={handleRoundSumbit}
           />
         </section>
@@ -95,62 +94,61 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   }
 
   return (
-    <div className='flex bg-black/95'>
+    <div className="flex bg-black/95">
       <WorldcupPickScreen
-        className='flex-1'
+        className="flex-1"
         worldcup={worldcup}
         defaultCandidates={candidates}
         startingRound={round as number}
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className='p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll'>
+        <div className="p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll">
           <section>
             <Fold
               nickname={worldcup.nickname}
               createdAt={worldcup.createdAt}
               updatedAt={worldcup.updatedAt}
               description={worldcup.description}
-              profilePathname={worldcup.profilePathname}
+              profilePath={worldcup.profilePath}
             >
               <LinkButton
-                href={`/wc/${worldcup.worldcupId}/stats`}
-                className='flex justify-center items-center gap-1'
-                variant='primary'
-                size='small'
+                href={`/wc/${worldcup.id}/stats`}
+                className="flex justify-center items-center gap-1"
+                variant="primary"
+                size="small"
               >
-                <ChartNoAxesColumnDecreasing size='1.2rem' color='#FFFFFF' />
+                <ChartNoAxesColumnDecreasing size="1.2rem" color="#FFFFFF" />
                 랭킹 보기
               </LinkButton>
               <Button
-                className='flex justify-center items-center gap-1'
-                variant='outline'
-                size='small'
+                className="flex justify-center items-center gap-1"
+                variant="outline"
+                size="small"
                 onClick={() => setShareWorldcupModal(true)}
               >
-                <Share color='#000000' size='1.2rem' />
+                <Share color="#000000" size="1.2rem" />
                 공유 하기
               </Button>
               <ShareWorldcupModal
                 open={shareWorldcupModal}
                 onClose={() => setShareWorldcupModal(false)}
                 title={worldcup.title}
-                worldcupId={worldcup.worldcupId}
+                worldcupId={worldcup.id}
               />
               <Button
                 onClick={handleWorldcupRestart}
-                variant='ghost'
-                size='small'
-                className='flex justify-center items-center gap-1'
+                variant="ghost"
+                size="small"
+                className="flex justify-center items-center gap-1"
               >
-                <RotateCcw color='#334155' size='1.2rem' />
+                <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기
               </Button>
             </Fold>
           </section>
           <CommentSection
-            numberOfComments={worldcup.numberOfComments}
-            worldcupId={worldcup.worldcupId}
+            worldcupId={worldcup.id}
             finalWinnerCandidateId={finalWinnerCandidateId}
             userId={userId}
           />

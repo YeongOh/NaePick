@@ -5,7 +5,7 @@ import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 
 interface Props {
   lowerHeight?: boolean;
-  pathname: string;
+  path: string;
   name: string;
   mediaType: string;
   allowVideoControl?: boolean;
@@ -14,17 +14,17 @@ interface Props {
 }
 
 const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
-  { lowerHeight, pathname, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
+  { lowerHeight, path, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
   ref
 ) {
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer | null>(null);
 
-  let youtubePathname = pathname;
+  let youtubePath = path;
   let youtubeStartTime = 0;
   let youtubeEndTime = 0;
-  if (mediaType === 'youtube' && pathname.includes('?')) {
-    const tokens = youtubePathname.split('?'); // id?s=0&e=0
-    youtubePathname = tokens[0];
+  if (mediaType === 'youtube' && path.includes('?')) {
+    const tokens = youtubePath.split('?'); // id?s=0&e=0
+    youtubePath = tokens[0];
     const timeTokens = tokens[1].split('&'); // s=0&e=0
     youtubeStartTime = Number(timeTokens[0].slice(2)); // s=0
     youtubeEndTime = Number(timeTokens[1].slice(2)); // e=0
@@ -47,13 +47,13 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
             muted
             controls={allowVideoControl}
           >
-            <source src={`https://cdn.naepick.co.kr/${pathname}`} type="video/mp4" />
+            <source src={`https://cdn.naepick.co.kr/${path}`} type="video/mp4" />
           </video>
         </div>
       )}
       {mediaType === 'cdn_img' && (
         <div className="max-w-fit size-full">
-          <MyImage className="object-contain size-full" src={`${pathname}?w=1920&h=1760`} alt={name} />
+          <MyImage className="object-contain size-full" src={`${path}?w=1920&h=1760`} alt={name} />
         </div>
       )}
       {mediaType === 'youtube' && (
@@ -74,8 +74,8 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
               },
             }}
             ref={ref}
-            id={youtubePathname}
-            videoId={youtubePathname}
+            id={youtubePath}
+            videoId={youtubePath}
             title="YouTube video player"
             onPlay={(e: YouTubeEvent) => {
               if (!youTubePlayer) {
@@ -100,7 +100,7 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
           <iframe
             className="size-full"
             onClick={(e) => e.stopPropagation()}
-            src={`https://chzzk.naver.com/embed/clip/${pathname}`}
+            src={`https://chzzk.naver.com/embed/clip/${path}`}
             title="CHZZK Player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"

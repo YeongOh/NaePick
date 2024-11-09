@@ -5,7 +5,7 @@ import Navbar from '@/app/components/navbar/navbar';
 import WorldcupFormTab from '../../components/WorldcupFormTab';
 import { getAllCategories } from '@/app/lib/category/service';
 import WorldcupForm from '../../components/WorldcupForm';
-import { getWorldcupForm } from '@/app/lib/worldcups/service';
+import { getWorldcupForm } from '@/app/lib/worldcup/service';
 
 interface Props {
   params: { 'worldcup-id': string };

@@ -37,7 +37,12 @@ export default async function Navbar({ screenMode }: Props) {
           }`}
         >
           <div className="w-36 flex">
-            <LinkButton href={`/wc/create`} variant={session?.userId ? 'primary' : 'ghost'} size="small">
+            <LinkButton
+              className={screenMode ? 'text-slate-300' : ''}
+              href={`/wc/create`}
+              variant={session?.userId ? 'primary' : 'ghost'}
+              size="small"
+            >
               이상형 월드컵 만들기
             </LinkButton>
           </div>

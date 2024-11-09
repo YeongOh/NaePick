@@ -1,10 +1,6 @@
 import Main from '@/app/components/main';
 import Navbar from '@/app/components/navbar/navbar';
-import {
-  getInfiniteLatestWorldcupCards,
-  getInfinitePopularWorldcupCards,
-} from '@/app/lib/data/worldcups';
-import 'dayjs/locale/ko';
+import { getInfiniteLatestWorldcupCards, getInfinitePopularWorldcupCards } from '@/app/lib/data/worldcups';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -25,7 +21,7 @@ export default async function Page({ params }: Props) {
     return (
       <>
         <Navbar />
-        <Main initialWorldcupCards={data} params='popular' cursor={cursor} />
+        <Main initialWorldcupCards={data} params="popular" cursor={cursor} />
       </>
     );
   }
@@ -41,7 +37,7 @@ export default async function Page({ params }: Props) {
     return (
       <>
         <Navbar />
-        <Main initialWorldcupCards={data} params='latest' cursor={cursor} />
+        <Main initialWorldcupCards={data} params="latest" cursor={cursor} />
       </>
     );
   }

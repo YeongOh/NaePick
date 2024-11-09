@@ -3,6 +3,8 @@ import 'server-only';
 import { COMMENT_ID_LENGTH } from '@/app/constants';
 import { db } from '../database';
 import { nanoid } from 'nanoid';
+import { comments } from '../database/schema';
+import { eq } from 'drizzle-orm';
 
 export async function createComment({
   worldcupId,
@@ -17,78 +19,37 @@ export async function createComment({
 }) {
   try {
     const commentId = nanoid(COMMENT_ID_LENGTH);
-
-    let votedFor = null;
-
-    if (votedCandidateId) {
-      const [result, fields] = await db.query(
-        `SELECT name FROM candidate WHERE candidate_id = ?`,
-        [votedCandidateId]
-      );
-      if (result && result[0]) {
-        votedFor = result[0].name;
-      }
-    }
-    const isAnonymous = userId ? false : true;
-
-    await db.query(
-      `INSERT INTO comment (comment_id, worldcup_id, user_id, text, is_anonymous, voted_candidate_id) 
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        commentId,
-        worldcupId,
-        isAnonymous ? null : userId,
-        text,
-        isAnonymous,
-        votedCandidateId,
-      ]
-    );
-    const newComment = {
-      userId: isAnonymous ? null : userId,
-      createdAt: String(new Date()),
-      updatedAt: String(new Date()),
+    const values = {
+      id: commentId,
+      userId: userId ?? null,
+      candidateId: votedCandidateId ?? null,
+      isAnonymous: userId ? false : true,
       worldcupId,
-      commentId,
       text,
-      votedFor,
-      isAnonymous,
     };
-    return newComment;
+    await db.insert(comments).values(values);
+
+    return commentId;
   } catch (error) {
     console.error(error);
-    throw new Error('Server Error');
+    throw error;
+  }
+}
+
+export async function updateComment(commentId: string, text: string) {
+  try {
+    await db.update(comments).set({ text }).where(eq(comments.id, commentId));
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
 export async function deleteComment(commentId: string) {
   try {
-    await db.query(
-      `DELETE FROM comment
-            WHERE comment_id = ?`,
-      [commentId]
-    );
+    await db.delete(comments).where(eq(comments.id, commentId));
   } catch (error) {
     console.error(error);
-    throw new Error('Server Error');
-  }
-}
-
-export async function updateComment({
-  commentId,
-  text,
-}: {
-  commentId: string;
-  text: string;
-}) {
-  try {
-    await db.query(
-      `UPDATE comment
-       SET text = ?
-       WHERE comment_id = ?`,
-      [text, commentId]
-    );
-  } catch (error) {
-    console.error(error);
-    throw new Error('Server Error');
+    throw error;
   }
 }

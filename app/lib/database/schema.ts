@@ -1,13 +1,23 @@
 import {
   CANDIDATE_ID_LENGTH,
   CANDIDATE_NAME_MAX_LENGTH,
+  COMMENT_ID_LENGTH,
+  COMMENT_TEXT_MAX_LENGTH,
   NICKNAME_MAX_LENGTH,
   USER_ID_LENGTH,
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
   WORLDCUP_ID_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
 } from '@/app/constants';
-import { mysqlEnum, mysqlTable as table, smallint, timestamp, varchar } from 'drizzle-orm/mysql-core';
+import {
+  mysqlEnum,
+  mysqlTable as table,
+  smallint,
+  timestamp,
+  varchar,
+  boolean,
+  AnyMySqlColumn,
+} from 'drizzle-orm/mysql-core';
 
 export const worldcups = table('worldcup', {
   id: varchar({ length: WORLDCUP_ID_LENGTH }).primaryKey(),
@@ -18,8 +28,8 @@ export const worldcups = table('worldcup', {
   categoryId: smallint()
     .notNull()
     .references(() => categories.id),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
 export const categories = table('category', {
@@ -33,8 +43,8 @@ export const users = table('user', {
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }).notNull(),
   profilePath: varchar({ length: 50 }),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
 export const candidates = table('candidate', {
@@ -48,11 +58,29 @@ export const candidates = table('candidate', {
   mediaTypeId: smallint()
     .notNull()
     .references(() => mediaTypes.id),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp().notNull().onUpdateNow().defaultNow(),
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
 export const mediaTypes = table('media_type', {
   id: smallint().primaryKey().autoincrement(),
   name: varchar({ length: 20 }).notNull().unique(),
+});
+
+export const comments = table('comment', {
+  id: varchar({ length: COMMENT_ID_LENGTH }).primaryKey(),
+  text: varchar({ length: COMMENT_TEXT_MAX_LENGTH }).notNull(),
+  parentId: varchar({ length: COMMENT_ID_LENGTH }).references((): AnyMySqlColumn => comments.id, {
+    onDelete: 'cascade',
+  }),
+  userId: varchar({ length: USER_ID_LENGTH }).references(() => users.id, { onDelete: 'set null' }),
+  worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
+    .notNull()
+    .references(() => worldcups.id, { onDelete: 'cascade' }),
+  candidateId: varchar({ length: CANDIDATE_ID_LENGTH }).references(() => candidates.id, {
+    onDelete: 'set null',
+  }),
+  isAnonymous: boolean().notNull().default(false),
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });

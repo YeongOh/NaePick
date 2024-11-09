@@ -1,15 +1,13 @@
 import { translatePublicity, WorldcupCard } from '@/app/lib/types';
 import CardThumbnail from './card-thumbnail';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ko';
 import Link from 'next/link';
 import CardEllipsis from './card-ellipsis';
 import CardUpdateLink from './card-update-link';
 import { useRouter } from 'next/navigation';
 import { forwardRef, useState } from 'react';
-import MyImage from '../ui/my-image';
 import Avatar from '../ui/Avatar';
+import dayjs from '@/app/utils/dayjs';
 
 export interface CardProps {
   worldcupCard: WorldcupCard;
@@ -21,20 +19,15 @@ export interface CardProps {
 }
 
 const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
-  {
-    worldcupCard,
-    openDropdownMenu,
-    onOpenDropdownMenu,
-    onCloseDropdownMenu,
-    extended,
-  }: CardProps,
+  { worldcupCard, openDropdownMenu, onOpenDropdownMenu, onCloseDropdownMenu, extended }: CardProps,
   ref
 ) {
   const [isActive, setIsActive] = useState(false);
   const router = useRouter();
-  dayjs.extend(relativeTime);
-  dayjs.locale('ko');
+  // console.log(new Date());
 
+  // console.log(dayjs(new Date()).fromNow());
+  console.log(worldcupCard.createdAt);
   const createdAt = dayjs(worldcupCard.createdAt);
 
   return (
@@ -57,47 +50,38 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
         }
       }}
       onClick={(e) => {
-        router.push(`/wc/${worldcupCard.worldcupId}`);
+        router.push(`/wc/${worldcupCard.id}`);
       }}
     >
       <div>
-        <Link
-          tabIndex={-1}
-          href={`/wc/${worldcupCard.worldcupId}`}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <Link tabIndex={-1} href={`/wc/${worldcupCard.id}`} onClick={(e) => e.stopPropagation()}>
           <CardThumbnail worldcupCard={worldcupCard} />
         </Link>
-        <div className='flex items-end justify-between p-1 md:p-0'>
-          <div className='flex-1'>
-            <div className='flex flex-start mt-2'>
+        <div className="flex items-end justify-between p-1 md:p-0">
+          <div className="flex-1">
+            <div className="flex flex-start mt-2">
               <Avatar
                 alt={worldcupCard.nickname}
-                profilePathname={worldcupCard.profilePathname}
-                size='small'
-                className='mt-1 mr-2'
+                profilePath={worldcupCard.profilePathname}
+                size="small"
+                className="mt-1 mr-2"
               />
-              <div className='flex-1'>
-                <Link href={`/wc/${worldcupCard.worldcupId}`}>
+              <div className="flex-1">
+                <Link href={`/wc/${worldcupCard.id}`}>
                   <h2
-                    className='text-base font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer mb-1'
+                    className="text-base font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer mb-1"
                     title={worldcupCard.title}
                   >
                     {worldcupCard.title}
                   </h2>
                 </Link>
-                <div className='text-md text-gray-500 flex items-center'>
+                <div className="text-md text-gray-500 flex items-center">
                   <span>{worldcupCard.nickname}</span>
-                  <span
-                    className='ml-2'
-                    title={createdAt.format('YYYY년 MM월 DD일')}
-                  >
+                  <span className="ml-2" title={createdAt.format('YYYY년 MM월 DD일')}>
                     {createdAt.fromNow()}
                   </span>
                   {extended ? (
-                    <span className='ml-2'>
-                      {translatePublicity(worldcupCard.publicity)}
-                    </span>
+                    <span className="ml-2">{translatePublicity(worldcupCard.publicity)}</span>
                   ) : null}
                 </div>
               </div>
@@ -109,7 +93,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
                 onCloseDropdownMenu={onCloseDropdownMenu}
               />
             </div>
-            <div className='flex items-center justify-between w-full'></div>
+            <div className="flex items-center justify-between w-full"></div>
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
-import "server-only";
-import { and, eq, ne, or } from "drizzle-orm";
-import { db } from "../database";
-import { users } from "../database/schema";
+import 'server-only';
+import { and, eq, ne, or } from 'drizzle-orm';
+import { db } from '../database';
+import { users } from '../database/schema';
 
-export async function findUsersWithDuplicateEmailOrNickname(email: string, nickname: string) {
+export async function findUserWithDuplicateEmailOrNickname(email: string, nickname: string) {
   try {
     return await db
       .select({ nickname: users.nickname, email: users.email })

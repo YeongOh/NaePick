@@ -6,18 +6,13 @@ import { nanoid } from 'nanoid';
 import { PassThrough, Readable } from 'stream';
 import { S3client, videoBucket } from '../storage/config';
 
-export async function downloadImgurUploadS3(
-  imgurUrl: string,
-  worldcupId: string
-) {
+export async function downloadImgurUploadS3(imgurUrl: string, worldcupId: string) {
   const pathname = new URL(imgurUrl).pathname;
   const originalVideoURL = `https://i.imgur.com${pathname}.mp4`;
   const response = await fetch(originalVideoURL);
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to download file from Imgur: ${response.statusText}`
-    );
+    throw new Error(`Failed to download file from Imgur: ${response.statusText}`);
   }
 
   if (!response.body) {
@@ -30,9 +25,7 @@ export async function downloadImgurUploadS3(
   const contentLength = response.headers.get('content-length');
   // mp4 upload => content type = video/mp4
   if (contentType !== 'video/mp4') {
-    throw new Error(
-      'imgur은 mp4 동영상 파일만 지원합니다. 주소가 올바른지 확인해보세요.'
-    );
+    throw new Error('imgur은 mp4 동영상 파일만 지원합니다. 주소가 올바른지 확인해보세요.');
   }
   const objectId = nanoid(OBJECT_ID_LENGTH);
   const key = `worldcups/${worldcupId}/${objectId}.mp4`;

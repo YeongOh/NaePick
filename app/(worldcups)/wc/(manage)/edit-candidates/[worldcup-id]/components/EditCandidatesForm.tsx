@@ -36,7 +36,7 @@ interface Candidate {
   path: string;
   thumbnailUrl: string | null;
   mediaType: string;
-  createdAt: Date;
+  createdAt: string;
 }
 
 interface Props {
@@ -443,7 +443,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
               </div>
               {selectedCandidateToPreviewIndex === candidateIndex && (
                 <div className="w-full flex justify-center my-8 h-[400px] bg-black">
-                  <Media pathname={candidate.path} name={candidate.name} mediaType={candidate.mediaType} />
+                  <Media path={candidate.path} name={candidate.name} mediaType={candidate.mediaType} />
                 </div>
               )}
             </li>

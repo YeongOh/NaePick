@@ -1,9 +1,9 @@
 'use server';
-import { worldcups } from '../database/schema';
+import { candidates, users, worldcups } from '../database/schema';
 import { nanoid } from 'nanoid';
 import { WORLDCUP_ID_LENGTH } from '@/app/constants';
 import { db } from '../database';
-import { eq } from 'drizzle-orm';
+import { asc, desc, eq, getTableColumns, gt, lt } from 'drizzle-orm';
 
 export async function createWorldcup({
   title,
@@ -68,6 +68,43 @@ export async function getWorldcupForm(worldcupId: string) {
   } catch (error) {
     console.error(error);
     throw error;
+  }
+}
+
+export async function getWorldcups(cursor?: string) {
+  const DATA_PER_PAGE = 3;
+
+  try {
+    const result = await db
+      .select()
+      .from(worldcups)
+      .where(cursor ? lt(worldcups.createdAt, cursor) : undefined)
+      .limit(DATA_PER_PAGE)
+      .orderBy(desc(worldcups.createdAt));
+
+    const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
+    return { data: result, nextCursor };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getWorldcup(worldcupId: string) {
+  try {
+    const result = await db
+      .select({
+        ...getTableColumns(worldcups),
+        nickname: users.nickname,
+        profilePath: users.profilePath,
+        candidatesCount: db.$count(candidates, eq(candidates.worldcupId, worldcupId)),
+      })
+      .from(worldcups)
+      .leftJoin(users, eq(users.id, worldcups.userId))
+      .where(eq(worldcups.id, worldcupId));
+
+    return result;
+  } catch (error) {
+    console.error(error);
   }
 }
 

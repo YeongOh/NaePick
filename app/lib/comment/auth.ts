@@ -1,25 +1,20 @@
 import 'server-only';
-import { Comment } from '../types';
-import { FieldPacket } from 'mysql2';
 import { db } from '../database';
+import { comments } from '../database/schema';
+import { eq } from 'drizzle-orm';
 
-export const canUserEditComment = async ({
-  userId,
-  commentId,
-}: {
-  userId: string;
-  commentId: string;
-}) => {
-  const [result, meta]: [Comment[], FieldPacket[]] = await db.query(
-    `SELECT user_id as userId 
-                FROM comment
-                WHERE comment_id = ?`,
-    [commentId]
-  );
-  if (!result || !result[0]) return false;
+export async function verifyCommentOwner(commentId: string, userId: string) {
+  try {
+    const [comment] = await db
+      .select({ userId: comments.userId })
+      .from(comments)
+      .where(eq(comments.id, commentId));
 
-  const comment = result[0];
-  if (comment.userId !== userId) return false;
+    if (comment.userId !== userId) return false;
 
-  return true;
-};
+    return true;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
