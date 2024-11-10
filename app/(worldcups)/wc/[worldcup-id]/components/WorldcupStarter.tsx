@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
@@ -14,6 +14,7 @@ import { getRandomCandidates } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { candidates, worldcups } from '@/app/lib/database/schema';
 import WorldcupStarterModal from './WorldcupStarterModal';
+import dynamic from 'next/dynamic';
 
 type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
 
@@ -36,6 +37,10 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   const [showSidebar, setShowSidebar] = useState(false);
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
   const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<string>();
+  const WorldcupStarterModal = useMemo(
+    () => dynamic(() => import('./WorldcupStarterModal'), { ssr: false }),
+    []
+  );
 
   const notEnoughCandidates = (worldcup.candidatesCount as number) < MIN_NUMBER_OF_CANDIDATES;
 

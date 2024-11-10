@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from './app/lib/session';
 
-const protectedRoutes = ['/woc/create', '/edit', '/edit-candidates', '/wc/users'];
+const protectedRoutes = ['/wc/create', '/edit', '/edit-candidates', '/wc/users'];
 const publicRoutes = ['/auth/login', '/auth/signup'];
 
 export default async function middleware(req: NextRequest) {

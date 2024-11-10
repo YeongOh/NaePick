@@ -1,19 +1,13 @@
 'use client';
 
-import { getRelativeDate, sortDate } from '@/app/utils/date';
+import { sortDate } from '@/app/utils/date';
 import React, { useEffect, useRef, useState } from 'react';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+
 import 'dayjs/locale/ko';
-import { EllipsisVertical, Pencil } from 'lucide-react';
-import CommentDropdownMenu from './CommentDropdownMenu';
+import { Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import TextArea from '@/app/components/ui/textarea';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
-import Button from '@/app/components/ui/button';
-import Avatar from '@/app/components/ui/Avatar';
-import ToggleableP from '@/app/components/ui/toggleable-p';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
 import {
   createCommentAction,
@@ -21,15 +15,18 @@ import {
   deleteCommentAction,
   getComments,
   getCommentsCount,
-  updateCommentAction,
 } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { comments } from '@/app/lib/database/schema';
+import Comment from './Comment';
+import Button from '@/app/components/ui/button';
 
-type CommentModel = InferSelectModel<typeof comments> & {
+export type CommentModel = InferSelectModel<typeof comments> & {
   nickname: string | null;
   profilePath: string | null;
   voted: string | null;
+  likeCount: number;
+  isLiked?: boolean;
 };
 
 interface Props {
@@ -47,11 +44,9 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const [comments, setComments] = useState<CommentModel[]>([]);
   const [numberOfNewComments, setNumberOfNewComments] = useState(0);
   const [cursor, setCursor] = useState<string>();
-  const ref = useRef(null);
   const [dropdownMenuId, setDropdownMenuId] = useState<string | null>(null);
   const [openDeleteConfirmModal, setOpenDeleteConfirmModal] = useState<boolean>(false);
-  const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
-  const [newText, setNewText] = useState('');
+  const ref = useRef(null);
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -75,18 +70,53 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   }, [dropdownMenuId]);
 
   useEffect(() => {
-    getComments(worldcupId).then((result) => {
+    if (commentsCount === undefined) {
+      getCommentsCount(worldcupId).then((resutlt) => setCommentsCount(resutlt));
+    }
+  }, []);
+
+  useEffect(() => {
+    getComments(worldcupId, userId).then((result) => {
       if (result) {
+        console.log(result);
         setComments(result.data);
         setCursor(result.nextCursor);
       }
     });
-  }, [worldcupId]);
+  }, [worldcupId, userId]);
+
+  useEffect(() => {
+    const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+      if (entries[0].isIntersecting && !isFetching && cursor) {
+        observer.unobserve(entries[0].target);
+        setIsFetching(true);
+        const result = await getComments(worldcupId, userId, cursor);
+        if (!result) {
+          throw new Error();
+        }
+        const { data, nextCursor } = result;
+        if (data) {
+          setComments((prev) => [...prev, ...data]);
+        }
+        setCursor(nextCursor);
+        setIsFetching(false);
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold: 0.5,
+    });
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [cursor, isFetching, worldcupId, userId]);
 
   const sortedComments = comments?.sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'));
-
-  dayjs.extend(relativeTime);
-  dayjs.locale('ko');
 
   const handleDeleteComment = async () => {
     const targetCommentId = dropdownMenuId;
@@ -103,32 +133,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     } finally {
       setOpenDeleteConfirmModal(false);
       setDropdownMenuId(null);
-    }
-  };
-
-  const handleEditTextSubmit = async () => {
-    try {
-      if (!updateCommentId) return;
-      if (newText.length <= 0) {
-        toast.error('최소 0자 이상이어야 합니다.');
-        return;
-      }
-      if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
-        toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-        return;
-      }
-
-      await updateCommentAction(updateCommentId, newText);
-      const newComments = comments.map((comment) =>
-        comment.id === updateCommentId ? { ...comment, text: newText } : comment
-      );
-      setComments(newComments);
-      setNewText('');
-      setUpdateCommentId(null);
-      toast.success('댓글이 수정되었습니다.');
-    } catch (error) {
-      console.error(error);
-      toast.error('댓글을 수정하지 못했습니다.');
     }
   };
 
@@ -158,42 +162,21 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     }
   };
 
-  useEffect(() => {
-    if (commentsCount === undefined) {
-      getCommentsCount(worldcupId).then((resutlt) => setCommentsCount(resutlt));
-    }
-  }, []);
+  const handleUpdateComment = (commentId: string, newText: string) => {
+    setComments(
+      comments.map((comment) => (comment.id === commentId ? { ...comment, text: newText } : comment))
+    );
+  };
 
-  useEffect(() => {
-    const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      if (entries[0].isIntersecting && !isFetching && cursor) {
-        observer.unobserve(entries[0].target);
-        setIsFetching(true);
-        const result = await getComments(worldcupId, cursor);
-        if (!result) {
-          throw new Error();
-        }
-        const { data, nextCursor } = result;
-        if (data) {
-          setComments((prev) => [...prev, ...data]);
-        }
-        setCursor(nextCursor);
-        setIsFetching(false);
-      }
-    };
-
-    const observer = new IntersectionObserver(handleIntersect, {
-      threshold: 0.5,
-    });
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [cursor, isFetching, worldcupId]);
+  const handleLikeComment = (commentId: string, isLiked: boolean) => {
+    setComments(
+      comments.map((comment) =>
+        comment.id === commentId
+          ? { ...comment, likeCount: isLiked ? comment.likeCount + 1 : comment.likeCount - 1, isLiked }
+          : comment
+      )
+    );
+  };
 
   const totalNumberOfComments = (commentsCount || 0) + numberOfNewComments;
 
@@ -223,93 +206,17 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       {comments ? (
         <ul>
           {sortedComments?.map((comment, index) => (
-            <li className="mb-4" key={comment.id} ref={index === sortedComments.length - 1 ? ref : null}>
-              <div className="flex justify-between">
-                <div className="mt-2 mr-3">
-                  <Avatar profilePath={comment.profilePath} size="small" alt={comment.nickname} />
-                </div>
-                <div className="w-full">
-                  <div className="mb-1">
-                    <span
-                      className={`mr-3 font-semibold text-base ${
-                        !comment.isAnonymous && comment.nickname ? 'text-slate-700' : 'text-gray-500'
-                      }`}
-                    >
-                      {comment.isAnonymous ? '익명' : comment.nickname ? comment.nickname : '탈퇴한 회원'}
-                    </span>
-                    {comment.voted ? (
-                      <span className="text-sm text-gray-500">
-                        {comment.voted}
-                        {'  -  '}
-                      </span>
-                    ) : null}
-                    <span
-                      className="text-sm text-gray-500"
-                      title={dayjs(comment.createdAt).format('YYYY년 MM월 DD일 HH시 MM분')}
-                    >
-                      {getRelativeDate(comment.createdAt)}
-                    </span>
-                  </div>
-                  {updateCommentId !== comment.id ? (
-                    <ToggleableP className={'text-slate-700'} text={comment.text} numberOfLines={3} />
-                  ) : (
-                    <>
-                      <TextArea
-                        id="editText"
-                        name="editText"
-                        value={newText}
-                        error={state.errors?.text}
-                        className={`p-2 mb-1`}
-                        onChange={(e) => setNewText(e.target.value)}
-                        rows={2}
-                      />
-                      <div className="flex w-full justify-end">
-                        <div className="w-[40%] flex gap-2">
-                          <Button
-                            type="button"
-                            size="small"
-                            onClick={() => setUpdateCommentId(null)}
-                            variant="ghost"
-                          >
-                            취소
-                          </Button>
-                          <Button type="button" size="small" variant="primary" onClick={handleEditTextSubmit}>
-                            확인
-                          </Button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-                {comment.userId === userId ? (
-                  <div className="relative w-10 h-10 mt-2">
-                    <button
-                      type="button"
-                      className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 rounded-full w-10 h-10 flex justify-center items-center`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (comment.id !== dropdownMenuId) {
-                          setDropdownMenuId(comment.id);
-                        } else {
-                          setDropdownMenuId(null);
-                        }
-                      }}
-                    >
-                      <EllipsisVertical size="1.2rem" />
-                    </button>
-                    <CommentDropdownMenu
-                      openDropdownMenu={comment.id === dropdownMenuId}
-                      onOpenDeleteCommentModal={() => setOpenDeleteConfirmModal(true)}
-                      startEditComment={() => {
-                        setNewText(comment.text);
-                        setUpdateCommentId(comment.id);
-                        setDropdownMenuId(null);
-                      }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            </li>
+            <Comment
+              key={comment.id}
+              ref={index === sortedComments.length - 1 ? ref : null}
+              comment={comment}
+              userId={userId}
+              dropdownMenuId={dropdownMenuId}
+              onUpdateComment={handleUpdateComment}
+              onLikeComment={handleLikeComment}
+              setDropdownMenuId={setDropdownMenuId}
+              setOpenDeleteConfirmModal={setOpenDeleteConfirmModal}
+            />
           ))}
         </ul>
       ) : null}

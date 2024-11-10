@@ -1,12 +1,12 @@
 'use client';
 
-import { getWorldcups } from '@/app/(worldcups)/wc/[worldcup-id]/actions';
 import CardGrid from '@/app/components/card/card-grid';
 import CardGridEmpty from '@/app/components/card/card-grid-empty';
 import MainNav from '@/app/components/main/main-nav';
 import { translateCategory } from '@/app/lib/types';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { getWorldcups } from '../action';
 
 interface Props {
   sort: 'latest' | 'popular';

@@ -18,9 +18,10 @@ import {
   boolean,
   AnyMySqlColumn,
   int,
+  primaryKey,
 } from 'drizzle-orm/mysql-core';
 
-export const worldcups = table('worldcup', {
+export const worldcups = table('worldcups', {
   id: varchar({ length: WORLDCUP_ID_LENGTH }).primaryKey(),
   title: varchar({ length: WORLDCUP_TITLE_MAX_LENGTH }).notNull(),
   description: varchar({ length: WORLDCUP_DESCRIPTION_MAX_LENGTH }),
@@ -33,12 +34,12 @@ export const worldcups = table('worldcup', {
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
-export const categories = table('category', {
+export const categories = table('categories', {
   id: smallint().primaryKey().autoincrement(),
   name: varchar({ length: 20 }).notNull().unique(),
 });
 
-export const users = table('user', {
+export const users = table('users', {
   id: varchar({ length: USER_ID_LENGTH }).primaryKey(),
   nickname: varchar({ length: NICKNAME_MAX_LENGTH }).notNull().unique(),
   email: varchar({ length: 255 }).notNull().unique(),
@@ -48,7 +49,7 @@ export const users = table('user', {
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
-export const candidates = table('candidate', {
+export const candidates = table('candidates', {
   id: varchar({ length: CANDIDATE_ID_LENGTH }).primaryKey(),
   name: varchar({ length: CANDIDATE_NAME_MAX_LENGTH }).notNull(),
   path: varchar({ length: 255 }).notNull(),
@@ -63,12 +64,12 @@ export const candidates = table('candidate', {
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
-export const mediaTypes = table('media_type', {
+export const mediaTypes = table('media_types', {
   id: smallint().primaryKey().autoincrement(),
   name: varchar({ length: 20 }).notNull().unique(),
 });
 
-export const comments = table('comment', {
+export const comments = table('comments', {
   id: varchar({ length: COMMENT_ID_LENGTH }).primaryKey(),
   text: varchar({ length: COMMENT_TEXT_MAX_LENGTH }).notNull(),
   parentId: varchar({ length: COMMENT_ID_LENGTH }).references((): AnyMySqlColumn => comments.id, {
@@ -86,7 +87,7 @@ export const comments = table('comment', {
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
-export const games = table('game', {
+export const games = table('games', {
   id: int().primaryKey().autoincrement(),
   worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
     .notNull()
@@ -100,3 +101,19 @@ export const games = table('game', {
   isFinalGame: boolean().notNull().default(false),
   createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
 });
+
+export const commentLikes = table(
+  'comment_likes',
+  {
+    commentId: varchar({ length: COMMENT_ID_LENGTH })
+      .notNull()
+      .references(() => comments.id, { onDelete: 'cascade' }),
+    userId: varchar({ length: USER_ID_LENGTH })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  },
+  (table) => {
+    return { pk: primaryKey({ columns: [table.commentId, table.userId] }) };
+  }
+);

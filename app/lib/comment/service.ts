@@ -3,8 +3,8 @@ import 'server-only';
 import { COMMENT_ID_LENGTH } from '@/app/constants';
 import { db } from '../database';
 import { nanoid } from 'nanoid';
-import { comments } from '../database/schema';
-import { eq } from 'drizzle-orm';
+import { commentLikes, comments } from '../database/schema';
+import { and, eq } from 'drizzle-orm';
 
 export async function createComment({
   worldcupId,
@@ -48,6 +48,26 @@ export async function updateComment(commentId: string, text: string) {
 export async function deleteComment(commentId: string) {
   try {
     await db.delete(comments).where(eq(comments.id, commentId));
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function likeComment(commentId: string, userId: string) {
+  try {
+    await db.insert(commentLikes).values({ commentId, userId });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function cancelLikeComment(commentId: string, userId: string) {
+  try {
+    await db
+      .delete(commentLikes)
+      .where(and(eq(commentLikes.commentId, commentId), eq(commentLikes.userId, userId)));
   } catch (error) {
     console.error(error);
     throw error;

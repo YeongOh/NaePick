@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import CardGrid from '../card/card-grid';
 import MainNav from './main-nav';
 import CardGridEmpty from '../card/card-grid-empty';
-import { getPopularWorldcups } from '@/app/(worldcups)/wc/[worldcup-id]/actions';
+import { getPopularWorldcups } from '@/app/(search)/action';
 
 interface Cursor {
   gameCount: number;
