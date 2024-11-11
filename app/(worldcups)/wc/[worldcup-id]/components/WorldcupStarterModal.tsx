@@ -40,8 +40,8 @@ export default function WorldcupStarterModal({
   );
   const notEnoughCandidates = candidatesCount < MIN_NUMBER_OF_CANDIDATES;
 
-  const createdDate = dayjs(createdAt);
-  const updatedDate = dayjs(updatedAt);
+  const createdDate = dayjs(createdAt).tz();
+  const updatedDate = dayjs(updatedAt).tz();
   const isUpdated = createdDate.diff(updatedDate);
 
   const handleRoundSubmit = () => {

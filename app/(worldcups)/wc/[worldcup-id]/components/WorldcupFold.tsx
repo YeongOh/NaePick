@@ -11,8 +11,8 @@ interface Props {
 }
 
 export default function WorldcupFold({ nickname, createdAt, updatedAt, description, profilePath }: Props) {
-  const createdDate = dayjs(createdAt);
-  const updatedDate = dayjs(updatedAt);
+  const createdDate = dayjs(createdAt).tz();
+  const updatedDate = dayjs(updatedAt).tz();
   const isUpdated = createdDate.diff(updatedDate);
 
   return (

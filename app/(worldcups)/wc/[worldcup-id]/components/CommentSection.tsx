@@ -255,7 +255,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           onChange={(e) => setText(e.target.value)}
           placeholder="댓글 내용"
           rows={2}
-          autoFocus
         />
         <InputErrorMessage className="mb-1" errors={state.errors?.text} />
         <Button variant="primary" className="flex justify-center items-center gap-1 mt-1 mb-4">

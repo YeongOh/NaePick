@@ -24,7 +24,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
   const [isActive, setIsActive] = useState(false);
   const router = useRouter();
 
-  const createdAt = dayjs(worldcupCard.createdAt);
+  const createdAt = dayjs(worldcupCard.createdAt).tz();
 
   return (
     <li
