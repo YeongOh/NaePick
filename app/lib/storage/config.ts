@@ -1,3 +1,4 @@
+import 'server-only';
 import { S3Client } from '@aws-sdk/client-s3';
 
 export const imageBucket = process.env.AWS_S3_IMAGE_BUCKET;

@@ -11,7 +11,7 @@ export default function NavbarDropdownMenu({ open, userId }: Props) {
   return (
     <>
       {open && (
-        <div className="navbar-dropdown-menu " onClick={(e) => e.stopPropagation()}>
+        <div className="navbar-dropdown-menu z-50" onClick={(e) => e.stopPropagation()}>
           <ul className="absolute right-0 font-lg border bg-white rounded-lg flex flex-col w-52 text-left text-base shadow cursor-pointer text-slate-700 p-2 z-50 animate-modalTransition font-semibold">
             <Link
               href="/wc/create"

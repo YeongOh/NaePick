@@ -2,24 +2,26 @@
 
 import { sortDate } from '@/app/utils/date';
 import React, { useEffect, useRef, useState } from 'react';
-
-import 'dayjs/locale/ko';
 import { Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TextArea from '@/app/components/ui/textarea';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
 import {
+  cancelLikeCommentAction,
   createCommentAction,
   CreateCommentState,
   deleteCommentAction,
   getComments,
   getCommentsCount,
+  likeCommentAction,
+  updateCommentAction,
 } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { comments } from '@/app/lib/database/schema';
 import Comment from './Comment';
 import Button from '@/app/components/ui/button';
+import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 
 export type CommentModel = InferSelectModel<typeof comments> & {
   nickname: string | null;
@@ -40,13 +42,20 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const [state, setState] = useState<CreateCommentState>({ errors: {} });
   const [commentsCount, setCommentsCount] = useState<number>();
   const [text, setText] = useState('');
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetchingComment, setIsFetchingComment] = useState(false);
   const [comments, setComments] = useState<CommentModel[]>([]);
   const [numberOfNewComments, setNumberOfNewComments] = useState(0);
   const [cursor, setCursor] = useState<string>();
-  const [dropdownMenuId, setDropdownMenuId] = useState<string | null>(null);
-  const [openDeleteConfirmModal, setOpenDeleteConfirmModal] = useState<boolean>(false);
+  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
+  const [deleteConfirmModalIndex, setDeleteConfirmModalIndex] = useState<number | null>(null);
+  const [isLikeCommentLoading, setIsLikeCommentLoading] = useState(false);
+  const [updateCommentIndex, setUpdateCommentIndex] = useState<number | null>(null);
+
   const ref = useRef(null);
+
+  const handleToggleDropdownMenu = (index: number) => {
+    setDropdownMenuIndex((prev) => (prev == index ? null : index));
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -55,19 +64,19 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       !target.closest('.dropdown-menu-toggle') &&
       !target.closest('.modal')
     ) {
-      setDropdownMenuId(null);
+      setDropdownMenuIndex(null);
     }
   };
 
   useEffect(() => {
-    if (dropdownMenuId !== null) {
+    if (dropdownMenuIndex !== null) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [dropdownMenuId]);
+  }, [dropdownMenuIndex]);
 
   useEffect(() => {
     if (commentsCount === undefined) {
@@ -87,9 +96,9 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
 
   useEffect(() => {
     const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      if (entries[0].isIntersecting && !isFetching && cursor) {
+      if (entries[0].isIntersecting && !isFetchingComment && cursor) {
         observer.unobserve(entries[0].target);
-        setIsFetching(true);
+        setIsFetchingComment(true);
         const result = await getComments(worldcupId, userId, cursor);
         if (!result) {
           throw new Error();
@@ -99,7 +108,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           setComments((prev) => [...prev, ...data]);
         }
         setCursor(nextCursor);
-        setIsFetching(false);
+        setIsFetchingComment(false);
       }
     };
 
@@ -114,15 +123,14 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     return () => {
       observer.disconnect();
     };
-  }, [cursor, isFetching, worldcupId, userId]);
+  }, [cursor, isFetchingComment, worldcupId, userId]);
 
   const sortedComments = comments?.sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'));
 
   const handleDeleteComment = async () => {
-    const targetCommentId = dropdownMenuId;
+    if (deleteConfirmModalIndex === null) return;
+    const targetCommentId = sortedComments[deleteConfirmModalIndex].id;
     try {
-      if (!targetCommentId) return;
-
       await deleteCommentAction(targetCommentId);
       const newComments = comments.filter((comment) => comment.id != targetCommentId);
       setComments(newComments);
@@ -131,8 +139,21 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       console.error(error);
       toast.error('댓글을 삭제하지 못했습니다.');
     } finally {
-      setOpenDeleteConfirmModal(false);
-      setDropdownMenuId(null);
+      setDeleteConfirmModalIndex(null);
+      setDropdownMenuIndex(null);
+    }
+  };
+
+  const handleDeleteCommentModal = (index: number) => {
+    setDeleteConfirmModalIndex(index);
+  };
+
+  const handleUpdateCommentToggle = (index: number) => {
+    if (index === updateCommentIndex) {
+      setUpdateCommentIndex(null);
+    } else {
+      setDropdownMenuIndex(null);
+      setUpdateCommentIndex(index);
     }
   };
 
@@ -162,20 +183,59 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     }
   };
 
-  const handleUpdateComment = (commentId: string, newText: string) => {
-    setComments(
-      comments.map((comment) => (comment.id === commentId ? { ...comment, text: newText } : comment))
-    );
+  const handleUpdateCommentSubmit = async (index: number, newText: string) => {
+    try {
+      if (newText.length <= 0) {
+        toast.error('최소 0자 이상이어야 합니다.');
+        return;
+      }
+      if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
+        toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
+        return;
+      }
+      const targetComment = sortedComments[index];
+
+      await updateCommentAction(targetComment.id, newText);
+      setComments(
+        comments.map((comment) => (comment.id === targetComment.id ? { ...comment, text: newText } : comment))
+      );
+      setUpdateCommentIndex(null);
+      toast.success('댓글이 수정되었습니다.');
+    } catch (error) {
+      console.error(error);
+      toast.error('댓글을 수정하지 못했습니다.');
+    }
   };
 
-  const handleLikeComment = (commentId: string, isLiked: boolean) => {
-    setComments(
-      comments.map((comment) =>
-        comment.id === commentId
-          ? { ...comment, likeCount: isLiked ? comment.likeCount + 1 : comment.likeCount - 1, isLiked }
-          : comment
-      )
-    );
+  const handleLikeComment = async (index: number) => {
+    try {
+      if (!userId) {
+        toast.error('로그인이 필요합니다!');
+        return;
+      }
+      if (isLikeCommentLoading) return;
+      setIsLikeCommentLoading(true);
+      const targetComment = sortedComments[index];
+
+      if (targetComment.isLiked) {
+        await cancelLikeCommentAction(targetComment.id, userId);
+      } else {
+        await likeCommentAction(targetComment.id, userId);
+      }
+      const isLiked = !targetComment.isLiked;
+      setComments(
+        comments.map((comment) =>
+          comment.id === targetComment.id
+            ? { ...comment, likeCount: isLiked ? comment.likeCount + 1 : comment.likeCount - 1, isLiked }
+            : comment
+        )
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error('좋아요에 실패했습니다.');
+    } finally {
+      setIsLikeCommentLoading(false);
+    }
   };
 
   const totalNumberOfComments = (commentsCount || 0) + numberOfNewComments;
@@ -211,11 +271,13 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
               ref={index === sortedComments.length - 1 ? ref : null}
               comment={comment}
               userId={userId}
-              dropdownMenuId={dropdownMenuId}
-              onUpdateComment={handleUpdateComment}
-              onLikeComment={handleLikeComment}
-              setDropdownMenuId={setDropdownMenuId}
-              setOpenDeleteConfirmModal={setOpenDeleteConfirmModal}
+              isOpenDropdownMenu={dropdownMenuIndex === index}
+              isUpdatingText={updateCommentIndex === index}
+              onUpdateCommentToggle={() => handleUpdateCommentToggle(index)}
+              onLikeComment={() => handleLikeComment(index)}
+              onUpdateCommentSubmit={(newText) => handleUpdateCommentSubmit(index, newText)}
+              onToggleDropdownMenu={() => handleToggleDropdownMenu(index)}
+              onOpenDeleteCommentModal={() => handleDeleteCommentModal(index)}
             />
           ))}
         </ul>
@@ -223,10 +285,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       <DeleteConfirmModal
         title={'해당 댓글을 정말로 삭제하시겠습니까?'}
         description={''}
-        open={!!openDeleteConfirmModal}
+        open={deleteConfirmModalIndex !== null}
         onClose={() => {
-          setOpenDeleteConfirmModal(false);
-          setDropdownMenuId(null);
+          setDeleteConfirmModalIndex(null);
+          setDropdownMenuIndex(null);
         }}
         onConfirm={handleDeleteComment}
       />

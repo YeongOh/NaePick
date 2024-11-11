@@ -1,6 +1,4 @@
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
+import dayjs from '@/app/utils/dayjs';
 import ToggleableP from '../../../../components/ui/toggleable-p';
 import Avatar from '../../../../components/ui/Avatar';
 
@@ -9,25 +7,16 @@ interface Props {
   createdAt: string;
   updatedAt: string;
   description: string | null;
-  children: React.ReactNode;
   profilePath: string | null;
 }
 
-export default function WorldcupFold({
-  nickname,
-  createdAt,
-  updatedAt,
-  description,
-  children,
-  profilePath,
-}: Props) {
+export default function WorldcupFold({ nickname, createdAt, updatedAt, description, profilePath }: Props) {
   const createdDate = dayjs(createdAt);
   const updatedDate = dayjs(updatedAt);
   const isUpdated = createdDate.diff(updatedDate);
 
   return (
     <>
-      <div className="flex mb-4 gap-1">{children}</div>
       <div className="flex items-center mb-1">
         <Avatar
           profilePath={profilePath}

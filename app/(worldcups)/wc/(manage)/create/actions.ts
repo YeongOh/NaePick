@@ -9,6 +9,7 @@ import {
 } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
 import { createWorldcup } from '@/app/lib/worldcup/service';
+import { revalidatePath } from 'next/cache';
 
 const WorldcupFormSchema = z.object({
   title: z
@@ -78,5 +79,7 @@ export async function createWorldcupAction(prevState: WorldcupFormState, formDat
       message: '이상형 월드컵을 생성하는 데 실패했습니다.',
     };
   }
+  // TODO: ?
+  // revalidatePath('/');
   redirect(`/wc/edit-candidates/${worldcupId}`);
 }

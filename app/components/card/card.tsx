@@ -1,6 +1,5 @@
 import { TCard, translatePublicity } from '@/app/lib/types';
 import CardThumbnail from './card-thumbnail';
-import 'dayjs/locale/ko';
 import Link from 'next/link';
 import CardEllipsis from './card-ellipsis';
 import CardUpdateLink from './card-update-link';

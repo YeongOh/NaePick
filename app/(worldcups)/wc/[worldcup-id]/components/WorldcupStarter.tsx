@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
-import 'dayjs/locale/ko';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import WorldcupPickScreen from './WorldcupPickScreen';
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
@@ -13,7 +12,6 @@ import CommentSection from './CommentSection';
 import { getRandomCandidates } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { candidates, worldcups } from '@/app/lib/database/schema';
-import WorldcupStarterModal from './WorldcupStarterModal';
 import dynamic from 'next/dynamic';
 
 type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
@@ -107,13 +105,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
       {showSidebar ? (
         <div className="p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll">
           <section>
-            <WorldcupFold
-              nickname={worldcup.nickname}
-              createdAt={worldcup.createdAt}
-              updatedAt={worldcup.updatedAt}
-              description={worldcup.description}
-              profilePath={worldcup.profilePath}
-            >
+            <div className="flex mb-4 gap-1">
               <LinkButton
                 href={`/wc/${worldcup.id}/stats`}
                 className="flex justify-center items-center gap-1"
@@ -147,7 +139,14 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
                 <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기
               </Button>
-            </WorldcupFold>
+            </div>
+            <WorldcupFold
+              nickname={worldcup.nickname}
+              createdAt={worldcup.createdAt}
+              updatedAt={worldcup.updatedAt}
+              description={worldcup.description}
+              profilePath={worldcup.profilePath}
+            />
           </section>
           <CommentSection
             worldcupId={worldcup.id}

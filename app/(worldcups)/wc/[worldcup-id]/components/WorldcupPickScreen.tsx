@@ -76,12 +76,12 @@ export default function WorldcupPickScreen({
   return (
     <>
       <section className={`relative flex bg-black h-[calc(100vh-68px)] ${className}`}>
-        <h2 className="absolute bg-black/50 z-50 w-full text-center text-white text-2clamp font-bold pointer-events-none">
+        <h2 className="absolute bg-black/50 z-40 w-full text-center text-white text-2clamp font-bold pointer-events-none">
           {worldcup.title} {getRoundsDescription(round)}
         </h2>
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-300 text-3clamp font-bold z-50 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+          className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-300 text-3clamp font-bold z-40 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
             picked ? 'hidden' : ''
           }`}
         >
@@ -89,7 +89,7 @@ export default function WorldcupPickScreen({
         </div>
 
         {isFinished ? (
-          <div className="pointer-events-none absolute left-1/2 bottom-1/4 -translate-x-1/2 bg-black bg-opacity-30 z-50 w-full">
+          <div className="pointer-events-none absolute left-1/2 bottom-1/4 -translate-x-1/2 bg-black bg-opacity-30 z-40 w-full">
             <h2 className="flex justify-center items-center text-white text-2clamp font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
               {picked === 'left' ? candidates[leftIndex].name : candidates[rightIndex].name} 우승!
             </h2>

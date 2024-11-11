@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import CardGrid from '../card/card-grid';
 import MainNav from './main-nav';
 import CardGridEmpty from '../card/card-grid-empty';
@@ -81,7 +81,9 @@ export default function Main({ worldcups, nextCursor }: Props) {
     <section className="max-w-screen-2xl m-auto">
       {worldcups ? (
         <>
-          <MainNav />
+          <Suspense>
+            <MainNav />
+          </Suspense>
           <CardGrid
             ref={lastWorldcupRef}
             worldcupCards={[...worldcups, ...newWorldcups]}

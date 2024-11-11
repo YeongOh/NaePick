@@ -8,90 +8,43 @@ import { EllipsisVertical, Heart } from 'lucide-react';
 import CommentDropdownMenu from './CommentDropdownMenu';
 import TextArea from '@/app/components/ui/textarea';
 import dayjs from '@/app/utils/dayjs';
-import toast from 'react-hot-toast';
-import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { cancelLikeCommentAction, likeCommentAction, updateCommentAction } from '../actions';
 import { CommentModel } from './CommentSection';
 
 interface Props {
   comment: CommentModel;
   userId?: string;
-  dropdownMenuId: string | null;
-  onUpdateComment: (commentId: string, newText: string) => void;
-  onLikeComment: (commentId: string, isLiked: boolean) => void;
-  setOpenDeleteConfirmModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setDropdownMenuId: React.Dispatch<React.SetStateAction<string | null>>;
+  isOpenDropdownMenu: boolean;
+  isUpdatingText: boolean;
+  onUpdateCommentToggle: () => void;
+  onUpdateCommentSubmit: (newText: string) => void;
+  onLikeComment: () => void;
+  onOpenDeleteCommentModal: () => void;
+  onToggleDropdownMenu: () => void;
 }
 
 const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
   {
     comment,
-    onUpdateComment,
+    isUpdatingText,
+    onUpdateCommentToggle,
     userId,
-    setDropdownMenuId,
-    dropdownMenuId,
-    setOpenDeleteConfirmModal,
+    isOpenDropdownMenu,
+    onOpenDeleteCommentModal,
     onLikeComment,
+    onUpdateCommentSubmit,
+    onToggleDropdownMenu,
   }: Props,
   ref
 ) {
-  const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
-  const [newText, setNewText] = useState('');
-  const [isLikeCommentLoading, setIsLikeCommentLoading] = useState(false);
-
-  const handleEditSubmit = async () => {
-    try {
-      if (!updateCommentId) return;
-      if (newText.length <= 0) {
-        toast.error('최소 0자 이상이어야 합니다.');
-        return;
-      }
-      if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
-        toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-        return;
-      }
-
-      await updateCommentAction(updateCommentId, newText);
-      onUpdateComment(updateCommentId, newText);
-      setNewText('');
-      setUpdateCommentId(null);
-      toast.success('댓글이 수정되었습니다.');
-    } catch (error) {
-      console.error(error);
-      toast.error('댓글을 수정하지 못했습니다.');
-    }
-  };
-
-  const handleLikeComment = async (commentId: string) => {
-    try {
-      if (!userId) {
-        toast.error('로그인이 필요합니다!');
-        return;
-      }
-      if (isLikeCommentLoading) return;
-      setIsLikeCommentLoading(true);
-
-      if (comment.isLiked) {
-        await cancelLikeCommentAction(commentId, userId);
-      } else {
-        await likeCommentAction(commentId, userId);
-      }
-      onLikeComment(commentId, !comment.isLiked);
-    } catch (error) {
-      console.error(error);
-      toast.error('좋아요에 실패했습니다.');
-    } finally {
-      setIsLikeCommentLoading(false);
-    }
-  };
+  const [newText, setNewText] = useState(comment.text);
 
   return (
-    <li className="mb-1" key={comment.id}>
+    <li key={comment.id}>
       <div className="flex justify-between">
-        <div className="mt-2 mr-3">
+        <div className="pt-2">
           <Avatar profilePath={comment.profilePath} size="small" alt={comment.nickname} />
         </div>
-        <div className="w-full">
+        <div className="w-full pl-2">
           <div className="mb-1">
             <span
               className={`mr-3 font-semibold text-base ${
@@ -113,12 +66,12 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
               {dayjs(comment.createdAt).fromNow()}
             </span>
           </div>
-          {updateCommentId !== comment.id ? (
+          {!isUpdatingText ? (
             <div>
               <ToggleableP className={'text-slate-700 mb-1'} text={comment.text} numberOfLines={3} />
               <div className="flex items-center -translate-x-1.5">
                 <button
-                  onClick={() => handleLikeComment(comment.id)}
+                  onClick={onLikeComment}
                   className="w-8 h-8 flex justify-center items-center"
                   type="button"
                 >
@@ -139,10 +92,23 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
               />
               <div className="flex w-full justify-end">
                 <div className="w-[40%] flex gap-2">
-                  <Button type="button" size="small" onClick={() => setUpdateCommentId(null)} variant="ghost">
+                  <Button
+                    type="button"
+                    size="small"
+                    onClick={() => {
+                      onUpdateCommentToggle();
+                      setNewText(comment.text);
+                    }}
+                    variant="ghost"
+                  >
                     취소
                   </Button>
-                  <Button type="button" size="small" variant="primary" onClick={handleEditSubmit}>
+                  <Button
+                    type="button"
+                    size="small"
+                    variant="primary"
+                    onClick={() => onUpdateCommentSubmit(newText)}
+                  >
                     확인
                   </Button>
                 </div>
@@ -157,23 +123,15 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
               className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 rounded-full w-10 h-10 flex justify-center items-center`}
               onClick={(e) => {
                 e.stopPropagation();
-                if (comment.id !== dropdownMenuId) {
-                  setDropdownMenuId(comment.id);
-                } else {
-                  setDropdownMenuId(null);
-                }
+                onToggleDropdownMenu();
               }}
             >
               <EllipsisVertical size="1.2rem" />
             </button>
             <CommentDropdownMenu
-              openDropdownMenu={comment.id === dropdownMenuId}
-              onOpenDeleteCommentModal={() => setOpenDeleteConfirmModal(true)}
-              startEditComment={() => {
-                setNewText(comment.text);
-                setUpdateCommentId(comment.id);
-                setDropdownMenuId(null);
-              }}
+              openDropdownMenu={isOpenDropdownMenu}
+              onOpenDeleteCommentModal={onOpenDeleteCommentModal}
+              onUpdateCommentToggle={onUpdateCommentToggle}
             />
           </div>
         ) : null}

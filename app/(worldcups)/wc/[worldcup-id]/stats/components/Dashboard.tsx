@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import 'dayjs/locale/ko';
 import CommentSection from '../../components/CommentSection';
 import { Globe, RotateCcw, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -128,13 +127,8 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
         )}
       </div>
       <section className="p-8 w-[31rem] bg-white h-[calc(100vh-68px)] overflow-y-scroll">
-        <WorldcupFold
-          nickname={worldcup.nickname}
-          createdAt={worldcup.createdAt}
-          updatedAt={worldcup.updatedAt}
-          description={worldcup.description}
-          profilePath={worldcup.profilePath}
-        >
+        <div className="flex mb-4 gap-1">
+          {' '}
           <LinkButton
             className="flex justify-center items-center gap-1"
             href={`/`}
@@ -167,7 +161,14 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             <RotateCcw color="#334155" size="1.2rem" />
             다시 하기
           </LinkButton>
-        </WorldcupFold>
+        </div>
+        <WorldcupFold
+          nickname={worldcup.nickname}
+          createdAt={worldcup.createdAt}
+          updatedAt={worldcup.updatedAt}
+          description={worldcup.description}
+          profilePath={worldcup.profilePath}
+        />
         <CommentSection worldcupId={worldcup.id} userId={userId} />
       </section>
     </div>

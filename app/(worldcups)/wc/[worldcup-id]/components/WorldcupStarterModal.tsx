@@ -5,11 +5,9 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import Button from '../../../../components/ui/button';
 import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/ko';
 import ToggleableP from '../../../../components/ui/toggleable-p';
 import Avatar from '../../../../components/ui/Avatar';
+import dayjs from '@/app/utils/dayjs';
 
 interface Props {
   open: boolean;
@@ -41,9 +39,6 @@ export default function WorldcupStarterModal({
     candidatesCount >= DEFAULT_ROUNDS ? DEFAULT_ROUNDS : Math.max(...availableRounds)
   );
   const notEnoughCandidates = candidatesCount < MIN_NUMBER_OF_CANDIDATES;
-
-  dayjs.extend(relativeTime);
-  dayjs.locale('ko');
 
   const createdDate = dayjs(createdAt);
   const updatedDate = dayjs(updatedAt);
