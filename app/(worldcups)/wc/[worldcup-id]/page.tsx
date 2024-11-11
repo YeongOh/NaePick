@@ -21,9 +21,9 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <>
+    <div className="flex flex-col items-stretch bg-black/50 h-screen">
       <Navbar screenMode />
       <WorldcupStarter worldcup={worldcup} userId={session?.userId} />
-    </>
+    </div>
   );
 }

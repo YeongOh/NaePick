@@ -131,6 +131,7 @@ export default function EditVideoButton({
       setVideoURL('');
       onChangeVideoInputIndex(null);
     } catch (error) {
+      console.error(error);
       toast.error('잘못된 URL입니다.');
     } finally {
       setIsLoading(false);

@@ -58,12 +58,17 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       keyframes: {
         shrinkLeft: {
           '100%': { width: '0%', transform: 'translateX(100%)' },
+        },
+        mobileShrinkTop: {
+          '100%': { height: '0%', transform: 'translateY(100%)' },
+        },
+        mobileShrinkBottom: {
+          '100%': { height: '0%', transform: 'translateY(-100%)' },
         },
         shrinkRight: {
           '100%': { width: '0%', transform: 'translateX(-100%)' },
@@ -71,6 +76,14 @@ const config: Config = {
         expandRight: {
           '0%': { width: '50%', 'justify-content': 'center' },
           '100%': { width: '100%', 'justify-content': 'center' },
+        },
+        mobileExpandTop: {
+          '0%': { height: '50%', 'justify-content': 'center' },
+          '100%': { height: '100%', 'justify-content': 'center' },
+        },
+        mobileExpandBottom: {
+          '0%': { height: '50%', 'justify-content': 'center' },
+          '100%': { height: '100%', 'justify-content': 'center' },
         },
         expandLeft: {
           '0%': { width: '50%', 'justify-content': 'center' },
@@ -89,6 +102,10 @@ const config: Config = {
         shrinkRight: 'shrinkRight 0.4s ease-in-out forwards',
         expandLeft: 'expandLeft 0.5s ease-in-out forwards',
         expandRight: 'expandRight 0.5s ease-in-out forwards',
+        mobileExpandTop: 'mobileExpandTop 0.3s ease-in-out forwards',
+        mobileExpandBottom: 'mobileExpandBottom 0.3s ease-in-out forwards',
+        mobileShrinkTop: 'mobileShrinkTop 0.3s ease-in-out forwards',
+        mobileShrinkBottom: 'mobileShrinkBottom 0.3s ease-in-out forwards',
         modalTransition: 'modalTransition 0.2s ease-in-out',
       },
     },

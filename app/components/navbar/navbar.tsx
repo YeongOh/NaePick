@@ -14,7 +14,7 @@ export default async function Navbar({ screenMode }: Props) {
 
   return (
     <nav
-      className={`p-1 gap-4 ${
+      className={`p-2 gap-4 ${
         screenMode ? 'bg-[#0f0f0f] border-0' : 'border border-t-0 border-l-0 border-r-0 border-b-1'
       }`}
     >

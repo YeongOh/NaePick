@@ -21,13 +21,7 @@ export const WORLDCUP_DESCRIPTION_MAX_LENGTH = 500;
 // File Name Limit
 export const FILE_NAME_MAX_LENGTH = 60;
 
-export const CATEGORIES = [
-  'animations',
-  'athletes',
-  'celebrities',
-  'idols',
-  'other',
-];
+export const CATEGORIES = ['animations', 'athletes', 'celebrities', 'idols', 'other'];
 
 // signup
 export const USERNAME_MIN_LENGTH = 4;
@@ -39,7 +33,7 @@ export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 64;
 
 // candidate name length
-export const CANDIDATE_NAME_MAX_LENGTH = 60;
+export const CANDIDATE_NAME_MAX_LENGTH = 100;
 
 // comment
 export const COMMENT_TEXT_MAX_LENGTH = 300;
@@ -50,9 +44,7 @@ export const DEFAULT_ROUNDS = 32;
 export const CHZZK_THUMBNAIL_URL =
   'https://nng-phinf.pstatic.net/MjAyMzEyMDZfMTU4/MDAxNzAxODM5NjIxMzUz.Ni9QdFjPNWRClkoo8bLmHEUojK9LQTo8H9Ngj7igRh8g.w9RX4vkKEYZuBj7Q8BKk4tdvh9fE7w8wlU7Z9aAV6Tgg.PNG/Android.png';
 
-export function getNumberOfRoundsAvailable(
-  numberOfCandidates: number
-): number[] {
+export function getNumberOfRoundsAvailable(numberOfCandidates: number): number[] {
   const options = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
   const result = options.filter((option) => option <= numberOfCandidates);
   return result;

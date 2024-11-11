@@ -38,7 +38,7 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
   return (
     <>
       {mediaType === 'cdn_video' && (
-        <div className="max-w-fit size-full">
+        <div className="max-h-fit max-w-fit size-full">
           <video
             className="w-full h-full object-contain"
             autoPlay
@@ -52,12 +52,12 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'cdn_img' && (
-        <div className="max-w-fit size-full">
+        <div className="max-h-fit max-w-fit size-full">
           <MyImage className="object-contain size-full" src={`${path}?w=1920&h=1760`} alt={name} />
         </div>
       )}
       {mediaType === 'youtube' && (
-        <div className={`size-full flex justify-center ${lowerHeight ? '' : 'items-center'}`}>
+        <div className={`size-full flex lg:justify-center ${lowerHeight ? 'items-start' : 'items-center'}`}>
           <YouTube
             className={`w-full max-h-full ${lowerHeight ? 'h-[85%]' : 'h-full'}`}
             opts={{
@@ -96,7 +96,11 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'chzzk' && (
-        <div className={`w-full ${lowerHeight ? 'h-[85%]' : 'h-full'} flex items-center justify-center`}>
+        <div
+          className={`w-full ${
+            lowerHeight ? 'h-[85%]' : 'h-full'
+          } flex items-start lg:items-center justify-center`}
+        >
           <iframe
             className="size-full"
             onClick={(e) => e.stopPropagation()}
