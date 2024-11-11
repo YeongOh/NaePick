@@ -36,7 +36,7 @@ export async function deleteWorldcupAction(worldcupId: string) {
 }
 
 export async function getMyWorldcups(userId: string, page: number) {
-  const DATA_PER_PAGE = 5;
+  const DATA_PER_PAGE = 20;
 
   try {
     const [result] = await db.execute(sql`

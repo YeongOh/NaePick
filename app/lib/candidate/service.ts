@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 
 export async function getCandidatesForUpdate(worldcupId: string, page: number) {
   try {
-    const DATA_PER_PAGE = 10;
+    const DATA_PER_PAGE = 20;
 
     const data = await db
       .select({
@@ -32,7 +32,7 @@ export async function getCandidatesForUpdate(worldcupId: string, page: number) {
 
 export async function getCandidatesForStat(worldcupId: string, page: number) {
   try {
-    const DATA_PER_PAGE = 10;
+    const DATA_PER_PAGE = 20;
 
     const stat = db.$with('stat').as(
       db

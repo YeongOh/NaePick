@@ -10,4 +10,4 @@ dayjs.extend(relativeTime);
 dayjs.tz.setDefault('Asia/Seoul');
 dayjs.locale('ko');
 
-export default dayjs;
+export default dayjs.tz;

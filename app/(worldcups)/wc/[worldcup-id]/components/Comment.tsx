@@ -61,9 +61,9 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
             ) : null}
             <span
               className="text-sm text-gray-500"
-              title={dayjs(comment.createdAt).tz().format('YYYY년 MM월 DD일 HH시 MM분')}
+              title={dayjs(comment.createdAt).format('YYYY년 MM월 DD일 HH시 MM분')}
             >
-              {dayjs(comment.createdAt).tz().fromNow()}
+              {dayjs(comment.createdAt).fromNow()}
             </span>
           </div>
           {!isUpdatingText ? (

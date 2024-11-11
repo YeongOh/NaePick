@@ -10,7 +10,7 @@ export async function getWorldcups(sort: 'latest' | 'popular', cursor?: string, 
 }
 
 export async function getLatestWorldcups(cursor?: string, category?: string) {
-  const DATA_PER_PAGE = 5;
+  const DATA_PER_PAGE = 20;
 
   let filter = sql``;
 
@@ -66,7 +66,7 @@ export async function getLatestWorldcups(cursor?: string, category?: string) {
 }
 
 export async function getPopularWorldcups(cursor?: any, category?: string) {
-  const DATA_PER_PAGE = 5;
+  const DATA_PER_PAGE = 20;
 
   let filter = sql``;
 

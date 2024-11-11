@@ -78,7 +78,7 @@ export async function getComments(worldcupId: string, userId?: string, cursor?: 
 }
 
 export async function getCommentsWithoutUserId(worldcupId: string, cursor?: string) {
-  const DATA_PER_PAGE = 10;
+  const DATA_PER_PAGE = 20;
 
   try {
     const result = await db
@@ -108,7 +108,7 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
 }
 
 export async function getCommentsWithUserId(worldcupId: string, userId: string, cursor?: string) {
-  const DATA_PER_PAGE = 10;
+  const DATA_PER_PAGE = 20;
 
   try {
     const result = await db
