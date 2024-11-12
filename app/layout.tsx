@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import GoogleAnalyticsComponent from './lib/analytics/google';
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ['latin'],
@@ -18,10 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang="en">
       <body className={notoSansKr.className}>
         <main>{children}</main>
         <Toaster />
+        <GoogleAnalyticsComponent />
       </body>
     </html>
   );

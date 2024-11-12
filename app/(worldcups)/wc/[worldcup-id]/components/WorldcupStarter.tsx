@@ -96,7 +96,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   return (
     <div className={`flex flex-col bg-black/95 lg:flex-row`}>
       <WorldcupPickScreen
-        className={`h-[calc(100svh-60px)] lg:flex-1 ${
+        className={`h-[calc(100svh-52px)] lg:flex-1 ${
           showSidebar ? 'h-[calc(30svh-60px)] lg:h-[calc(100svh-60px)]' : ''
         }`}
         worldcup={worldcup}
@@ -105,7 +105,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-[calc(100svh-60px)] lg:w-[31rem] lg:p-8">
+        <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-[100svh] lg:w-[31rem] lg:p-8">
           <section>
             <div className="mb-4 flex gap-1">
               <LinkButton

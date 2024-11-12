@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { WORLDCUP_ID_LENGTH } from '@/app/constants';
 import { db } from '../database';
 import { eq, getTableColumns } from 'drizzle-orm';
+import { cache } from 'react';
 
 export async function createWorldcup({
   title,
@@ -52,7 +53,7 @@ export async function updateWorldcup({
   }
 }
 
-export async function getWorldcup(worldcupId: string) {
+export const getWorldcup = cache(async (worldcupId: string) => {
   try {
     const result = await db
       .select({
@@ -69,7 +70,7 @@ export async function getWorldcup(worldcupId: string) {
   } catch (error) {
     console.error(error);
   }
-}
+});
 
 export async function getWorldcupForm(worldcupId: string) {
   try {

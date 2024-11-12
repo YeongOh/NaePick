@@ -3,9 +3,19 @@ import { notFound, redirect } from 'next/navigation';
 import WorldcupStarter from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupStarter';
 import Navbar from '@/app/components/navbar/navbar';
 import { getWorldcup } from '@/app/lib/worldcup/service';
+import { Metadata, ResolvingMetadata } from 'next';
 
 interface Props {
   params: { ['worldcup-id']: string };
+}
+
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const worldcupId = params['worldcup-id'];
+  const worldcup = await getWorldcup(worldcupId);
+  return {
+    title: `${worldcup?.title} | 이상형 월드컵 NaePick`,
+    description: worldcup?.description || '',
+  };
 }
 
 export default async function Page({ params }: Props) {
@@ -21,7 +31,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-stretch bg-black/50 h-screen">
+    <div className="flex h-screen flex-col items-stretch bg-black/50">
       <Navbar screenMode />
       <WorldcupStarter worldcup={worldcup} userId={session?.userId} />
     </div>

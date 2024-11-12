@@ -4,11 +4,21 @@ import { getSession } from '@/app/lib/session';
 import Navbar from '@/app/components/navbar/navbar';
 import { getCandidatesForStat } from '@/app/lib/candidate/service';
 import { getWorldcup } from '@/app/lib/worldcup/service';
+import { Metadata, ResolvingMetadata } from 'next';
 
 interface Props {
   params: { 'worldcup-id': string };
   searchParams: {
     page?: string;
+  };
+}
+
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const worldcupId = params['worldcup-id'];
+  const worldcup = await getWorldcup(worldcupId);
+  return {
+    title: `${worldcup?.title} | 이상형 월드컵 NaePick`,
+    description: worldcup?.description || '',
   };
 }
 
