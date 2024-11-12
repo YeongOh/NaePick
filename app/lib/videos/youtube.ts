@@ -1,14 +1,10 @@
-export async function fetchYoutubeTitle(
-  videoURL: string
-): Promise<string | undefined> {
+export async function fetchYoutubeTitle(videoURL: string): Promise<string | undefined> {
   try {
-    const response = await fetch(
-      `https://noembed.com/embed?dataType=json&url=${videoURL}`
-    );
+    const response = await fetch(`https://noembed.com/embed?dataType=json&url=${videoURL}`);
     const data: { title: string } = await response.json();
     return data.title;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -42,22 +38,16 @@ export function extractYoutubeId(youtubeURL: string) {
   }
 }
 
-export function getYoutubeThumbnailURL(
-  youtubeID: string,
-  resolution: 'small' | 'medium' | 'large'
-) {
+export function getYoutubeThumbnailURL(youtubeID: string, resolution: 'small' | 'medium' | 'large') {
   if (youtubeID === '') return '';
 
   let youtubeIDwithoutLoop = youtubeID;
   if (youtubeID.includes('?')) {
     youtubeIDwithoutLoop = youtubeID.split('?')[0];
   }
-  if (resolution === 'small')
-    return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/mqdefault.jpg`;
-  if (resolution === 'medium')
-    return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/hqdefault.jpg`;
+  if (resolution === 'small') return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/mqdefault.jpg`;
+  if (resolution === 'medium') return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/hqdefault.jpg`;
   // 초고화질 보류
   //return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/maxresdefault`
-  if (resolution === 'large')
-    return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/hqdefault.jpg`;
+  if (resolution === 'large') return `https://img.youtube.com/vi/${youtubeIDwithoutLoop}/hqdefault.jpg`;
 }

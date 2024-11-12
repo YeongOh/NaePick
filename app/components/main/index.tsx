@@ -7,7 +7,7 @@ import CardGridEmpty from '../card/card-grid-empty';
 import { getPopularWorldcups } from '@/app/(search)/action';
 
 interface Cursor {
-  gameCount: number;
+  matchCount: number;
   createdAt: string;
 }
 
@@ -78,7 +78,7 @@ export default function Main({ worldcups, nextCursor }: Props) {
   }, [isFetching, cursor]);
 
   return (
-    <section className="max-w-screen-2xl m-auto">
+    <section className="m-auto max-w-screen-2xl">
       {worldcups ? (
         <>
           <Suspense>

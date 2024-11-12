@@ -36,7 +36,7 @@ export default function WorldcupStarterModal({
   const router = useRouter();
   const availableRounds = getNumberOfRoundsAvailable(candidatesCount);
   const [round, setRound] = useState<number>(
-    candidatesCount >= DEFAULT_ROUNDS ? DEFAULT_ROUNDS : Math.max(...availableRounds)
+    candidatesCount >= DEFAULT_ROUNDS ? DEFAULT_ROUNDS : Math.max(...availableRounds),
   );
   const notEnoughCandidates = candidatesCount < MIN_NUMBER_OF_CANDIDATES;
 
@@ -58,12 +58,12 @@ export default function WorldcupStarterModal({
       {open &&
         createPortal(
           <div
-            className="modal fixed inset-0 z-40 bg-black/80 w-screen h-screen"
+            className="modal fixed inset-0 z-40 h-screen w-screen bg-black/80"
             onClick={() => router.back()}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border bg-white rounded-xl p-6 w-[26rem] animate-modalTransition"
+              className="fixed left-1/2 top-1/2 w-[26rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 animate-modalTransition rounded-xl border bg-white p-3 lg:p-6"
             >
               <div>
                 <div className="mb-2 flex items-center">
@@ -74,22 +74,22 @@ export default function WorldcupStarterModal({
                     alt={nickname ? nickname : '탈퇴한 회원'}
                   />
                   <div>
-                    <div className="text-md text-slate-700 font-semibold">
+                    <div className="text-md font-semibold text-slate-700">
                       {nickname ? nickname : '탈퇴한 회원'}
                     </div>
-                    <div className="text-sm text-gray-500 mb-2">
+                    <div className="mb-2 text-sm text-gray-500">
                       {isUpdated ? `${updatedDate.fromNow()} 업데이트` : `${createdDate.fromNow()} 생성`}
                     </div>
                   </div>
                 </div>
                 <div className="mb-2">
                   <ToggleableP
-                    className={'text-slate-700 w-full'}
+                    className={'w-full text-slate-700'}
                     text={description ? description : ''}
                     numberOfLines={5}
                   />
                 </div>
-                <p className="text-sm text-gray-500 mb-2">
+                <p className="mb-2 text-sm text-gray-500">
                   {notEnoughCandidates
                     ? '후보 수가 충분하지 않아 시작할 수 없습니다.'
                     : `총 ${candidatesCount}명의 후보가 대기 중입니다.`}
@@ -97,7 +97,7 @@ export default function WorldcupStarterModal({
                 <select
                   id={`${title} round`}
                   name="round"
-                  className={`w-full text-center peer cursor-pointer rounded-md border border-gray-200 p-2 outline-2 focus:outline-primary-500 mb-2 text-base text-slate-700 font-semibold disabled:bg-gray-300`}
+                  className={`peer mb-2 w-full cursor-pointer rounded-md border border-gray-200 p-2 text-center text-base font-semibold text-slate-700 outline-2 focus:outline-primary-500 disabled:bg-gray-300`}
                   defaultValue={round}
                   onChange={handleRoundChange}
                   disabled={notEnoughCandidates}
@@ -122,7 +122,7 @@ export default function WorldcupStarterModal({
                   <Button
                     variant="primary"
                     onClick={handleRoundSubmit}
-                    className="flex justify-center items-center gap-1"
+                    className="flex items-center justify-center gap-1"
                   >
                     시작
                   </Button>
@@ -130,7 +130,7 @@ export default function WorldcupStarterModal({
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </>
   );

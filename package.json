@@ -11,7 +11,10 @@
   },
   "prettier": {
     "printWidth": 110,
-    "singleQuote": true
+    "singleQuote": true,
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.670.0",
@@ -50,6 +53,8 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

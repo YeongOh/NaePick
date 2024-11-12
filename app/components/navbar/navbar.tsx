@@ -3,7 +3,7 @@ import Link from 'next/link';
 import NavbarLink from './navbar-link';
 import NavbarProfileImage from './navbar-profile-image';
 import LinkButton from '../ui/link-button';
-import { Trophy } from 'lucide-react';
+import { Menu, Trophy } from 'lucide-react';
 
 interface Props {
   screenMode?: boolean;
@@ -14,14 +14,14 @@ export default async function Navbar({ screenMode }: Props) {
 
   return (
     <nav
-      className={`p-2 gap-4 ${
-        screenMode ? 'bg-[#0f0f0f] border-0' : 'border border-t-0 border-l-0 border-r-0 border-b-1'
+      className={`gap-4 p-2 ${
+        screenMode ? 'border-0 bg-[#0f0f0f]' : 'border-b-1 border border-l-0 border-r-0 border-t-0'
       }`}
     >
-      <div className="flex items-center justify-between max-w-screen-2xl m-auto">
-        <div className="flex items-center gap-8">
+      <div className="m-auto flex max-w-screen-2xl items-center justify-between">
+        <div className="flex items-center">
           <Link
-            className={`flex items-center font-bold text-2xl ${
+            className={`flex items-center text-lg font-bold lg:text-2xl ${
               screenMode ? 'text-primary-300' : 'text-primary-500'
             }`}
             href={'/'}
@@ -29,14 +29,13 @@ export default async function Navbar({ screenMode }: Props) {
             <Trophy className="mr-1" />
             NaePick
           </Link>
-          {screenMode ? null : <NavbarLink href="/category">카테고리</NavbarLink>}
         </div>
         <div
-          className={`flex gap-4 items-center text-base font-semibold text-slate-600 ${
+          className={`flex items-center gap-4 text-base font-semibold text-slate-600 ${
             screenMode ? 'text-white/90' : 'text-primary-500'
           }`}
         >
-          <div className="w-36 flex">
+          <div className="hidden w-36 lg:flex">
             <LinkButton
               className={screenMode ? 'text-slate-300' : ''}
               href={`/wc/create`}
@@ -56,7 +55,7 @@ export default async function Navbar({ screenMode }: Props) {
             </>
           ) : (
             <>
-              <div className="w-24 flex">
+              <div className="flex w-16 lg:w-24">
                 <LinkButton href={`/auth/login`} variant="primary" size="small">
                   로그인
                 </LinkButton>

@@ -4,7 +4,7 @@ import { forwardRef, useState } from 'react';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 
 interface Props {
-  lowerHeight?: boolean;
+  screenMode?: boolean;
   path: string;
   name: string;
   mediaType: string;
@@ -14,8 +14,8 @@ interface Props {
 }
 
 const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
-  { lowerHeight, path, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
-  ref
+  { screenMode, path, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
+  ref,
 ) {
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer | null>(null);
 
@@ -38,9 +38,9 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
   return (
     <>
       {mediaType === 'cdn_video' && (
-        <div className="max-h-fit max-w-fit size-full">
+        <div className="size-full max-h-fit max-w-fit">
           <video
-            className="w-full h-full object-contain"
+            className="h-full w-full object-contain"
             autoPlay
             playsInline
             loop
@@ -52,14 +52,16 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'cdn_img' && (
-        <div className="max-h-fit max-w-fit size-full">
-          <MyImage className="object-contain size-full" src={`${path}?w=1920&h=1760`} alt={name} />
+        <div className="size-full max-h-fit max-w-fit">
+          <MyImage className="size-full object-contain" src={`${path}?w=1920&h=1760`} alt={name} />
         </div>
       )}
       {mediaType === 'youtube' && (
-        <div className={`size-full flex lg:justify-center ${lowerHeight ? 'items-start' : 'items-center'}`}>
+        <div
+          className={`flex size-full justify-center ${screenMode ? 'items-start lg:pt-10' : 'items-center'}`}
+        >
           <YouTube
-            className={`w-full max-h-full ${lowerHeight ? 'h-[85%]' : 'h-full'}`}
+            className={`max-h-full ${screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full'}`}
             opts={{
               height: '100%',
               width: '100%',
@@ -97,12 +99,10 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
       )}
       {mediaType === 'chzzk' && (
         <div
-          className={`w-full ${
-            lowerHeight ? 'h-[85%]' : 'h-full'
-          } flex items-start lg:items-center justify-center`}
+          className={`flex size-full justify-center ${screenMode ? 'items-start lg:pt-10' : 'items-center'}`}
         >
           <iframe
-            className="size-full"
+            className={`max-h-full ${screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full'}`}
             onClick={(e) => e.stopPropagation()}
             src={`https://chzzk.naver.com/embed/clip/${path}`}
             title="CHZZK Player"

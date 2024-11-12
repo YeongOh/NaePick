@@ -11,7 +11,14 @@ import {
   updateComment,
 } from '@/app/lib/comment/service';
 import { db } from '@/app/lib/database';
-import { candidates, commentLikes, comments, games, mediaTypes, users } from '@/app/lib/database/schema';
+import {
+  candidates,
+  commentLikes,
+  comments,
+  matchResults,
+  mediaTypes,
+  users,
+} from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
 import { and, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
 
@@ -95,7 +102,7 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
       .where(
         cursor
           ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
-          : eq(comments.worldcupId, worldcupId)
+          : eq(comments.worldcupId, worldcupId),
       )
       .orderBy(desc(comments.createdAt))
       .limit(DATA_PER_PAGE);
@@ -127,7 +134,7 @@ export async function getCommentsWithUserId(worldcupId: string, userId: string, 
       .where(
         cursor
           ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
-          : eq(comments.worldcupId, worldcupId)
+          : eq(comments.worldcupId, worldcupId),
       )
       .orderBy(desc(comments.createdAt))
       .limit(DATA_PER_PAGE);
@@ -184,21 +191,21 @@ export async function cancelLikeCommentAction(commentId: string, userId: string)
   await cancelLikeComment(commentId, userId);
 }
 
-export async function submitGameResult(
-  gameResult: { winnerId: string; loserId: string }[],
-  worldcupId: string
+export async function submitMatchResult(
+  matchResult: { winnerId: string; loserId: string }[],
+  worldcupId: string,
 ) {
   try {
     await db.transaction(async (tx) => {
-      for (let i = 0; i < gameResult.length - 1; i++) {
-        const { winnerId, loserId } = gameResult[i];
-        await tx.insert(games).values({ worldcupId, winnerId, loserId });
+      for (let i = 0; i < matchResult.length - 1; i++) {
+        const { winnerId, loserId } = matchResult[i];
+        await tx.insert(matchResults).values({ worldcupId, winnerId, loserId });
       }
 
-      const { winnerId: finalWinnerId, loserId: finalLoserId } = gameResult[gameResult.length - 1];
+      const { winnerId: finalWinnerId, loserId: finalLoserId } = matchResult[matchResult.length - 1];
       await tx
-        .insert(games)
-        .values({ winnerId: finalWinnerId, loserId: finalLoserId, isFinalGame: true, worldcupId });
+        .insert(matchResults)
+        .values({ winnerId: finalWinnerId, loserId: finalLoserId, isFinalMatch: true, worldcupId });
     });
   } catch (error) {
     console.error(error);

@@ -87,7 +87,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   useEffect(() => {
     getComments(worldcupId, userId).then((result) => {
       if (result) {
-        console.log(result);
         setComments(result.data);
         setCursor(result.nextCursor);
       }
@@ -197,7 +196,9 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
 
       await updateCommentAction(targetComment.id, newText);
       setComments(
-        comments.map((comment) => (comment.id === targetComment.id ? { ...comment, text: newText } : comment))
+        comments.map((comment) =>
+          comment.id === targetComment.id ? { ...comment, text: newText } : comment,
+        ),
       );
       setUpdateCommentIndex(null);
       toast.success('댓글이 수정되었습니다.');
@@ -227,8 +228,8 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
         comments.map((comment) =>
           comment.id === targetComment.id
             ? { ...comment, likeCount: isLiked ? comment.likeCount + 1 : comment.likeCount - 1, isLiked }
-            : comment
-        )
+            : comment,
+        ),
       );
     } catch (error) {
       console.error(error);
@@ -242,7 +243,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
 
   return (
     <section className={`${className} bg-white`}>
-      <div className="my-4 text-base text-slate-700 font-semibold">
+      <div className="my-4 text-base font-semibold text-slate-700">
         {totalNumberOfComments > 0 ? `댓글 ${totalNumberOfComments}개` : `댓글을 남겨주세요.`}
       </div>
       <form onSubmit={handleCommentFormSubmit}>
@@ -251,13 +252,13 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           name="text"
           value={text}
           error={state.errors?.text}
-          className={`p-2 mb-1`}
+          className={`mb-1 p-2`}
           onChange={(e) => setText(e.target.value)}
           placeholder="댓글 내용"
           rows={2}
         />
         <InputErrorMessage className="mb-1" errors={state.errors?.text} />
-        <Button variant="primary" className="flex justify-center items-center gap-1 mt-1 mb-4">
+        <Button variant="primary" className="mb-4 mt-1 flex items-center justify-center gap-1">
           <Pencil color="#FFFFFF" size="1.2rem" />
           댓글 추가하기
         </Button>

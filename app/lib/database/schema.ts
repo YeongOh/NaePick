@@ -87,7 +87,7 @@ export const comments = table('comments', {
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
 
-export const games = table('games', {
+export const matchResults = table('match_result', {
   id: int().primaryKey().autoincrement(),
   worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
     .notNull()
@@ -98,7 +98,7 @@ export const games = table('games', {
   loserId: varchar({ length: CANDIDATE_ID_LENGTH })
     .notNull()
     .references(() => candidates.id, { onDelete: 'cascade' }),
-  isFinalGame: boolean().notNull().default(false),
+  isFinalMatch: boolean().notNull().default(false),
   createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
 });
 
@@ -115,5 +115,5 @@ export const commentLikes = table(
   },
   (table) => {
     return { pk: primaryKey({ columns: [table.commentId, table.userId] }) };
-  }
+  },
 );

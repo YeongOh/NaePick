@@ -37,7 +37,7 @@ export default function LinkButton({
     <Link
       href={href}
       onClick={onClick}
-      className={`w-full text-center text-base font-semibold rounded ${classNameResult}`}
+      className={`w-full rounded text-center text-base font-semibold ${classNameResult}`}
       {...props}
     >
       {children}

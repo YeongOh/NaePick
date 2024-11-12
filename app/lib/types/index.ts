@@ -17,7 +17,7 @@ export type TCard = InferSelectModel<typeof worldcups> & {
 };
 
 interface PopularNextCursor {
-  gameCount: number;
+  matchCount: number;
   createdAt: string;
 }
 

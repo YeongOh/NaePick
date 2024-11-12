@@ -25,59 +25,52 @@ export default function SignupForm() {
   return (
     <form
       onSubmit={handleSignupFormSubmit}
-      className='rounded-md flex flex-col w-full mb-36'
+      className="mb-36 flex w-full flex-col rounded-md"
       onKeyDown={handleFormKeyDown}
     >
-      <Link
-        href='/'
-        className='text-primary-500 text-5xl text-center m-4 font-extrabold'
-      >
+      <Link href="/" className="m-4 text-center text-5xl font-extrabold text-primary-500">
         NaePick
       </Link>
-      <p className='text-center text-base mb-6 text-slate-700'>
+      <p className="mb-6 text-center text-base text-slate-700">
         이상형 월드컵 NaePick에 오신 것을 환영합니다! <br />
         간단한 회원가입 후 이상형 월드컵을 만들어 보세요!
       </p>
       <Input
-        id='email'
-        name='email'
-        type='text'
-        className={`p-4 mb-2`}
+        id="email"
+        name="email"
+        type="text"
+        className={`mb-2 p-4`}
         error={state.errors?.email}
         placeholder={`이메일`}
-        autoFocus
       />
-      <InputErrorMessage className='mb-2' errors={state.errors?.email} />
+      <InputErrorMessage className="mb-2" errors={state.errors?.email} />
       <Input
-        id='nickname'
-        name='nickname'
-        className={`p-4 mb-2`}
+        id="nickname"
+        name="nickname"
+        className={`mb-2 p-4`}
         error={state.errors?.nickname}
         placeholder={`닉네임 (${NICKNAME_MIN_LENGTH} ~ ${NICKNAME_MAX_LENGTH}자)`}
       />
-      <InputErrorMessage className='mb-2' errors={state.errors?.nickname} />
+      <InputErrorMessage className="mb-2" errors={state.errors?.nickname} />
       <Input
-        id='password'
-        name='password'
-        type='password'
-        className={`p-4 mb-2`}
+        id="password"
+        name="password"
+        type="password"
+        className={`mb-2 p-4`}
         error={state.errors?.password}
         placeholder={`비밀번호 (문자, 숫자, 특수 문자 포함 8자 이상)`}
       />
-      <InputErrorMessage className='mb-2' errors={state.errors?.password} />
+      <InputErrorMessage className="mb-2" errors={state.errors?.password} />
       <Input
-        id='confirmPassword'
-        name='confirmPassword'
-        type='password'
-        className={`p-4 mb-2`}
+        id="confirmPassword"
+        name="confirmPassword"
+        type="password"
+        className={`mb-2 p-4`}
         error={state.errors?.confirmPassword}
         placeholder={`비밀번호 재입력`}
       />
-      <InputErrorMessage
-        className='mb-2'
-        errors={state.errors?.confirmPassword}
-      />
-      <Button variant='primary' className='mt-4'>
+      <InputErrorMessage className="mb-2" errors={state.errors?.confirmPassword} />
+      <Button variant="primary" className="mt-4">
         가입하기
       </Button>
     </form>

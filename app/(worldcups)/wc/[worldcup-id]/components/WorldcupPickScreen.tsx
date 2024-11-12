@@ -6,7 +6,7 @@ import { YouTubePlayer } from 'react-youtube';
 import { InferSelectModel } from 'drizzle-orm';
 import { candidates, worldcups } from '@/app/lib/database/schema';
 import { getRoundsDescription } from '../utils';
-import { submitGameResult as submitGameResult } from '../actions';
+import { submitMatchResult as submitMatchResult } from '../actions';
 
 type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
 type WorldcupModel = InferSelectModel<typeof worldcups> & {
@@ -31,7 +31,7 @@ export default function WorldcupPickScreen({
   className,
 }: Props) {
   const [candidates, setCandidates] = useState<CandidateModel[]>(defaultCandidates.slice(0, startingRound));
-  const [gameResult, setGameResult] = useState<{ winnerId: string; loserId: string }[]>([]);
+  const [matchResult, setMatchResult] = useState<{ winnerId: string; loserId: string }[]>([]);
   const [picked, setPicked] = useState<'left' | 'right'>();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
@@ -49,8 +49,8 @@ export default function WorldcupPickScreen({
     setPicked(target);
 
     if (round == 2) {
-      const gameResults = [...gameResult, { winnerId, loserId }];
-      await submitGameResult(gameResults, worldcup.id);
+      const matchResults = [...matchResult, { winnerId, loserId }];
+      await submitMatchResult(matchResults, worldcup.id);
       onWorldcupEnd(winnerId);
       return;
     }
@@ -58,7 +58,7 @@ export default function WorldcupPickScreen({
     setTimeout(() => {
       const newCandidates = [winner, ...candidates.toSpliced(leftIndex)];
       setCandidates(newCandidates);
-      setGameResult([...gameResult, { winnerId, loserId }]);
+      setMatchResult([...matchResult, { winnerId, loserId }]);
       setPicked(undefined);
     }, 2000);
   };
@@ -75,13 +75,13 @@ export default function WorldcupPickScreen({
 
   return (
     <>
-      <section className={`relative flex flex-col lg:flex-row bg-black ${className}`}>
-        <h2 className="absolute bg-black/50 z-40 w-full text-center text-white text-3xl lg:text-2clamp font-bold pointer-events-none leading-10">
+      <section className={`relative flex flex-col bg-black lg:flex-row ${className}`}>
+        <h2 className="pointer-events-none absolute z-40 w-full bg-black/50 text-center text-3xl font-bold leading-10 text-white lg:text-2clamp">
           {worldcup.title} {getRoundsDescription(round)}
         </h2>
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`absolute inset-0 m-auto w-fit h-fit cursor-default text-primary-700 text-3clamp font-bold z-40 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
+          className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
             picked ? 'hidden' : ''
           }`}
         >
@@ -89,8 +89,8 @@ export default function WorldcupPickScreen({
         </div>
 
         {isFinished ? (
-          <div className="pointer-events-none absolute left-1/2 bottom-1/4 -translate-x-1/2 bg-black bg-opacity-30 z-40 w-full h-fit">
-            <h2 className="flex justify-center items-center text-white text-3xl lg:text-5xl font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+          <div className="pointer-events-none absolute bottom-1 left-1/2 z-40 h-fit w-full -translate-x-1/2 bg-black bg-opacity-30 lg:bottom-1/4">
+            <h2 className="flex items-center justify-center text-2xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:text-3xl">
               {picked === 'left' ? candidates[leftIndex].name : candidates[rightIndex].name} 우승!
             </h2>
           </div>
@@ -101,13 +101,13 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('left');
           }}
-          className={`group relative flex flex-col items-center justify-end h-1/2 lg:flex-row lg:h-full lg:w-1/2 lg:justify-end ${
+          className={`group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end ${
             picked === 'left' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''
           } ${picked === 'right' ? 'animate-mobileShrinkTop lg:animate-shrinkRight' : ''}`}
         >
           {picked !== 'right' ? (
             <Media
-              lowerHeight={isFinished ? false : true}
+              screenMode={isFinished ? false : true}
               path={leftCandidate.path}
               mediaType={leftCandidate.mediaType}
               name={leftCandidate.name}
@@ -117,8 +117,8 @@ export default function WorldcupPickScreen({
           {!isFinished && picked !== 'right' && (
             <figcaption
               className={`${
-                picked ? 'right-1/2 bottom-1/2' : 'lg:right-[20%] bottom-6'
-              } line-clamp-1 text-3xl min-h-10 text-right lg:w-[35rem] right-10 lg:translate-x-0 lg:bottom-1/4 lg:text-clamp pointer-events-none group-hover:text-primary-500 group-active:text-primary-600 transition-colors text-white  absolute font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+                picked ? 'right-1/2 translate-x-1/2' : 'bottom-6 lg:right-[20%]'
+              } pointer-events-none absolute line-clamp-1 w-3/4 text-right text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:bottom-1/4 lg:w-4/5 lg:text-clamp`}
             >
               {leftCandidate.name}
             </figcaption>
@@ -130,13 +130,13 @@ export default function WorldcupPickScreen({
             if (picked) return;
             handlePick('right');
           }}
-          className={`group relative flex flex-col items-center justify-start h-1/2 lg:flex-row lg:h-full lg:w-1/2 lg:justify-start ${
+          className={`group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start ${
             picked === 'left' ? 'animate-mobileShrinkBottom lg:animate-shrinkLeft' : ''
           } ${picked === 'right' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''}`}
         >
           {picked !== 'left' ? (
             <Media
-              lowerHeight={isFinished ? false : true}
+              screenMode={isFinished ? false : true}
               path={rightCandidate.path}
               mediaType={rightCandidate.mediaType}
               name={rightCandidate.name}
@@ -146,8 +146,8 @@ export default function WorldcupPickScreen({
           {!isFinished && picked !== 'left' ? (
             <figcaption
               className={`${
-                picked ? 'lg:left-1/2' : 'lg:left-[20%] top-6'
-              } line-clamp-1 text-3xl min-h-10 lg:w-[35rem] right-10 lg:text-clamp lg:top-auto lg:bottom-1/4 lg:translate-x-0 pointer-events-none group-hover:text-primary-500 group-active:text-primary-600 transition-colors text-white  absolute font-bold drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+                picked ? 'lg:left-1/2 lg:-translate-x-1/2' : 'top-6 lg:left-[20%]'
+              } pointer-events-none absolute line-clamp-1 w-3/4 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:bottom-1/4 lg:top-auto lg:w-4/5 lg:text-clamp`}
             >
               {rightCandidate.name}
             </figcaption>

@@ -1,7 +1,14 @@
 'use server';
 
 import { db } from '@/app/lib/database';
-import { candidates, categories, games, mediaTypes, users, worldcups } from '@/app/lib/database/schema';
+import {
+  candidates,
+  categories,
+  matchResults,
+  mediaTypes,
+  users,
+  worldcups,
+} from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
 import { deleteImage, deleteVideo, listImageFiles, listVideoFiles } from '@/app/lib/storage';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
@@ -51,19 +58,19 @@ export async function getMyWorldcups(userId: string, page: number) {
         LEFT JOIN ${users} ON ${users.id} = ${worldcups.userId}
         LEFT JOIN ${categories} ON ${categories.id} = ${worldcups.categoryId}
         LEFT JOIN LATERAL (
-          SELECT ${games.winnerId} AS id
-          FROM ${games}
-          WHERE ${games.worldcupId} = ${worldcups.id}
-          GROUP BY ${games.winnerId}
+          SELECT ${matchResults.winnerId} AS id
+          FROM ${matchResults}
+          WHERE ${matchResults.worldcupId} = ${worldcups.id}
+          GROUP BY ${matchResults.winnerId}
           ORDER BY COUNT(*) DESC
           LIMIT 1) AS lw ON TRUE
         LEFT JOIN ${candidates} AS lc ON lc.id = lw.id
         LEFT JOIN ${mediaTypes} AS lm ON lm.id = lc.media_type_id
         LEFT JOIN LATERAL (
-          SELECT ${games.winnerId} AS id
-          FROM ${games}
-          WHERE ${games.worldcupId} = ${worldcups.id}
-          GROUP BY ${games.winnerId}
+          SELECT ${matchResults.winnerId} AS id
+          FROM ${matchResults}
+          WHERE ${matchResults.worldcupId} = ${worldcups.id}
+          GROUP BY ${matchResults.winnerId}
           ORDER BY COUNT(*) DESC
           LIMIT 1 OFFSET 1) AS rw ON TRUE
         LEFT JOIN ${candidates} AS rc ON rc.id = rw.id

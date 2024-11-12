@@ -1,13 +1,13 @@
 import 'server-only';
 import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { db } from '../database';
-import { candidates, games, mediaTypes } from '../database/schema';
+import { candidates, matchResults, mediaTypes } from '../database/schema';
 import { CANDIDATE_ID_LENGTH } from '@/app/constants';
 import { nanoid } from 'nanoid';
 
 export async function getCandidatesForUpdate(worldcupId: string, page: number) {
   try {
-    const DATA_PER_PAGE = 20;
+    const DATA_PER_PAGE = 10;
 
     const data = await db
       .select({
@@ -32,7 +32,7 @@ export async function getCandidatesForUpdate(worldcupId: string, page: number) {
 
 export async function getCandidatesForStat(worldcupId: string, page: number) {
   try {
-    const DATA_PER_PAGE = 20;
+    const DATA_PER_PAGE = 10;
 
     const stat = db.$with('stat').as(
       db
@@ -42,15 +42,18 @@ export async function getCandidatesForStat(worldcupId: string, page: number) {
           path: candidates.path,
           thumbnailUrl: candidates.thumbnailUrl,
           mediaType: sql<string>`${mediaTypes.name}`.as('mediaType'),
-          winCount: db.$count(games, eq(games.winnerId, candidates.id)).as('winCount'),
-          lossCount: db.$count(games, eq(games.loserId, candidates.id)).as('lossCount'),
+          winCount: db.$count(matchResults, eq(matchResults.winnerId, candidates.id)).as('winCount'),
+          lossCount: db.$count(matchResults, eq(matchResults.loserId, candidates.id)).as('lossCount'),
           trophyCount: db
-            .$count(games, and(eq(games.winnerId, candidates.id), eq(games.isFinalGame, true)))
+            .$count(
+              matchResults,
+              and(eq(matchResults.winnerId, candidates.id), eq(matchResults.isFinalMatch, true)),
+            )
             .as('trophyCount'),
         })
         .from(candidates)
         .innerJoin(mediaTypes, eq(mediaTypes.id, candidates.mediaTypeId))
-        .where(eq(candidates.worldcupId, worldcupId))
+        .where(eq(candidates.worldcupId, worldcupId)),
     );
 
     const result = await db
@@ -151,7 +154,7 @@ export async function updateCandidate({
 export async function updateCandidateNames(candidateNames: { id: string; name: string }[]) {
   try {
     const promises = candidateNames.map(({ id, name }) =>
-      db.update(candidates).set({ name }).where(eq(candidates.id, id))
+      db.update(candidates).set({ name }).where(eq(candidates.id, id)),
     );
     await Promise.allSettled(promises);
   } catch (error) {

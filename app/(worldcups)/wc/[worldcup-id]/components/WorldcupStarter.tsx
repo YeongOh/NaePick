@@ -37,7 +37,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<string>();
   const WorldcupStarterModal = useMemo(
     () => dynamic(() => import('./WorldcupStarterModal'), { ssr: false }),
-    []
+    [],
   );
 
   const notEnoughCandidates = (worldcup.candidatesCount as number) < MIN_NUMBER_OF_CANDIDATES;
@@ -63,8 +63,8 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   if (isSelectingRounds) {
     return (
       <>
-        <section className="relative flex bg-black h-[calc(100vh-60px)]">
-          <h1 className="absolute bg-black/50 z-50 w-full text-center text-white text-3xl lg:text-5xl font-bold leading-10">
+        <section className="relative flex h-[calc(100svh-60px)] bg-black">
+          <h1 className="absolute z-50 w-full bg-black/50 text-center text-3xl font-bold leading-10 text-white lg:text-5xl">
             {worldcup.title}{' '}
             {notEnoughCandidates ? (
               <>
@@ -94,10 +94,10 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   }
 
   return (
-    <div className={`flex bg-black/95 flex-col lg:flex-row`}>
+    <div className={`flex flex-col bg-black/95 lg:flex-row`}>
       <WorldcupPickScreen
-        className={`lg:flex-1 h-[calc(100vh-60px)] ${
-          showSidebar ? 'h-[calc(50vh-30px)] lg:h-[calc(100vh-60px)]' : ''
+        className={`h-[calc(100svh-60px)] lg:flex-1 ${
+          showSidebar ? 'h-[calc(30svh-30px)] lg:h-[calc(100svh-60px)]' : ''
         }`}
         worldcup={worldcup}
         defaultCandidates={candidates}
@@ -105,12 +105,12 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className="lg:w-[31rem] p-8 bg-white overflow-y-scroll h-[calc(50vh-30px)] lg:h-[calc(100vh-60px)]">
+        <div className="h-[calc(70svh-30px)] overflow-y-scroll bg-white p-3 lg:h-[calc(100svh-60px)] lg:w-[31rem] lg:p-8">
           <section>
-            <div className="flex mb-4 gap-1">
+            <div className="mb-4 flex gap-1">
               <LinkButton
                 href={`/wc/${worldcup.id}/stats`}
-                className="flex justify-center items-center gap-1"
+                className="flex items-center justify-center gap-1"
                 variant="primary"
                 size="small"
               >
@@ -118,7 +118,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
                 랭킹 보기
               </LinkButton>
               <Button
-                className="flex justify-center items-center gap-1"
+                className="flex items-center justify-center gap-1"
                 variant="outline"
                 size="small"
                 onClick={() => setShareWorldcupModal(true)}
@@ -136,7 +136,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
                 onClick={handleWorldcupRestart}
                 variant="ghost"
                 size="small"
-                className="flex justify-center items-center gap-1"
+                className="flex items-center justify-center gap-1"
               >
                 <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기

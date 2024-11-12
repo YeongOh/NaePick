@@ -74,7 +74,7 @@ export async function createWorldcupAction(prevState: WorldcupFormState, formDat
       categoryId,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return {
       message: '이상형 월드컵을 생성하는 데 실패했습니다.',
     };
