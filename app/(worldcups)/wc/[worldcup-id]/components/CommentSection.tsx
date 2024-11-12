@@ -258,7 +258,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           rows={2}
         />
         <InputErrorMessage className="mb-1" errors={state.errors?.text} />
-        <Button variant="primary" className="mb-4 mt-1 flex items-center justify-center gap-1">
+        <Button
+          variant="primary"
+          className="mb-4 mt-1 flex items-center justify-center gap-1 text-sm lg:text-base"
+        >
           <Pencil color="#FFFFFF" size="1.2rem" />
           댓글 추가하기
         </Button>

@@ -34,7 +34,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     onUpdateCommentSubmit,
     onToggleDropdownMenu,
   }: Props,
-  ref
+  ref,
 ) {
   const [newText, setNewText] = useState(comment.text);
 
@@ -47,7 +47,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
         <div className="w-full pl-2">
           <div className="mb-1">
             <span
-              className={`mr-3 font-semibold text-base ${
+              className={`mr-3 text-base font-semibold ${
                 !comment.isAnonymous && comment.nickname ? 'text-slate-700' : 'text-gray-500'
               }`}
             >
@@ -68,11 +68,11 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           </div>
           {!isUpdatingText ? (
             <div>
-              <ToggleableP className={'text-slate-700 mb-1'} text={comment.text} numberOfLines={3} />
-              <div className="flex items-center -translate-x-1.5">
+              <ToggleableP className={'text-slate-700 lg:mb-1'} text={comment.text} numberOfLines={3} />
+              <div className="flex -translate-x-1.5 items-center">
                 <button
                   onClick={onLikeComment}
-                  className="w-8 h-8 flex justify-center items-center"
+                  className="flex h-8 w-8 items-center justify-center"
                   type="button"
                 >
                   <Heart color={comment.isLiked ? '#f87171' : '#6b7280'} size="1.2rem" />
@@ -86,12 +86,12 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                 id="editText"
                 name="editText"
                 value={newText}
-                className={`p-2 mb-1`}
+                className={`mb-1 p-2`}
                 onChange={(e) => setNewText(e.target.value)}
                 rows={2}
               />
               <div className="flex w-full justify-end">
-                <div className="w-[40%] flex gap-2">
+                <div className="flex w-[40%] gap-2">
                   <Button
                     type="button"
                     size="small"
@@ -117,10 +117,10 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           )}
         </div>
         {comment.userId === userId ? (
-          <div className="relative w-10 h-10 mt-2">
+          <div className="relative mt-2 h-10 w-10">
             <button
               type="button"
-              className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 rounded-full w-10 h-10 flex justify-center items-center`}
+              className={`dropdown-menu-toggle flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-primary-50 active:bg-primary-200`}
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleDropdownMenu();

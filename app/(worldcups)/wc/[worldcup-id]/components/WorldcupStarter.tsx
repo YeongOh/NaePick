@@ -97,7 +97,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
     <div className={`flex flex-col bg-black/95 lg:flex-row`}>
       <WorldcupPickScreen
         className={`h-[calc(100svh-60px)] lg:flex-1 ${
-          showSidebar ? 'h-[calc(30svh-30px)] lg:h-[calc(100svh-60px)]' : ''
+          showSidebar ? 'h-[calc(30svh-60px)] lg:h-[calc(100svh-60px)]' : ''
         }`}
         worldcup={worldcup}
         defaultCandidates={candidates}
@@ -105,12 +105,12 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className="h-[calc(70svh-30px)] overflow-y-scroll bg-white p-3 lg:h-[calc(100svh-60px)] lg:w-[31rem] lg:p-8">
+        <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-[calc(100svh-60px)] lg:w-[31rem] lg:p-8">
           <section>
             <div className="mb-4 flex gap-1">
               <LinkButton
                 href={`/wc/${worldcup.id}/stats`}
-                className="flex items-center justify-center gap-1"
+                className="flex items-center justify-center gap-1 text-sm lg:text-base"
                 variant="primary"
                 size="small"
               >
@@ -118,7 +118,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
                 랭킹 보기
               </LinkButton>
               <Button
-                className="flex items-center justify-center gap-1"
+                className="flex items-center justify-center gap-1 text-sm lg:text-base"
                 variant="outline"
                 size="small"
                 onClick={() => setShareWorldcupModal(true)}
@@ -136,7 +136,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
                 onClick={handleWorldcupRestart}
                 variant="ghost"
                 size="small"
-                className="flex items-center justify-center gap-1"
+                className="flex items-center justify-center gap-1 text-sm lg:text-base"
               >
                 <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기

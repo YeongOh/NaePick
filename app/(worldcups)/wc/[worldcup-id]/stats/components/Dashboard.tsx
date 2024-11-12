@@ -158,7 +158,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
       <section className="h-[calc(60svh-20px)] overflow-y-scroll bg-white p-3 lg:h-auto lg:w-[31rem] lg:p-8">
         <div className="mb-4 flex gap-1">
           <LinkButton
-            className="flex items-center justify-center gap-1"
+            className="flex items-center justify-center gap-1 text-sm lg:text-base"
             href={`/`}
             variant="primary"
             size="small"
@@ -166,7 +166,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             <Globe size="1.2rem" />새 월드컵 찾기
           </LinkButton>
           <Button
-            className="flex items-center justify-center gap-1"
+            className="flex items-center justify-center gap-1 text-sm lg:text-base"
             variant="outline"
             size="small"
             onClick={() => setShareWorldcupModal(true)}
@@ -184,7 +184,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             href={`/wc/${worldcup.id}`}
             variant="ghost"
             size="small"
-            className="flex items-center justify-center gap-1"
+            className="flex items-center justify-center gap-1 text-sm lg:text-base"
           >
             <RotateCcw color="#334155" size="1.2rem" />
             다시 하기
