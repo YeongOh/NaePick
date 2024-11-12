@@ -120,7 +120,7 @@ export default function WorldcupPickScreen({
               <figcaption
                 className={`${
                   picked ? '' : 'bottom-6'
-                } pointer-events-none absolute left-1/2 line-clamp-1 w-3/4 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+                } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
               >
                 {leftCandidate.name}
               </figcaption>
@@ -128,7 +128,7 @@ export default function WorldcupPickScreen({
               <figcaption
                 className={`${
                   picked ? 'right-1/2' : 'right-[20%]'
-                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden w-4/5 text-right text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
               >
                 {leftCandidate.name}
               </figcaption>
@@ -160,7 +160,7 @@ export default function WorldcupPickScreen({
               <figcaption
                 className={`${
                   picked ? '' : 'top-6'
-                } pointer-events-none absolute left-1/2 line-clamp-1 w-3/4 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+                } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
               >
                 {rightCandidate.name}
               </figcaption>
@@ -168,7 +168,7 @@ export default function WorldcupPickScreen({
               <figcaption
                 className={`${
                   picked ? 'left-1/2' : 'left-[20%]'
-                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden w-4/5 text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
               >
                 {rightCandidate.name}
               </figcaption>
