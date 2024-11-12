@@ -115,13 +115,24 @@ export default function WorldcupPickScreen({
             />
           ) : null}
           {!isFinished && picked !== 'right' && (
-            <figcaption
-              className={`${
-                picked ? 'right-1/2 translate-x-1/2' : 'bottom-6 lg:right-[20%]'
-              } pointer-events-none absolute line-clamp-1 w-3/4 text-right text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:bottom-1/4 lg:w-4/5 lg:text-clamp`}
-            >
-              {leftCandidate.name}
-            </figcaption>
+            <>
+              {/* mobile */}
+              <figcaption
+                className={`${
+                  picked ? '' : 'bottom-6'
+                } pointer-events-none absolute left-1/2 line-clamp-1 w-3/4 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+              >
+                {leftCandidate.name}
+              </figcaption>
+              {/* pc */}
+              <figcaption
+                className={`${
+                  picked ? 'right-1/2' : 'bottom-6 right-[20%]'
+                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden w-4/5 text-right text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+              >
+                {leftCandidate.name}
+              </figcaption>
+            </>
           )}
         </figure>
         <figure
@@ -144,13 +155,24 @@ export default function WorldcupPickScreen({
             />
           ) : null}
           {!isFinished && picked !== 'left' ? (
-            <figcaption
-              className={`${
-                picked ? 'lg:left-1/2 lg:-translate-x-1/2' : 'top-6 lg:left-[20%]'
-              } pointer-events-none absolute line-clamp-1 w-3/4 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:bottom-1/4 lg:top-auto lg:w-4/5 lg:text-clamp`}
-            >
-              {rightCandidate.name}
-            </figcaption>
+            <>
+              {/* mobile */}
+              <figcaption
+                className={`${
+                  picked ? '' : 'top-6'
+                } pointer-events-none absolute left-1/2 line-clamp-1 w-3/4 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+              >
+                {rightCandidate.name}
+              </figcaption>
+              {/* pc */}
+              <figcaption
+                className={`${
+                  picked ? 'left-1/2' : 'left-[20%]'
+                } pointer-events-none absolute bottom-1/4 top-auto line-clamp-1 hidden w-4/5 text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+              >
+                {rightCandidate.name}
+              </figcaption>
+            </>
           ) : null}
         </figure>
       </section>
