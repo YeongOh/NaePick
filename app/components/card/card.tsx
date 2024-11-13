@@ -11,16 +11,10 @@ import dayjs from '@/app/utils/dayjs';
 export interface CardProps {
   worldcupCard: TCard;
   children?: React.ReactNode;
-  openDropdownMenu: boolean;
-  onOpenDropdownMenu: () => void;
-  onCloseDropdownMenu: () => void;
   extended?: boolean;
 }
 
-const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
-  { worldcupCard, openDropdownMenu, onOpenDropdownMenu, onCloseDropdownMenu, extended }: CardProps,
-  ref
-) {
+const Card = forwardRef<HTMLLIElement, CardProps>(function Card({ worldcupCard, extended }: CardProps, ref) {
   const [isActive, setIsActive] = useState(false);
   const router = useRouter();
 
@@ -29,7 +23,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
   return (
     <li
       ref={ref}
-      className={`transition-colors rounded-xl cursor-pointer mb-4 p-1 ${
+      className={`mb-4 cursor-pointer rounded-xl p-1 transition-colors ${
         isActive ? `active:bg-primary-100` : ''
       }`}
       onMouseDown={(e) => {
@@ -55,23 +49,23 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
         </Link>
         <div className="flex items-end justify-between p-1 md:p-0">
           <div className="flex-1">
-            <div className="flex flex-start mt-2">
+            <div className="flex-start mt-2 flex">
               <Avatar
                 alt={worldcupCard.nickname}
                 profilePath={worldcupCard.profilePath}
                 size="small"
-                className="mt-1 mr-2"
+                className="mr-2 mt-1"
               />
               <div className="flex-1">
                 <Link href={`/wc/${worldcupCard.id}`}>
                   <h2
-                    className="text-base font-bold line-clamp-2 text-slate-700 hover:underline cursor-pointer mb-1"
+                    className="mb-1 line-clamp-2 cursor-pointer text-base font-bold text-slate-700 hover:underline"
                     title={worldcupCard.title}
                   >
                     {worldcupCard.title}
                   </h2>
                 </Link>
-                <div className="text-md text-gray-500 flex items-center">
+                <div className="flex items-center text-md text-gray-500">
                   <span>{worldcupCard.nickname}</span>
                   <span className="ml-2" title={createdAt.format('YYYY년 MM월 DD일')}>
                     {createdAt.fromNow()}
@@ -81,15 +75,9 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card(
                   ) : null}
                 </div>
               </div>
-              <CardEllipsis
-                worldcupId={worldcupCard.id}
-                title={worldcupCard.title}
-                openDropdownMenu={openDropdownMenu}
-                onOpenDropdownMenu={onOpenDropdownMenu}
-                onCloseDropdownMenu={onCloseDropdownMenu}
-              />
+              <CardEllipsis worldcupId={worldcupCard.id} title={worldcupCard.title} />
             </div>
-            <div className="flex items-center justify-between w-full"></div>
+            <div className="flex w-full items-center justify-between"></div>
           </div>
         </div>
       </div>

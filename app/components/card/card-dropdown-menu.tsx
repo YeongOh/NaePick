@@ -1,37 +1,34 @@
 import Link from 'next/link';
-import ShareWorldcupModal from '../modal/share-worldcup-modal';
-import { useState } from 'react';
 import { ChartNoAxesColumnDecreasing, Share } from 'lucide-react';
+import { useDropdown } from '../hooks/useDropdown';
 
 interface Props {
-  openDropdownMenu: boolean;
   worldcupId: string;
   title: string;
   onOpenShareWorldcupModal: () => void;
 }
 
-export default function CardDropdownMenu({
-  openDropdownMenu,
-  worldcupId,
-  onOpenShareWorldcupModal,
-}: Props) {
+export default function CardDropdownMenu({ worldcupId, onOpenShareWorldcupModal }: Props) {
+  const { dropdownId } = useDropdown();
+  const open = dropdownId === worldcupId;
+
   return (
     <>
-      {openDropdownMenu && (
-        <div className='dropdown-menu' onClick={(e) => e.stopPropagation()}>
-          <ul className='absolute right-0 border bg-white rounded-lg flex flex-col w-36 text-left text-base shadow cursor-pointer text-slate-700 p-2 z-50 animate-modalTransition'>
+      {open && (
+        <div className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
+          <ul className="absolute right-0 z-50 flex w-36 animate-modalTransition cursor-pointer flex-col rounded-lg border bg-white p-2 text-left text-base text-slate-700 shadow">
             <Link
-              className='dropdown-button p-2 my-0.5 hover:bg-primary-100 flex items-center gap-2 rounded active:bg-primary-200'
+              className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-primary-100 active:bg-primary-200"
               href={`/wc/${worldcupId}/stats`}
             >
-              <ChartNoAxesColumnDecreasing size='1.2rem' color='#334155' />
+              <ChartNoAxesColumnDecreasing size="1.2rem" color="#334155" />
               랭킹 보기
             </Link>
             <button
-              className='dropdown-button p-2 hover:bg-primary-100 text-left flex items-center gap-2 rounded active:bg-primary-200'
+              className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-primary-100 active:bg-primary-200"
               onClick={onOpenShareWorldcupModal}
             >
-              <Share color='#334155' size='1.2rem' />
+              <Share color="#334155" size="1.2rem" />
               공유
             </button>
           </ul>

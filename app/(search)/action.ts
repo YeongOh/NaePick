@@ -10,13 +10,22 @@ import {
   worldcups,
 } from '@/app/lib/database/schema';
 import { sql } from 'drizzle-orm';
+import { TCard } from '../lib/types';
 
-export async function getWorldcups(sort: 'latest' | 'popular', cursor?: string, category?: string) {
-  if (sort === 'latest') return await getLatestWorldcups(cursor, category);
-  return getPopularWorldcups(cursor, category);
+export async function getWorldcups({
+  sort,
+  category,
+  cursor,
+}: {
+  sort: 'latest' | 'popular';
+  category?: string;
+  cursor?: string;
+}) {
+  if (sort === 'latest') return await getLatestWorldcups({ category, cursor });
+  return getPopularWorldcups({ category, cursor });
 }
 
-export async function getLatestWorldcups(cursor?: string, category?: string) {
+export async function getLatestWorldcups({ category, cursor }: { category?: string; cursor?: string }) {
   const DATA_PER_PAGE = 20;
 
   let filter = sql``;
@@ -31,8 +40,7 @@ export async function getLatestWorldcups(cursor?: string, category?: string) {
     filter = sql`WHERE ${worldcups.publicity} = 'public'`;
   }
 
-  try {
-    const [result] = await db.execute(sql`
+  const [result, meta]: [unknown, any] = await db.execute(sql`
         SELECT ${worldcups.id}, ${worldcups.title}, ${worldcups.description},
                ${worldcups.publicity}, ${worldcups.createdAt} AS createdAt,
                ${users.nickname}, ${users.profilePath} AS profilePath,
@@ -65,14 +73,11 @@ export async function getLatestWorldcups(cursor?: string, category?: string) {
         LIMIT ${DATA_PER_PAGE}
         `);
 
-    const nextCursor = Array.isArray(result) && result.length ? result.at(-1)?.createdAt : null;
-    return { data: result, nextCursor };
-  } catch (error) {
-    console.error(error);
-  }
+  const nextCursor = Array.isArray(result) && result.length ? result.at(-1)?.createdAt : null;
+  return { data: (result as TCard[]) || [], nextCursor };
 }
 
-export async function getPopularWorldcups(cursor?: any, category?: string) {
+export async function getPopularWorldcups({ category, cursor }: { category?: string; cursor?: any }) {
   const DATA_PER_PAGE = 20;
 
   let filter = sql``;
@@ -90,8 +95,7 @@ export async function getPopularWorldcups(cursor?: any, category?: string) {
     filter = sql`WHERE ${worldcups.publicity} = 'public'`;
   }
 
-  try {
-    const [result] = await db.execute(sql`
+  const [result, meta]: [unknown, any] = await db.execute(sql`
         SELECT ${worldcups.id}, ${worldcups.title}, ${worldcups.description},
                ${worldcups.publicity}, ${worldcups.createdAt} AS createdAt,
                ${users.nickname}, ${users.profilePath} AS profilePath,
@@ -128,12 +132,9 @@ export async function getPopularWorldcups(cursor?: any, category?: string) {
         LIMIT ${DATA_PER_PAGE}
         `);
 
-    const nextCursor =
-      Array.isArray(result) && result.length
-        ? { matchCount: result.at(-1)?.matchCount as number, createdAt: result.at(-1)?.createdAt as string }
-        : null;
-    return { data: result, nextCursor };
-  } catch (error) {
-    console.error(error);
-  }
+  const nextCursor =
+    Array.isArray(result) && result.length
+      ? { matchCount: result.at(-1)?.matchCount as number, createdAt: result.at(-1)?.createdAt as string }
+      : null;
+  return { data: (result as TCard[]) || [], nextCursor };
 }

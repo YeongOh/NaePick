@@ -134,35 +134,71 @@ export async function getComments(worldcupId: string, userId?: string, cursor?: 
   return getCommentsWithoutUserId(worldcupId, cursor);
 }
 
+export async function getCommentsWithUserId(worldcupId: string, userId: string, cursor?: string) {
+  const DATA_PER_PAGE = 20;
+
+  const replies = alias(comments, 'replies');
+
+  const result = await db
+    .select({
+      ...getTableColumns(comments),
+      nickname: users.nickname,
+      profilePath: users.profilePath,
+      voted: candidates.name,
+      isLiked: commentLikes.userId,
+      likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
+      replyCount: count(replies.id).as('replyCount'),
+    })
+    .from(comments)
+    .leftJoin(replies, eq(replies.parentId, comments.id))
+    .leftJoin(commentLikes, and(eq(commentLikes.commentId, comments.id), eq(commentLikes.userId, userId)))
+    .leftJoin(users, eq(users.id, comments.userId))
+    .leftJoin(candidates, eq(candidates.id, comments.candidateId))
+    .where(
+      cursor
+        ? and(
+            and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor)),
+            isNull(comments.parentId),
+          )
+        : and(eq(comments.worldcupId, worldcupId), isNull(comments.parentId)),
+    )
+    .groupBy(comments.id)
+    .orderBy(desc(comments.createdAt))
+    .limit(DATA_PER_PAGE);
+
+  const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
+  return { data: result, nextCursor };
+}
+
 export async function getCommentsWithoutUserId(worldcupId: string, cursor?: string) {
   const DATA_PER_PAGE = 20;
 
-  try {
-    const result = await db
-      .select({
-        ...getTableColumns(comments),
-        nickname: users.nickname,
-        profilePath: users.profilePath,
-        isLiked: commentLikes.userId,
-        voted: candidates.name,
-        likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
-      })
-      .from(comments)
-      .leftJoin(users, eq(users.id, comments.userId))
-      .leftJoin(candidates, eq(candidates.id, comments.candidateId))
-      .where(
-        cursor
-          ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
-          : eq(comments.worldcupId, worldcupId),
-      )
-      .orderBy(desc(comments.createdAt))
-      .limit(DATA_PER_PAGE);
+  const replies = alias(comments, 'replies');
 
-    const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
-    return { data: result, nextCursor };
-  } catch (error) {
-    console.error(error);
-  }
+  const result = await db
+    .select({
+      ...getTableColumns(comments),
+      nickname: users.nickname,
+      profilePath: users.profilePath,
+      isLiked: commentLikes.userId,
+      voted: candidates.name,
+      likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
+      replyCount: count(replies.id).as('replyCount'),
+    })
+    .from(comments)
+    .leftJoin(replies, eq(replies.parentId, comments.id))
+    .leftJoin(users, eq(users.id, comments.userId))
+    .leftJoin(candidates, eq(candidates.id, comments.candidateId))
+    .where(
+      cursor
+        ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
+        : eq(comments.worldcupId, worldcupId),
+    )
+    .orderBy(desc(comments.createdAt))
+    .limit(DATA_PER_PAGE);
+
+  const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
+  return { data: result, nextCursor };
 }
 
 export async function getCommentReplies(parentId: string, userId?: string) {
@@ -214,47 +250,7 @@ export async function getCommentRepliesWithoutUserId(parentId: string) {
   }
 }
 
-export async function getCommentsWithUserId(worldcupId: string, userId: string, cursor?: string) {
-  const DATA_PER_PAGE = 20;
-
-  try {
-    const replies = alias(comments, 'replies');
-
-    const result = await db
-      .select({
-        ...getTableColumns(comments),
-        nickname: users.nickname,
-        profilePath: users.profilePath,
-        voted: candidates.name,
-        isLiked: commentLikes.userId,
-        likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
-        replyCount: count(replies.id).as('replyCount'),
-      })
-      .from(comments)
-      .leftJoin(replies, eq(replies.parentId, comments.id))
-      .leftJoin(commentLikes, and(eq(commentLikes.commentId, comments.id), eq(commentLikes.userId, userId)))
-      .leftJoin(users, eq(users.id, comments.userId))
-      .leftJoin(candidates, eq(candidates.id, comments.candidateId))
-      .where(
-        cursor
-          ? and(
-              and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor)),
-              isNull(comments.parentId),
-            )
-          : and(eq(comments.worldcupId, worldcupId), isNull(comments.parentId)),
-      )
-      .groupBy(comments.id)
-      .orderBy(desc(comments.createdAt))
-      .limit(DATA_PER_PAGE);
-
-    const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
-    return { data: result, nextCursor };
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function getParentCommntsCount(worldcupId: string) {
+export async function getCommentCount(worldcupId: string) {
   try {
     const count = await db.$count(
       comments,

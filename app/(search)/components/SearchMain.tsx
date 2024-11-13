@@ -5,8 +5,10 @@ import CardGridEmpty from '@/app/components/card/card-grid-empty';
 import MainNav from '@/app/components/main/main-nav';
 import { translateCategory } from '@/app/lib/types';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getWorldcups } from '../action';
+import { useInView } from 'react-intersection-observer';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 interface Props {
   sort: 'latest' | 'popular';
@@ -15,10 +17,16 @@ interface Props {
 
 export default function SearchMain({ sort, category }: Props) {
   const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
-  const [isFetching, setIsFetching] = useState(false);
-  const [cursor, setCursor] = useState<any>();
-  const [worldcups, setWorldcups] = useState<any>([]);
-  const lastWorldcupRef = useRef(null);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
+    queryKey: ['worldcups', { sort, category }],
+    queryFn: ({ pageParam }) => getWorldcups({ sort, category, cursor: pageParam }),
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => lastPage?.nextCursor,
+  });
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+  });
+  const worldcups = data?.pages.flatMap((page) => page?.data) || [];
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -32,9 +40,10 @@ export default function SearchMain({ sort, category }: Props) {
   };
 
   useEffect(() => {
-    setWorldcups([]);
-    setCursor(undefined);
-  }, [sort, category]);
+    if (inView && !isFetchingNextPage && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
 
   useEffect(() => {
     if (dropdownMenuIndex !== null) {
@@ -46,66 +55,21 @@ export default function SearchMain({ sort, category }: Props) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [dropdownMenuIndex]);
 
-  useEffect(() => {
-    const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      if (entries[0].isIntersecting && !isFetching && cursor != null) {
-        try {
-          setIsFetching(true);
-          observer.unobserve(entries[0].target);
-          const result = await getWorldcups(sort, cursor, category);
-          if (!result || !result.data) throw new Error();
-
-          const { data, nextCursor } = result;
-
-          if (data && Array.isArray(data)) setWorldcups((prev: any) => [...prev, ...data]);
-
-          setCursor(nextCursor);
-          setIsFetching(false);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    };
-
-    if (cursor === undefined) {
-      getWorldcups(sort, cursor, category).then((result) => {
-        if (result?.data) setWorldcups(result.data);
-        setCursor(result?.nextCursor);
-      });
-    }
-
-    const observer = new IntersectionObserver(handleIntersect, {
-      threshold: 0.5,
-    });
-
-    if (lastWorldcupRef.current) observer.observe(lastWorldcupRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isFetching, cursor, sort, category]);
-
   return (
-    <section className="max-w-screen-2xl m-auto">
+    <section className="m-auto max-w-screen-2xl">
       {worldcups ? (
         <>
           <MainNav>
             {category ? (
               <Link
-                className="flex items-center justify-center bg-black/80 text-white border rounded p-2 text-base hover:bg-black/90"
+                className="flex items-center justify-center rounded border bg-black/80 p-2 text-base text-white hover:bg-black/90"
                 href={sort === 'popular' ? '/' : `/search?sort=${sort}`}
               >
                 <span className="text-white">{translateCategory(category)}</span>
               </Link>
             ) : null}
           </MainNav>
-          <CardGrid
-            ref={lastWorldcupRef}
-            worldcupCards={worldcups}
-            dropdownMenuIndex={dropdownMenuIndex}
-            onOpenDropdownMenu={(index) => setDropdownMenuIndex(index)}
-            onCloseDropdownMenu={() => setDropdownMenuIndex(null)}
-          />
+          <CardGrid ref={ref} worldcupCards={worldcups} />
         </>
       ) : (
         <CardGridEmpty />

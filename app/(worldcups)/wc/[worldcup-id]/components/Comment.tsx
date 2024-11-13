@@ -12,19 +12,18 @@ import { CommentModel } from './CommentSection';
 import { getCommentReplies } from '../actions';
 import { useQuery } from '@tanstack/react-query';
 import Spinner from '@/app/components/ui/spinner';
+import { useDropdown } from '@/app/components/hooks/useDropdown';
 
 interface Props {
   comment: CommentModel;
   userId?: string;
   updateCommentId: string | null;
   replyingId: string | null;
-  dropdownMenuId: string | null;
   onLikeComment: (id: string, like: boolean) => void;
   onUpdateCommentToggle: (id: string) => void;
   onUpdateCommentSubmit: (id: string, newText: string) => void;
   onReplyCommentToggle: (id: string | null) => void;
   onReplyCommentSubmit: (replyText: string) => void;
-  onToggleDropdownMenu: (id: string) => void;
   onOpenDeleteCommentModal: (id: string) => void;
 }
 
@@ -34,17 +33,16 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     userId,
     updateCommentId,
     replyingId,
-    dropdownMenuId,
     onLikeComment,
     onUpdateCommentToggle,
     onUpdateCommentSubmit,
     onReplyCommentToggle,
     onReplyCommentSubmit,
-    onToggleDropdownMenu,
     onOpenDeleteCommentModal,
   }: Props,
   ref,
 ) {
+  const { dropdownId, toggleDropdown } = useDropdown();
   const [newText, setNewText] = useState(comment.text);
   const [replyText, setReplyText] = useState('');
   const [showReplies, setShowReplies] = useState(false);
@@ -212,14 +210,13 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
               className={`dropdown-menu-toggle flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-primary-50 active:bg-primary-200`}
               onClick={(e) => {
                 e.stopPropagation();
-                console.log(comment.id);
-                onToggleDropdownMenu(comment.id);
+                toggleDropdown(comment.id);
               }}
             >
               <EllipsisVertical size="1.2rem" />
             </button>
             <CommentDropdownMenu
-              openDropdownMenu={dropdownMenuId === comment.id}
+              openDropdownMenu={dropdownId === comment.id}
               onOpenDeleteCommentModal={() => onOpenDeleteCommentModal(comment.id)}
               onUpdateCommentToggle={() => onUpdateCommentToggle(comment.id)}
             />
@@ -232,13 +229,11 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
             ? replies?.map((reply) => (
                 <Comment
                   key={reply.id}
-                  dropdownMenuId={dropdownMenuId}
                   comment={reply}
                   userId={userId}
                   updateCommentId={updateCommentId}
                   replyingId={replyingId}
                   onLikeComment={onLikeComment}
-                  onToggleDropdownMenu={onToggleDropdownMenu}
                   onUpdateCommentToggle={onUpdateCommentToggle}
                   onUpdateCommentSubmit={onUpdateCommentSubmit}
                   onReplyCommentToggle={onReplyCommentToggle}

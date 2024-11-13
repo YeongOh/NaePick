@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import GoogleAnalyticsComponent from './lib/analytics/google';
 import { ReactQueryClientProvider } from './lib/react-query';
+import { DropdownProvider } from './components/hooks/useDropdown';
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ['latin'],
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={notoSansKr.className}>
-        <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+        <DropdownProvider>
+          <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+        </DropdownProvider>
         <Toaster />
         <GoogleAnalyticsComponent />
       </body>

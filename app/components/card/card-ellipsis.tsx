@@ -4,49 +4,37 @@ import { useState } from 'react';
 import CardDropdownMenu from './card-dropdown-menu';
 import { EllipsisVertical } from 'lucide-react';
 import ShareWorldcupModal from '../modal/share-worldcup-modal';
+import { useDropdown } from '../hooks/useDropdown';
 
 interface Props {
   worldcupId: string;
   title: string;
-  openDropdownMenu: boolean;
-  onOpenDropdownMenu: () => void;
-  onCloseDropdownMenu: () => void;
 }
 
-export default function CardEllipsis({
-  worldcupId,
-  openDropdownMenu,
-  onOpenDropdownMenu,
-  onCloseDropdownMenu,
-  title,
-}: Props) {
+export default function CardEllipsis({ worldcupId, title }: Props) {
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
+  const { toggleDropdown } = useDropdown();
 
   const handleShareWorldcupModal = () => {
+    toggleDropdown(null);
     setShareWorldcupModal(true);
-    onCloseDropdownMenu();
   };
 
   return (
     <>
-      <div className='relative'>
+      <div className="relative">
         <button
-          type='button'
-          className={`dropdown-menu-toggle transition-colors hover:bg-primary-50 active:bg-primary-200 hover:border rounded-full w-10 h-10 flex justify-center items-center`}
+          type="button"
+          className={`dropdown-menu-toggle flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:border hover:bg-primary-50 active:bg-primary-200`}
           onClick={(e) => {
             e.stopPropagation();
-            if (!openDropdownMenu) {
-              onOpenDropdownMenu();
-            } else {
-              onCloseDropdownMenu();
-            }
+            toggleDropdown(worldcupId);
           }}
         >
-          <EllipsisVertical size='1.2rem' />
+          <EllipsisVertical size="1.2rem" />
         </button>
         <CardDropdownMenu
           worldcupId={worldcupId}
-          openDropdownMenu={openDropdownMenu}
           onOpenShareWorldcupModal={handleShareWorldcupModal}
           title={title}
         />

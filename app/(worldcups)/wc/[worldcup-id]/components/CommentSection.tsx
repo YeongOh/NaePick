@@ -1,7 +1,6 @@
 'use client';
 
-import { sortDate } from '@/app/utils/date';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TextArea from '@/app/components/ui/textarea';
@@ -13,7 +12,7 @@ import {
   CreateCommentState,
   deleteCommentAction,
   getComments,
-  getParentCommntsCount,
+  getCommentCount,
   likeCommentAction,
   replyCommentAction,
   updateCommentAction,
@@ -23,8 +22,10 @@ import { comments } from '@/app/lib/database/schema';
 import Comment from './Comment';
 import Button from '@/app/components/ui/button';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Spinner from '@/app/components/ui/spinner';
+import { useInView } from 'react-intersection-observer';
+import { useDropdown } from '@/app/components/hooks/useDropdown';
 
 export type CommentModel = InferSelectModel<typeof comments> & {
   nickname: string | null;
@@ -32,7 +33,7 @@ export type CommentModel = InferSelectModel<typeof comments> & {
   voted: string | null;
   likeCount: number;
   replyCount?: number;
-  isLiked?: boolean;
+  isLiked?: string | null;
 };
 
 interface Props {
@@ -43,28 +44,32 @@ interface Props {
 }
 
 export default function CommentSection({ worldcupId, className, userId, finalWinnerCandidateId }: Props) {
+  const { toggleDropdown } = useDropdown();
   const [state, setState] = useState<CreateCommentState>({ errors: {} });
-  const [commentsCount, setCommentsCount] = useState<number>();
   const [text, setText] = useState('');
   const [numberOfNewComments, setNumberOfNewComments] = useState(0);
-  const [dropdownMenuId, setDropdownMenuId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<{
     commentId: string;
     parentId: string | null;
   } | null>(null);
   const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
   const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
-  const totalNumberOfComments = (commentsCount || 0) + numberOfNewComments;
   const queryClient = useQueryClient();
-  const ref = useRef(null);
+  const { data: commentCount } = useQuery({
+    queryKey: ['comment-count', { worldcupId }],
+    queryFn: () => getCommentCount(worldcupId),
+  });
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
     queryKey: ['comments', { worldcupId }],
     queryFn: ({ pageParam }) => getComments(worldcupId, userId, pageParam),
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => lastPage?.nextCursor,
   });
-  const comments = data?.pages.flatMap((page) => page.data) || [];
-  const sortedComments = comments?.sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'));
+  const { ref, inView } = useInView({
+    threshold: 0.5,
+  });
+  const comments = data?.pages.flatMap((page) => page?.data) || [];
+  const totalNumberOfComments = (commentCount || 0) + numberOfNewComments;
 
   const createCommentMutation = useMutation({
     mutationFn: ({
@@ -116,16 +121,19 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
         await queryClient.cancelQueries({ queryKey: ['replies', { parentId }] });
         const snapshot = queryClient.getQueryData(['replies', { parentId }]);
         queryClient.setQueryData(['replies', { parentId }], (old: CommentModel[]) =>
-          old.map((comment: any) =>
+          old.map((comment) =>
             comment.id === commentId ? { ...comment, text: newText, updatedAt: String(new Date()) } : comment,
           ),
         );
         return { snapshot };
-      } else {
-        await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
-        const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
-        queryClient.setQueryData(['comments', { worldcupId }], (previous) => {
-          const newPages = previous?.pages.map((page: InfiniteData<CommentModel[]>) => {
+      }
+
+      await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
+      const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
+      queryClient.setQueryData(
+        ['comments', { worldcupId }],
+        (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
+          const newPages = previous.pages.map((page) => {
             const newData = page.data.map((comment: any) =>
               comment.id === commentId
                 ? { ...comment, text: newText, updatedAt: String(new Date()) }
@@ -137,10 +145,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
             ...previous,
             pages: newPages,
           };
-        });
+        },
+      );
 
-        return { snapshot };
-      }
+      return { snapshot };
     },
     onError: (error, variables, context) => {
       console.error(error);
@@ -189,6 +197,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
         queryClient.invalidateQueries({
           queryKey: ['comments', { worldcupId }],
         });
+        setNumberOfNewComments((prev) => prev - 1);
       }
     },
     onError: (error, data, variables) => {
@@ -227,12 +236,16 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           ),
         );
         return { snapshot };
-      } else {
-        await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
-        const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
-        queryClient.setQueryData(['comments', { worldcupId }], (previous) => {
-          const newPages = previous?.pages.map((page: InfiniteData<CommentModel[]>) => {
-            const newData = page.data.map((comment: any) =>
+      }
+
+      await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
+      const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
+      queryClient.setQueryData(
+        ['comments', { worldcupId }],
+        (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
+          console.log(previous);
+          const newPages = previous?.pages.map((page) => {
+            const newData = page.data.map((comment) =>
               comment.id === commentId
                 ? {
                     ...comment,
@@ -247,67 +260,21 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
             ...previous,
             pages: newPages,
           };
-        });
+        },
+      );
 
-        return { snapshot };
-      }
+      return { snapshot };
     },
     onError: (error, data, variables) => {
       console.error(error);
     },
   });
 
-  const handleToggleDropdownMenu = (index: string) => {
-    setDropdownMenuId((prev) => (prev == index ? null : index));
-  };
-
-  const handleClickOutside = (event: MouseEvent) => {
-    const target = event.target as HTMLElement;
-    if (
-      !target.closest('.dropdown-menu') &&
-      !target.closest('.dropdown-menu-toggle') &&
-      !target.closest('.modal')
-    ) {
-      setDropdownMenuId(null);
-    }
-  };
-
   useEffect(() => {
-    if (dropdownMenuId !== null) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+    if (inView && !isFetchingNextPage && hasNextPage) {
+      fetchNextPage();
     }
-
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [dropdownMenuId]);
-
-  useEffect(() => {
-    if (commentsCount === undefined) {
-      getParentCommntsCount(worldcupId).then((resutlt) => setCommentsCount(resutlt));
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      if (entries[0].isIntersecting && !isFetchingNextPage && hasNextPage) {
-        console.log('fetching');
-        fetchNextPage();
-      }
-    };
-
-    const observer = new IntersectionObserver(handleIntersect, {
-      threshold: 0.5,
-    });
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [worldcupId, userId, fetchNextPage, isFetchingNextPage, hasNextPage, ref]);
+  }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
 
   const handleCommentFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -322,10 +289,16 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       parentId: deleteConfirmId.parentId,
     });
     setDeleteConfirmId(null);
-    setDropdownMenuId(null);
+    toggleDropdown(null);
   };
 
-  const handleDeleteCommentModal = ({ commentId, parentId }: { commentId: string; parentId: string }) => {
+  const handleDeleteCommentModal = ({
+    commentId,
+    parentId,
+  }: {
+    commentId: string;
+    parentId: string | null;
+  }) => {
     setDeleteConfirmId({ commentId, parentId });
   };
 
@@ -333,7 +306,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     if (id === updateCommentId) {
       setUpdateCommentId(null);
     } else {
-      setDropdownMenuId(null);
+      toggleDropdown(null);
       setUpdateCommentId(id);
     }
   };
@@ -347,7 +320,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
       return;
     }
-    console.log(id, newText, parentId);
 
     updateCommentMutation.mutate({ commentId: id, newText, parentId });
     setUpdateCommentId(null);
@@ -418,14 +390,13 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           <Spinner />
         </div>
       ) : null}
-      {comments ? (
+      {comments.length ? (
         <ul>
-          {sortedComments?.map((comment, index) => (
+          {comments?.map((comment, index) => (
             <Comment
               key={comment.id}
               comment={comment}
               userId={userId}
-              dropdownMenuId={dropdownMenuId}
               updateCommentId={updateCommentId}
               replyingId={replyCommentId}
               onLikeComment={(id, like) => handleLikeComment(id, like, id === comment.id ? null : comment.id)}
@@ -435,7 +406,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
               }
               onReplyCommentToggle={(id) => handleReplyCommentToggle(id)}
               onReplyCommentSubmit={(replyText) => handleReplyCommentSubmit(comment.id, replyText)}
-              onToggleDropdownMenu={(id) => handleToggleDropdownMenu(id)}
               onOpenDeleteCommentModal={(id) =>
                 handleDeleteCommentModal({ commentId: id, parentId: id === comment.id ? null : comment.id })
               }
@@ -458,7 +428,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
         open={deleteConfirmId !== null}
         onClose={() => {
           setDeleteConfirmId(null);
-          setDropdownMenuId(null);
+          toggleDropdown(null);
         }}
         onConfirm={handleDeleteComment}
       />
