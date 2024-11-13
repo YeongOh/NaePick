@@ -97,6 +97,7 @@ export async function replyCommentAction({
 
   const session = await getSession();
   const userId = session?.userId;
+  console.log(parentId, worldcupId, userId);
 
   const commentId = await replyComment({
     parentId,
@@ -190,8 +191,11 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
     .leftJoin(candidates, eq(candidates.id, comments.candidateId))
     .where(
       cursor
-        ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
-        : eq(comments.worldcupId, worldcupId),
+        ? and(
+            and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor)),
+            isNull(comments.parentId),
+          )
+        : and(eq(comments.worldcupId, worldcupId), isNull(comments.parentId)),
     )
     .groupBy(comments.id)
     .orderBy(desc(comments.createdAt))
@@ -252,10 +256,7 @@ export async function getCommentRepliesWithoutUserId(parentId: string) {
 
 export async function getCommentCount(worldcupId: string) {
   try {
-    const count = await db.$count(
-      comments,
-      and(eq(comments.worldcupId, worldcupId), isNull(comments.parentId)),
-    );
+    const count = await db.$count(comments, eq(comments.worldcupId, worldcupId));
     return count;
   } catch (error) {
     console.error(error);
