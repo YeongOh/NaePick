@@ -13,8 +13,9 @@ import {
   CreateCommentState,
   deleteCommentAction,
   getComments,
-  getCommentsCount,
+  getParentCommntsCount,
   likeCommentAction,
+  replyCommentAction,
   updateCommentAction,
 } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
@@ -22,12 +23,15 @@ import { comments } from '@/app/lib/database/schema';
 import Comment from './Comment';
 import Button from '@/app/components/ui/button';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
+import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import Spinner from '@/app/components/ui/spinner';
 
 export type CommentModel = InferSelectModel<typeof comments> & {
   nickname: string | null;
   profilePath: string | null;
   voted: string | null;
   likeCount: number;
+  replyCount?: number;
   isLiked?: boolean;
 };
 
@@ -42,19 +46,219 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const [state, setState] = useState<CreateCommentState>({ errors: {} });
   const [commentsCount, setCommentsCount] = useState<number>();
   const [text, setText] = useState('');
-  const [isFetchingComment, setIsFetchingComment] = useState(false);
-  const [comments, setComments] = useState<CommentModel[]>([]);
   const [numberOfNewComments, setNumberOfNewComments] = useState(0);
-  const [cursor, setCursor] = useState<string>();
-  const [dropdownMenuIndex, setDropdownMenuIndex] = useState<number | null>(null);
-  const [deleteConfirmModalIndex, setDeleteConfirmModalIndex] = useState<number | null>(null);
-  const [isLikeCommentLoading, setIsLikeCommentLoading] = useState(false);
-  const [updateCommentIndex, setUpdateCommentIndex] = useState<number | null>(null);
-
+  const [dropdownMenuId, setDropdownMenuId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<{
+    commentId: string;
+    parentId: string | null;
+  } | null>(null);
+  const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
+  const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
+  const totalNumberOfComments = (commentsCount || 0) + numberOfNewComments;
+  const queryClient = useQueryClient();
   const ref = useRef(null);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
+    queryKey: ['comments', { worldcupId }],
+    queryFn: ({ pageParam }) => getComments(worldcupId, userId, pageParam),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
+  const comments = data?.pages.flatMap((page) => page.data) || [];
+  const sortedComments = comments?.sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'));
 
-  const handleToggleDropdownMenu = (index: number) => {
-    setDropdownMenuIndex((prev) => (prev == index ? null : index));
+  const createCommentMutation = useMutation({
+    mutationFn: ({
+      text,
+      worldcupId,
+      votedCandidateId,
+    }: {
+      worldcupId: string;
+      text: string;
+      votedCandidateId?: string;
+    }) => {
+      return createCommentAction({
+        text,
+        worldcupId,
+        votedCandidateId,
+      });
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['comments', { worldcupId }],
+      });
+      if (data.errors) {
+        setState({ errors: data.errors });
+      } else {
+        setState({ errors: {} });
+        setNumberOfNewComments((prev) => prev + 1);
+      }
+    },
+    onError: (error, data, variables) => {
+      console.error(error);
+      toast.error('댓글 작성에 실패했습니다.');
+    },
+  });
+
+  const updateCommentMutation = useMutation({
+    mutationFn: ({
+      commentId,
+      newText,
+      parentId,
+    }: {
+      commentId: string;
+      newText: string;
+      parentId: string | null;
+    }) => {
+      return updateCommentAction(commentId, newText);
+    },
+    onMutate: async ({ commentId, newText, parentId }) => {
+      if (parentId) {
+        await queryClient.cancelQueries({ queryKey: ['replies', { parentId }] });
+        const snapshot = queryClient.getQueryData(['replies', { parentId }]);
+        queryClient.setQueryData(['replies', { parentId }], (old: CommentModel[]) =>
+          old.map((comment: any) =>
+            comment.id === commentId ? { ...comment, text: newText, updatedAt: String(new Date()) } : comment,
+          ),
+        );
+        return { snapshot };
+      } else {
+        await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
+        const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
+        queryClient.setQueryData(['comments', { worldcupId }], (previous) => {
+          const newPages = previous?.pages.map((page: InfiniteData<CommentModel[]>) => {
+            const newData = page.data.map((comment: any) =>
+              comment.id === commentId
+                ? { ...comment, text: newText, updatedAt: String(new Date()) }
+                : comment,
+            );
+            return { ...page, data: newData };
+          });
+          return {
+            ...previous,
+            pages: newPages,
+          };
+        });
+
+        return { snapshot };
+      }
+    },
+    onError: (error, variables, context) => {
+      console.error(error);
+      toast.error('댓글을 수정하지 못했습니다.');
+    },
+  });
+  const replyCommentMutation = useMutation({
+    mutationFn: ({
+      parentId,
+      text,
+      worldcupId,
+      votedCandidateId,
+    }: {
+      text: string;
+      votedCandidateId?: string;
+      parentId: string;
+      worldcupId: string;
+    }) => {
+      return replyCommentAction({
+        text,
+        votedCandidateId,
+        parentId,
+        worldcupId,
+      });
+    },
+    onSuccess: (data, { parentId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ['replies', { parentId }],
+      });
+    },
+    onError: (error, data, variables) => {
+      console.error(error);
+      toast.error('답글 달기에 실패했습니다.');
+    },
+  });
+  const deleteCommentMutation = useMutation({
+    mutationFn: ({ commentId, parentId }: { commentId: string; parentId: string | null }) => {
+      return deleteCommentAction(commentId);
+    },
+    onSuccess: (data, { commentId, parentId }) => {
+      if (parentId) {
+        queryClient.invalidateQueries({
+          queryKey: ['replies', { parentId }],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ['comments', { worldcupId }],
+        });
+      }
+    },
+    onError: (error, data, variables) => {
+      console.error(error);
+      toast.error('댓글을 삭제하지 못했습니다.');
+    },
+  });
+  const likeCommentMutation = useMutation({
+    mutationFn: ({
+      commentId,
+      userId,
+      like,
+      parentId,
+    }: {
+      commentId: string;
+      userId: string;
+      like: boolean;
+      parentId: string | null;
+    }) => {
+      if (like) return likeCommentAction(commentId, userId);
+      return cancelLikeCommentAction(commentId, userId);
+    },
+    onMutate: async ({ commentId, userId, like, parentId }) => {
+      if (parentId) {
+        await queryClient.cancelQueries({ queryKey: ['replies', { parentId }] });
+        const snapshot = queryClient.getQueryData(['replies', { parentId }]);
+        queryClient.setQueryData(['replies', { parentId }], (replies: CommentModel[]) =>
+          replies.map((comment: any) =>
+            comment.id === commentId
+              ? {
+                  ...comment,
+                  likeCount: like ? comment.likeCount + 1 : comment.likeCount - 1,
+                  isLiked: like ? true : false,
+                }
+              : comment,
+          ),
+        );
+        return { snapshot };
+      } else {
+        await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
+        const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
+        queryClient.setQueryData(['comments', { worldcupId }], (previous) => {
+          const newPages = previous?.pages.map((page: InfiniteData<CommentModel[]>) => {
+            const newData = page.data.map((comment: any) =>
+              comment.id === commentId
+                ? {
+                    ...comment,
+                    likeCount: like ? comment.likeCount + 1 : comment.likeCount - 1,
+                    isLiked: like ? true : false,
+                  }
+                : comment,
+            );
+            return { ...page, data: newData };
+          });
+          return {
+            ...previous,
+            pages: newPages,
+          };
+        });
+
+        return { snapshot };
+      }
+    },
+    onError: (error, data, variables) => {
+      console.error(error);
+    },
+  });
+
+  const handleToggleDropdownMenu = (index: string) => {
+    setDropdownMenuId((prev) => (prev == index ? null : index));
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -64,50 +268,31 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       !target.closest('.dropdown-menu-toggle') &&
       !target.closest('.modal')
     ) {
-      setDropdownMenuIndex(null);
+      setDropdownMenuId(null);
     }
   };
 
   useEffect(() => {
-    if (dropdownMenuIndex !== null) {
+    if (dropdownMenuId !== null) {
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [dropdownMenuIndex]);
+  }, [dropdownMenuId]);
 
   useEffect(() => {
     if (commentsCount === undefined) {
-      getCommentsCount(worldcupId).then((resutlt) => setCommentsCount(resutlt));
+      getParentCommntsCount(worldcupId).then((resutlt) => setCommentsCount(resutlt));
     }
   }, []);
 
   useEffect(() => {
-    getComments(worldcupId, userId).then((result) => {
-      if (result) {
-        setComments(result.data);
-        setCursor(result.nextCursor);
-      }
-    });
-  }, [worldcupId, userId]);
-
-  useEffect(() => {
     const handleIntersect = async (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      if (entries[0].isIntersecting && !isFetchingComment && cursor) {
-        observer.unobserve(entries[0].target);
-        setIsFetchingComment(true);
-        const result = await getComments(worldcupId, userId, cursor);
-        if (!result) {
-          throw new Error();
-        }
-        const { data, nextCursor } = result;
-        if (data) {
-          setComments((prev) => [...prev, ...data]);
-        }
-        setCursor(nextCursor);
-        setIsFetchingComment(false);
+      if (entries[0].isIntersecting && !isFetchingNextPage && hasNextPage) {
+        console.log('fetching');
+        fetchNextPage();
       }
     };
 
@@ -122,124 +307,86 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     return () => {
       observer.disconnect();
     };
-  }, [cursor, isFetchingComment, worldcupId, userId]);
-
-  const sortedComments = comments?.sort((a, b) => sortDate(a.createdAt, b.createdAt, 'newest'));
-
-  const handleDeleteComment = async () => {
-    if (deleteConfirmModalIndex === null) return;
-    const targetCommentId = sortedComments[deleteConfirmModalIndex].id;
-    try {
-      await deleteCommentAction(targetCommentId);
-      const newComments = comments.filter((comment) => comment.id != targetCommentId);
-      setComments(newComments);
-      toast.success('댓글이 삭제되었습니다.');
-    } catch (error) {
-      console.error(error);
-      toast.error('댓글을 삭제하지 못했습니다.');
-    } finally {
-      setDeleteConfirmModalIndex(null);
-      setDropdownMenuIndex(null);
-    }
-  };
-
-  const handleDeleteCommentModal = (index: number) => {
-    setDeleteConfirmModalIndex(index);
-  };
-
-  const handleUpdateCommentToggle = (index: number) => {
-    if (index === updateCommentIndex) {
-      setUpdateCommentIndex(null);
-    } else {
-      setDropdownMenuIndex(null);
-      setUpdateCommentIndex(index);
-    }
-  };
+  }, [worldcupId, userId, fetchNextPage, isFetchingNextPage, hasNextPage, ref]);
 
   const handleCommentFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    createCommentMutation.mutate({ text, worldcupId, votedCandidateId: finalWinnerCandidateId });
+    setText('');
+  };
 
-    try {
-      const result = await createCommentAction({
-        text,
-        worldcupId,
-        votedCandidateId: finalWinnerCandidateId,
-      });
-      const { data: newComment, errors } = result;
-      if (errors) {
-        setState({ errors });
-      } else {
-        setState({ errors: {} });
-      }
-      if (newComment) {
-        setComments((prev) => [...prev, newComment]);
-        setNumberOfNewComments((prev) => prev + 1);
-      }
-      setText('');
-    } catch (error) {
-      console.error(error);
-      toast.error('업로드에 실패했습니다.');
+  const handleDeleteComment = async () => {
+    if (deleteConfirmId === null) return;
+    deleteCommentMutation.mutate({
+      commentId: deleteConfirmId.commentId,
+      parentId: deleteConfirmId.parentId,
+    });
+    setDeleteConfirmId(null);
+    setDropdownMenuId(null);
+  };
+
+  const handleDeleteCommentModal = ({ commentId, parentId }: { commentId: string; parentId: string }) => {
+    setDeleteConfirmId({ commentId, parentId });
+  };
+
+  const handleUpdateCommentToggle = (id: string) => {
+    if (id === updateCommentId) {
+      setUpdateCommentId(null);
+    } else {
+      setDropdownMenuId(null);
+      setUpdateCommentId(id);
     }
   };
 
-  const handleUpdateCommentSubmit = async (index: number, newText: string) => {
-    try {
-      if (newText.length <= 0) {
-        toast.error('최소 0자 이상이어야 합니다.');
-        return;
-      }
-      if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
-        toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-        return;
-      }
-      const targetComment = sortedComments[index];
-
-      await updateCommentAction(targetComment.id, newText);
-      setComments(
-        comments.map((comment) =>
-          comment.id === targetComment.id ? { ...comment, text: newText } : comment,
-        ),
-      );
-      setUpdateCommentIndex(null);
-      toast.success('댓글이 수정되었습니다.');
-    } catch (error) {
-      console.error(error);
-      toast.error('댓글을 수정하지 못했습니다.');
+  const handleUpdateCommentSubmit = async (id: string, newText: string, parentId: string | null) => {
+    if (newText.length <= 0) {
+      toast.error('최소 0자 이상이어야 합니다.');
+      return;
     }
+    if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
+      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
+      return;
+    }
+    console.log(id, newText, parentId);
+
+    updateCommentMutation.mutate({ commentId: id, newText, parentId });
+    setUpdateCommentId(null);
   };
 
-  const handleLikeComment = async (index: number) => {
-    try {
-      if (!userId) {
-        toast.error('로그인이 필요합니다!');
-        return;
-      }
-      if (isLikeCommentLoading) return;
-      setIsLikeCommentLoading(true);
-      const targetComment = sortedComments[index];
-
-      if (targetComment.isLiked) {
-        await cancelLikeCommentAction(targetComment.id, userId);
-      } else {
-        await likeCommentAction(targetComment.id, userId);
-      }
-      const isLiked = !targetComment.isLiked;
-      setComments(
-        comments.map((comment) =>
-          comment.id === targetComment.id
-            ? { ...comment, likeCount: isLiked ? comment.likeCount + 1 : comment.likeCount - 1, isLiked }
-            : comment,
-        ),
-      );
-    } catch (error) {
-      console.error(error);
-      toast.error('좋아요에 실패했습니다.');
-    } finally {
-      setIsLikeCommentLoading(false);
+  const handleReplyCommentSubmit = async (parentId: string, replyText: string) => {
+    if (replyText.length <= 0) {
+      toast.error('최소 0자 이상이어야 합니다.');
+      return;
     }
+    if (replyText.length > COMMENT_TEXT_MAX_LENGTH) {
+      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
+      return;
+    }
+
+    replyCommentMutation.mutate({
+      text: replyText,
+      votedCandidateId: finalWinnerCandidateId,
+      parentId,
+      worldcupId,
+    });
+    setReplyCommentId(null);
   };
 
-  const totalNumberOfComments = (commentsCount || 0) + numberOfNewComments;
+  const handleLikeComment = async (commentId: string, like: boolean, parentId: string | null) => {
+    if (!userId) {
+      toast.error('로그인이 필요합니다!');
+      return;
+    }
+    likeCommentMutation.mutate({ commentId, userId, like, parentId });
+  };
+
+  const handleReplyCommentToggle = (id: string | null) => {
+    if (id === null) {
+      setReplyCommentId(null);
+      return;
+    }
+    setReplyCommentId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <section className={`${className} bg-white`}>
@@ -266,32 +413,52 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           댓글 추가하기
         </Button>
       </form>
+      {createCommentMutation.isPending ? (
+        <div className="relative flex items-center justify-center">
+          <Spinner />
+        </div>
+      ) : null}
       {comments ? (
         <ul>
           {sortedComments?.map((comment, index) => (
             <Comment
               key={comment.id}
-              ref={index === sortedComments.length - 1 ? ref : null}
               comment={comment}
               userId={userId}
-              isOpenDropdownMenu={dropdownMenuIndex === index}
-              isUpdatingText={updateCommentIndex === index}
-              onUpdateCommentToggle={() => handleUpdateCommentToggle(index)}
-              onLikeComment={() => handleLikeComment(index)}
-              onUpdateCommentSubmit={(newText) => handleUpdateCommentSubmit(index, newText)}
-              onToggleDropdownMenu={() => handleToggleDropdownMenu(index)}
-              onOpenDeleteCommentModal={() => handleDeleteCommentModal(index)}
+              dropdownMenuId={dropdownMenuId}
+              updateCommentId={updateCommentId}
+              replyingId={replyCommentId}
+              onLikeComment={(id, like) => handleLikeComment(id, like, id === comment.id ? null : comment.id)}
+              onUpdateCommentToggle={(id) => handleUpdateCommentToggle(id)}
+              onUpdateCommentSubmit={(id, newText) =>
+                handleUpdateCommentSubmit(id, newText, id === comment.id ? null : comment.id)
+              }
+              onReplyCommentToggle={(id) => handleReplyCommentToggle(id)}
+              onReplyCommentSubmit={(replyText) => handleReplyCommentSubmit(comment.id, replyText)}
+              onToggleDropdownMenu={(id) => handleToggleDropdownMenu(id)}
+              onOpenDeleteCommentModal={(id) =>
+                handleDeleteCommentModal({ commentId: id, parentId: id === comment.id ? null : comment.id })
+              }
             />
           ))}
         </ul>
       ) : null}
+      {isFetching || isFetchingNextPage ? (
+        <div className="relative mt-10 flex items-center justify-center">
+          <div className="absolute">
+            <Spinner />
+          </div>
+        </div>
+      ) : (
+        <div ref={ref} />
+      )}
       <DeleteConfirmModal
         title={'해당 댓글을 정말로 삭제하시겠습니까?'}
         description={''}
-        open={deleteConfirmModalIndex !== null}
+        open={deleteConfirmId !== null}
         onClose={() => {
-          setDeleteConfirmModalIndex(null);
-          setDropdownMenuIndex(null);
+          setDeleteConfirmId(null);
+          setDropdownMenuId(null);
         }}
         onConfirm={handleDeleteComment}
       />

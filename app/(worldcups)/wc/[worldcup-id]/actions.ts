@@ -8,6 +8,7 @@ import {
   createComment,
   deleteComment,
   likeComment,
+  replyComment,
   updateComment,
 } from '@/app/lib/comment/service';
 import { db } from '@/app/lib/database';
@@ -20,7 +21,8 @@ import {
   users,
 } from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
-import { and, desc, eq, getTableColumns, lt, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, getTableColumns, isNull, lt, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/mysql-core';
 
 export type CreateCommentState = {
   errors?: {
@@ -79,6 +81,54 @@ export async function createCommentAction({
   return { data: newComment };
 }
 
+export async function replyCommentAction({
+  parentId,
+  text,
+  worldcupId,
+  votedCandidateId,
+}: {
+  parentId: string;
+  worldcupId: string;
+  text: string;
+  votedCandidateId?: string;
+}) {
+  const trimText = text.trim();
+  // TODO: 글자수 체크
+
+  const session = await getSession();
+  const userId = session?.userId;
+
+  const commentId = await replyComment({
+    parentId,
+    worldcupId,
+    userId,
+    votedCandidateId,
+    text: trimText,
+  });
+
+  let voted = null;
+  if (votedCandidateId) {
+    voted = await getCandidateName(votedCandidateId);
+  }
+
+  const newComment = {
+    id: commentId,
+    userId: userId ?? null,
+    candidateId: votedCandidateId ?? null,
+    isAnonymous: userId ? false : true,
+    profilePath: session?.profilePath,
+    nickname: session?.nickname,
+    createdAt: String(new Date()),
+    updatedAt: String(new Date()),
+    likeCount: 0,
+    parentId,
+    worldcupId,
+    text,
+    voted,
+  };
+  return { data: newComment };
+}
+
 export async function getComments(worldcupId: string, userId?: string, cursor?: string) {
   if (userId) return getCommentsWithUserId(worldcupId, userId, cursor);
   return getCommentsWithoutUserId(worldcupId, cursor);
@@ -93,6 +143,7 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
         ...getTableColumns(comments),
         nickname: users.nickname,
         profilePath: users.profilePath,
+        isLiked: commentLikes.userId,
         voted: candidates.name,
         likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
       })
@@ -109,6 +160,55 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
 
     const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
     return { data: result, nextCursor };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getCommentReplies(parentId: string, userId?: string) {
+  if (userId) return getCommentRepliesWithUserId(parentId, userId);
+  return getCommentRepliesWithoutUserId(parentId);
+}
+
+export async function getCommentRepliesWithUserId(parentId: string, userId: string) {
+  try {
+    const result = await db
+      .select({
+        ...getTableColumns(comments),
+        nickname: users.nickname,
+        profilePath: users.profilePath,
+        isLiked: commentLikes.userId,
+        voted: candidates.name,
+        likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
+      })
+      .from(comments)
+      .leftJoin(users, eq(users.id, comments.userId))
+      .leftJoin(commentLikes, and(eq(commentLikes.commentId, comments.id), eq(commentLikes.userId, userId)))
+      .leftJoin(candidates, eq(candidates.id, comments.candidateId))
+      .where(eq(comments.parentId, parentId))
+      .orderBy(asc(comments.createdAt));
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getCommentRepliesWithoutUserId(parentId: string) {
+  try {
+    const result = await db
+      .select({
+        ...getTableColumns(comments),
+        nickname: users.nickname,
+        profilePath: users.profilePath,
+        voted: candidates.name,
+        likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
+      })
+      .from(comments)
+      .leftJoin(users, eq(users.id, comments.userId))
+      .leftJoin(candidates, eq(candidates.id, comments.candidateId))
+      .where(eq(comments.parentId, parentId))
+      .orderBy(asc(comments.createdAt));
+    return result;
   } catch (error) {
     console.error(error);
   }
@@ -118,6 +218,8 @@ export async function getCommentsWithUserId(worldcupId: string, userId: string, 
   const DATA_PER_PAGE = 20;
 
   try {
+    const replies = alias(comments, 'replies');
+
     const result = await db
       .select({
         ...getTableColumns(comments),
@@ -126,16 +228,22 @@ export async function getCommentsWithUserId(worldcupId: string, userId: string, 
         voted: candidates.name,
         isLiked: commentLikes.userId,
         likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
+        replyCount: count(replies.id).as('replyCount'),
       })
       .from(comments)
+      .leftJoin(replies, eq(replies.parentId, comments.id))
       .leftJoin(commentLikes, and(eq(commentLikes.commentId, comments.id), eq(commentLikes.userId, userId)))
       .leftJoin(users, eq(users.id, comments.userId))
       .leftJoin(candidates, eq(candidates.id, comments.candidateId))
       .where(
         cursor
-          ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
-          : eq(comments.worldcupId, worldcupId),
+          ? and(
+              and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor)),
+              isNull(comments.parentId),
+            )
+          : and(eq(comments.worldcupId, worldcupId), isNull(comments.parentId)),
       )
+      .groupBy(comments.id)
       .orderBy(desc(comments.createdAt))
       .limit(DATA_PER_PAGE);
 
@@ -146,9 +254,12 @@ export async function getCommentsWithUserId(worldcupId: string, userId: string, 
   }
 }
 
-export async function getCommentsCount(worldcupId: string) {
+export async function getParentCommntsCount(worldcupId: string) {
   try {
-    const count = await db.$count(comments, eq(comments.worldcupId, worldcupId));
+    const count = await db.$count(
+      comments,
+      and(eq(comments.worldcupId, worldcupId), isNull(comments.parentId)),
+    );
     return count;
   } catch (error) {
     console.error(error);

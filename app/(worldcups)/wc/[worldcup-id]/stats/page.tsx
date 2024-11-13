@@ -37,18 +37,16 @@ export default async function Page({ params, searchParams }: Props) {
     }
 
     return (
-      <>
+      <div className="flex h-svh flex-col">
         <Navbar />
-        <div>
-          <Dashboard
-            candidates={stat.data}
-            statCount={stat.count}
-            worldcup={worldcup}
-            page={page}
-            userId={session?.userId}
-          />
-        </div>
-      </>
+        <Dashboard
+          candidates={stat.data}
+          statCount={stat.count}
+          worldcup={worldcup}
+          page={page}
+          userId={session?.userId}
+        />
+      </div>
     );
   } else {
     notFound();

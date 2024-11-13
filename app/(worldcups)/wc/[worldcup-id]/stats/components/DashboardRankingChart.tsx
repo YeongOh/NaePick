@@ -8,7 +8,7 @@ interface Props {
   page: number;
 }
 
-export default function DashboardRanking({ onShowDetails, candidates, selectedIndex, page }: Props) {
+export default function DashboardRankingChart({ onShowDetails, candidates, selectedIndex, page }: Props) {
   return (
     <ul className="overflow-hidden rounded">
       <div className="flex h-8 items-center border-b bg-gray-50 text-sm text-gray-500">

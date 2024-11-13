@@ -31,7 +31,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <div className="flex h-screen flex-col items-stretch bg-black/50">
+    <div className="flex h-svh flex-col items-stretch bg-black/50">
       <Navbar screenMode />
       <WorldcupStarter worldcup={worldcup} userId={session?.userId} />
     </div>

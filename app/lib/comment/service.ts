@@ -54,6 +54,39 @@ export async function deleteComment(commentId: string) {
   }
 }
 
+export async function replyComment({
+  worldcupId,
+  parentId,
+  text,
+  userId,
+  votedCandidateId,
+}: {
+  worldcupId: string;
+  parentId: string;
+  text: string;
+  userId?: string;
+  votedCandidateId?: string;
+}) {
+  try {
+    const commentId = nanoid(COMMENT_ID_LENGTH);
+    const values = {
+      id: commentId,
+      userId: userId ?? null,
+      candidateId: votedCandidateId ?? null,
+      isAnonymous: userId ? false : true,
+      parentId,
+      worldcupId,
+      text,
+    };
+    await db.insert(comments).values(values);
+
+    return commentId;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 export async function likeComment(commentId: string, userId: string) {
   try {
     await db.insert(commentLikes).values({ commentId, userId });

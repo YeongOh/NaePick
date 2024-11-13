@@ -3,6 +3,7 @@ import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import GoogleAnalyticsComponent from './lib/analytics/google';
+import { ReactQueryClientProvider } from './lib/react-query';
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ['latin'],
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={notoSansKr.className}>
-        <main>{children}</main>
+        <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
         <Toaster />
         <GoogleAnalyticsComponent />
       </body>

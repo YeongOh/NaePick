@@ -63,7 +63,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   if (isSelectingRounds) {
     return (
       <>
-        <section className="relative flex h-[calc(100svh-60px)] bg-black">
+        <section className="relative flex h-full flex-grow bg-black">
           <h1 className="absolute z-50 w-full bg-black/50 text-center text-3xl font-bold leading-10 text-white lg:text-5xl">
             {worldcup.title}{' '}
             {notEnoughCandidates ? (
@@ -94,10 +94,10 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   }
 
   return (
-    <div className={`flex flex-col bg-black/95 lg:flex-row`}>
+    <div className={`flex h-[calc(100svh-60px)] flex-col bg-black/95 lg:flex-grow lg:flex-row`}>
       <WorldcupPickScreen
         className={`h-[calc(100svh-52px)] lg:flex-1 ${
-          showSidebar ? 'h-[calc(30svh-60px)] lg:h-[calc(100svh-60px)]' : ''
+          showSidebar ? 'h-[calc(30svh-60px)] lg:h-[calc(100svh-60px)]' : 'lg:h-full'
         }`}
         worldcup={worldcup}
         defaultCandidates={candidates}
@@ -105,7 +105,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
         onWorldcupEnd={handleOnWorldcupEnd}
       />
       {showSidebar ? (
-        <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-[100svh] lg:w-[31rem] lg:p-8">
+        <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-full lg:w-[31rem] lg:p-8">
           <section>
             <div className="mb-4 flex gap-1">
               <LinkButton

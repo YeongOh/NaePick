@@ -12,7 +12,7 @@ import Button from '@/app/components/ui/button';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
 import { InferSelectModel } from 'drizzle-orm';
 import { worldcups } from '@/app/lib/database/schema';
-import DashboardRanking from './DashboardRanking';
+import DashboardRankingChart from './DashboardRankingChart';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 
 export interface CandidateStatModel {
@@ -50,10 +50,10 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
   };
 
   return (
-    <div className="flex h-[calc(100svh-61px)] flex-col lg:h-auto lg:flex-row">
-      <section className="hidden w-[24rem] bg-gray-200 p-2 lg:block">
+    <div className="flex h-[calc(100svh-61px)] flex-grow flex-col lg:flex-row">
+      <section className="hidden w-1/5 bg-gray-200 p-2 lg:block">
         <div className="bg-gray-200 p-2">
-          <DashboardRanking
+          <DashboardRankingChart
             onShowDetails={setSelectedCandidateIndex}
             selectedIndex={selectedCandidateIndex}
             candidates={candidates}
@@ -70,17 +70,17 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </div>
         </div>
       </section>
-      <section className="relative flex h-[calc(30svh-20px)] flex-1 items-center justify-center bg-black/90 lg:h-[calc(100svh-60px)]">
+      <section className="relative flex items-center justify-center bg-black/90 lg:h-auto lg:w-[55%]">
         <h1 className="absolute top-0 w-full bg-black/50 text-center text-3xl font-bold text-white lg:text-5xl">
           {worldcup.title}
         </h1>
         {selectedCandidate ? (
           <>
-            <div className="absolute bottom-0 text-center text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:bottom-10">
-              <h2 className="text-xl font-bold lg:text-2xl">
+            <div className="absolute bottom-0 text-center text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:bottom-auto lg:top-20">
+              <h2 className="text-xl font-bold lg:text-4xl">
                 {currentRank}등 {selectedCandidate.name} <br />
               </h2>
-              <span className="text-lg font-bold lg:text-lg">
+              <span className="text-lg font-bold lg:text-2xl">
                 {' '}
                 승률: {selectedCandidate.winRate === 0 ? '0' : (selectedCandidate.winRate * 100).toFixed(1)}%
               </span>
@@ -131,7 +131,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </button>
         )}
       </section>
-      <section className="h-12 bg-black/90 lg:hidden">
+      <section className="bg-black/90 lg:hidden">
         <ul className="flex items-center gap-1 overflow-hidden rounded p-1">
           {candidates.map((candidate, i) => {
             const isSelected = i === selectedCandidateIndex;
@@ -155,7 +155,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           })}
         </ul>
       </section>
-      <section className="h-[calc(60svh-20px)] overflow-y-scroll bg-white p-3 lg:h-auto lg:w-[31rem] lg:p-8">
+      <section className="flex-col overflow-y-scroll bg-white p-3 lg:h-full lg:w-1/4 lg:flex-grow-0 lg:p-8">
         <div className="mb-4 flex gap-1">
           <LinkButton
             className="flex items-center justify-center gap-1 text-sm lg:text-base"
