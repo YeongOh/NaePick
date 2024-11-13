@@ -180,7 +180,6 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
       ...getTableColumns(comments),
       nickname: users.nickname,
       profilePath: users.profilePath,
-      isLiked: commentLikes.userId,
       voted: candidates.name,
       likeCount: db.$count(commentLikes, eq(commentLikes.commentId, comments.id)),
       replyCount: count(replies.id).as('replyCount'),
@@ -194,6 +193,7 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
         ? and(eq(comments.worldcupId, worldcupId), lt(comments.createdAt, cursor))
         : eq(comments.worldcupId, worldcupId),
     )
+    .groupBy(comments.id)
     .orderBy(desc(comments.createdAt))
     .limit(DATA_PER_PAGE);
 

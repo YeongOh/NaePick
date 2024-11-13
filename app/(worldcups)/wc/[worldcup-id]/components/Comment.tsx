@@ -9,21 +9,21 @@ import CommentDropdownMenu from './CommentDropdownMenu';
 import TextArea from '@/app/components/ui/textarea';
 import dayjs from '@/app/utils/dayjs';
 import { CommentModel } from './CommentSection';
-import { getCommentReplies } from '../actions';
-import { useQuery } from '@tanstack/react-query';
-import Spinner from '@/app/components/ui/spinner';
+import { getCommentReplies, replyCommentAction } from '../actions';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDropdown } from '@/app/components/hooks/useDropdown';
+import toast from 'react-hot-toast';
+import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 
 interface Props {
   comment: CommentModel;
   userId?: string;
   updateCommentId: string | null;
-  replyingId: string | null;
+  finalWinnerCandidateId?: string;
+  worldcupId: string;
   onLikeComment: (id: string, like: boolean) => void;
   onUpdateCommentToggle: (id: string) => void;
   onUpdateCommentSubmit: (id: string, newText: string) => void;
-  onReplyCommentToggle: (id: string | null) => void;
-  onReplyCommentSubmit: (replyText: string) => void;
   onOpenDeleteCommentModal: (id: string) => void;
 }
 
@@ -32,12 +32,11 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     comment,
     userId,
     updateCommentId,
-    replyingId,
+    finalWinnerCandidateId,
+    worldcupId,
     onLikeComment,
     onUpdateCommentToggle,
     onUpdateCommentSubmit,
-    onReplyCommentToggle,
-    onReplyCommentSubmit,
     onOpenDeleteCommentModal,
   }: Props,
   ref,
@@ -45,16 +44,62 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
   const { dropdownId, toggleDropdown } = useDropdown();
   const [newText, setNewText] = useState(comment.text);
   const [replyText, setReplyText] = useState('');
+  const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
-  const [commentIdGetReplies, setCommentIdGetReplies] = useState<string | null>(null);
   const { data: replies, isFetching } = useQuery({
     queryKey: ['replies', { parentId: comment.id }],
     queryFn: () => getCommentReplies(comment.id, userId),
-    enabled: !!commentIdGetReplies,
+    enabled: !!showReplies,
+  });
+  const queryClient = useQueryClient();
+  const replyCommentMutation = useMutation({
+    mutationFn: ({
+      parentId,
+      text,
+      worldcupId,
+      votedCandidateId,
+    }: {
+      text: string;
+      votedCandidateId?: string;
+      parentId: string;
+      worldcupId: string;
+    }) => {
+      return replyCommentAction({
+        text,
+        votedCandidateId,
+        parentId,
+        worldcupId,
+      });
+    },
+    onSuccess: (data, { parentId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ['replies', { parentId }],
+      });
+      setShowReplies(true);
+    },
+    onError: (error, data, variables) => {
+      console.error(error);
+      toast.error('답글 달기에 실패했습니다.');
+    },
   });
 
-  const handleGetReplies = async () => {
-    setCommentIdGetReplies(comment.id);
+  const handleReplyCommentSubmit = (parentId: string, replyText: string) => {
+    if (replyText.length <= 0) {
+      toast.error('최소 0자 이상이어야 합니다.');
+      return;
+    }
+    if (replyText.length > COMMENT_TEXT_MAX_LENGTH) {
+      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
+      return;
+    }
+
+    replyCommentMutation.mutate({
+      text: replyText,
+      votedCandidateId: finalWinnerCandidateId,
+      parentId,
+      worldcupId,
+    });
+    setIsReplying(false);
   };
 
   return (
@@ -140,11 +185,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                   <Heart color={comment.isLiked ? '#f87171' : '#6b7280'} size="1.2rem" />
                 </button>
                 <span className="mr-2 text-base text-gray-500">{comment.likeCount}</span>
-                <button
-                  type="button"
-                  className="text-sm text-slate-700"
-                  onClick={() => onReplyCommentToggle(comment.id)}
-                >
+                <button type="button" className="text-sm text-slate-700" onClick={() => setIsReplying(true)}>
                   답글
                 </button>
               </div>
@@ -152,18 +193,13 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           ) : null}
           {comment.replyCount && comment.replyCount > 0 ? (
             <button
-              onClick={() => {
-                if (!showReplies) {
-                  handleGetReplies();
-                }
-                setShowReplies((prev) => !prev);
-              }}
+              onClick={() => setShowReplies((prev) => !prev)}
               className="mb-1 flex gap-1 text-base text-blue-500 hover:text-blue-600 active:text-blue-700"
             >
               {showReplies ? <ChevronUp /> : <ChevronDown />} 답글 {comment.replyCount}개
             </button>
           ) : null}
-          {replyingId === comment.id ? (
+          {isReplying ? (
             <>
               <TextArea
                 id="replyText"
@@ -181,7 +217,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                     size="small"
                     onClick={() => {
                       setReplyText('');
-                      onReplyCommentToggle(null);
+                      setIsReplying(false);
                     }}
                     variant="ghost"
                   >
@@ -192,7 +228,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                     size="small"
                     variant="primary"
                     onClick={() => {
-                      onReplyCommentSubmit(replyText);
+                      handleReplyCommentSubmit(comment.parentId ?? comment.id, replyText);
                       setReplyText('');
                     }}
                   >
@@ -223,34 +259,26 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           </div>
         ) : null}
       </div>
-      <ul className="flex justify-end">
-        <ul className="flex w-[calc(100%-2.5rem)] flex-col">
+      <div className="flex justify-end">
+        <ul className="relative flex w-[calc(100%-2.5rem)] flex-col">
           {showReplies && replies
             ? replies?.map((reply) => (
                 <Comment
                   key={reply.id}
                   comment={reply}
                   userId={userId}
+                  worldcupId={worldcupId}
+                  finalWinnerCandidateId={finalWinnerCandidateId}
                   updateCommentId={updateCommentId}
-                  replyingId={replyingId}
                   onLikeComment={onLikeComment}
                   onUpdateCommentToggle={onUpdateCommentToggle}
                   onUpdateCommentSubmit={onUpdateCommentSubmit}
-                  onReplyCommentToggle={onReplyCommentToggle}
-                  onReplyCommentSubmit={onReplyCommentSubmit}
                   onOpenDeleteCommentModal={onOpenDeleteCommentModal}
                 />
               ))
             : null}
         </ul>
-        {isFetching ? (
-          <div className="relative mt-10 flex items-center justify-center">
-            <div className="absolute">
-              <Spinner />
-            </div>
-          </div>
-        ) : null}
-      </ul>
+      </div>
     </li>
   );
 });

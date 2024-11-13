@@ -14,7 +14,6 @@ import {
   getComments,
   getCommentCount,
   likeCommentAction,
-  replyCommentAction,
   updateCommentAction,
 } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
@@ -53,7 +52,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     parentId: string | null;
   } | null>(null);
   const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
-  const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { data: commentCount } = useQuery({
     queryKey: ['comment-count', { worldcupId }],
@@ -155,35 +153,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       toast.error('댓글을 수정하지 못했습니다.');
     },
   });
-  const replyCommentMutation = useMutation({
-    mutationFn: ({
-      parentId,
-      text,
-      worldcupId,
-      votedCandidateId,
-    }: {
-      text: string;
-      votedCandidateId?: string;
-      parentId: string;
-      worldcupId: string;
-    }) => {
-      return replyCommentAction({
-        text,
-        votedCandidateId,
-        parentId,
-        worldcupId,
-      });
-    },
-    onSuccess: (data, { parentId }) => {
-      queryClient.invalidateQueries({
-        queryKey: ['replies', { parentId }],
-      });
-    },
-    onError: (error, data, variables) => {
-      console.error(error);
-      toast.error('답글 달기에 실패했습니다.');
-    },
-  });
   const deleteCommentMutation = useMutation({
     mutationFn: ({ commentId, parentId }: { commentId: string; parentId: string | null }) => {
       return deleteCommentAction(commentId);
@@ -243,7 +212,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       queryClient.setQueryData(
         ['comments', { worldcupId }],
         (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
-          console.log(previous);
           const newPages = previous?.pages.map((page) => {
             const newData = page.data.map((comment) =>
               comment.id === commentId
@@ -325,39 +293,12 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     setUpdateCommentId(null);
   };
 
-  const handleReplyCommentSubmit = async (parentId: string, replyText: string) => {
-    if (replyText.length <= 0) {
-      toast.error('최소 0자 이상이어야 합니다.');
-      return;
-    }
-    if (replyText.length > COMMENT_TEXT_MAX_LENGTH) {
-      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-      return;
-    }
-
-    replyCommentMutation.mutate({
-      text: replyText,
-      votedCandidateId: finalWinnerCandidateId,
-      parentId,
-      worldcupId,
-    });
-    setReplyCommentId(null);
-  };
-
   const handleLikeComment = async (commentId: string, like: boolean, parentId: string | null) => {
     if (!userId) {
       toast.error('로그인이 필요합니다!');
       return;
     }
     likeCommentMutation.mutate({ commentId, userId, like, parentId });
-  };
-
-  const handleReplyCommentToggle = (id: string | null) => {
-    if (id === null) {
-      setReplyCommentId(null);
-      return;
-    }
-    setReplyCommentId((prev) => (prev === id ? null : id));
   };
 
   return (
@@ -398,14 +339,13 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
               comment={comment}
               userId={userId}
               updateCommentId={updateCommentId}
-              replyingId={replyCommentId}
+              worldcupId={worldcupId}
+              finalWinnerCandidateId={finalWinnerCandidateId}
               onLikeComment={(id, like) => handleLikeComment(id, like, id === comment.id ? null : comment.id)}
               onUpdateCommentToggle={(id) => handleUpdateCommentToggle(id)}
               onUpdateCommentSubmit={(id, newText) =>
                 handleUpdateCommentSubmit(id, newText, id === comment.id ? null : comment.id)
               }
-              onReplyCommentToggle={(id) => handleReplyCommentToggle(id)}
-              onReplyCommentSubmit={(replyText) => handleReplyCommentSubmit(comment.id, replyText)}
               onOpenDeleteCommentModal={(id) =>
                 handleDeleteCommentModal({ commentId: id, parentId: id === comment.id ? null : comment.id })
               }
