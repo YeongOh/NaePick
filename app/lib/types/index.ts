@@ -63,7 +63,7 @@ export function translateCategory(categoryName: string): string {
     case 'youtubers':
       return '유튜버';
     default:
-      return '오류';
+      return '잘못된 카테고리';
   }
 }
 

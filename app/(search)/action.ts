@@ -9,36 +9,45 @@ import {
   users,
   worldcups,
 } from '@/app/lib/database/schema';
-import { sql } from 'drizzle-orm';
+import { SQL, sql } from 'drizzle-orm';
 import { TCard } from '../lib/types';
 
 export async function getWorldcups({
   sort,
   category,
   cursor,
+  query,
 }: {
-  sort: 'latest' | 'popular';
+  sort?: 'latest' | 'popular';
   category?: string;
   cursor?: string;
+  query?: string;
 }) {
-  if (sort === 'latest') return await getLatestWorldcups({ category, cursor });
-  return getPopularWorldcups({ category, cursor });
+  if (!sort || sort === 'popular') {
+    return await getPopularWorldcups({ category, cursor, query });
+  }
+  return await getLatestWorldcups({ category, cursor, query });
 }
 
-export async function getLatestWorldcups({ category, cursor }: { category?: string; cursor?: string }) {
+export async function getLatestWorldcups({
+  category,
+  cursor,
+  query,
+}: {
+  category?: string;
+  cursor?: string;
+  query?: string;
+}) {
   const DATA_PER_PAGE = 20;
 
-  let filter = sql``;
+  const sqlChunks: SQL[] = [];
+  sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);
 
-  if (cursor && category) {
-    filter = sql`WHERE ${worldcups.publicity} = 'public' AND ${worldcups.createdAt} < ${cursor} AND ${categories.name} = ${category}`;
-  } else if (cursor) {
-    filter = sql`WHERE ${worldcups.publicity} = 'public' AND ${worldcups.createdAt} < ${cursor}`;
-  } else if (category) {
-    filter = sql`WHERE ${worldcups.publicity} = 'public' AND ${categories.name} = ${category}`;
-  } else {
-    filter = sql`WHERE ${worldcups.publicity} = 'public'`;
-  }
+  if (cursor) sqlChunks.push(sql`AND ${worldcups.createdAt} < ${cursor}`);
+  if (category) sqlChunks.push(sql`AND ${categories.name} = ${category}`);
+  if (query) sqlChunks.push(sql`AND ${worldcups.title} LIKE ${query + '%'}`);
+
+  const filter: SQL = sql.join(sqlChunks, sql.raw(' '));
 
   const [result, meta]: [unknown, any] = await db.execute(sql`
         SELECT ${worldcups.id}, ${worldcups.title}, ${worldcups.description},
@@ -77,23 +86,27 @@ export async function getLatestWorldcups({ category, cursor }: { category?: stri
   return { data: (result as TCard[]) || [], nextCursor };
 }
 
-export async function getPopularWorldcups({ category, cursor }: { category?: string; cursor?: any }) {
+export async function getPopularWorldcups({
+  category,
+  cursor,
+  query,
+}: {
+  category?: string;
+  cursor?: any;
+  query?: string;
+}) {
   const DATA_PER_PAGE = 20;
 
-  let filter = sql``;
+  const sqlChunks: SQL[] = [];
+  sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);
 
-  if (cursor && category) {
-    filter = sql`WHERE ${worldcups.publicity} = 'public' AND (COALESCE(m.match_count, 0) < ${cursor.matchCount}
-               OR (COALESCE(m.match_count, 0) = ${cursor.matchCount} AND ${worldcups.createdAt} < ${cursor.createdAt}))
-               AND ${categories.name} = ${category}`;
-  } else if (cursor) {
-    filter = sql`WHERE ${worldcups.publicity} = 'public' AND COALESCE(m.match_count, 0) < ${cursor.matchCount} 
-               OR (COALESCE(m.match_count, 0) = ${cursor.matchCount} AND ${worldcups.createdAt} < ${cursor.createdAt})`;
-  } else if (category) {
-    filter = sql`WHERE ${worldcups.publicity} = 'public' AND ${categories.name} = ${category}`;
-  } else {
-    filter = sql`WHERE ${worldcups.publicity} = 'public'`;
-  }
+  if (cursor)
+    sqlChunks.push(sql`AND (COALESCE(m.match_count, 0) < ${cursor.matchCount} 
+  OR (COALESCE(m.match_count, 0) = ${cursor.matchCount} AND ${worldcups.createdAt} < ${cursor.createdAt}))`);
+  if (category) sqlChunks.push(sql`AND ${categories.name} = ${category}`);
+  if (query) sqlChunks.push(sql`AND ${worldcups.title} LIKE ${query + '%'}`);
+
+  const filter: SQL = sql.join(sqlChunks, sql.raw(' '));
 
   const [result, meta]: [unknown, any] = await db.execute(sql`
         SELECT ${worldcups.id}, ${worldcups.title}, ${worldcups.description},

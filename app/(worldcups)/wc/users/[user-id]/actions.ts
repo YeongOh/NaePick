@@ -83,7 +83,7 @@ export async function getMyWorldcups(userId: string, page: number) {
 
     const count = await db.$count(worldcups, eq(worldcups.userId, userId));
 
-    return { data: result, count };
+    return { data: result as any, count };
   } catch (error) {
     console.error(error);
   }

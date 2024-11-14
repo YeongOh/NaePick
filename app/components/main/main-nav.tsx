@@ -1,20 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import Searchbar from './searchbar';
+import { useCallback } from 'react';
+import { translateCategory } from '@/app/lib/types';
+import { X } from 'lucide-react';
 
-interface Props {
-  children?: React.ReactNode;
-}
-
-export default function MainNav({ children }: Props) {
+export default function MainNav() {
   const searchParams = useSearchParams();
-  const path = usePathname();
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const deleteQueryString = useCallback(
+    (name: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(name);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   return (
     <nav className="m-2 flex items-center gap-2 p-2">
       <Link
-        href={path === '/' || path === '/search' ? '/search?sort=popular' : `${path}?sort=popular`}
+        href={'/search?' + createQueryString('sort', 'popular')}
         className={`rounded px-3 py-2 text-base ${
           searchParams.get('sort') === 'popular' || !searchParams.has('sort')
             ? 'bg-primary-500 text-white'
@@ -24,7 +43,7 @@ export default function MainNav({ children }: Props) {
         인기
       </Link>
       <Link
-        href={path === '/' || path === '/search' ? '/search?sort=latest' : `${path}?sort=latest`}
+        href={'/search?' + createQueryString('sort', 'latest')}
         className={`rounded px-3 py-2 text-base ${
           searchParams.get('sort') === 'latest'
             ? 'bg-primary-500 text-white'
@@ -33,7 +52,15 @@ export default function MainNav({ children }: Props) {
       >
         최신
       </Link>
-      {!path.includes('/category') && (
+      {searchParams.get('category') ? (
+        <Link
+          className="flex items-center justify-center rounded bg-primary-500 px-3 py-2 text-base text-white"
+          href={'/search?' + deleteQueryString('category')}
+        >
+          {translateCategory(searchParams.get('category') || '')}
+          <X size={'1.2rem'} />
+        </Link>
+      ) : (
         <Link
           href={'/category'}
           className={`rounded px-3 py-2 text-base ${'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100'}`}
@@ -41,7 +68,7 @@ export default function MainNav({ children }: Props) {
           카테고리
         </Link>
       )}
-      {children}
+      <Searchbar />
     </nav>
   );
 }
