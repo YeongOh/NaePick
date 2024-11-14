@@ -61,11 +61,11 @@ const validateSessionId = async (sessionId: string): Promise<boolean> => {
 };
 
 export async function deleteSession() {
-  const sessionCookie = await getSession();
-  if (!sessionCookie) {
-    return;
-  }
+  const sessionCookie = await getIronSession<SessionCookie>(cookies(), sessionCookieOptions);
   const sessionId = sessionCookie.sessionId;
   sessionCookie.destroy();
+  if (!sessionId) {
+    return;
+  }
   await db.delete(sessions).where(eq(sessions.id, sessionId));
 }

@@ -3,7 +3,6 @@ import { DeleteObjectCommand, ListObjectsCommand, PutObjectCommand } from '@aws-
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { imageBucket, S3client, videoBucket } from './config';
 
-// TODO: import server only
 export async function getSignedUrlForImage(key: string, fileType: string) {
   try {
     const params = {
@@ -56,7 +55,7 @@ export async function deleteImage(key: string) {
       new DeleteObjectCommand({
         Bucket: imageBucket,
         Key: key,
-      })
+      }),
     );
   } catch (error) {
     console.error(error);
@@ -68,7 +67,7 @@ export async function deleteVideo(key: string) {
       new DeleteObjectCommand({
         Bucket: videoBucket,
         Key: key,
-      })
+      }),
     );
   } catch (error) {
     console.error(error);
