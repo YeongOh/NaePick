@@ -9,6 +9,7 @@ import {
   WORLDCUP_ID_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
 } from '@/app/constants';
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
 import {
   mysqlEnum,
   mysqlTable as table,
@@ -48,6 +49,20 @@ export const users = table('users', {
   createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
 });
+
+export const sessions = table('sessions', {
+  id: varchar('id', {
+    length: 255,
+  }).primaryKey(),
+  userId: varchar({ length: USER_ID_LENGTH })
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
+  expiresAt: timestamp({ mode: 'string' }).notNull(),
+});
+
+export type SessionInsert = InferInsertModel<typeof sessions>;
 
 export const candidates = table('candidates', {
   id: varchar({ length: CANDIDATE_ID_LENGTH }).primaryKey(),

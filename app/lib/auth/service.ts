@@ -34,6 +34,7 @@ export async function findUserWithEmail(email: string) {
         userId: users.id,
         nickname: users.nickname,
         profilePath: users.profilePath,
+        email: users.email,
         password: users.password,
       })
       .from(users)

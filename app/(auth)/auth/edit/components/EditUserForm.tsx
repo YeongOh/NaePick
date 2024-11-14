@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
@@ -19,20 +19,17 @@ import {
   getSignedUrlForProfileImage,
   updateUserProfilePathAction,
 } from '../actions';
-import { getUserProfilePath } from '@/app/lib/auth/service';
 
 interface Props {
   nickname: string;
   profilePath: string | null;
   userId: string;
+  email: string;
 }
 
-const fetcher = (url: string) => fetch(url).then((response) => response.json());
-
-export default function EditUserForm({ nickname, userId, profilePath }: Props) {
+export default function EditUserForm({ nickname, userId, profilePath, email }: Props) {
   const initialState: editUserState = { message: null, errors: {} };
   const [state, submitEditUserForm] = useFormState(editUserAction, initialState);
-  const [email, setEmail] = useState<string>('');
   const [changePassword, setChangePassword] = useState<boolean>(false);
   const [openDeleteProfileModal, setOpenDeleteProfileModal] = useState(false);
   const router = useRouter();
@@ -66,7 +63,7 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
         toast.error('오류가 발생했습니다.');
       }
     },
-    [profilePath]
+    [profilePath],
   );
 
   const handleDeleteProfileImage = async () => {
@@ -106,15 +103,6 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
     noDrag: true,
   });
 
-  useEffect(() => {
-    fetch('/api/user')
-      .then((response) => response.json())
-      .then(({ email }) => {
-        setEmail(email);
-      })
-      .catch((error) => console.log(error));
-  }, []);
-
   const handleEditUserFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -129,28 +117,28 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
   return (
     <form
       onSubmit={handleEditUserFormSubmit}
-      className="rounded-md flex flex-col w-full mb-20"
+      className="mb-20 flex w-full flex-col rounded-md"
       onKeyDown={handleFormKeyDown}
     >
-      <Link href="/" className="text-primary-500 text-5xl text-center mb-8 font-extrabold">
+      <Link href="/" className="mb-8 text-center text-5xl font-extrabold text-primary-500">
         NaePick
       </Link>
-      <div className="flex flex-col items-center mb-4">
+      <div className="mb-4 flex flex-col items-center">
         <Avatar alt={'내 프로필 이미지'} profilePath={profilePath} size="large" className="mb-2" />
         <div {...getRootProps()}>
           <input {...getInputProps()} />
-          <p className="text-base text-blue-500 cursor-pointer hover:underline">프로필 이미지 변경</p>
+          <p className="cursor-pointer text-base text-blue-500 hover:underline">프로필 이미지 변경</p>
         </div>
         {profilePath !== null ? (
           <button
             type="button"
-            className="text-base text-gray-500 cursor-pointer hover:underline"
+            className="cursor-pointer text-base text-gray-500 hover:underline"
             onClick={() => setOpenDeleteProfileModal(true)}
           >
             프로필 이미지 삭제
           </button>
         ) : null}
-        <p className="flex justify-center items-center text-base text-gray-500 mt-2">
+        <p className="mt-2 flex items-center justify-center text-base text-gray-500">
           <Info size="1.1rem" className="mr-1" /> 이미지 크기는 80x80px를 추천합니다.
         </p>
       </div>
@@ -158,7 +146,7 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
         id="email"
         name="email"
         type="email"
-        className={`p-4 mb-2`}
+        className={`mb-2 p-4`}
         defaultValue={email}
         placeholder={'이메일 주소'}
         disabled
@@ -168,7 +156,7 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
         id="nickname"
         name="nickname"
         type="text"
-        className={`p-4 mb-2`}
+        className={`mb-2 p-4`}
         error={state.errors?.nickname}
         defaultValue={nickname}
         placeholder={'닉네임'}
@@ -179,22 +167,22 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
         name="oldPassword"
         type="password"
         error={state.errors?.oldPassword}
-        className={`p-4 mb-2`}
+        className={`mb-2 p-4`}
         placeholder={`비밀번호`}
       />
       <InputErrorMessage className="mb-2" errors={state.errors?.oldPassword} />
-      <div className="flex gap-2 pl-2 mb-4">
+      <div className="mb-4 flex gap-2 pl-2">
         <input
           type="checkbox"
           id="changePassword"
           name="changePassword"
           checked={changePassword}
-          className="cursor-pointer peer/change-password"
+          className="peer/change-password cursor-pointer"
           onChange={() => setChangePassword((prev) => !prev)}
         />
         <label
           htmlFor="changePassword"
-          className="font-semibold text-base text-gray-500 peer-checked/change-password:text-primary-500 cursor-pointer"
+          className="cursor-pointer text-base font-semibold text-gray-500 peer-checked/change-password:text-primary-500"
         >
           비밀번호 변경
         </label>
@@ -205,7 +193,7 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
         type="password"
         error={state.errors?.newPassword}
         disabled={!changePassword}
-        className={`p-4 mb-2`}
+        className={`mb-2 p-4`}
         placeholder={`새로운 비밀번호`}
       />
       <InputErrorMessage className="mb-2" errors={state.errors?.newPassword} />
@@ -215,7 +203,7 @@ export default function EditUserForm({ nickname, userId, profilePath }: Props) {
         type="password"
         error={state.errors?.confirmNewPassword}
         disabled={!changePassword}
-        className={`p-4 mb-2`}
+        className={`mb-2 p-4`}
         placeholder={`새로운 비밀번호 재입력`}
       />
       <InputErrorMessage className="mb-2" errors={state.errors?.confirmNewPassword} />

@@ -18,6 +18,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function deleteWorldcupAction(worldcupId: string) {
   const session = await getSession();
+  if (!session) throw new Error('세션이 만료되었습니다.');
 
   const userId = session.userId;
   const isVerified = verifyWorldcupOwner(worldcupId, userId);

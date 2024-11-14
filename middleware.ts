@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from './app/lib/session';
+import { getOptimisticSession } from './app/lib/session/optimistic';
 
 const protectedRoutes = ['/wc/create', '/wc/edit', '/wc/edit-candidates', '/wc/users'];
 const publicOnlyRoutes = ['/auth/login', '/auth/signup'];
@@ -9,13 +9,13 @@ export default async function middleware(req: NextRequest) {
 
   const isProtectedRoute = protectedRoutes.includes(path);
   if (isProtectedRoute) {
-    const session = await getSession();
+    const session = await getOptimisticSession();
     if (!session?.userId) return NextResponse.redirect(new URL('/auth/login', req.nextUrl));
   }
 
   const isPublicOnlyRoute = publicOnlyRoutes.includes(path);
   if (isPublicOnlyRoute) {
-    const session = await getSession();
+    const session = await getOptimisticSession();
     if (session?.userId) return NextResponse.redirect(new URL('/auth/signout', req.nextUrl));
   }
 

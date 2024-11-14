@@ -5,13 +5,18 @@ import EditUserForm from './components/EditUserForm';
 export default async function Page() {
   const session = await getSession();
 
-  if (!session.userId) {
+  if (!session || !session.userId) {
     redirect('/auth/login');
   }
 
   return (
-    <section className="max-w-xs m-auto min-h-screen flex flex-col justify-center items-center">
-      <EditUserForm userId={session.userId} nickname={session.nickname} profilePath={session.profilePath} />
+    <section className="m-auto flex min-h-screen max-w-xs flex-col items-center justify-center">
+      <EditUserForm
+        userId={session.userId}
+        nickname={session.nickname}
+        profilePath={session.profilePath}
+        email={session.email}
+      />
     </section>
   );
 }

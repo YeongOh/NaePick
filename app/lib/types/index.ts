@@ -79,22 +79,3 @@ export function translatePublicity(publicity: string): string {
       return '오류';
   }
 }
-
-const sevenDays = 60 * 60 * 24 * 7;
-
-export const sessionOptions: SessionOptions = {
-  password: process.env.SESSION_PASSWORD as string,
-  cookieName: 'iron',
-  ttl: sevenDays,
-  cookieOptions: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: sevenDays - 60,
-  },
-};
-
-export interface SessionData {
-  userId: string;
-  nickname: string;
-  profilePath: string | null;
-}

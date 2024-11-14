@@ -1,11 +1,11 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createSession } from '@/app/lib/session';
 import { findUserWithEmail } from '@/app/lib/auth/service';
 import { verifyPassword } from '@/app/lib/auth/utils';
 import { createSelectSchema } from 'drizzle-zod';
 import { users } from '@/app/lib/database/schema';
+import { createSession } from '@/app/lib/session';
 
 const LoginFormSchema = createSelectSchema(users, {
   email: (schema) => schema.email.email({ message: '올바른 이메일이 아닙니다.' }),
@@ -53,7 +53,7 @@ export async function loginAction(state: SigninState, formData: FormData) {
 
     const { userId, nickname, profilePath } = user;
 
-    await createSession({ userId, nickname, profilePath });
+    await createSession({ userId, nickname, profilePath, email });
   } catch (error) {
     console.error(error);
     return {

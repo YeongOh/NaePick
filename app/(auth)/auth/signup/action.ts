@@ -97,7 +97,7 @@ export async function signupAction(state: SignupState, formData: FormData) {
       throw new Error('회원가입에 실패했습니다.');
     }
 
-    await createSession({ userId: newUserId, profilePath: null, nickname });
+    await createSession({ userId: newUserId, profilePath: null, nickname, email });
   } catch (error) {
     console.error(error);
     return {
