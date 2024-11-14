@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { createSession, getSession } from '@/app/lib/session';
 import {
+  deleteAccount,
   findUserWithUserId,
   getUserProfilePath,
   updateUserNickname,
@@ -192,6 +193,19 @@ export async function getSignedUrlForProfileImage(imagePath: string, fileType: s
       profilePath: key,
       url,
     };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function deleteAccountAction() {
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      throw new Error('세션이 만료되었습니다.');
+    }
+
+    await deleteAccount(session.userId);
   } catch (error) {
     console.log(error);
   }

@@ -20,7 +20,7 @@ export default function NavbarProfileImage({ profilePath, nickname, userId }: Pr
         className="dropdown-menu-toggle rounded-full font-normal hover:outline hover:outline-primary-500 active:outline-primary-700"
         onClick={() => toggleDropdown('avatar-dropdown')}
       >
-        <Avatar profilePath={profilePath} alt={nickname} size="medium" />
+        <Avatar profilePath={profilePath} alt={nickname} size="small" />
       </button>
       <NavbarDropdownMenu open={dropdownId === 'avatar-dropdown'} userId={userId} />
     </div>

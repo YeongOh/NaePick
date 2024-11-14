@@ -122,3 +122,12 @@ export async function getUserEmail(userId: string) {
     throw error;
   }
 }
+
+export async function deleteAccount(userId: string) {
+  try {
+    await db.delete(users).where(eq(users.id, userId));
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

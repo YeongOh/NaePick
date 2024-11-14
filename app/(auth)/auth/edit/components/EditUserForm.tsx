@@ -13,12 +13,14 @@ import InputErrorMessage from '@/app/components/ui/input-error-message';
 import Button from '@/app/components/ui/button';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
 import {
+  deleteAccountAction,
   deleteProfileImage,
   editUserAction,
   editUserState,
   getSignedUrlForProfileImage,
   updateUserProfilePathAction,
 } from '../actions';
+import { signout } from '../../signout/actions';
 
 interface Props {
   nickname: string;
@@ -32,6 +34,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
   const [state, submitEditUserForm] = useFormState(editUserAction, initialState);
   const [changePassword, setChangePassword] = useState<boolean>(false);
   const [openDeleteProfileModal, setOpenDeleteProfileModal] = useState(false);
+  const [openDeleteAccountModal, setOpenDeleteAccountModal] = useState(false);
   const router = useRouter();
 
   const onDrop = useCallback(
@@ -80,6 +83,15 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
       toast.error('오류가 발생했습니다.');
     } finally {
       setOpenDeleteProfileModal(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccountAction();
+      await signout();
+    } catch (error) {
+      toast.error('오류가 발생했습니다.');
     }
   };
 
@@ -214,12 +226,26 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
         type="button"
         onClick={() => router.back()}
         variant="outline"
-        className="mt-2"
+        className="mb-4 mt-2"
         aria-label="Go back"
         role="link"
       >
         돌아가기
       </Button>
+      <button
+        type="button"
+        onClick={() => setOpenDeleteAccountModal(true)}
+        className="text-base text-red-500"
+      >
+        회원 탈퇴
+      </button>
+      <DeleteConfirmModal
+        open={openDeleteAccountModal}
+        title={'정말로 회원 탈퇴하시겠습니까?'}
+        description="모든 회원 정보가 삭제됩니다. 탈퇴 후 닉네임은 '탈퇴한 회원'으로 표시되지만, 생성하신 월드컵과 댓글은 그대로 남게 됩니다."
+        onClose={() => setOpenDeleteAccountModal(false)}
+        onConfirm={handleDeleteAccount}
+      />
       <DeleteConfirmModal
         open={openDeleteProfileModal}
         title={'정말로 프로필 이미지를 삭제하시겠습니까?'}

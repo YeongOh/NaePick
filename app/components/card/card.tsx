@@ -66,7 +66,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card({ worldcupCard, 
                   </h2>
                 </Link>
                 <div className="flex items-center text-md text-gray-500">
-                  <span>{worldcupCard.nickname}</span>
+                  <span>{worldcupCard.nickname || '탈퇴한 회원'}</span>
                   <span className="ml-2" title={createdAt.format('YYYY년 MM월 DD일')}>
                     {createdAt.fromNow()}
                   </span>

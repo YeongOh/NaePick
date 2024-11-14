@@ -9,7 +9,7 @@ import {
   WORLDCUP_ID_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
 } from '@/app/constants';
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import { InferInsertModel } from 'drizzle-orm';
 import {
   mysqlEnum,
   mysqlTable as table,
@@ -56,7 +56,7 @@ export const sessions = table('sessions', {
   }).primaryKey(),
   userId: varchar({ length: USER_ID_LENGTH })
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
   updatedAt: timestamp({ mode: 'string' }).notNull().onUpdateNow().defaultNow(),
   expiresAt: timestamp({ mode: 'string' }).notNull(),
@@ -129,6 +129,8 @@ export const commentLikes = table(
     createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
   },
   (table) => {
-    return { pk: primaryKey({ columns: [table.commentId, table.userId] }) };
+    return {
+      pk: primaryKey({ name: 'comment_likes_composite_key', columns: [table.commentId, table.userId] }),
+    };
   },
 );

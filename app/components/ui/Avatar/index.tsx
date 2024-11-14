@@ -13,9 +13,9 @@ export default function Avatar({ profilePath, size, className, alt }: Props) {
 
   return (
     <div
-      className={`rounded-full overflow-hidden${size === 'small' ? ' w-9 h-9' : ''}${
-        size === 'medium' ? ' w-10 h-10' : ''
-      }${size === 'large' ? ' w-20 h-20' : ''} ${className || ''}`}
+      className={`overflow-hidden rounded-full ${size === 'small' ? 'h-8 w-8 lg:h-9 lg:w-9' : ''}${
+        size === 'medium' ? 'h-10 w-10' : ''
+      }${size === 'large' ? 'h-20 w-20' : ''} ${className || ''}`}
     >
       <img
         alt={alt ? alt : '탈퇴한 회원'}

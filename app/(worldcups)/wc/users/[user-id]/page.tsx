@@ -26,7 +26,7 @@ export default async function Page({ params, searchParams }: Props) {
   return (
     <>
       <Navbar />
-      <section className="max-w-screen-2xl m-auto">
+      <section className="m-auto max-w-screen-2xl">
         {result.data ? (
           <CardGridPagination
             count={result.count}

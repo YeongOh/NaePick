@@ -10,19 +10,13 @@ interface Props {
   description: string;
 }
 
-export default function DeleteConfirmModal({
-  open,
-  onClose,
-  onConfirm,
-  title,
-  description,
-}: Props) {
+export default function DeleteConfirmModal({ open, onClose, onConfirm, title, description }: Props) {
   return (
     <>
       {open &&
         createPortal(
           <div
-            className='modal fixed inset-0 z-50 bg-black/80 w-screen h-screen'
+            className="modal fixed inset-0 z-50 h-screen w-screen bg-black/80"
             onClick={(e) => {
               e.stopPropagation();
               onClose();
@@ -30,28 +24,24 @@ export default function DeleteConfirmModal({
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className='fixed inset-0 m-auto border bg-white rounded-xl p-6 w-[420px] h-fit animate-modalTransition'
+              className="fixed inset-0 m-auto h-fit w-[420px] max-w-[95%] animate-modalTransition rounded-xl border bg-white p-6"
             >
-              <div className='flex flex-col justify-between'>
-                <h2 className='text-lg font-semibold text-slate-700 mb-4'>
-                  {title}
-                </h2>
+              <div className="flex flex-col justify-between">
+                <h2 className="mb-4 text-lg font-semibold text-slate-700">{title}</h2>
                 {description.length ? (
-                  <p className='text-base text-slate-500 h-[50px]'>
-                    {description}
-                  </p>
+                  <p className="mb-2 h-[50px] text-base text-slate-500">{description}</p>
                 ) : null}
-                <div className='flex w-full gap-2 justify-end'>
+                <div className="flex w-full justify-end gap-2">
                   <button
-                    type='button'
-                    className='text-slate-700 hover:bg-gray-50 active:bg-gray-100 text-base px-4 py-2 text-center border rounded'
+                    type="button"
+                    className="rounded border px-4 py-2 text-center text-base text-slate-700 hover:bg-gray-50 active:bg-gray-100"
                     onClick={onClose}
                   >
                     취소
                   </button>
                   <button
-                    type='button'
-                    className='text-base font-semibold bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors text-center text-white px-4 py-2 rounded'
+                    type="button"
+                    className="rounded bg-red-500 px-4 py-2 text-center text-base font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700"
                     onClick={onConfirm}
                   >
                     삭제하기
@@ -60,7 +50,7 @@ export default function DeleteConfirmModal({
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </>
   );
