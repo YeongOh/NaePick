@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Navbar from './components/navbar/navbar';
 import LinkButton from './components/ui/link-button';
 

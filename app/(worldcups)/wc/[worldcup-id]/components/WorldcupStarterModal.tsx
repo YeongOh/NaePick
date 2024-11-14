@@ -3,11 +3,11 @@
 import { DEFAULT_ROUNDS, getNumberOfRoundsAvailable, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import Button from '../../../../components/ui/button';
 import { useRouter } from 'next/navigation';
-import ToggleableP from '../../../../components/ui/toggleable-p';
-import Avatar from '../../../../components/ui/Avatar';
 import dayjs from '@/app/utils/dayjs';
+import Avatar from '@/app/components/ui/Avatar';
+import ToggleableP from '@/app/components/ui/toggleable-p';
+import Button from '@/app/components/ui/button';
 
 interface Props {
   open: boolean;

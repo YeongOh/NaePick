@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { TCard } from '@/app/lib/types';
 import ThumbnailImage from '../ThumbnailImage';
 
@@ -20,10 +19,10 @@ export default function CardThumbnail({ worldcupCard }: Props) {
 
   return (
     <>
-      <div className={`inline-flex w-full h-44 group`}>
+      <div className={`group inline-flex h-44 w-full`}>
         {leftPath ? (
           <>
-            <div className="relative w-1/2 overflow-hidden sm:rounded-tl-xl sm:rounded-bl-xl">
+            <div className="relative w-1/2 overflow-hidden sm:rounded-bl-xl sm:rounded-tl-xl">
               <ThumbnailImage
                 path={leftPath}
                 name={leftName || ''}
@@ -31,9 +30,9 @@ export default function CardThumbnail({ worldcupCard }: Props) {
                 thumbnailURL={leftThumbnailUrl}
                 size="medium"
               />
-              <div className="bg-black/30 absolute h-auto bottom-0 w-full">
+              <div className="absolute bottom-0 h-auto w-full bg-black/30">
                 <p
-                  className="text-center text-white text-base truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-semibold px-1.5"
+                  className="truncate px-1.5 text-center text-base font-semibold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
                   title={leftName || ''}
                 >
                   {leftName}
@@ -42,10 +41,10 @@ export default function CardThumbnail({ worldcupCard }: Props) {
             </div>
           </>
         ) : (
-          <div className="relative w-1/2 overflow-hidden sm:rounded-tl-xl sm:rounded-bl-xl bg-black"></div>
+          <div className="relative w-1/2 overflow-hidden bg-black sm:rounded-bl-xl sm:rounded-tl-xl"></div>
         )}
         {rightPath ? (
-          <div className="relative w-1/2 overflow-hidden sm:rounded-tr-xl sm:rounded-br-xl">
+          <div className="relative w-1/2 overflow-hidden sm:rounded-br-xl sm:rounded-tr-xl">
             <ThumbnailImage
               path={rightPath}
               name={rightName || ''}
@@ -53,9 +52,9 @@ export default function CardThumbnail({ worldcupCard }: Props) {
               thumbnailURL={rightThumbnailUrl}
               size="medium"
             />
-            <div className="bg-black/30 absolute h-auto bottom-0 w-full">
+            <div className="absolute bottom-0 h-auto w-full bg-black/30">
               <p
-                className="text-center text-white text-base truncate drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-semibold px-1.5"
+                className="truncate px-1.5 text-center text-base font-semibold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
                 title={rightName || ''}
               >
                 {rightName}
@@ -63,7 +62,7 @@ export default function CardThumbnail({ worldcupCard }: Props) {
             </div>
           </div>
         ) : (
-          <div className="relative w-1/2 overflow-hidden sm:rounded-tr-xl sm:rounded-br-xl bg-black"></div>
+          <div className="relative w-1/2 overflow-hidden bg-black sm:rounded-br-xl sm:rounded-tr-xl"></div>
         )}
       </div>
     </>

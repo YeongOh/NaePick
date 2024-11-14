@@ -1,10 +1,10 @@
 'use server';
 
-import { deleteSessionAction } from '@/app/lib/session';
+import { deleteSession } from '@/app/lib/session';
 import { redirect } from 'next/navigation';
 
 export async function signout() {
-  await deleteSessionAction();
+  await deleteSession();
 
   redirect('/');
 }

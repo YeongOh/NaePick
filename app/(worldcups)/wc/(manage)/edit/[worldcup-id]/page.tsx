@@ -19,12 +19,12 @@ export default async function Page({ params }: Props) {
   ]);
 
   if (!worldcup || !categories) notFound();
-  if (worldcup.userId !== session.userId) redirect('/forbidden');
+  if (worldcup.userId !== session?.userId) redirect('/forbidden');
 
   return (
     <>
       <Navbar />
-      <div className="max-w-xl m-auto flex flex-col">
+      <div className="m-auto flex max-w-xl flex-col">
         <WorldcupFormTab worldcupId={worldcupId} disabled={null} highlight="info" />
         <WorldcupForm worldcup={worldcup} categories={categories} />
       </div>

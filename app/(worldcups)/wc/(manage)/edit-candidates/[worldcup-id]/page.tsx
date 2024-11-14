@@ -19,12 +19,13 @@ export default async function Page({ params, searchParams }: Props) {
   const [result, session] = await Promise.all([getCandidatesForUpdate(worldcupId, page), getSession()]);
 
   if (!result) notFound();
+  if (!session) redirect('/forbidden');
   if (!(await verifyWorldcupOwner(worldcupId, session.userId))) redirect('/forbidden');
 
   return (
     <>
       <Navbar />
-      <div className="max-w-3xl m-auto">
+      <div className="m-auto max-w-3xl">
         <WorldcupFormTab worldcupId={worldcupId} disabled={null} highlight="candidates" />
         <EditCandidatesForm
           worldcupId={worldcupId}

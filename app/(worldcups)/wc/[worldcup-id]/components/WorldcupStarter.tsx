@@ -94,7 +94,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
   }
 
   return (
-    <div className={`flex h-[calc(100svh-60px)] flex-col bg-black/95 lg:flex-grow lg:flex-row`}>
+    <div className={`flex h-[calc(100svh-52px)] flex-col bg-black/95 lg:flex-grow lg:flex-row`}>
       <WorldcupPickScreen
         className={`h-[calc(100svh-52px)] lg:flex-1 ${
           showSidebar ? 'h-[calc(30svh-60px)] lg:h-[calc(100svh-60px)]' : 'lg:h-full'

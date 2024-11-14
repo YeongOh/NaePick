@@ -70,7 +70,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </div>
         </div>
       </section>
-      <section className="relative flex items-center justify-center bg-black/90 lg:h-auto lg:w-[55%]">
+      <section className="relative flex min-h-[10rem] items-center justify-center bg-black/90 lg:w-[55%]">
         <h1 className="absolute top-0 w-full bg-black/50 text-center text-3xl font-bold text-white lg:text-5xl">
           {worldcup.title}
         </h1>

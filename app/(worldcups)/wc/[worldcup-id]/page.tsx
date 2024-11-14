@@ -26,7 +26,7 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
-  if (worldcup.publicity === 'private' && session.userId !== worldcup.userId) {
+  if (worldcup.publicity === 'private' && session?.userId !== worldcup.userId) {
     redirect('/forbidden');
   }
 
