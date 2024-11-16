@@ -1,4 +1,4 @@
-name: Deploy To EC2
+name: deploy to EC2
 
 on:
   push:
@@ -8,4 +8,18 @@ on:
 jobs:
   Deploy:
     runs-on: ubuntu-latest
-    steps: -name
+    steps:
+      - name: SSH -> EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            cd /home/ubuntu/pick
+            git pull origin main
+            npm i
+            npm run build
+            pm2 kill
+            pm2 start npm --name naepick-server -- start
