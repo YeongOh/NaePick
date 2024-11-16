@@ -11,15 +11,20 @@ jobs:
     steps:
       - name: SSH -> EC2
         uses: appleboy/ssh-action@master
+        env:
+          ENV: ${{ secrets.ENV }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: ENV
           script_stop: true
           script: |
             cd /home/ubuntu/pick
             git pull origin main
+            echo "$ENV" > .env
             npm i
             npm run build
+            npx drizzle-kit push
             pm2 kill
             pm2 start npm --name naepick-server -- start
