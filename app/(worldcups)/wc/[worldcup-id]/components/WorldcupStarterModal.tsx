@@ -1,6 +1,6 @@
 'use client';
 
-import { DEFAULT_ROUNDS, getNumberOfRoundsAvailable, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,8 @@ import Avatar from '@/app/components/ui/Avatar';
 import ToggleableP from '@/app/components/ui/toggleable-p';
 import Button from '@/app/components/ui/button';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
+import { getNumberOfRoundsAvailable } from '../utils';
+import { X } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -42,15 +44,12 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
     <>
       {open &&
         createPortal(
-          <div
-            className="modal fixed inset-0 z-40 h-screen w-screen bg-black/80"
-            onClick={() => router.back()}
-          >
+          <div className="modal fixed inset-0 z-40 h-screen w-screen bg-black/80">
             <div
               onClick={(e) => e.stopPropagation()}
               className="fixed left-1/2 top-1/2 w-[26rem] max-w-[95%] -translate-x-1/2 -translate-y-1/2 animate-modalTransition rounded-xl border bg-white p-3 lg:p-6"
             >
-              <div>
+              <div className="relative">
                 <div className="mb-2 flex items-center">
                   <Avatar
                     profilePath={profilePath}
@@ -67,6 +66,13 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
                     </div>
                   </div>
                 </div>
+                <button
+                  aria-label="돌아가기"
+                  className="absolute right-0 top-0 flex h-10 w-10 items-center justify-center text-slate-700"
+                  onClick={() => router.back()}
+                >
+                  <X size={'1.2rem'} />
+                </button>
                 <div className="mb-2">
                   <ToggleableP
                     className={'w-full text-slate-700'}

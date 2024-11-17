@@ -38,7 +38,7 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
   return (
     <>
       {mediaType === 'cdn_video' && (
-        <div className="size-full max-h-fit max-w-fit">
+        <div className="size-full max-h-fit max-w-fit lg:max-h-[85svh]">
           <video
             className="h-full w-full object-contain"
             autoPlay
@@ -52,7 +52,7 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
         </div>
       )}
       {mediaType === 'cdn_img' && (
-        <div className="size-full max-h-fit max-w-fit">
+        <div className="size-full max-h-fit max-w-fit lg:max-h-[85svh]">
           <MyImage className="size-full object-contain" src={`${path}?w=1920&h=1760`} alt={name} />
         </div>
       )}

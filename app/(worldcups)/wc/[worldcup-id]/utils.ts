@@ -10,3 +10,9 @@ export function getRoundsDescription(round: number): string {
 
   return '';
 }
+
+export function getNumberOfRoundsAvailable(numberOfCandidates: number): number[] {
+  const options = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
+  const result = options.filter((option) => option <= numberOfCandidates);
+  return result;
+}
