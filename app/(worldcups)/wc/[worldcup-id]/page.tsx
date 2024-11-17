@@ -4,6 +4,7 @@ import WorldcupStarter from '@/app/(worldcups)/wc/[worldcup-id]/components/World
 import Navbar from '@/app/components/navbar/navbar';
 import { getWorldcup } from '@/app/lib/worldcup/service';
 import { Metadata, ResolvingMetadata } from 'next';
+import { WorldcupMatchProvider } from './hooks/useWorldcupMatch';
 
 interface Props {
   params: { ['worldcup-id']: string };
@@ -33,7 +34,9 @@ export default async function Page({ params }: Props) {
   return (
     <div className="flex h-svh flex-col items-stretch bg-black/50">
       <Navbar screenMode />
-      <WorldcupStarter worldcup={worldcup} userId={session?.userId} />
+      <WorldcupMatchProvider worldcup={worldcup} userId={session?.userId}>
+        <WorldcupStarter />
+      </WorldcupMatchProvider>
     </div>
   );
 }

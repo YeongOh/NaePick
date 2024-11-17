@@ -8,31 +8,16 @@ import dayjs from '@/app/utils/dayjs';
 import Avatar from '@/app/components/ui/Avatar';
 import ToggleableP from '@/app/components/ui/toggleable-p';
 import Button from '@/app/components/ui/button';
+import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 
 interface Props {
   open: boolean;
   onRoundSubmit: (round: number) => void;
-  worldcupId?: string;
-  candidatesCount: number;
-  title: string;
-  description: string | null;
-  nickname: string | null;
-  createdAt: string;
-  updatedAt: string;
-  profilePath: string | null;
 }
 
-export default function WorldcupStarterModal({
-  open,
-  onRoundSubmit,
-  candidatesCount,
-  title,
-  description,
-  createdAt,
-  updatedAt,
-  nickname,
-  profilePath,
-}: Props) {
+export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
+  const { worldcup } = useWorldcupMatch();
+  const { candidatesCount, title, description, createdAt, updatedAt, nickname, profilePath } = worldcup;
   const router = useRouter();
   const availableRounds = getNumberOfRoundsAvailable(candidatesCount);
   const [round, setRound] = useState<number>(

@@ -126,8 +126,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
         return { snapshot };
       }
 
-      await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
-      const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
       queryClient.setQueryData(
         ['comments', { worldcupId }],
         (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
@@ -145,8 +143,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           };
         },
       );
-
-      return { snapshot };
     },
     onError: (error, variables, context) => {
       console.error(error);
@@ -191,8 +187,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     },
     onMutate: async ({ commentId, userId, like, parentId }) => {
       if (parentId) {
-        await queryClient.cancelQueries({ queryKey: ['replies', { parentId }] });
-        const snapshot = queryClient.getQueryData(['replies', { parentId }]);
         queryClient.setQueryData(['replies', { parentId }], (replies: CommentModel[]) =>
           replies.map((comment: any) =>
             comment.id === commentId
@@ -204,11 +198,8 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
               : comment,
           ),
         );
-        return { snapshot };
       }
 
-      await queryClient.cancelQueries({ queryKey: ['comments', { worldcupId }] });
-      const snapshot = queryClient.getQueryData(['comments', { worldcupId }]);
       queryClient.setQueryData(
         ['comments', { worldcupId }],
         (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
@@ -230,8 +221,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           };
         },
       );
-
-      return { snapshot };
     },
     onError: (error, data, variables) => {
       console.error(error);

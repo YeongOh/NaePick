@@ -26,6 +26,5 @@ jobs:
             echo "$ENV" > .env
             npm i
             npm run build
-            npx drizzle-kit push
             pm2 kill
             pm2 start npm --name naepick-server -- start

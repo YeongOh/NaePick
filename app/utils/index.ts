@@ -14,3 +14,11 @@ export function excludeFileExtension(fileName: string): string {
 export function mp4toJpg(pathname: string): string {
   return pathname.substring(0, pathname.lastIndexOf('.')) + '.jpg';
 }
+
+export function delay(timeInMillisecond: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, timeInMillisecond);
+  });
+}

@@ -10,57 +10,31 @@ import Button from '@/app/components/ui/button';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
 import CommentSection from './CommentSection';
 import { getRandomCandidates } from '../actions';
-import { InferSelectModel } from 'drizzle-orm';
-import { candidates, worldcups } from '@/app/lib/database/schema';
 import dynamic from 'next/dynamic';
+import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 
-type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
-
-type WorldcupModel = InferSelectModel<typeof worldcups> & {
-  candidatesCount: number;
-  profilePath: string | null;
-  nickname: string | null;
-};
-
-interface Props {
-  worldcup: WorldcupModel;
-  userId?: string;
-}
-
-export default function WorldcupStarter({ worldcup, userId }: Props) {
-  const [isSelectingRounds, setIsSelectingRounds] = useState<boolean>(true);
-  const [candidates, setCandidates] = useState<CandidateModel[]>([]);
-  const [round, setRounds] = useState<number | null>(null);
-  const [openStartWorldcupModal, setOpenStartWorldcupModal] = useState<boolean>(true);
-  const [showSidebar, setShowSidebar] = useState(false);
+export default function WorldcupStarter() {
+  const { worldcup, userId, matchStatus, setMatchStatus, setCandidates, finalWinnerCandidateId } =
+    useWorldcupMatch();
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
-  const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<string>();
   const WorldcupStarterModal = useMemo(
     () => dynamic(() => import('./WorldcupStarterModal'), { ssr: false }),
     [],
   );
 
-  const notEnoughCandidates = (worldcup.candidatesCount as number) < MIN_NUMBER_OF_CANDIDATES;
+  const notEnoughCandidates = worldcup.candidatesCount < MIN_NUMBER_OF_CANDIDATES;
 
   const handleRoundSumbit = async (selectedRound: number) => {
-    setOpenStartWorldcupModal(false);
     const randomCandidates = await getRandomCandidates(worldcup.id, selectedRound);
     setCandidates(randomCandidates || []);
-    setRounds(selectedRound);
-    setIsSelectingRounds(false);
-  };
-
-  const handleOnWorldcupEnd = (finalWinnerCandidateId: string) => {
-    setFinalWinnerCandidateId(finalWinnerCandidateId);
-    setShowSidebar(true);
+    setMatchStatus('IDLE');
   };
 
   const handleWorldcupRestart = () => {
-    setOpenStartWorldcupModal(true);
-    setIsSelectingRounds(true);
+    setMatchStatus('SELECTING_ROUNDS');
   };
 
-  if (isSelectingRounds) {
+  if (matchStatus === 'SELECTING_ROUNDS') {
     return (
       <>
         <section className="relative flex h-full flex-grow bg-black">
@@ -77,17 +51,7 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
               </>
             )}
           </h1>
-          <WorldcupStarterModal
-            nickname={worldcup.nickname}
-            title={worldcup.title}
-            description={worldcup.description}
-            open={openStartWorldcupModal}
-            createdAt={worldcup.createdAt}
-            updatedAt={worldcup.updatedAt}
-            candidatesCount={worldcup.candidatesCount}
-            profilePath={worldcup.profilePath}
-            onRoundSubmit={handleRoundSumbit}
-          />
+          <WorldcupStarterModal open={matchStatus === 'SELECTING_ROUNDS'} onRoundSubmit={handleRoundSumbit} />
         </section>
       </>
     );
@@ -97,14 +61,10 @@ export default function WorldcupStarter({ worldcup, userId }: Props) {
     <div className={`flex h-[calc(100svh-52px)] flex-col bg-black/95 lg:flex-grow lg:flex-row`}>
       <WorldcupPickScreen
         className={`h-[calc(100svh-52px)] lg:flex-1 ${
-          showSidebar ? 'h-[calc(30svh-52px)] lg:h-[calc(100svh-52px)]' : 'lg:h-full'
+          matchStatus === 'END' ? 'h-[calc(30svh-52px)] lg:h-[calc(100svh-52px)]' : 'lg:h-full'
         }`}
-        worldcup={worldcup}
-        defaultCandidates={candidates}
-        startingRound={round as number}
-        onWorldcupEnd={handleOnWorldcupEnd}
       />
-      {showSidebar ? (
+      {matchStatus === 'END' ? (
         <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-full lg:w-[31rem] lg:p-8">
           <section>
             <div className="mb-4 flex gap-1">

@@ -3,64 +3,54 @@
 import Media from '@/app/components/media';
 import { useState } from 'react';
 import { YouTubePlayer } from 'react-youtube';
-import { InferSelectModel } from 'drizzle-orm';
-import { candidates, worldcups } from '@/app/lib/database/schema';
 import { getRoundsDescription } from '../utils';
 import { submitMatchResult as submitMatchResult } from '../actions';
-
-type CandidateModel = InferSelectModel<typeof candidates> & { mediaType: string };
-type WorldcupModel = InferSelectModel<typeof worldcups> & {
-  candidatesCount: number;
-  profilePath: string | null;
-  nickname: string | null;
-};
+import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
+import { delay } from '@/app/utils';
 
 interface Props {
-  defaultCandidates: CandidateModel[];
-  worldcup: WorldcupModel;
-  startingRound: number;
-  onWorldcupEnd: (finalWinnerCandidateId: string) => void;
   className: string;
 }
 
-export default function WorldcupPickScreen({
-  defaultCandidates,
-  worldcup,
-  startingRound,
-  onWorldcupEnd,
-  className,
-}: Props) {
-  const [candidates, setCandidates] = useState<CandidateModel[]>(defaultCandidates.slice(0, startingRound));
-  const [matchResult, setMatchResult] = useState<{ winnerId: string; loserId: string }[]>([]);
-  const [picked, setPicked] = useState<'left' | 'right'>();
+export default function WorldcupPickScreen({ className }: Props) {
+  const {
+    worldcup,
+    matchStatus,
+    setMatchStatus,
+    candidates,
+    setCandidates,
+    matchResult,
+    setMatchResult,
+    setFinalWinnerCandidateId,
+    finalWinner,
+  } = useWorldcupMatch();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
 
+  const [leftCandidate, rightCandidate] = [
+    candidates[candidates.length - 2],
+    candidates[candidates.length - 1],
+  ];
   const round = candidates.length;
-  const [leftIndex, rightIndex] = [round - 2, round - 1];
-  const [leftCandidate, rightCandidate] = [candidates[leftIndex], candidates[rightIndex]];
-  const isFinished = round === 2 && picked;
+  const NEXT_ROUND_DELAY = 2000;
 
-  const handlePick = async (target: 'left' | 'right') => {
-    const winner = target === 'left' ? leftCandidate : rightCandidate;
-    const loser = target === 'left' ? rightCandidate : leftCandidate;
-    const winnerId = winner.id;
-    const loserId = loser.id;
-    setPicked(target);
+  const handlePick = async (target: 'PICK_LEFT' | 'PICK_RIGHT') => {
+    const winner = target === 'PICK_LEFT' ? leftCandidate : rightCandidate;
+    const loser = target === 'PICK_LEFT' ? rightCandidate : leftCandidate;
 
-    if (round == 2) {
-      const matchResults = [...matchResult, { winnerId, loserId }];
-      await submitMatchResult(matchResults, worldcup.id);
-      onWorldcupEnd(winnerId);
-      return;
+    setMatchStatus(target);
+    await delay(NEXT_ROUND_DELAY);
+    const newCandidates = [winner, ...candidates.toSpliced(candidates.length - 2)];
+    setCandidates(newCandidates);
+    if (round === 2) {
+      setMatchStatus('END');
+      setFinalWinnerCandidateId(winner.id);
+      const matchResults = [...matchResult, { winnerId: winner.id, loserId: loser.id }];
+      submitMatchResult(matchResults, worldcup.id);
+    } else {
+      setMatchStatus('IDLE');
+      setMatchResult([...matchResult, { winnerId: winner.id, loserId: loser.id }]);
     }
-
-    setTimeout(() => {
-      const newCandidates = [winner, ...candidates.toSpliced(leftIndex)];
-      setCandidates(newCandidates);
-      setMatchResult([...matchResult, { winnerId, loserId }]);
-      setPicked(undefined);
-    }, 2000);
   };
 
   const handleOnMouseOverLeftYouTube = () => {
@@ -79,102 +69,102 @@ export default function WorldcupPickScreen({
         <h2 className="pointer-events-none absolute z-40 w-full bg-black/50 text-center text-3xl font-bold leading-10 text-white lg:text-2clamp">
           {worldcup.title} {getRoundsDescription(round)}
         </h2>
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] ${
-            picked ? 'hidden' : ''
-          }`}
-        >
-          VS
-        </div>
-
-        {isFinished ? (
+        {matchStatus === 'IDLE' && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+          >
+            VS
+          </div>
+        )}
+        {matchStatus === 'END' && finalWinner ? (
           <div className="pointer-events-none absolute bottom-1 left-1/2 z-40 h-fit w-full -translate-x-1/2 bg-black bg-opacity-30 lg:bottom-1/4">
             <h2 className="flex items-center justify-center text-2xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:text-3xl">
-              {picked === 'left' ? candidates[leftIndex].name : candidates[rightIndex].name} 우승!
+              {finalWinner.name} 우승!
             </h2>
           </div>
         ) : null}
-        <figure
-          onMouseOver={handleOnMouseOverLeftYouTube}
-          onClick={() => {
-            if (picked) return;
-            handlePick('left');
-          }}
-          className={`group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end ${
-            picked === 'left' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''
-          } ${picked === 'right' ? 'animate-mobileShrinkTop lg:animate-shrinkRight' : ''}`}
-        >
-          {picked !== 'right' ? (
+        {leftCandidate && (
+          <figure
+            onMouseOver={handleOnMouseOverLeftYouTube}
+            onClick={() => {
+              if (matchStatus !== 'IDLE') return;
+              handlePick('PICK_LEFT');
+            }}
+            className={`group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end ${
+              matchStatus === 'PICK_LEFT' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''
+            } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileShrinkTop lg:animate-shrinkRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''}`}
+          >
             <Media
-              screenMode={isFinished ? false : true}
+              screenMode={matchStatus === 'END' ? false : true}
               path={leftCandidate.path}
               mediaType={leftCandidate.mediaType}
               name={leftCandidate.name}
               onYouTubePlay={(e) => setLeftYouTubePlayer(e.target)}
             />
-          ) : null}
-          {!isFinished && picked !== 'right' && (
-            <>
-              {/* mobile */}
-              <figcaption
-                className={`${
-                  picked ? '' : 'bottom-6'
-                } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
-              >
-                {leftCandidate.name}
-              </figcaption>
-              {/* pc */}
-              <figcaption
-                className={`${
-                  picked ? 'right-1/2' : 'right-[20%]'
-                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
-              >
-                {leftCandidate.name}
-              </figcaption>
-            </>
-          )}
-        </figure>
-        <figure
-          onMouseOver={handleOnMouseOverRightYouTube}
-          onClick={() => {
-            if (picked) return;
-            handlePick('right');
-          }}
-          className={`group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start ${
-            picked === 'left' ? 'animate-mobileShrinkBottom lg:animate-shrinkLeft' : ''
-          } ${picked === 'right' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''}`}
-        >
-          {picked !== 'left' ? (
+            \
+            {(matchStatus === 'IDLE' || matchStatus === 'PICK_LEFT') && (
+              <>
+                {/* mobile */}
+                <figcaption
+                  className={`${
+                    matchStatus === 'PICK_LEFT' ? '' : 'bottom-6'
+                  } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+                >
+                  {leftCandidate.name}
+                </figcaption>
+                {/* pc */}
+                <figcaption
+                  className={`${
+                    matchStatus === 'PICK_LEFT' ? 'right-1/2 translate-x-1/2' : 'right-[20%]'
+                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                >
+                  {leftCandidate.name}
+                </figcaption>
+              </>
+            )}
+          </figure>
+        )}
+        {rightCandidate && (
+          <figure
+            onMouseOver={handleOnMouseOverRightYouTube}
+            onClick={() => {
+              if (matchStatus !== 'IDLE') return;
+              handlePick('PICK_RIGHT');
+            }}
+            className={`group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start ${
+              matchStatus === 'PICK_LEFT' ? 'animate-mobileShrinkBottom lg:animate-shrinkLeft' : ''
+            } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''}`}
+          >
             <Media
-              screenMode={isFinished ? false : true}
+              screenMode={matchStatus === 'END' ? false : true}
               path={rightCandidate.path}
               mediaType={rightCandidate.mediaType}
               name={rightCandidate.name}
               onYouTubePlay={(e) => setRightYouTubePlayer(e.target)}
             />
-          ) : null}
-          {!isFinished && picked !== 'left' ? (
-            <>
-              {/* mobile */}
-              <figcaption
-                className={`${
-                  picked ? '' : 'top-6'
-                } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
-              >
-                {rightCandidate.name}
-              </figcaption>
-              {/* pc */}
-              <figcaption
-                className={`${
-                  picked ? 'left-1/2' : 'left-[20%]'
-                } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
-              >
-                {rightCandidate.name}
-              </figcaption>
-            </>
-          ) : null}
-        </figure>
+            {(matchStatus === 'IDLE' || matchStatus === 'PICK_RIGHT') && (
+              <>
+                {/* mobile */}
+                <figcaption
+                  className={`${
+                    matchStatus === 'PICK_RIGHT' ? '' : 'top-6'
+                  } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+                >
+                  {rightCandidate.name}
+                </figcaption>
+                {/* pc */}
+                <figcaption
+                  className={`${
+                    matchStatus === 'PICK_RIGHT' ? 'left-1/2 -translate-x-1/2' : 'left-[20%]'
+                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                >
+                  {rightCandidate.name}
+                </figcaption>
+              </>
+            )}
+          </figure>
+        )}
       </section>
     </>
   );
