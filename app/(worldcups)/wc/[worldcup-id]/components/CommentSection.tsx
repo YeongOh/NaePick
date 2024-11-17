@@ -39,7 +39,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     queryKey: ['comment-count', { worldcupId }],
     queryFn: () => getCommentCount(worldcupId),
   });
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
     queryKey: ['comments', { worldcupId }],
     queryFn: ({ pageParam }) => getComments(worldcupId, userId, pageParam),
     initialPageParam: '',
@@ -194,7 +194,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           ))}
         </ul>
       ) : null}
-      {isFetching || isFetchingNextPage ? (
+      {isLoading || isFetchingNextPage ? (
         <div className="relative mt-10 flex items-center justify-center">
           <div className="absolute">
             <Spinner />

@@ -14,6 +14,7 @@ import { useDropdown } from '@/app/components/hooks/useDropdown';
 import toast from 'react-hot-toast';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { WorldcupComment } from '../types';
+import Spinner from '@/app/components/ui/spinner';
 
 interface Props {
   comment: WorldcupComment;
@@ -47,7 +48,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
   const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [fetchForNewReplyComment, setFetchForNewReplyComment] = useState(false);
-  const { data: replies, isFetching } = useQuery({
+  const { data: replies, isLoading: isLoadingReplies } = useQuery({
     queryKey: ['replies', { parentId: comment.id }],
     queryFn: () => getCommentReplies(comment.id, userId),
     enabled: !!showReplies || fetchForNewReplyComment,
@@ -271,6 +272,11 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           </div>
         ) : null}
       </div>
+      {replyCommentMutation.isPending && (
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      )}
       <div className="flex justify-end">
         <ul className="relative flex w-[calc(100%-2.5rem)] flex-col">
           {showReplies && replies
@@ -289,7 +295,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                 />
               ))
             : null}
-          {!showReplies && fetchForNewReplyComment && !isFetching && replies && (
+          {!showReplies && fetchForNewReplyComment && !isLoadingReplies && replies && (
             <Comment
               key={replies[replies.length - 1].id}
               comment={replies[replies.length - 1]}
@@ -305,6 +311,11 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           )}
         </ul>
       </div>
+      {isLoadingReplies && (
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
+      )}
     </li>
   );
 });
