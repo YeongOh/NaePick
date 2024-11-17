@@ -6,25 +6,17 @@ import toast from 'react-hot-toast';
 import TextArea from '@/app/components/ui/textarea';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
-import {
-  cancelLikeCommentAction,
-  createCommentAction,
-  CreateCommentState,
-  deleteCommentAction,
-  getComments,
-  getCommentCount,
-  likeCommentAction,
-  updateCommentAction,
-} from '../actions';
+import { getComments, getCommentCount } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { comments } from '@/app/lib/database/schema';
 import Comment from './Comment';
 import Button from '@/app/components/ui/button';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import Spinner from '@/app/components/ui/spinner';
 import { useInView } from 'react-intersection-observer';
 import { useDropdown } from '@/app/components/hooks/useDropdown';
+import useCommentMutation from '../hooks/useCommentMutation';
 
 export type CommentModel = InferSelectModel<typeof comments> & {
   nickname: string | null;
@@ -43,17 +35,7 @@ interface Props {
 }
 
 export default function CommentSection({ worldcupId, className, userId, finalWinnerCandidateId }: Props) {
-  const { toggleDropdown } = useDropdown();
-  const [state, setState] = useState<CreateCommentState>({ errors: {} });
-  const [text, setText] = useState('');
-  const [numberOfNewComments, setNumberOfNewComments] = useState(0);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<{
-    commentId: string;
-    parentId: string | null;
-  } | null>(null);
-  const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
-  const queryClient = useQueryClient();
-  const { data: commentCount } = useQuery({
+  const { data: commentCount, isLoading: commentCountLoading } = useQuery({
     queryKey: ['comment-count', { worldcupId }],
     queryFn: () => getCommentCount(worldcupId),
   });
@@ -63,169 +45,23 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     initialPageParam: '',
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
   });
+  const { createCommentMutation, updateCommentMutation, deleteCommentMutation, likeCommentMutation } =
+    useCommentMutation({
+      worldcupId,
+      userId,
+      finalWinnerCandidateId,
+    });
+  const { toggleDropdown } = useDropdown();
+  const [text, setText] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<{
+    commentId: string;
+    parentId: string | null;
+  } | null>(null);
+  const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
   const comments = data?.pages.flatMap((page) => page?.data) || [];
-  const totalNumberOfComments = (commentCount || 0) + numberOfNewComments;
-
-  const createCommentMutation = useMutation({
-    mutationFn: ({
-      text,
-      worldcupId,
-      votedCandidateId,
-    }: {
-      worldcupId: string;
-      text: string;
-      votedCandidateId?: string;
-    }) => {
-      return createCommentAction({
-        text,
-        worldcupId,
-        votedCandidateId,
-      });
-    },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['comments', { worldcupId }],
-      });
-      if (data.errors) {
-        setState({ errors: data.errors });
-      } else {
-        setState({ errors: {} });
-        setNumberOfNewComments((prev) => prev + 1);
-      }
-    },
-    onError: (error, data, variables) => {
-      console.error(error);
-      toast.error('댓글 작성에 실패했습니다.');
-    },
-  });
-
-  const updateCommentMutation = useMutation({
-    mutationFn: ({
-      commentId,
-      newText,
-      parentId,
-    }: {
-      commentId: string;
-      newText: string;
-      parentId: string | null;
-    }) => {
-      return updateCommentAction(commentId, newText);
-    },
-    onMutate: async ({ commentId, newText, parentId }) => {
-      if (parentId) {
-        await queryClient.cancelQueries({ queryKey: ['replies', { parentId }] });
-        const snapshot = queryClient.getQueryData(['replies', { parentId }]);
-        queryClient.setQueryData(['replies', { parentId }], (old: CommentModel[]) =>
-          old.map((comment) =>
-            comment.id === commentId ? { ...comment, text: newText, updatedAt: String(new Date()) } : comment,
-          ),
-        );
-        return { snapshot };
-      }
-
-      queryClient.setQueryData(
-        ['comments', { worldcupId }],
-        (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
-          const newPages = previous.pages.map((page) => {
-            const newData = page.data.map((comment: any) =>
-              comment.id === commentId
-                ? { ...comment, text: newText, updatedAt: String(new Date()) }
-                : comment,
-            );
-            return { ...page, data: newData };
-          });
-          return {
-            ...previous,
-            pages: newPages,
-          };
-        },
-      );
-    },
-    onError: (error, variables, context) => {
-      console.error(error);
-      toast.error('댓글을 수정하지 못했습니다.');
-    },
-  });
-  const deleteCommentMutation = useMutation({
-    mutationFn: ({ commentId, parentId }: { commentId: string; parentId: string | null }) => {
-      return deleteCommentAction(commentId);
-    },
-    onSuccess: (data, { commentId, parentId }) => {
-      if (parentId) {
-        queryClient.invalidateQueries({
-          queryKey: ['replies', { parentId }],
-        });
-      } else {
-        queryClient.invalidateQueries({
-          queryKey: ['comments', { worldcupId }],
-        });
-        setNumberOfNewComments((prev) => prev - 1);
-      }
-    },
-    onError: (error, data, variables) => {
-      console.error(error);
-      toast.error('댓글을 삭제하지 못했습니다.');
-    },
-  });
-  const likeCommentMutation = useMutation({
-    mutationFn: ({
-      commentId,
-      userId,
-      like,
-      parentId,
-    }: {
-      commentId: string;
-      userId: string;
-      like: boolean;
-      parentId: string | null;
-    }) => {
-      if (like) return likeCommentAction(commentId, userId);
-      return cancelLikeCommentAction(commentId, userId);
-    },
-    onMutate: async ({ commentId, userId, like, parentId }) => {
-      if (parentId) {
-        queryClient.setQueryData(['replies', { parentId }], (replies: CommentModel[]) =>
-          replies.map((comment: any) =>
-            comment.id === commentId
-              ? {
-                  ...comment,
-                  likeCount: like ? comment.likeCount + 1 : comment.likeCount - 1,
-                  isLiked: like ? true : false,
-                }
-              : comment,
-          ),
-        );
-      }
-
-      queryClient.setQueryData(
-        ['comments', { worldcupId }],
-        (previous: InfiniteData<{ data: CommentModel[]; nextCursor: string }>) => {
-          const newPages = previous?.pages.map((page) => {
-            const newData = page.data.map((comment) =>
-              comment.id === commentId
-                ? {
-                    ...comment,
-                    likeCount: like ? comment.likeCount + 1 : comment.likeCount - 1,
-                    isLiked: like ? true : false,
-                  }
-                : comment,
-            );
-            return { ...page, data: newData };
-          });
-          return {
-            ...previous,
-            pages: newPages,
-          };
-        },
-      );
-    },
-    onError: (error, data, variables) => {
-      console.error(error);
-    },
-  });
 
   useEffect(() => {
     if (inView && !isFetchingNextPage && hasNextPage) {
@@ -235,6 +71,15 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
 
   const handleCommentFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (text.trim().length <= 0) {
+      toast.error('최소 0자 이상이어야 합니다.');
+      return;
+    }
+    if (text.trim().length > COMMENT_TEXT_MAX_LENGTH) {
+      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
+      return;
+    }
+
     createCommentMutation.mutate({ text, worldcupId, votedCandidateId: finalWinnerCandidateId });
     setText('');
   };
@@ -269,11 +114,11 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   };
 
   const handleUpdateCommentSubmit = async (id: string, newText: string, parentId: string | null) => {
-    if (newText.length <= 0) {
+    if (newText.trim().length <= 0) {
       toast.error('최소 0자 이상이어야 합니다.');
       return;
     }
-    if (newText.length > COMMENT_TEXT_MAX_LENGTH) {
+    if (newText.trim().length > COMMENT_TEXT_MAX_LENGTH) {
       toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
       return;
     }
@@ -293,20 +138,27 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   return (
     <section className={`${className} bg-white`}>
       <div className="my-4 text-base font-semibold text-slate-700">
-        {totalNumberOfComments > 0 ? `댓글 ${totalNumberOfComments}개` : `댓글을 남겨주세요.`}
+        {commentCountLoading
+          ? '...'
+          : commentCount && commentCount > 0
+            ? `댓글 ${commentCount}개`
+            : `댓글을 남겨주세요.`}
       </div>
       <form onSubmit={handleCommentFormSubmit}>
         <TextArea
           id="text"
           name="text"
           value={text}
-          error={state.errors?.text}
+          error={createCommentMutation.isError}
           className={`mb-1 p-2`}
           onChange={(e) => setText(e.target.value)}
           placeholder="댓글 내용"
           rows={2}
         />
-        <InputErrorMessage className="mb-1" errors={state.errors?.text} />
+        <InputErrorMessage
+          className="mb-1"
+          errors={createCommentMutation.error?.message ? [createCommentMutation.error?.message] : undefined}
+        />
         <Button
           variant="primary"
           className="mb-4 mt-1 flex items-center justify-center gap-1 text-sm lg:text-base"

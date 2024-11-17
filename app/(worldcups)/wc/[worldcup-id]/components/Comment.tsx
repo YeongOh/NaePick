@@ -8,15 +8,15 @@ import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import CommentDropdownMenu from './CommentDropdownMenu';
 import TextArea from '@/app/components/ui/textarea';
 import dayjs from '@/app/utils/dayjs';
-import { CommentModel } from './CommentSection';
 import { getCommentReplies, replyCommentAction } from '../actions';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDropdown } from '@/app/components/hooks/useDropdown';
 import toast from 'react-hot-toast';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
+import { WorldcupComment } from '../types';
 
 interface Props {
-  comment: CommentModel;
+  comment: WorldcupComment;
   userId?: string;
   updateCommentId: string | null;
   finalWinnerCandidateId?: string;
@@ -46,10 +46,11 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
   const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
+  const [fetchForNewReplyComment, setFetchForNewReplyComment] = useState(false);
   const { data: replies, isFetching } = useQuery({
     queryKey: ['replies', { parentId: comment.id }],
     queryFn: () => getCommentReplies(comment.id, userId),
-    enabled: !!showReplies,
+    enabled: !!showReplies || fetchForNewReplyComment,
   });
   const queryClient = useQueryClient();
   const replyCommentMutation = useMutation({
@@ -71,15 +72,21 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
         worldcupId,
       });
     },
-    onSuccess: (data, { parentId }) => {
+
+    onSuccess: (data, { worldcupId, parentId }) => {
+      queryClient.setQueryData(['comment-count', { worldcupId }], (oldCount: number) => oldCount + 1);
       queryClient.invalidateQueries({
         queryKey: ['replies', { parentId }],
       });
-      setShowReplies(true);
+      queryClient.invalidateQueries({
+        queryKey: ['comments', { worldcupId }],
+      });
+      setFetchForNewReplyComment(true);
     },
+
     onError: (error, data, variables) => {
       console.error(error);
-      toast.error('답글 달기에 실패했습니다.');
+      toast.error(error.message);
     },
   });
 
@@ -193,7 +200,12 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           ) : null}
           {comment.replyCount && comment.replyCount > 0 ? (
             <button
-              onClick={() => setShowReplies((prev) => !prev)}
+              onClick={() => {
+                if (!showReplies) {
+                  setFetchForNewReplyComment(false);
+                }
+                setShowReplies((prev) => !prev);
+              }}
               className="mb-1 flex gap-1 text-base text-blue-500 hover:text-blue-600 active:text-blue-700"
             >
               {showReplies ? <ChevronUp /> : <ChevronDown />} 답글 {comment.replyCount}개
@@ -277,6 +289,20 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                 />
               ))
             : null}
+          {!showReplies && fetchForNewReplyComment && !isFetching && replies && (
+            <Comment
+              key={replies[replies.length - 1].id}
+              comment={replies[replies.length - 1]}
+              userId={userId}
+              worldcupId={worldcupId}
+              finalWinnerCandidateId={finalWinnerCandidateId}
+              updateCommentId={updateCommentId}
+              onLikeComment={onLikeComment}
+              onUpdateCommentToggle={onUpdateCommentToggle}
+              onUpdateCommentSubmit={onUpdateCommentSubmit}
+              onOpenDeleteCommentModal={onOpenDeleteCommentModal}
+            />
+          )}
         </ul>
       </div>
     </li>

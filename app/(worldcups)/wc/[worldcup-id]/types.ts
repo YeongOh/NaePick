@@ -1,4 +1,4 @@
-import { candidates, worldcups } from '@/app/lib/database/schema';
+import { candidates, comments, worldcups } from '@/app/lib/database/schema';
 import { InferSelectModel } from 'drizzle-orm';
 
 export type WorldcupMatchCandidate = InferSelectModel<typeof candidates> & { mediaType: string };
@@ -10,3 +10,12 @@ export type WorldcupMatchWorldcup = InferSelectModel<typeof worldcups> & {
 };
 
 export type WorldcupMatchResult = { winnerId: string; loserId: string };
+
+export type WorldcupComment = InferSelectModel<typeof comments> & {
+  nickname: string | null;
+  profilePath: string | null;
+  voted: string | null;
+  likeCount: number;
+  replyCount?: number;
+  isLiked?: string | null;
+};
