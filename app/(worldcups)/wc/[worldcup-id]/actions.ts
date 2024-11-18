@@ -19,8 +19,17 @@ import {
   matchResults,
   mediaTypes,
   users,
+  worldcupFavourites,
+  worldcupLikes,
+  worldcups,
 } from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
+import {
+  addWorldcupFavourite,
+  likeWorldcup,
+  removeWorldcupFavourite,
+  unlikeWorldcup,
+} from '@/app/lib/worldcup/service';
 import { and, asc, count, desc, eq, getTableColumns, isNull, lt, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
 
@@ -291,6 +300,101 @@ export async function getRandomCandidates(worldcupId: string, round: number) {
       .limit(round);
 
     return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getWorldcupLikes(worldcupId: string) {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+
+    let result;
+    if (userId) {
+      result = {
+        isLiked: await db.$count(
+          worldcupLikes,
+          and(eq(worldcupLikes.worldcupId, worldcupId), eq(worldcupLikes.userId, userId)),
+        ),
+        likeCount: await db.$count(worldcupLikes, eq(worldcupLikes.worldcupId, worldcupId)),
+      };
+    } else {
+      result = {
+        likeCount: await db.$count(worldcupLikes, eq(worldcupLikes.worldcupId, worldcupId)),
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function likeWorldcupAction(worldcupId: string) {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+    await likeWorldcup(worldcupId, userId);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function unlikeWorldcupAction(worldcupId: string) {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+    await unlikeWorldcup(worldcupId, userId);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function isWorldcupFavourite(worldcupId: string) {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+    const result = await db
+      .select()
+      .from(worldcupFavourites)
+      .where(and(eq(worldcupFavourites.worldcupId, worldcupId), eq(worldcupFavourites.userId, userId)));
+
+    if (result.length) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function addWorldcupFavouriteAction(worldcupId: string) {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+    await addWorldcupFavourite(worldcupId, userId);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function removeWorldcupFavouriteAction(worldcupId: string) {
+  try {
+    const session = await getSession();
+    const userId = session?.userId;
+    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+    await removeWorldcupFavourite(worldcupId, userId);
   } catch (error) {
     console.error(error);
   }

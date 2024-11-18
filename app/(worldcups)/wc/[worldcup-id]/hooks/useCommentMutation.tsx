@@ -11,11 +11,9 @@ import { WorldcupComment } from '../types';
 
 interface Props {
   worldcupId: string;
-  finalWinnerCandidateId?: string;
-  userId?: string;
 }
 
-export default function useCommentMutation({ worldcupId, userId, finalWinnerCandidateId }: Props) {
+export default function useCommentMutation({ worldcupId }: Props) {
   const queryClient = useQueryClient();
 
   const createCommentMutation = useMutation({

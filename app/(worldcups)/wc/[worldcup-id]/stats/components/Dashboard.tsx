@@ -191,6 +191,8 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </LinkButton>
         </div>
         <WorldcupFold
+          worldcupId={worldcup.id}
+          userId={userId}
           nickname={worldcup.nickname}
           createdAt={worldcup.createdAt}
           updatedAt={worldcup.updatedAt}

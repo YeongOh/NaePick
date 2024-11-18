@@ -1,9 +1,9 @@
 import 'server-only';
-import { candidates, users, worldcups } from '../database/schema';
+import { candidates, users, worldcupFavourites, worldcupLikes, worldcups } from '../database/schema';
 import { nanoid } from 'nanoid';
 import { WORLDCUP_ID_LENGTH } from '@/app/constants';
 import { db } from '../database';
-import { eq, getTableColumns } from 'drizzle-orm';
+import { and, eq, getTableColumns } from 'drizzle-orm';
 import { cache } from 'react';
 
 export async function createWorldcup({
@@ -99,5 +99,41 @@ export async function deleteWorldcup(worldcupId: string) {
   } catch (error) {
     console.error(error);
     throw error;
+  }
+}
+
+export async function likeWorldcup(worldcupId: string, userId: string) {
+  try {
+    await db.insert(worldcupLikes).values({ worldcupId, userId });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function unlikeWorldcup(worldcupId: string, userId: string) {
+  try {
+    await db
+      .delete(worldcupLikes)
+      .where(and(eq(worldcupLikes.worldcupId, worldcupId), eq(worldcupLikes.userId, userId)));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function addWorldcupFavourite(worldcupId: string, userId: string) {
+  try {
+    await db.insert(worldcupFavourites).values({ worldcupId, userId });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function removeWorldcupFavourite(worldcupId: string, userId: string) {
+  try {
+    await db
+      .delete(worldcupFavourites)
+      .where(and(eq(worldcupFavourites.worldcupId, worldcupId), eq(worldcupFavourites.userId, userId)));
+  } catch (error) {
+    console.error(error);
   }
 }

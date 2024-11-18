@@ -1,5 +1,5 @@
 import { signout } from '@/app/(auth)/auth/signout/actions';
-import { LogOut, SquarePlus, Trophy, UserRoundPen } from 'lucide-react';
+import { LogOut, SquarePlus, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useDropdown } from '../../../hooks/useDropdown';
 import Avatar from '../ui/Avatar';

@@ -132,3 +132,39 @@ export const commentLikes = table(
     };
   },
 );
+
+export const worldcupLikes = table(
+  'worldcup_likes',
+  {
+    worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
+      .notNull()
+      .references(() => worldcups.id, { onDelete: 'cascade' }),
+    userId: varchar({ length: USER_ID_LENGTH })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  },
+  (table) => {
+    return {
+      pk: [primaryKey({ columns: [table.worldcupId, table.userId] })],
+    };
+  },
+);
+
+export const worldcupFavourites = table(
+  'worldcup_favourites',
+  {
+    worldcupId: varchar({ length: WORLDCUP_ID_LENGTH })
+      .notNull()
+      .references(() => worldcups.id, { onDelete: 'cascade' }),
+    userId: varchar({ length: USER_ID_LENGTH })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp({ mode: 'string' }).notNull().defaultNow(),
+  },
+  (table) => {
+    return {
+      pk: [primaryKey({ columns: [table.worldcupId, table.userId] })],
+    };
+  },
+);

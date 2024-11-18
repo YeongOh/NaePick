@@ -108,6 +108,8 @@ export default function WorldcupStarter() {
               updatedAt={worldcup.updatedAt}
               description={worldcup.description}
               profilePath={worldcup.profilePath}
+              worldcupId={worldcup.id}
+              userId={userId}
             />
           </section>
           <CommentSection
