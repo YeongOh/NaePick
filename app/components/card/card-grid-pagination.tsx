@@ -2,23 +2,36 @@
 
 import Card from './card';
 import Pagination from '../pagination';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { TCard } from '@/app/lib/types';
+import { useCallback } from 'react';
 
 interface Props {
   count: number;
   worldcups: TCard[];
   extended?: boolean;
   page: number;
-  userId: string;
+  userId?: string;
 }
 
 export default function CardGridPagination({ worldcups, extended, page, userId, count }: Props) {
   const totalPages = Math.ceil((count || 0) / 5);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const path = usePathname();
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
 
   const handlePageNumberClick = async (page: number) => {
-    router.push(`/wc/users/${userId}?page=${page}`, {
+    router.push(`${path}?${createQueryString('page', `${page}`)}`, {
       scroll: false,
     });
   };
@@ -27,7 +40,7 @@ export default function CardGridPagination({ worldcups, extended, page, userId, 
     <>
       <ul className="mt-4 grid grid-cols-card-12rem justify-center gap-2 sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem">
         {worldcups.map((worldcup, index: number) => (
-          <Card key={worldcup.id} worldcupCard={worldcup} extended={extended} />
+          <Card key={worldcup.id} worldcupCard={worldcup} extended={userId ? true : false} />
         ))}
       </ul>
 

@@ -48,8 +48,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const { createCommentMutation, updateCommentMutation, deleteCommentMutation, likeCommentMutation } =
     useCommentMutation({
       worldcupId,
-      userId,
-      finalWinnerCandidateId,
     });
   const { toggleDropdown } = useDropdown();
   const [text, setText] = useState('');

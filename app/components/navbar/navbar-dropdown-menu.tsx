@@ -1,5 +1,5 @@
 import { signout } from '@/app/(auth)/auth/signout/actions';
-import { LogOut, SquarePlus, Trophy } from 'lucide-react';
+import { LogOut, SquarePlus, Star, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useDropdown } from '../../../hooks/useDropdown';
 import Avatar from '../ui/Avatar';
@@ -51,6 +51,14 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
             >
               <Trophy size="1.5rem" />
               나의 이상형 월드컵
+            </Link>
+            <Link
+              href={`/wc/favourites`}
+              className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-primary-100 active:bg-primary-200"
+              onClick={handleToggleDropdown}
+            >
+              <Star size="1.5rem" />
+              즐겨찾기한 이상형 월드컵
             </Link>
             <button
               onClick={() => {
