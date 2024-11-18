@@ -8,7 +8,7 @@ interface Props {
   alt: string | null;
 }
 
-export default function Avatar({ profilePath, size, className, alt }: Props) {
+export default function OldAvatar({ profilePath, size, className, alt }: Props) {
   const PROFILE_PLACEHOLDER = 'profile/placeholder.webp';
 
   return (

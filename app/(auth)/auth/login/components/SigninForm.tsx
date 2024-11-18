@@ -18,7 +18,6 @@ export default function SigninForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-    reset,
   } = useForm<TLoginFormSchema>({ resolver: zodResolver(loginFormSchema) });
 
   const onSubmit = async (data: TLoginFormSchema) => {

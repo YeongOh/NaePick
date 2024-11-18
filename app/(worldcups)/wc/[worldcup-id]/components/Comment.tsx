@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import Avatar from '@/app/components/ui/Avatar';
+import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
 import Spinner from '@/app/components/ui/spinner';
 import TextArea from '@/app/components/ui/textarea';
@@ -117,7 +117,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     <li key={comment.id}>
       <div className="flex justify-between">
         <div className="pt-2">
-          <Avatar profilePath={comment.profilePath} size="small" alt={comment.nickname} />
+          <OldAvatar profilePath={comment.profilePath} size="small" alt={comment.nickname} />
         </div>
         <div className="w-full pl-2">
           <div className="mb-1">

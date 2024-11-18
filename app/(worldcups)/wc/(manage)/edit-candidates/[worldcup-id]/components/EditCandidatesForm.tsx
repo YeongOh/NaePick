@@ -18,7 +18,7 @@ import {
   updateCandidateNamesAction,
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
 import Media from '@/app/components/media';
-import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
+import DeleteModal from '@/app/components/NewModal/DeleteModal';
 import Pagination from '@/app/components/pagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 import LinkButton from '@/app/components/ui/link-button';
@@ -472,7 +472,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
           </LinkButton>
         </div>
       </form>
-      <DeleteConfirmModal
+      <DeleteModal
         open={showDeleteConfirmModal}
         onClose={() => {
           setShowDeleteConfirmModal(false);

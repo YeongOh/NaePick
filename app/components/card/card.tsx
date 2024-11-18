@@ -9,7 +9,7 @@ import dayjs from '@/app/utils/dayjs';
 import CardEllipsis from './card-ellipsis';
 import CardThumbnail from './card-thumbnail';
 import CardUpdateLink from './card-update-link';
-import Avatar from '../ui/Avatar';
+import OldAvatar from '../ui/OldAvatar/OldAvatar';
 
 export interface CardProps {
   worldcupCard: TCard;
@@ -53,7 +53,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card({ worldcupCard, 
         <div className="flex items-end justify-between p-1 md:p-0">
           <div className="flex-1">
             <div className="flex-start mt-2 flex">
-              <Avatar
+              <OldAvatar
                 alt={worldcupCard.nickname}
                 profilePath={worldcupCard.profilePath}
                 size="small"

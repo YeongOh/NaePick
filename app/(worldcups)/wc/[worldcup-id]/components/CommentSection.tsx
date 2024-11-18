@@ -8,7 +8,7 @@ import { Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
 
-import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
+import DeleteModal from '@/app/components/NewModal/DeleteModal';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
 import Spinner from '@/app/components/ui/spinner';
@@ -204,7 +204,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       ) : (
         <div ref={ref} />
       )}
-      <DeleteConfirmModal
+      <DeleteModal
         title={'해당 댓글을 정말로 삭제하시겠습니까?'}
         description={''}
         open={deleteConfirmId !== null}

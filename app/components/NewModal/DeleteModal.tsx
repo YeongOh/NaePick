@@ -2,6 +2,8 @@
 
 import { createPortal } from 'react-dom';
 
+import Button from '../ui/Button';
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -10,7 +12,7 @@ interface Props {
   description: string;
 }
 
-export default function DeleteConfirmModal({ open, onClose, onConfirm, title, description }: Props) {
+export default function DeleteModal({ open, onClose, onConfirm, title, description }: Props) {
   return (
     <>
       {open &&
@@ -32,20 +34,12 @@ export default function DeleteConfirmModal({ open, onClose, onConfirm, title, de
                   <p className="mb-2 h-[50px] text-base text-slate-500">{description}</p>
                 ) : null}
                 <div className="flex w-full justify-end gap-2">
-                  <button
-                    type="button"
-                    className="rounded border px-4 py-2 text-center text-base text-slate-700 hover:bg-gray-50 active:bg-gray-100"
-                    onClick={onClose}
-                  >
+                  <Button type="button" variant="outline" className="px-4 py-2" onClick={onClose}>
                     취소
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded bg-red-500 px-4 py-2 text-center text-base font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700"
-                    onClick={onConfirm}
-                  >
+                  </Button>
+                  <Button type="button" variant="delete" className="px-4 py-2" onClick={onConfirm}>
                     삭제하기
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

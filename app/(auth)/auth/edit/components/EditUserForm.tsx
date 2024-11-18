@@ -2,28 +2,29 @@
 
 import { useCallback, useState } from 'react';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Info } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useFormState } from 'react-dom';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
-import Avatar from '@/app/components/ui/Avatar';
-import Input from '@/app/components/ui/input';
-import InputErrorMessage from '@/app/components/ui/input-error-message';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
+import DeleteModal from '@/app/components/NewModal/DeleteModal';
+import Button from '@/app/components/ui/Button';
+import FormError from '@/app/components/ui/FormError';
+import FormInput from '@/app/components/ui/FormInput';
+import NewAvatar from '@/app/components/ui/NewAvatar';
 
 import { signout } from '../../signout/actions';
 import {
   deleteAccountAction,
   deleteProfileImage,
   editUserAction,
-  editUserState,
   getSignedUrlForProfileImage,
   updateUserProfilePathAction,
 } from '../actions';
+import { EditFormSchema, TEditFormSchema } from '../types';
 
 interface Props {
   nickname: string;
@@ -33,11 +34,9 @@ interface Props {
 }
 
 export default function EditUserForm({ nickname, userId, profilePath, email }: Props) {
-  const initialState: editUserState = { message: null, errors: {} };
-  const [state, submitEditUserForm] = useFormState(editUserAction, initialState);
-  const [changePassword, setChangePassword] = useState<boolean>(false);
   const [openDeleteProfileModal, setOpenDeleteProfileModal] = useState(false);
   const [openDeleteAccountModal, setOpenDeleteAccountModal] = useState(false);
+  const [changePassword, setChangePassword] = useState<boolean>(false);
   const router = useRouter();
 
   const onDrop = useCallback(
@@ -118,11 +117,32 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
     noDrag: true,
   });
 
-  const handleEditUserFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    formData.append('changePassword', String(changePassword));
-    submitEditUserForm(formData);
+  const {
+    register,
+    handleSubmit: handleEditUserFormSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<TEditFormSchema>({ resolver: zodResolver(EditFormSchema), mode: 'onChange' });
+
+  const onEditUserFormSubmit = async (data: TEditFormSchema) => {
+    const result = await editUserAction(data);
+    if (!result?.errors) {
+      toast.success('회원 정보가 수정되었습니다.');
+      return;
+    }
+
+    const errors = result.errors;
+    if ('session' in errors) {
+      toast.error(errors.session as string);
+    } else if ('userId' in errors) {
+      toast.error(errors.userId as string);
+    } else if ('oldPassword' in errors) {
+      setError('oldPassword', { type: 'server', message: errors.oldPassword });
+    } else if ('nickname' in errors) {
+      setError('nickname', { type: 'server', message: errors.nickname });
+    } else if ('server' in errors) {
+      toast.error(errors.server);
+    }
   };
 
   const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -131,7 +151,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
 
   return (
     <form
-      onSubmit={handleEditUserFormSubmit}
+      onSubmit={handleEditUserFormSubmit(onEditUserFormSubmit)}
       className="mb-20 flex w-full flex-col rounded-md"
       onKeyDown={handleFormKeyDown}
     >
@@ -139,7 +159,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
         NaePick
       </Link>
       <div className="mb-4 flex flex-col items-center">
-        <Avatar alt={'내 프로필 이미지'} profilePath={profilePath} size="large" className="mb-2" />
+        <NewAvatar alt={'내 프로필 이미지'} profilePath={profilePath} size="lg" className="mb-2" />
         <div {...getRootProps()}>
           <input {...getInputProps()} />
           <p className="cursor-pointer text-base text-blue-500 hover:underline">프로필 이미지 변경</p>
@@ -157,7 +177,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
           <Info size="1.1rem" className="mr-1" /> 이미지 크기는 80x80px를 추천합니다.
         </p>
       </div>
-      <Input
+      <FormInput
         id="email"
         name="email"
         type="email"
@@ -167,25 +187,25 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
         disabled
         readOnly
       />
-      <Input
+      <FormInput
         id="nickname"
-        name="nickname"
+        {...register('nickname')}
         type="text"
         className={`mb-2 p-4`}
-        error={state.errors?.nickname}
+        error={errors?.nickname}
         defaultValue={nickname}
         placeholder={'닉네임'}
       />
-      <InputErrorMessage className="mb-2" errors={state.errors?.nickname} />
-      <Input
+      <FormError className="mb-2" error={errors?.nickname?.message} />
+      <FormInput
         id="oldPassword"
-        name="oldPassword"
+        {...register('oldPassword')}
         type="password"
-        error={state.errors?.oldPassword}
+        error={errors?.oldPassword}
         className={`mb-2 p-4`}
         placeholder={`비밀번호`}
       />
-      <InputErrorMessage className="mb-2" errors={state.errors?.oldPassword} />
+      <FormError className="mb-2" error={errors?.oldPassword?.message} />
       <div className="mb-4 flex gap-2 pl-2">
         <input
           type="checkbox"
@@ -202,39 +222,38 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
           비밀번호 변경
         </label>
       </div>
-      <Input
+      <FormInput
         id="newPassword"
-        name="newPassword"
+        {...register('newPassword')}
         type="password"
-        error={state.errors?.newPassword}
+        error={errors?.newPassword}
         disabled={!changePassword}
         className={`mb-2 p-4`}
         placeholder={`새로운 비밀번호`}
       />
-      <InputErrorMessage className="mb-2" errors={state.errors?.newPassword} />
-      <Input
+      <FormError className="mb-2" error={errors?.newPassword?.message} />
+      <FormInput
         id="confirmNewPassword"
-        name="confirmNewPassword"
+        {...register('confirmNewPassword')}
         type="password"
-        error={state.errors?.confirmNewPassword}
+        error={errors?.confirmNewPassword}
         disabled={!changePassword}
         className={`mb-2 p-4`}
         placeholder={`새로운 비밀번호 재입력`}
       />
-      <InputErrorMessage className="mb-2" errors={state.errors?.confirmNewPassword} />
-      <OldButton className="mt-4" variant="primary">
+      <FormError className="mb-2" error={errors?.confirmNewPassword?.message} />
+      <Button pending={isSubmitting} className="mt-4 w-full" variant="primary">
         수정 완료
-      </OldButton>
-      <OldButton
+      </Button>
+      <Button
         type="button"
         onClick={() => router.back()}
         variant="outline"
-        className="mb-4 mt-2"
-        aria-label="Go back"
+        className="mb-4 mt-2 w-full"
         role="link"
       >
         돌아가기
-      </OldButton>
+      </Button>
       <button
         type="button"
         onClick={() => setOpenDeleteAccountModal(true)}
@@ -242,16 +261,16 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
       >
         회원 탈퇴
       </button>
-      <DeleteConfirmModal
+      <DeleteModal
         open={openDeleteAccountModal}
-        title={'정말로 회원 탈퇴하시겠습니까?'}
+        title={'정말로 회원을  탈퇴하시겠습니까?'}
         description="모든 회원 정보가 삭제됩니다. 탈퇴 후 닉네임은 '탈퇴한 회원'으로 표시되지만, 생성하신 월드컵과 댓글은 그대로 남게 됩니다."
         onClose={() => setOpenDeleteAccountModal(false)}
         onConfirm={handleDeleteAccount}
       />
-      <DeleteConfirmModal
+      <DeleteModal
         open={openDeleteProfileModal}
-        title={'정말로 프로필 이미지를 삭제하시겠습니까?'}
+        title={'프로필 이미지를 삭제하시겠습니까?'}
         description=""
         onClose={() => setOpenDeleteProfileModal(false)}
         onConfirm={handleDeleteProfileImage}

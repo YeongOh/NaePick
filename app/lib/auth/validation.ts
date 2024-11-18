@@ -24,6 +24,7 @@ export async function isNicknameDuplicate(userId: string, nickname: string) {
       },
       where: and(eq(users.nickname, nickname), ne(users.id, userId)),
     });
+    console.log(user);
 
     if (user) return true;
 

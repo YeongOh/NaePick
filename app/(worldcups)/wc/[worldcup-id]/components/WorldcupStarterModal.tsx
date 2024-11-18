@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 
-import Avatar from '@/app/components/ui/Avatar';
+import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
 import ToggleableP from '@/app/components/ui/toggleable-p';
 import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
@@ -54,7 +54,7 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
             >
               <div className="relative">
                 <div className="mb-2 flex items-center">
-                  <Avatar
+                  <OldAvatar
                     profilePath={profilePath}
                     className="mr-2"
                     size="small"
