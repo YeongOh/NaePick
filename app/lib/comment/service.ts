@@ -1,10 +1,12 @@
 import 'server-only';
 
-import { COMMENT_ID_LENGTH } from '@/app/constants';
-import { db } from '../database';
-import { nanoid } from 'nanoid';
-import { commentLikes, comments } from '../database/schema';
 import { and, eq } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
+
+import { COMMENT_ID_LENGTH } from '@/app/constants';
+
+import { db } from '../database';
+import { commentLikes, comments } from '../database/schema';
 
 export async function createComment({
   worldcupId,

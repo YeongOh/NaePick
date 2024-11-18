@@ -1,4 +1,5 @@
 import { TCard } from '@/app/lib/types';
+
 import ThumbnailImage from '../ThumbnailImage';
 
 interface Props {

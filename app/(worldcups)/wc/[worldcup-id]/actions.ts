@@ -1,7 +1,9 @@
 'use server';
 
+import { and, asc, count, desc, eq, getTableColumns, isNull, lt, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/mysql-core';
+
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { getCandidateName } from '@/app/lib/candidate/service';
 import { verifyCommentOwner } from '@/app/lib/comment/auth';
 import {
   cancelLikeComment,
@@ -21,7 +23,6 @@ import {
   users,
   worldcupFavourites,
   worldcupLikes,
-  worldcups,
 } from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
 import {
@@ -30,8 +31,6 @@ import {
   removeWorldcupFavourite,
   unlikeWorldcup,
 } from '@/app/lib/worldcup/service';
-import { and, asc, count, desc, eq, getTableColumns, isNull, lt, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/mysql-core';
 
 export type CreateCommentState = {
   errors?: {

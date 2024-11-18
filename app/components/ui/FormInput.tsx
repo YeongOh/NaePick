@@ -1,8 +1,9 @@
 'use client';
 
 import { ComponentProps, forwardRef, useState } from 'react';
-import { FieldError } from 'react-hook-form';
+
 import clsx from 'clsx';
+import { FieldError } from 'react-hook-form';
 
 interface Props extends ComponentProps<'input'> {
   error: FieldError | undefined;

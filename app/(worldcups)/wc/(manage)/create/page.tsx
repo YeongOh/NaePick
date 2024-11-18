@@ -1,5 +1,6 @@
-import WorldcupForm from '@/app/(worldcups)/wc/(manage)/components/WorldcupForm';
 import { notFound } from 'next/navigation';
+
+import WorldcupForm from '@/app/(worldcups)/wc/(manage)/components/WorldcupForm';
 import Navbar from '@/app/components/navbar/navbar';
 import { getCategories } from '@/app/lib/category/service';
 
@@ -11,7 +12,7 @@ export default async function Page() {
   return (
     <>
       <Navbar />
-      <section className="max-w-xl m-auto flex flex-col mt-14">
+      <section className="m-auto mt-14 flex max-w-xl flex-col">
         <WorldcupForm categories={categories} />
       </section>
     </>

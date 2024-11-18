@@ -19,11 +19,11 @@ export default function Pagination({
   const higherEnd = currentPageNumber + range > totalPages ? totalPages : currentPageNumber + range;
 
   return (
-    <div className={`h-12 flex items-center justify-center gap-1 text-base text-slate-700 ${className}`}>
+    <div className={`flex h-12 items-center justify-center gap-1 text-base text-slate-700 ${className}`}>
       <button
         type="button"
         disabled={currentPageNumber === 1}
-        className={`w-14 h-10 rounded flex justify-center items-center ${
+        className={`flex h-10 w-14 items-center justify-center rounded ${
           currentPageNumber === 1 ? '' : 'hover:bg-gray-50'
         }`}
         onClick={() => onPageNumberClick(currentPageNumber - 1)}
@@ -37,9 +37,9 @@ export default function Pagination({
           <button
             type="button"
             key={`page-number ${pageNumber}`}
-            className={`w-10 h-10 rounded ${
+            className={`h-10 w-10 rounded ${
               isSelected
-                ? 'bg-primary-500 text-white font-semibold cursor-default'
+                ? 'cursor-default bg-primary-500 font-semibold text-white'
                 : 'bg-white hover:bg-gray-50 active:bg-gray-100'
             }`}
             onClick={() => onPageNumberClick(pageNumber)}
@@ -52,7 +52,7 @@ export default function Pagination({
       <button
         type="button"
         disabled={currentPageNumber === totalPages}
-        className={`w-14 h-10 rounded flex justify-center items-center ${
+        className={`flex h-10 w-14 items-center justify-center rounded ${
           currentPageNumber === 1 ? '' : 'hover:bg-gray-50'
         }`}
         onClick={() => onPageNumberClick(currentPageNumber + 1)}

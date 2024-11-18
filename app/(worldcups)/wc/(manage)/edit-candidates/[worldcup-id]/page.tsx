@@ -1,10 +1,12 @@
-import Navbar from '@/app/components/navbar/navbar';
-import WorldcupFormTab from '@/app/(worldcups)/wc/(manage)/components/WorldcupFormTab';
-import { getSession } from '@/app/lib/session';
 import { notFound, redirect } from 'next/navigation';
-import EditCandidatesForm from './components/EditCandidatesForm';
+
+import WorldcupFormTab from '@/app/(worldcups)/wc/(manage)/components/WorldcupFormTab';
+import Navbar from '@/app/components/navbar/navbar';
 import { getCandidatesForUpdate } from '@/app/lib/candidate/service';
+import { getSession } from '@/app/lib/session';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
+
+import EditCandidatesForm from './components/EditCandidatesForm';
 
 interface Props {
   params: { 'worldcup-id': string };

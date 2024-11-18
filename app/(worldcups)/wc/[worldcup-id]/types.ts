@@ -1,5 +1,6 @@
-import { candidates, comments, worldcups } from '@/app/lib/database/schema';
 import { InferSelectModel } from 'drizzle-orm';
+
+import { candidates, comments, worldcups } from '@/app/lib/database/schema';
 
 export type WorldcupMatchCandidate = InferSelectModel<typeof candidates> & { mediaType: string };
 

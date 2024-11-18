@@ -1,12 +1,15 @@
 'use client';
 
-import Media from '@/app/components/media';
 import { useState } from 'react';
+
 import { YouTubePlayer } from 'react-youtube';
-import { getRoundsDescription } from '../utils';
+
+import Media from '@/app/components/media';
+import { delay } from '@/app/utils';
+
 import { submitMatchResult as submitMatchResult } from '../actions';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
-import { delay } from '@/app/utils';
+import { getRoundsDescription } from '../utils';
 
 interface Props {
   className: string;

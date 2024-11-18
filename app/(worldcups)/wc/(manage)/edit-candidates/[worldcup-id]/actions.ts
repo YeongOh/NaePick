@@ -1,18 +1,20 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { nanoid } from 'nanoid';
-import { OBJECT_ID_LENGTH } from '@/app/constants';
-import { getSession } from '@/app/lib/session';
-import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import path from 'path';
-import { deleteImage, deleteVideo, getSignedUrlForImage } from '@/app/lib/storage';
+
+import { nanoid } from 'nanoid';
+import { revalidatePath } from 'next/cache';
+
+import { OBJECT_ID_LENGTH } from '@/app/constants';
 import {
   createCandidate,
   deleteCandidate,
   updateCandidate,
   updateCandidateNames,
 } from '@/app/lib/candidate/service';
+import { getSession } from '@/app/lib/session';
+import { deleteImage, deleteVideo, getSignedUrlForImage } from '@/app/lib/storage';
+import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import { mp4toJpg } from '@/app/utils';
 
 export async function getSignedUrlForCandidateImage(worldcupId: string, fileType: string, filePath: string) {
@@ -70,7 +72,7 @@ export async function updateCandidateNamesAction(worldcupId: string, formData: F
 export async function deleteCandidateObject(
   path: string,
   worldcupId: string,
-  mediaType: 'cdn_img' | 'cdn_video'
+  mediaType: 'cdn_img' | 'cdn_video',
 ) {
   const session = await getSession();
   if (!session?.userId) throw new Error('로그인을 해주세요.');

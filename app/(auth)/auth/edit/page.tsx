@@ -1,5 +1,7 @@
-import { getSession } from '@/app/lib/session';
 import { redirect } from 'next/navigation';
+
+import { getSession } from '@/app/lib/session';
+
 import EditUserForm from './components/EditUserForm';
 
 export default async function Page() {

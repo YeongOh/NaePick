@@ -1,5 +1,12 @@
 'use server';
 
+import path from 'path';
+
+import { nanoid } from 'nanoid';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
+
 import {
   NICKNAME_MAX_LENGTH,
   NICKNAME_MIN_LENGTH,
@@ -7,9 +14,6 @@ import {
   PASSWORD_MIN_LENGTH,
   USER_ID_LENGTH,
 } from '@/app/constants';
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { createSession, getSession } from '@/app/lib/session';
 import {
   deleteAccount,
   findUserWithUserId,
@@ -20,10 +24,8 @@ import {
 } from '@/app/lib/auth/service';
 import { verifyPassword } from '@/app/lib/auth/utils';
 import { isNicknameDuplicate } from '@/app/lib/auth/validation';
-import { redirect } from 'next/navigation';
+import { createSession, getSession } from '@/app/lib/session';
 import { deleteImage, getSignedUrlForImage } from '@/app/lib/storage';
-import { nanoid } from 'nanoid';
-import path from 'path';
 
 const FormSchema = z
   .object({

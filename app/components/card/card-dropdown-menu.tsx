@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import { ChartNoAxesColumnDecreasing, Share } from 'lucide-react';
+import Link from 'next/link';
+
 import { useDropdown } from '../../../hooks/useDropdown';
 
 interface Props {

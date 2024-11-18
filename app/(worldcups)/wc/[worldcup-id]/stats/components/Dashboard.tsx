@@ -1,19 +1,22 @@
 'use client';
 
 import React, { useState } from 'react';
-import CommentSection from '../../components/CommentSection';
+
+import { InferSelectModel } from 'drizzle-orm';
 import { ChevronLeft, ChevronRight, Globe, RotateCcw, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Media from '@/app/components/media';
-import Pagination from '@/app/components/pagination';
+
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
+import Media from '@/app/components/media';
+import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
+import Pagination from '@/app/components/pagination';
+import ThumbnailImage from '@/app/components/ThumbnailImage';
 import LinkButton from '@/app/components/ui/link-button';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
-import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
-import { InferSelectModel } from 'drizzle-orm';
 import { worldcups } from '@/app/lib/database/schema';
+
 import DashboardRankingChart from './DashboardRankingChart';
-import ThumbnailImage from '@/app/components/ThumbnailImage';
+import CommentSection from '../../components/CommentSection';
 
 export interface CandidateStatModel {
   id: string;

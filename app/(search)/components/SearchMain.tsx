@@ -1,12 +1,15 @@
 'use client';
 
+import { useEffect } from 'react';
+
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInView } from 'react-intersection-observer';
+
 import CardGrid from '@/app/components/card/card-grid';
 import CardGridEmpty from '@/app/components/card/card-grid-empty';
 import MainNav from '@/app/components/main/main-nav';
-import { useEffect } from 'react';
+
 import { getWorldcups } from '../action';
-import { useInView } from 'react-intersection-observer';
-import { useInfiniteQuery } from '@tanstack/react-query';
 
 interface Props {
   sort?: 'latest' | 'popular';

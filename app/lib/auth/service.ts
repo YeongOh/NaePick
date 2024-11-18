@@ -1,10 +1,12 @@
 import 'server-only';
-import { nanoid } from 'nanoid';
-import { db } from '../database';
-import { users } from '../database/schema';
-import { hashPassword } from './utils';
-import { USER_ID_LENGTH } from '@/app/constants';
 import { eq } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
+
+import { USER_ID_LENGTH } from '@/app/constants';
+
+import { db } from '../database';
+import { hashPassword } from './utils';
+import { users } from '../database/schema';
 
 export async function createUser({
   email,

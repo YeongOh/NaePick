@@ -1,16 +1,19 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
-import WorldcupPickScreen from './WorldcupPickScreen';
+import dynamic from 'next/dynamic';
+
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
+import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
 import LinkButton from '@/app/components/ui/link-button';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
-import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
+import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+
 import CommentSection from './CommentSection';
+import WorldcupPickScreen from './WorldcupPickScreen';
 import { getRandomCandidates } from '../actions';
-import dynamic from 'next/dynamic';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 
 export default function WorldcupStarter() {

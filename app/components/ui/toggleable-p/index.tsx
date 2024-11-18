@@ -20,9 +20,7 @@ export default function ToggleableP({ text, numberOfLines, className }: Props) {
     <>
       <p
         ref={ref}
-        className={`text-base whitespace-pre-line ${
-          showMore === true ? 'line-clamp-none' : ''
-        } ${
+        className={`whitespace-pre-line text-base ${showMore === true ? 'line-clamp-none' : ''} ${
           showMore === false ? `line-clamp-${numberOfLines}` : ''
         } ${className}`}
       >
@@ -30,7 +28,7 @@ export default function ToggleableP({ text, numberOfLines, className }: Props) {
       </p>
       {showMore !== null ? (
         <button
-          className='text-gray-500 text-base hover:text-gray-700 hover:underline'
+          className="text-base text-gray-500 hover:text-gray-700 hover:underline"
           onClick={() => setShowMore((prev) => !prev)}
         >
           {showMore ? '간략히' : '자세히 보기'}

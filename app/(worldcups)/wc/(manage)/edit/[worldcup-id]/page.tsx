@@ -1,10 +1,12 @@
-import { getSession } from '@/app/lib/session';
 import { notFound, redirect } from 'next/navigation';
+
 import Navbar from '@/app/components/navbar/navbar';
-import WorldcupFormTab from '../../components/WorldcupFormTab';
 import { getCategories } from '@/app/lib/category/service';
-import WorldcupForm from '../../components/WorldcupForm';
+import { getSession } from '@/app/lib/session';
 import { getWorldcupForm } from '@/app/lib/worldcup/service';
+
+import WorldcupForm from '../../components/WorldcupForm';
+import WorldcupFormTab from '../../components/WorldcupFormTab';
 
 interface Props {
   params: { 'worldcup-id': string };

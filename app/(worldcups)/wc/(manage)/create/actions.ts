@@ -1,7 +1,9 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
@@ -9,7 +11,6 @@ import {
 } from '@/app/constants';
 import { getSession } from '@/app/lib/session';
 import { createWorldcup } from '@/app/lib/worldcup/service';
-import { revalidatePath } from 'next/cache';
 
 const WorldcupFormSchema = z.object({
   title: z

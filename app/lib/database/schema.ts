@@ -1,14 +1,3 @@
-import {
-  CANDIDATE_ID_LENGTH,
-  CANDIDATE_NAME_MAX_LENGTH,
-  COMMENT_ID_LENGTH,
-  COMMENT_TEXT_MAX_LENGTH,
-  NICKNAME_MAX_LENGTH,
-  USER_ID_LENGTH,
-  WORLDCUP_DESCRIPTION_MAX_LENGTH,
-  WORLDCUP_ID_LENGTH,
-  WORLDCUP_TITLE_MAX_LENGTH,
-} from '@/app/constants';
 import { InferInsertModel } from 'drizzle-orm';
 import {
   mysqlEnum,
@@ -21,6 +10,18 @@ import {
   int,
   primaryKey,
 } from 'drizzle-orm/mysql-core';
+
+import {
+  CANDIDATE_ID_LENGTH,
+  CANDIDATE_NAME_MAX_LENGTH,
+  COMMENT_ID_LENGTH,
+  COMMENT_TEXT_MAX_LENGTH,
+  NICKNAME_MAX_LENGTH,
+  USER_ID_LENGTH,
+  WORLDCUP_DESCRIPTION_MAX_LENGTH,
+  WORLDCUP_ID_LENGTH,
+  WORLDCUP_TITLE_MAX_LENGTH,
+} from '@/app/constants';
 
 export const worldcups = table('worldcups', {
   id: varchar({ length: WORLDCUP_ID_LENGTH }).primaryKey(),

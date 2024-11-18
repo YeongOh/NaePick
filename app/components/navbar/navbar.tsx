@@ -1,8 +1,10 @@
-import { getSession } from '@/app/lib/session';
+import { Trophy } from 'lucide-react';
 import Link from 'next/link';
+
+import { getSession } from '@/app/lib/session';
+
 import NavbarProfileImage from './navbar-profile-image';
 import LinkButton from '../ui/link-button';
-import { Trophy } from 'lucide-react';
 
 interface Props {
   screenMode?: boolean;

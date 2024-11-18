@@ -1,5 +1,8 @@
 'use server';
 
+import { eq, sql } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+
 import { db } from '@/app/lib/database';
 import {
   candidates,
@@ -13,8 +16,6 @@ import { getSession } from '@/app/lib/session';
 import { deleteImage, deleteVideo, listImageFiles, listVideoFiles } from '@/app/lib/storage';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import { deleteWorldcup } from '@/app/lib/worldcup/service';
-import { eq, sql } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
 
 export async function deleteWorldcupAction(worldcupId: string) {
   const session = await getSession();

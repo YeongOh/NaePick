@@ -1,9 +1,11 @@
-import { getSession } from '@/app/lib/session';
 import { notFound, redirect } from 'next/navigation';
+
 import CardGridPagination from '@/app/components/card/card-grid-pagination';
 import Navbar from '@/app/components/navbar/navbar';
-import { getMyWorldcups } from './actions';
 import LinkButton from '@/app/components/ui/link-button';
+import { getSession } from '@/app/lib/session';
+
+import { getMyWorldcups } from './actions';
 
 interface Props {
   params: { 'user-id': string };

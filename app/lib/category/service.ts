@@ -1,7 +1,8 @@
 import 'server-only';
+import { eq, getTableColumns } from 'drizzle-orm';
+
 import { db } from '../database';
 import { categories, worldcups } from '../database/schema';
-import { eq, getTableColumns } from 'drizzle-orm';
 
 export async function getCategoriesForSearch() {
   try {

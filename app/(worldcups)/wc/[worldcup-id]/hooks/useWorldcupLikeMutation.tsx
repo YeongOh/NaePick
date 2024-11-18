@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { likeWorldcupAction, unlikeWorldcupAction } from '../actions';
 import toast from 'react-hot-toast';
+
+import { likeWorldcupAction, unlikeWorldcupAction } from '../actions';
 
 interface Props {
   worldcupId: string;

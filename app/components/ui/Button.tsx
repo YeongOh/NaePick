@@ -1,6 +1,7 @@
+import { ComponentProps } from 'react';
+
 import clsx from 'clsx';
 import { Loader2 } from 'lucide-react';
-import { ComponentProps } from 'react';
 
 interface Props extends ComponentProps<'button'> {
   className?: string;
@@ -11,7 +12,7 @@ interface Props extends ComponentProps<'button'> {
   size?: 'sm' | 'md' | 'icon';
 }
 
-export default function NewButton({ className, variant, children, pending, size = 'md', ...props }: Props) {
+export default function Button({ className, variant, children, pending, size = 'md', ...props }: Props) {
   return (
     <button
       {...props}

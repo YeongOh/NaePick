@@ -1,12 +1,15 @@
 'use client';
 
 import { Suspense, useEffect } from 'react';
-import CardGrid from '../card/card-grid';
-import MainNav from './main-nav';
-import CardGridEmpty from '../card/card-grid-empty';
-import { getPopularWorldcups } from '@/app/(search)/action';
-import { useInView } from 'react-intersection-observer';
+
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInView } from 'react-intersection-observer';
+
+import { getPopularWorldcups } from '@/app/(search)/action';
+
+import MainNav from './main-nav';
+import CardGrid from '../card/card-grid';
+import CardGridEmpty from '../card/card-grid-empty';
 
 interface Cursor {
   matchCount: number;

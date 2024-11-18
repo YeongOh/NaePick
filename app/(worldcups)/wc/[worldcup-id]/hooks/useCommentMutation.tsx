@@ -1,4 +1,6 @@
 import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+
 import {
   cancelLikeCommentAction,
   createCommentAction,
@@ -6,7 +8,6 @@ import {
   likeCommentAction,
   updateCommentAction,
 } from '../actions';
-import toast from 'react-hot-toast';
 import { WorldcupComment } from '../types';
 
 interface Props {

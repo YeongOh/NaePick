@@ -1,7 +1,8 @@
 import 'server-only';
+import { eq } from 'drizzle-orm';
+
 import { db } from '../database';
 import { comments } from '../database/schema';
-import { eq } from 'drizzle-orm';
 
 export async function verifyCommentOwner(commentId: string, userId: string) {
   try {

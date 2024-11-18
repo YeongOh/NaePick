@@ -1,5 +1,7 @@
 'use server';
 
+import { SQL, sql } from 'drizzle-orm';
+
 import { db } from '@/app/lib/database';
 import {
   candidates,
@@ -9,7 +11,7 @@ import {
   users,
   worldcups,
 } from '@/app/lib/database/schema';
-import { SQL, sql } from 'drizzle-orm';
+
 import { TCard } from '../lib/types';
 
 export async function getWorldcups({

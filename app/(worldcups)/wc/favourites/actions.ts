@@ -1,5 +1,7 @@
 'use server';
 
+import { eq, sql } from 'drizzle-orm';
+
 import { db } from '@/app/lib/database';
 import {
   candidates,
@@ -11,7 +13,6 @@ import {
   worldcups,
 } from '@/app/lib/database/schema';
 import { getSession } from '@/app/lib/session';
-import { eq, sql } from 'drizzle-orm';
 
 export async function getMyWorldcupFavourites(page: number) {
   const session = await getSession();

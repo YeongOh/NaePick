@@ -1,7 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { CANDIDATE_NAME_MAX_LENGTH, CHZZK_THUMBNAIL_URL, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import { useCallback, useState } from 'react';
+
+import { ImageUp, Info } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
+import toast from 'react-hot-toast';
+import { IoLogoYoutube } from 'react-icons/io';
+import { SiImgur } from 'react-icons/si';
+
 import {
   createCandidateAction,
   deleteCandidateAction,
@@ -9,26 +17,21 @@ import {
   getSignedUrlForCandidateImage,
   updateCandidateNamesAction,
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
-import { excludeFileExtension } from '@/app/utils';
-import { useCallback, useState } from 'react';
-import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
-import toast from 'react-hot-toast';
-import EditVideoButton from './EditVideoButton';
-import { IoLogoYoutube } from 'react-icons/io';
-import { SiImgur } from 'react-icons/si';
-import { ImageUp, Info } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Spinner from '@/app/components/ui/spinner';
-import ThumbnailImage from '@/app/components/ThumbnailImage';
-import EditImageButton from './EditImageButton';
 import Media from '@/app/components/media';
-import Pagination from '@/app/components/pagination';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
-import LinkButton from '@/app/components/ui/link-button';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
+import Pagination from '@/app/components/pagination';
+import ThumbnailImage from '@/app/components/ThumbnailImage';
+import LinkButton from '@/app/components/ui/link-button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
+import Spinner from '@/app/components/ui/spinner';
+import { CANDIDATE_NAME_MAX_LENGTH, CHZZK_THUMBNAIL_URL, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
 import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
 import { extractYoutubeId, fetchYoutubeTitle } from '@/app/lib/videos/youtube';
-import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
+import { excludeFileExtension } from '@/app/utils';
+
+import EditImageButton from './EditImageButton';
+import EditVideoButton from './EditVideoButton';
 
 interface Candidate {
   id: string;

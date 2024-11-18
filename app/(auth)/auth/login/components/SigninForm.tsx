@@ -1,14 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import { loginAction } from '../actions';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginFormSchema, TLoginFormSchema } from '../types';
-import FormInput from '@/app/components/ui/FormInput';
-import FormError from '@/app/components/ui/FormError';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import NewButton from '@/app/components/ui/NewButton';
+
+import Button from '@/app/components/ui/Button';
+import FormError from '@/app/components/ui/FormError';
+import FormInput from '@/app/components/ui/FormInput';
+
+import { loginAction } from '../actions';
+import { loginFormSchema, TLoginFormSchema } from '../types';
 
 export default function SigninForm() {
   const {
@@ -31,7 +33,6 @@ export default function SigninForm() {
     } else if ('server' in errors) {
       toast.error(errors.server);
     }
-    reset();
   };
 
   return (
@@ -60,9 +61,9 @@ export default function SigninForm() {
         placeholder={`비밀번호`}
       />
       <FormError className="mb-2" error={errors?.password?.message} />
-      <NewButton pending={isSubmitting} className="mt-4 w-full" variant="primary">
+      <Button pending={isSubmitting} className="mt-4 w-full" variant="primary">
         로그인
-      </NewButton>
+      </Button>
       <div className="mt-4 flex justify-center gap-2 text-center text-base text-gray-500">
         아직 회원이 아니신가요?
       </div>

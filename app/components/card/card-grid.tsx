@@ -1,7 +1,9 @@
 'use client';
 
-import { TCard } from '@/app/lib/types';
 import { forwardRef } from 'react';
+
+import { TCard } from '@/app/lib/types';
+
 import Card from './card';
 
 interface CardGridProps {

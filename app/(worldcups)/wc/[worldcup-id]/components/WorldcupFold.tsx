@@ -1,14 +1,16 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { Star, ThumbsUp } from 'lucide-react';
+import toast from 'react-hot-toast';
+
 import Avatar from '@/app/components/ui/Avatar';
 import ToggleableP from '@/app/components/ui/toggleable-p';
 import dayjs from '@/app/utils/dayjs';
-import { Star, ThumbsUp } from 'lucide-react';
+
 import { getWorldcupLikes, isWorldcupFavourite } from '../actions';
-import { useQuery } from '@tanstack/react-query';
-import useWorldcupLikeMutation from '../hooks/useWorldcupLikeMutation';
-import toast from 'react-hot-toast';
 import useWorldcupFavouriteMutation from '../hooks/useWorldcupFavouriteMutation';
+import useWorldcupLikeMutation from '../hooks/useWorldcupLikeMutation';
 
 interface Props {
   nickname: string | null;

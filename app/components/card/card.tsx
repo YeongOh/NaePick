@@ -1,12 +1,15 @@
-import { TCard, translatePublicity } from '@/app/lib/types';
-import CardThumbnail from './card-thumbnail';
-import Link from 'next/link';
-import CardEllipsis from './card-ellipsis';
-import CardUpdateLink from './card-update-link';
-import { useRouter } from 'next/navigation';
 import { forwardRef, useState } from 'react';
-import Avatar from '../ui/Avatar';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { TCard, translatePublicity } from '@/app/lib/types';
 import dayjs from '@/app/utils/dayjs';
+
+import CardEllipsis from './card-ellipsis';
+import CardThumbnail from './card-thumbnail';
+import CardUpdateLink from './card-update-link';
+import Avatar from '../ui/Avatar';
 
 export interface CardProps {
   worldcupCard: TCard;

@@ -1,11 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
+
 import { findUserWithEmail } from '@/app/lib/auth/service';
 import { verifyPassword } from '@/app/lib/auth/utils';
 import { createSession } from '@/app/lib/session';
+
 import { loginFormSchema, TLoginFormSchema } from './types';
-import { z } from 'zod';
 
 export async function loginAction(data: TLoginFormSchema) {
   const validatedFields = loginFormSchema.safeParse(data);

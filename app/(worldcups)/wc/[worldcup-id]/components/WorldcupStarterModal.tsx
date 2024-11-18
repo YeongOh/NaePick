@@ -1,16 +1,19 @@
 'use client';
 
-import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
+
+import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import dayjs from '@/app/utils/dayjs';
+import { createPortal } from 'react-dom';
+
 import Avatar from '@/app/components/ui/Avatar';
-import ToggleableP from '@/app/components/ui/toggleable-p';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
+import ToggleableP from '@/app/components/ui/toggleable-p';
+import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import dayjs from '@/app/utils/dayjs';
+
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getNumberOfRoundsAvailable } from '../utils';
-import { X } from 'lucide-react';
 
 interface Props {
   open: boolean;

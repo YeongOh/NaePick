@@ -1,11 +1,14 @@
 'use client';
 
+import { useCallback } from 'react';
+
+import { X } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import Searchbar from './searchbar';
-import { useCallback } from 'react';
+
 import { translateCategory } from '@/app/lib/types';
-import { X } from 'lucide-react';
+
+import Searchbar from './searchbar';
 
 export default function MainNav() {
   const searchParams = useSearchParams();

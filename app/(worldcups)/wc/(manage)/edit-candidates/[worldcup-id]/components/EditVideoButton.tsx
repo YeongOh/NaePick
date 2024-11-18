@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+
 import toast from 'react-hot-toast';
 import { IoLogoYoutube } from 'react-icons/io';
+
 import Spinner from '@/app/components/ui/spinner';
-import { extractYoutubeId } from '@/app/lib/videos/youtube';
 import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
 import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
+import { extractYoutubeId } from '@/app/lib/videos/youtube';
+
 import { deleteCandidateObject, updateCandidateAction } from '../actions';
 
 interface Props {
@@ -142,11 +145,11 @@ export default function EditVideoButton({
     <>
       <button
         type="button"
-        className="px-4 py-2 relative bg-white border rounded-md text-base text-primary-500 hover:bg-gray-100 transition-colors"
+        className="relative rounded-md border bg-white px-4 py-2 text-base text-primary-500 transition-colors hover:bg-gray-100"
         onClick={() => onChangeVideoInputIndex(candidateIndex)}
       >
         {isLoading ? (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+          <div className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
             <Spinner />
           </div>
         ) : null}
@@ -154,7 +157,7 @@ export default function EditVideoButton({
       </button>
       {showVideoURLInput && !isLoading ? (
         <>
-          <div className="cursor-pointer border rounded-md text-base bg-gray-50 p-2 flex items-center absolute right-28 bottom-0 translate-x-1/3 w-[500px] z-40">
+          <div className="absolute bottom-0 right-28 z-40 flex w-[500px] translate-x-1/3 cursor-pointer items-center rounded-md border bg-gray-50 p-2 text-base">
             <input
               className="block w-[75%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500"
               id="videoURL"
@@ -168,11 +171,11 @@ export default function EditVideoButton({
               }}
               autoComplete="off"
             />
-            <div className="absolute flex items-center gap-1 right-2">
+            <div className="absolute right-2 flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => onChangeVideoInputIndex(null)}
-                className="px-3 py-1 right-[40px] text-gray-500 border bg-white rounded hover:bg-gray-100 transition-colors"
+                className="right-[40px] rounded border bg-white px-3 py-1 text-gray-500 transition-colors hover:bg-gray-100"
               >
                 취소
               </button>
@@ -186,23 +189,23 @@ export default function EditVideoButton({
                     mediaType,
                   })
                 }
-                className="px-3 py-1 bg-primary-500 text-white right-2 rounded hover:bg-primary-600 active:bg-primary-700 transition-colors"
+                className="right-2 rounded bg-primary-500 px-3 py-1 text-white transition-colors hover:bg-primary-600 active:bg-primary-700"
               >
                 입력
               </button>
             </div>
           </div>
           {showYoutubeTimeInput && (
-            <div className="absolute text-base text-slate-700 mb-2 z-50 w-96 right-0">
-              <div className="bg-gray-100 border rounded w-full">
-                <div className="font-semibold p-2 text-center">유튜브 구간 반복 설정</div>
-                <div className="flex items-center gap-1 mb-2 justify-center">
+            <div className="absolute right-0 z-50 mb-2 w-96 text-base text-slate-700">
+              <div className="w-full rounded border bg-gray-100">
+                <div className="p-2 text-center font-semibold">유튜브 구간 반복 설정</div>
+                <div className="mb-2 flex items-center justify-center gap-1">
                   <IoLogoYoutube color="red" size={'1.2rem'} />
                   <label htmlFor="youtubeStartTime" className="text-gray-500">
                     시작 시간 (초) :{' '}
                   </label>
                   <input
-                    className="block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500"
+                    className="block w-14 rounded-md border border-gray-200 px-2 py-1 text-right text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
                     id="youtubeStartTime"
                     type="number"
                     value={youtubeStartTime}
@@ -212,7 +215,7 @@ export default function EditVideoButton({
                   />
                   <div className="text-gray-500">종료 시간 (초) : </div>
                   <input
-                    className="block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500"
+                    className="block w-14 rounded-md border border-gray-200 px-2 py-1 text-right text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
                     id="youtubeEndTime"
                     type="number"
                     value={youtubeEndTime}

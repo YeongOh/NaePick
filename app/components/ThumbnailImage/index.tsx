@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import MyImage from '@/app/components/ui/my-image';
-import { mp4toJpg } from '@/app/utils';
 import { getYoutubeThumbnailURL } from '@/app/lib/videos/youtube';
+import { mp4toJpg } from '@/app/utils';
 
 interface Props {
   onClick?: () => void;
@@ -20,7 +20,7 @@ export default function ThumbnailImage({ onClick, size, path, name, mediaType, t
     if (size === 'large') params = 'w=500&h=500';
 
     return (
-      <MyImage className="object-cover size-full" src={`${path}?${params}`} alt={name} onClick={onClick} />
+      <MyImage className="size-full object-cover" src={`${path}?${params}`} alt={name} onClick={onClick} />
     );
   }
 
@@ -31,7 +31,7 @@ export default function ThumbnailImage({ onClick, size, path, name, mediaType, t
     if (size === 'large') params = 'w=500&h=500';
     return (
       <MyImage
-        className="object-cover size-full"
+        className="size-full object-cover"
         src={`${mp4toJpg(path)}?${params}`}
         alt={name}
         onClick={onClick}

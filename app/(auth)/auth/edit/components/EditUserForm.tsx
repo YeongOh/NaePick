@@ -1,17 +1,21 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { useFormState } from 'react-dom';
+
+import { Info } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useFormState } from 'react-dom';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
-import { Info } from 'lucide-react';
+
+import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
 import Avatar from '@/app/components/ui/Avatar';
 import Input from '@/app/components/ui/input';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
-import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
+
+import { signout } from '../../signout/actions';
 import {
   deleteAccountAction,
   deleteProfileImage,
@@ -20,7 +24,6 @@ import {
   getSignedUrlForProfileImage,
   updateUserProfilePathAction,
 } from '../actions';
-import { signout } from '../../signout/actions';
 
 interface Props {
   nickname: string;

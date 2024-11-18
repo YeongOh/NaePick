@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import CardDropdownMenu from './card-dropdown-menu';
+
 import { EllipsisVertical } from 'lucide-react';
-import ShareWorldcupModal from '../modal/share-worldcup-modal';
+
+import CardDropdownMenu from './card-dropdown-menu';
 import { useDropdown } from '../../../hooks/useDropdown';
+import ShareWorldcupModal from '../modal/share-worldcup-modal';
 
 interface Props {
   worldcupId: string;

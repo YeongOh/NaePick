@@ -9,20 +9,8 @@ interface Props {
   onClick?: () => void;
 }
 
-export default function MyImage({
-  className,
-  src,
-  alt,
-  onClick,
-  ...otherProps
-}: Props) {
+export default function MyImage({ className, src, alt, onClick, ...otherProps }: Props) {
   return (
-    <img
-      className={className}
-      src={`${IMG_ORIGIN}/${src}`}
-      alt={alt}
-      onClick={onClick}
-      {...otherProps}
-    />
+    <img className={className} src={`${IMG_ORIGIN}/${src}`} alt={alt} onClick={onClick} {...otherProps} />
   );
 }

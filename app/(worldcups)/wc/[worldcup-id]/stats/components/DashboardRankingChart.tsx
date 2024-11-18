@@ -1,4 +1,5 @@
 import ThumbnailImage from '@/app/components/ThumbnailImage';
+
 import { CandidateStatModel } from './Dashboard';
 
 interface Props {

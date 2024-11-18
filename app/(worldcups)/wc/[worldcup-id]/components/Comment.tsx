@@ -1,20 +1,23 @@
 'use client;';
 
 import { forwardRef, useState } from 'react';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
-import Avatar from '@/app/components/ui/Avatar';
-import ToggleableP from '@/app/components/ui/toggleable-p';
-import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
-import CommentDropdownMenu from './CommentDropdownMenu';
-import TextArea from '@/app/components/ui/textarea';
-import dayjs from '@/app/utils/dayjs';
-import { getCommentReplies, replyCommentAction } from '../actions';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDropdown } from '@/hooks/useDropdown';
+import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { WorldcupComment } from '../types';
+
+import Avatar from '@/app/components/ui/Avatar';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import Spinner from '@/app/components/ui/spinner';
+import TextArea from '@/app/components/ui/textarea';
+import ToggleableP from '@/app/components/ui/toggleable-p';
+import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
+import dayjs from '@/app/utils/dayjs';
+import { useDropdown } from '@/hooks/useDropdown';
+
+import CommentDropdownMenu from './CommentDropdownMenu';
+import { getCommentReplies, replyCommentAction } from '../actions';
+import { WorldcupComment } from '../types';
 
 interface Props {
   comment: WorldcupComment;

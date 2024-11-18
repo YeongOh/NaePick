@@ -1,10 +1,13 @@
 'use client';
 
-import { MediaType } from '@/app/lib/types';
 import { useCallback, useState } from 'react';
+
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
+
 import Spinner from '@/app/components/ui/spinner';
+import { MediaType } from '@/app/lib/types';
+
 import { deleteCandidateObject, getSignedUrlForCandidateImage } from '../actions';
 import { updateCandidateAction } from '../actions';
 
@@ -51,7 +54,7 @@ export default function EditImageButton({ originalPath, worldcupId, candidateId,
         setIsLoading(false);
       }
     },
-    [candidateId, isLoading, mediaType, originalPath, worldcupId]
+    [candidateId, isLoading, mediaType, originalPath, worldcupId],
   );
 
   const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
@@ -77,12 +80,12 @@ export default function EditImageButton({ originalPath, worldcupId, candidateId,
   return (
     <button
       type="button"
-      className="px-4 py-2 relative bg-white border rounded-md text-base text-primary-500 hover:bg-gray-100 transition-colors"
+      className="relative rounded-md border bg-white px-4 py-2 text-base text-primary-500 transition-colors hover:bg-gray-100"
       {...getRootProps()}
     >
       <input {...getInputProps()} />
       {isLoading ? (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+        <div className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
           <Spinner />
         </div>
       ) : null}

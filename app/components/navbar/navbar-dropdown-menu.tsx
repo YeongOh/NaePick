@@ -1,6 +1,8 @@
-import { signout } from '@/app/(auth)/auth/signout/actions';
 import { LogOut, SquarePlus, Star, Trophy } from 'lucide-react';
 import Link from 'next/link';
+
+import { signout } from '@/app/(auth)/auth/signout/actions';
+
 import { useDropdown } from '../../../hooks/useDropdown';
 import Avatar from '../ui/Avatar';
 

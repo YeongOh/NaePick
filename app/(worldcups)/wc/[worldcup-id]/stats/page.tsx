@@ -1,10 +1,11 @@
-import Dashboard from '@/app/(worldcups)/wc/[worldcup-id]/stats/components/Dashboard';
+import { Metadata, ResolvingMetadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-import { getSession } from '@/app/lib/session';
+
+import Dashboard from '@/app/(worldcups)/wc/[worldcup-id]/stats/components/Dashboard';
 import Navbar from '@/app/components/navbar/navbar';
 import { getCandidatesForStat } from '@/app/lib/candidate/service';
+import { getSession } from '@/app/lib/session';
 import { getWorldcup } from '@/app/lib/worldcup/service';
-import { Metadata, ResolvingMetadata } from 'next';
 
 interface Props {
   params: { 'worldcup-id': string };

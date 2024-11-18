@@ -1,5 +1,5 @@
 import { InferSelectModel } from 'drizzle-orm';
-import { SessionOptions } from 'iron-session';
+
 import { worldcups } from '../database/schema';
 
 export type TCard = InferSelectModel<typeof worldcups> & {

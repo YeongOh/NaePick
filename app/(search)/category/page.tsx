@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
-import { translateCategory } from '@/app/lib/types';
+
 import MyImage from '@/app/components/ui/my-image';
 import { getCategoriesForSearch } from '@/app/lib/category/service';
+import { translateCategory } from '@/app/lib/types';
+
 import CategoryLink from './components/CategoryLinks';
 
 export default async function Page() {

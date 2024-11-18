@@ -1,6 +1,7 @@
-import { users } from '@/app/lib/database/schema';
 import { createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+
+import { users } from '@/app/lib/database/schema';
 
 export const loginFormSchema = createSelectSchema(users, {
   email: z.string().email({ message: '이메일이 올바르지 않습니다.' }),

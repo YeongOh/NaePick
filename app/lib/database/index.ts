@@ -1,5 +1,6 @@
-import mysql from 'mysql2/promise';
 import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
+
 import * as schema from './schema';
 
 // https://velog.io/@te-ing/Next.js-14-App-router-mysql-Too-many-connections-%EC%98%A4%EB%A5%98

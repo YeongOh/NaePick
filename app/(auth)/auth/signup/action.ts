@@ -1,5 +1,8 @@
 'use server';
 
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
+
 import {
   EMAIL_MAX_LENGTH,
   NICKNAME_MAX_LENGTH,
@@ -7,11 +10,9 @@ import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
 } from '@/app/constants';
-import { z } from 'zod';
-import { redirect } from 'next/navigation';
-import { createSession } from '@/app/lib/session';
-import { findUserWithDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
 import { createUser } from '@/app/lib/auth/service';
+import { findUserWithDuplicateEmailOrNickname } from '@/app/lib/auth/validation';
+import { createSession } from '@/app/lib/session';
 
 const FormSchema = z
   .object({

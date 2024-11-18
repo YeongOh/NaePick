@@ -1,8 +1,9 @@
 'use client';
 
+import { useCallback, useState } from 'react';
+
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useState } from 'react';
 
 export default function Searchbar() {
   const [query, setQuery] = useState('');
