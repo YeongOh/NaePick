@@ -62,8 +62,6 @@ export const sessions = table('sessions', {
   expiresAt: timestamp({ mode: 'string' }).notNull(),
 });
 
-export type SessionInsert = InferInsertModel<typeof sessions>;
-
 export const candidates = table('candidates', {
   id: varchar({ length: CANDIDATE_ID_LENGTH }).primaryKey(),
   name: varchar({ length: CANDIDATE_NAME_MAX_LENGTH }).notNull(),
@@ -130,7 +128,7 @@ export const commentLikes = table(
   },
   (table) => {
     return {
-      pk: primaryKey({ name: 'comment_likes_composite_key', columns: [table.commentId, table.userId] }),
+      pk: [primaryKey({ columns: [table.commentId, table.userId] })],
     };
   },
 );

@@ -1,9 +1,8 @@
 import { getSession } from '@/app/lib/session';
 import Link from 'next/link';
-import NavbarLink from './navbar-link';
 import NavbarProfileImage from './navbar-profile-image';
 import LinkButton from '../ui/link-button';
-import { Menu, Trophy } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 
 interface Props {
   screenMode?: boolean;
@@ -51,6 +50,7 @@ export default async function Navbar({ screenMode }: Props) {
                 userId={session.userId}
                 profilePath={session.profilePath}
                 nickname={session.nickname}
+                email={session.email}
               />
             </>
           ) : (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useDropdown } from '../hooks/useDropdown';
+import { useDropdown } from '../../../hooks/useDropdown';
 import Avatar from '../ui/Avatar';
 import NavbarDropdownMenu from './navbar-dropdown-menu';
 
@@ -8,9 +8,10 @@ interface Props {
   profilePath: string | null;
   nickname: string;
   userId: string;
+  email: string;
 }
 
-export default function NavbarProfileImage({ profilePath, nickname, userId }: Props) {
+export default function NavbarProfileImage({ profilePath, nickname, userId, email }: Props) {
   const { dropdownId, toggleDropdown } = useDropdown();
 
   return (
@@ -22,7 +23,13 @@ export default function NavbarProfileImage({ profilePath, nickname, userId }: Pr
       >
         <Avatar profilePath={profilePath} alt={nickname} size="small" />
       </button>
-      <NavbarDropdownMenu open={dropdownId === 'avatar-dropdown'} userId={userId} />
+      <NavbarDropdownMenu
+        open={dropdownId === 'avatar-dropdown'}
+        userId={userId}
+        nickname={nickname}
+        profilePath={profilePath}
+        email={email}
+      />
     </div>
   );
 }

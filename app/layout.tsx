@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import GoogleAnalyticsComponent from './lib/analytics/google';
 import { ReactQueryClientProvider } from './lib/react-query';
-import { DropdownProvider } from './components/hooks/useDropdown';
+import { DropdownProvider } from '../hooks/useDropdown';
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ['latin'],

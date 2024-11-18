@@ -10,7 +10,7 @@ import TextArea from '@/app/components/ui/textarea';
 import dayjs from '@/app/utils/dayjs';
 import { getCommentReplies, replyCommentAction } from '../actions';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDropdown } from '@/app/components/hooks/useDropdown';
+import { useDropdown } from '@/hooks/useDropdown';
 import toast from 'react-hot-toast';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { WorldcupComment } from '../types';

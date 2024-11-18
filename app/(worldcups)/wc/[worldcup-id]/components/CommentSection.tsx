@@ -15,7 +15,7 @@ import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import Spinner from '@/app/components/ui/spinner';
 import { useInView } from 'react-intersection-observer';
-import { useDropdown } from '@/app/components/hooks/useDropdown';
+import { useDropdown } from '@/hooks/useDropdown';
 import useCommentMutation from '../hooks/useCommentMutation';
 
 export type CommentModel = InferSelectModel<typeof comments> & {

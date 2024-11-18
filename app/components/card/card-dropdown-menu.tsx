@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ChartNoAxesColumnDecreasing, Share } from 'lucide-react';
-import { useDropdown } from '../hooks/useDropdown';
+import { useDropdown } from '../../../hooks/useDropdown';
 
 interface Props {
   worldcupId: string;
