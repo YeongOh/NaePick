@@ -3,32 +3,20 @@
 import { redirect } from 'next/navigation';
 import { findUserWithEmail } from '@/app/lib/auth/service';
 import { verifyPassword } from '@/app/lib/auth/utils';
-import { createSelectSchema } from 'drizzle-zod';
-import { users } from '@/app/lib/database/schema';
 import { createSession } from '@/app/lib/session';
+import { loginFormSchema, TLoginFormSchema } from './types';
+import { z } from 'zod';
 
-const LoginFormSchema = createSelectSchema(users, {
-  email: (schema) => schema.email.email({ message: '올바른 이메일이 아닙니다.' }),
-}).pick({ email: true, password: true });
-
-export type SigninState = {
-  errors?: {
-    email?: string[];
-    password?: string[];
-  };
-  message?: string | null;
-};
-
-export async function loginAction(state: SigninState, formData: FormData) {
-  const validatedFields = LoginFormSchema.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
-  });
+export async function loginAction(data: TLoginFormSchema) {
+  const validatedFields = loginFormSchema.safeParse(data);
 
   if (!validatedFields.success) {
+    let parseError = {};
+    validatedFields.error.issues.forEach((issue) => {
+      parseError = { ...parseError, [issue.path[0]]: issue.message };
+    });
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: '필수 항목이 누락되었습니다.',
+      errors: parseError,
     };
   }
 
@@ -39,7 +27,7 @@ export async function loginAction(state: SigninState, formData: FormData) {
     if (!user)
       return {
         errors: {
-          email: ['등록되지 않은 이메일입니다.'],
+          email: '등록되지 않은 이메일입니다.',
         },
       };
 
@@ -47,7 +35,7 @@ export async function loginAction(state: SigninState, formData: FormData) {
     if (!isValidPassword)
       return {
         errors: {
-          password: ['비밀번호가 틀렸습니다.'],
+          password: '비밀번호가 틀렸습니다.',
         },
       };
 
@@ -57,7 +45,7 @@ export async function loginAction(state: SigninState, formData: FormData) {
   } catch (error) {
     console.error(error);
     return {
-      message: '로그인에 실패하였습니다.',
+      errors: { server: '서버 문제로 인해 로그인에 실패하였습니다.' },
     };
   }
 

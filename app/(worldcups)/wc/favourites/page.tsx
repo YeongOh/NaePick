@@ -15,7 +15,6 @@ export default async function Page({ searchParams }: Props) {
   const page = Number(searchParams.page) || 1;
   const [result, session] = await Promise.all([getMyWorldcupFavourites(page), getSession()]);
 
-  console.log(session);
   if (!session?.userId) {
     redirect('/forbidden');
   }
@@ -36,7 +35,7 @@ export default async function Page({ searchParams }: Props) {
             </p>
             <div className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">둘러보세요!</div>
             <div className="flex w-36 flex-col items-center justify-center">
-              <LinkButton href="/wc/create" variant="primary" size="medium" className="my-2">
+              <LinkButton href="/" variant="primary" size="medium" className="my-2">
                 둘러보기
               </LinkButton>
             </div>

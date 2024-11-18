@@ -6,7 +6,7 @@ import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import WorldcupPickScreen from './WorldcupPickScreen';
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
 import LinkButton from '@/app/components/ui/link-button';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
 import CommentSection from './CommentSection';
 import { getRandomCandidates } from '../actions';
@@ -77,7 +77,7 @@ export default function WorldcupStarter() {
                 <ChartNoAxesColumnDecreasing size="1.2rem" color="#FFFFFF" />
                 랭킹 보기
               </LinkButton>
-              <Button
+              <OldButton
                 className="flex items-center justify-center gap-1 text-sm lg:text-base"
                 variant="outline"
                 size="small"
@@ -85,14 +85,14 @@ export default function WorldcupStarter() {
               >
                 <Share color="#000000" size="1.2rem" />
                 공유 하기
-              </Button>
+              </OldButton>
               <ShareWorldcupModal
                 open={shareWorldcupModal}
                 onClose={() => setShareWorldcupModal(false)}
                 title={worldcup.title}
                 worldcupId={worldcup.id}
               />
-              <Button
+              <OldButton
                 onClick={handleWorldcupRestart}
                 variant="ghost"
                 size="small"
@@ -100,7 +100,7 @@ export default function WorldcupStarter() {
               >
                 <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기
-              </Button>
+              </OldButton>
             </div>
             <WorldcupFold
               nickname={worldcup.nickname}

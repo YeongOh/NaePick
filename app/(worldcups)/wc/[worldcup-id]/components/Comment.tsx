@@ -1,7 +1,7 @@
 'use client;';
 
 import { forwardRef, useState } from 'react';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import Avatar from '@/app/components/ui/Avatar';
 import ToggleableP from '@/app/components/ui/toggleable-p';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
@@ -156,7 +156,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
               />
               <div className="flex w-full justify-end">
                 <div className="flex w-[40%] gap-2">
-                  <Button
+                  <OldButton
                     type="button"
                     size="small"
                     onClick={() => {
@@ -166,15 +166,15 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                     variant="ghost"
                   >
                     취소
-                  </Button>
-                  <Button
+                  </OldButton>
+                  <OldButton
                     type="button"
                     size="small"
                     variant="primary"
                     onClick={() => onUpdateCommentSubmit(comment.id, newText)}
                   >
                     확인
-                  </Button>
+                  </OldButton>
                 </div>
               </div>
             </>
@@ -225,7 +225,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
               />
               <div className="flex w-full justify-end">
                 <div className="flex w-[40%] gap-2">
-                  <Button
+                  <OldButton
                     type="button"
                     size="small"
                     onClick={() => {
@@ -235,8 +235,8 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                     variant="ghost"
                   >
                     취소
-                  </Button>
-                  <Button
+                  </OldButton>
+                  <OldButton
                     type="button"
                     size="small"
                     variant="primary"
@@ -246,7 +246,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                     }}
                   >
                     확인
-                  </Button>
+                  </OldButton>
                 </div>
               </div>
             </>

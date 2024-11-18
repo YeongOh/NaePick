@@ -10,7 +10,7 @@ import { getComments, getCommentCount } from '../actions';
 import { InferSelectModel } from 'drizzle-orm';
 import { comments } from '@/app/lib/database/schema';
 import Comment from './Comment';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import Spinner from '@/app/components/ui/spinner';
@@ -157,13 +157,13 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           className="mb-1"
           errors={createCommentMutation.error?.message ? [createCommentMutation.error?.message] : undefined}
         />
-        <Button
+        <OldButton
           variant="primary"
           className="mb-4 mt-1 flex items-center justify-center gap-1 text-sm lg:text-base"
         >
           <Pencil color="#FFFFFF" size="1.2rem" />
           댓글 추가하기
-        </Button>
+        </OldButton>
       </form>
       {createCommentMutation.isPending ? (
         <div className="relative flex items-center justify-center">

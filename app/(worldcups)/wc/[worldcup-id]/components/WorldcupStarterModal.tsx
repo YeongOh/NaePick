@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import dayjs from '@/app/utils/dayjs';
 import Avatar from '@/app/components/ui/Avatar';
 import ToggleableP from '@/app/components/ui/toggleable-p';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getNumberOfRoundsAvailable } from '../utils';
 import { X } from 'lucide-react';
@@ -106,17 +106,17 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
                   )}
                 </select>
                 {notEnoughCandidates ? (
-                  <Button variant="outline" aria-label="Go back" role="link" onClick={() => router.back()}>
+                  <OldButton variant="outline" aria-label="Go back" role="link" onClick={() => router.back()}>
                     돌아가기
-                  </Button>
+                  </OldButton>
                 ) : (
-                  <Button
+                  <OldButton
                     variant="primary"
                     onClick={handleRoundSubmit}
                     className="flex items-center justify-center gap-1"
                   >
                     시작
-                  </Button>
+                  </OldButton>
                 )}
               </div>
             </div>

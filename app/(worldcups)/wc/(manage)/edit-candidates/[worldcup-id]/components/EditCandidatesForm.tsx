@@ -23,7 +23,7 @@ import ThumbnailImage from '@/app/components/ThumbnailImage';
 import EditImageButton from './EditImageButton';
 import Media from '@/app/components/media';
 import Pagination from '@/app/components/pagination';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import LinkButton from '@/app/components/ui/link-button';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
 import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
@@ -109,7 +109,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
         });
       }
     },
-    [isLoading, worldcupId]
+    [isLoading, worldcupId],
   );
 
   const onError = (error: Error) => {
@@ -270,12 +270,12 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
     <>
       <form
         onSubmit={handleUpdateWorldcupCandidates}
-        className="rounded-md bg-gray-50 p-6 mb-20"
+        className="mb-20 rounded-md bg-gray-50 p-6"
         onKeyDown={handleFormKeyDown}
       >
-        <h2 className="font-semibold text-slate-700 mb-2 text-base">후보 이미지 추가</h2>
+        <h2 className="mb-2 text-base font-semibold text-slate-700">후보 이미지 추가</h2>
         <div
-          className="relative cursor-pointer border rounded-md mb-4 text-base bg-white p-4 hover:bg-gray-50 transition-colors"
+          className="relative mb-4 cursor-pointer rounded-md border bg-white p-4 text-base transition-colors hover:bg-gray-50"
           {...getRootProps()}
         >
           <input {...getInputProps()} />
@@ -284,17 +284,17 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
             <p className="text-slate-700">이미지 파일을 드롭하거나 클릭해서 업로드</p>
           </div>
         </div>
-        <div className="text-base mb-6 text-slate-500">
-          <h2 className="font-semibold text-slate-500 mb-2 flex items-center gap-1">
+        <div className="mb-6 text-base text-slate-500">
+          <h2 className="mb-2 flex items-center gap-1 font-semibold text-slate-500">
             <Info size={'1rem'} />
             이미지 업로드 안내
           </h2>
           <p className="ml-2">- 파일 크기 제한은 1MB입니다.</p>
           <p className="ml-2">- 한 번에 업로드할 수 있는 파일 개수는 10개입니다.</p>
         </div>
-        <h2 className="font-semibold text-slate-700 mb-2 text-base">후보 동영상 추가</h2>
+        <h2 className="mb-2 text-base font-semibold text-slate-700">후보 동영상 추가</h2>
 
-        <div className="cursor-pointer border rounded-md text-base bg-gray-100 p-2 flex items-center mb-4 relative">
+        <div className="relative mb-4 flex cursor-pointer items-center rounded-md border bg-gray-100 p-2 text-base">
           <input
             id="videoURL"
             className="block w-[91%] rounded-md border border-gray-200 p-2 placeholder:text-gray-500 focus:outline-primary-500"
@@ -310,22 +310,22 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
           <button
             type="button"
             onClick={handleVideoUpload}
-            className="absolute px-4 py-2 bg-primary-500 text-white right-2 rounded hover:bg-primary-600 active:bg-primary-700 transition-colors font-semibold"
+            className="absolute right-2 rounded bg-primary-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-primary-600 active:bg-primary-700"
           >
             추가
           </button>
         </div>
         {showYoutubeTimeInput && (
-          <div className="text-base text-slate-700 mb-2">
+          <div className="mb-2 text-base text-slate-700">
             <div>
-              <div className="font-semibold mb-2">유튜브 구간 반복 설정</div>
-              <div className="flex items-center gap-1 bg-gray-100 p-2 justify-center border rounded">
+              <div className="mb-2 font-semibold">유튜브 구간 반복 설정</div>
+              <div className="flex items-center justify-center gap-1 rounded border bg-gray-100 p-2">
                 <IoLogoYoutube color="red" size={'1.2rem'} />
                 <label htmlFor="youtubeStartTime" className="text-gray-500">
                   시작 시간 (초) :{' '}
                 </label>
                 <input
-                  className="block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500"
+                  className="block w-14 rounded-md border border-gray-200 px-2 py-1 text-right text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
                   id="youtubeStartTime"
                   type="number"
                   value={youtubeStartTime}
@@ -335,7 +335,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                 />
                 <div className="text-gray-500">종료 시간 (초) : </div>
                 <input
-                  className="block w-14 py-1 px-2 text-base text-slate-700 text-right rounded-md border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500"
+                  className="block w-14 rounded-md border border-gray-200 px-2 py-1 text-right text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
                   id="youtubeEndTime"
                   type="number"
                   value={youtubeEndTime}
@@ -347,8 +347,8 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
             </div>
           </div>
         )}
-        <div className="text-base mb-6 text-slate-500">
-          <h2 className="font-semibold text-slate-500 mb-2 flex items-center gap-1">
+        <div className="mb-6 text-base text-slate-500">
+          <h2 className="mb-2 flex items-center gap-1 font-semibold text-slate-500">
             <Info size={'1rem'} />
             동영상 주소 형식
           </h2>
@@ -368,24 +368,24 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
             <li className="">- 유튜브 주소를 입력할 시 시작 및 종료 시간을 입력하는 설정이 팝업됩니다.</li>
           </ul>
         </div>
-        <h2 className="font-semibold text-slate-700 mb-2 text-base">
+        <h2 className="mb-2 text-base font-semibold text-slate-700">
           {count === 0 ? '아직 후보가 충분하지 않네요!' : `후보 ${count}명`}
         </h2>
         {count < MIN_NUMBER_OF_CANDIDATES ? (
-          <p className="text-base text-gray-500 pl-2 mb-4">
+          <p className="mb-4 pl-2 text-base text-gray-500">
             - {MIN_NUMBER_OF_CANDIDATES - count}명을 더 추가하면 이상형 월드컵을 시작할 수 있습니다.
           </p>
         ) : null}
         {isLoading ? (
-          <div className="flex justify-center items-center border rounded bg-gray-100 my-4 h-[64px] w-full animate-pulse">
+          <div className="my-4 flex h-[64px] w-full animate-pulse items-center justify-center rounded border bg-gray-100">
             <Spinner />
           </div>
         ) : null}
         <ul>
           {candidates.map((candidate, candidateIndex) => (
             <li key={`${candidate.id}/${candidate.path}`}>
-              <div className="flex items-center border mb-4 bg-gray-100">
-                <div className="relative w-16 h-16 cursor-pointer">
+              <div className="mb-4 flex items-center border bg-gray-100">
+                <div className="relative h-16 w-16 cursor-pointer">
                   <ThumbnailImage
                     path={candidate.path}
                     name={candidate.name}
@@ -393,15 +393,15 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                     thumbnailURL={candidate.thumbnailUrl}
                     onClick={() => {
                       setSelectedCandidateToPreviewIndex(
-                        candidateIndex === selectedCandidateToPreviewIndex ? null : candidateIndex
+                        candidateIndex === selectedCandidateToPreviewIndex ? null : candidateIndex,
                       );
                     }}
                     size="small"
                   />
                 </div>
-                <div className="w-full flex">
+                <div className="flex w-full">
                   <input
-                    className="flex-1 ml-2 mr-1 pl-4 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500  border rounded-md"
+                    className="ml-2 mr-1 flex-1 rounded-md border pl-4 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
                     id={candidate.name}
                     name={candidate.id}
                     type="text"
@@ -430,7 +430,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                     />
                     <button
                       type="button"
-                      className="text-red-500 px-4 py-2 border rounded-md bg-white text-base mr-2 hover:bg-gray-100 transition-colors"
+                      className="mr-2 rounded-md border bg-white px-4 py-2 text-base text-red-500 transition-colors hover:bg-gray-100"
                       onClick={() => {
                         setSelectedCandidateToDelete(candidate);
                         setShowDeleteConfirmModal(true);
@@ -442,7 +442,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                 </div>
               </div>
               {selectedCandidateToPreviewIndex === candidateIndex && (
-                <div className="w-full flex justify-center my-8 h-[400px] bg-black">
+                <div className="my-8 flex h-[400px] w-full justify-center bg-black">
                   <Media path={candidate.path} name={candidate.name} mediaType={candidate.mediaType} />
                 </div>
               )}
@@ -460,9 +460,9 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
             />
           </div>
         ) : null}
-        <Button className="mt-8" variant="primary">
+        <OldButton className="mt-8" variant="primary">
           이상형 월드컵 후보 이름 저장
-        </Button>
+        </OldButton>
         <div className="flex">
           <LinkButton href={`/wc/${worldcupId}`} className="mt-2" variant="outline">
             이상형 월드컵 확인하기

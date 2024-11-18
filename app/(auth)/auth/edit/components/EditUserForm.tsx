@@ -10,7 +10,7 @@ import { Info } from 'lucide-react';
 import Avatar from '@/app/components/ui/Avatar';
 import Input from '@/app/components/ui/input';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import DeleteConfirmModal from '@/app/components/modal/delete-confirm-modal';
 import {
   deleteAccountAction,
@@ -219,10 +219,10 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
         placeholder={`새로운 비밀번호 재입력`}
       />
       <InputErrorMessage className="mb-2" errors={state.errors?.confirmNewPassword} />
-      <Button className="mt-4" variant="primary">
+      <OldButton className="mt-4" variant="primary">
         수정 완료
-      </Button>
-      <Button
+      </OldButton>
+      <OldButton
         type="button"
         onClick={() => router.back()}
         variant="outline"
@@ -231,7 +231,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
         role="link"
       >
         돌아가기
-      </Button>
+      </OldButton>
       <button
         type="button"
         onClick={() => setOpenDeleteAccountModal(true)}

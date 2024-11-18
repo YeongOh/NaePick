@@ -8,7 +8,7 @@ import Media from '@/app/components/media';
 import Pagination from '@/app/components/pagination';
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
 import LinkButton from '@/app/components/ui/link-button';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
 import { InferSelectModel } from 'drizzle-orm';
 import { worldcups } from '@/app/lib/database/schema';
@@ -165,7 +165,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           >
             <Globe size="1.2rem" />새 월드컵 찾기
           </LinkButton>
-          <Button
+          <OldButton
             className="flex items-center justify-center gap-1 text-sm lg:text-base"
             variant="outline"
             size="small"
@@ -173,7 +173,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           >
             <Share color="#000000" size="1.2rem" />
             공유 하기
-          </Button>
+          </OldButton>
           <ShareWorldcupModal
             open={shareWorldcupModal}
             onClose={() => setShareWorldcupModal(false)}

@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { forwardRef, useState } from 'react';
+import { FieldError } from 'react-hook-form';
 
 interface InputProps {
   id: string;
-  name: string;
+  name?: string;
   type?: string;
   placeholder?: string;
-  error?: string[];
+  error?: string[] | FieldError;
   autoFocus?: boolean;
   value?: string;
   className?: string;
@@ -17,20 +18,23 @@ interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function Input({
-  id,
-  name,
-  type = 'text',
-  placeholder,
-  error,
-  autoFocus = false,
-  value,
-  onChange,
-  className,
-  defaultValue,
-  readOnly,
-  disabled,
-}: InputProps) {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    id,
+    name,
+    type = 'text',
+    placeholder,
+    error,
+    autoFocus = false,
+    value,
+    onChange,
+    className,
+    defaultValue,
+    readOnly,
+    disabled,
+  }: InputProps,
+  ref,
+) {
   const [focused, setFocused] = useState(false);
   const [hasValue, setHasValue] = useState(false);
 
@@ -39,19 +43,19 @@ export default function Input({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) onChange(e);
-    setHasValue(!!e.target.value); // Update hasValue based on input's content
+    setHasValue(!!e.target.value);
   };
 
   return (
-    <div className='relative'>
+    <div className="relative">
       <input
+        ref={ref}
         id={id}
         name={name}
         type={type}
-        className={`text-base block w-full rounded-lg border border-gray-200 placeholder:text-gray-500 focus:outline-primary-500 text-slate-700 disabled:bg-gray-100 
-        ${error ? 'outline outline-2 outline-red-500' : ''} ${className || ''}`}
+        className={`block w-full rounded-lg border border-gray-200 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500 disabled:bg-gray-100 ${error ? 'outline outline-2 outline-red-500' : ''} ${className || ''}`}
         aria-describedby={`${id}-error`}
-        autoComplete='off'
+        autoComplete="off"
         autoFocus={autoFocus}
         value={value}
         onChange={handleChange}
@@ -65,9 +69,9 @@ export default function Input({
         htmlFor={id}
         className={`${
           error ? 'text-red-500' : 'text-gray-500'
-        } absolute top-[28%] left-4 text-base transition cursor-text ${
+        } absolute left-4 top-[28%] cursor-text text-base transition ${
           focused || hasValue || defaultValue || value
-            ? '-translate-y-6 -translate-x-1 text-primary-500 bg-white'
+            ? '-translate-x-1 -translate-y-6 bg-white text-primary-500'
             : 'bg-transparent'
         }`}
       >
@@ -75,4 +79,6 @@ export default function Input({
       </label>
     </div>
   );
-}
+});
+
+export default Input;

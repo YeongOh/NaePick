@@ -12,7 +12,7 @@ import { createWorldcupAction, WorldcupFormState } from '@/app/(worldcups)/wc/(m
 import Input from '@/app/components/ui/input';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import TextArea from '@/app/components/ui/textarea';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 import { InferSelectModel } from 'drizzle-orm';
 import { categories, worldcups } from '@/app/lib/database/schema';
 import { editWorldcupAction } from '../edit/[worldcup-id]/actions';
@@ -186,9 +186,9 @@ export default function WorldcupForm({ categories, worldcup }: Props) {
         </select>
       </div>
       <InputErrorMessage errors={state.errors?.categoryId} />
-      <Button className="mt-4" variant="primary">
+      <OldButton className="mt-4" variant="primary">
         {worldcup?.id ? '이상형 월드컵 수정하기' : '이상형 월드컵 생성하기'}
-      </Button>
+      </OldButton>
       {worldcup?.id ? (
         <LinkButton href={`/wc/${worldcup?.id}`} className="mt-2" variant="outline">
           이상형 월드컵 확인하기

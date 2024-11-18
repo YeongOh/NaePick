@@ -6,7 +6,7 @@ import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH } from '@/app/constants';
 import { signupAction, SignupState } from '../action';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import Input from '@/app/components/ui/input';
-import Button from '@/app/components/ui/button';
+import OldButton from '@/app/components/ui/OldButton/OldButton';
 
 export default function SignupForm() {
   const initialState: SignupState = { message: null, errors: {} };
@@ -70,9 +70,9 @@ export default function SignupForm() {
         placeholder={`비밀번호 재입력`}
       />
       <InputErrorMessage className="mb-2" errors={state.errors?.confirmPassword} />
-      <Button variant="primary" className="mt-4">
+      <OldButton variant="primary" className="mt-4">
         가입하기
-      </Button>
+      </OldButton>
     </form>
   );
 }

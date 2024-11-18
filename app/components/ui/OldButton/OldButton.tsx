@@ -6,15 +6,17 @@ interface Props {
   type?: 'submit' | 'reset' | 'button' | undefined;
   role?: string;
   size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
 }
 
-export default function Button({
+export default function OldButton({
   className = '',
   variant,
   onClick,
   children,
   type,
   role,
+  disabled,
   size = 'medium',
 }: Props) {
   let classNameResult = '';
@@ -34,8 +36,9 @@ export default function Button({
     <button
       role={role}
       type={type}
+      disabled={disabled}
       onClick={onClick}
-      className={`w-full text-base font-semibold rounded ${classNameResult} ${className}`}
+      className={`w-full rounded text-base font-semibold disabled:bg-gray-500 ${classNameResult} ${className}`}
     >
       {children}
     </button>
