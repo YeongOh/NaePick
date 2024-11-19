@@ -1,9 +1,9 @@
-import { ComponentProps } from 'react';
+import { ComponentPropsWithoutRef } from 'react';
 
 import clsx from 'clsx';
 import { Loader2 } from 'lucide-react';
 
-interface Props extends ComponentProps<'button'> {
+interface Props extends ComponentPropsWithoutRef<'button'> {
   className?: string;
   variant: 'primary' | 'outline' | 'ghost' | 'delete';
   pending?: boolean;
@@ -30,7 +30,8 @@ export default function Button({ className, variant, children, pending, size = '
           'border bg-white text-slate-700 transition-colors hover:bg-gray-50 active:bg-gray-100',
         variant === 'ghost' &&
           'bg-white text-slate-700 transition-colors hover:bg-gray-50 active:bg-gray-100',
-        variant === 'delete' && 'bg-red-500 text-white transition-colors hover:bg-red-600 active:bg-red-700',
+        variant === 'delete' &&
+          'border bg-red-500 text-white transition-colors hover:bg-red-600 active:bg-red-700',
 
         pending && 'opacity-50',
         className,

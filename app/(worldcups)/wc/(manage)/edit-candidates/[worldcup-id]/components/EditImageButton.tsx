@@ -6,10 +6,10 @@ import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import Spinner from '@/app/components/ui/spinner';
-import { MediaType } from '@/app/lib/types';
 
 import { deleteCandidateObject, getSignedUrlForCandidateImage } from '../actions';
 import { updateCandidateAction } from '../actions';
+import Button from '@/app/components/ui/Button';
 
 interface Props {
   originalPath: string;
@@ -46,7 +46,7 @@ export default function EditImageButton({ originalPath, worldcupId, candidateId,
         if (mediaType === 'cdn_img' || mediaType === 'cdn_video')
           await deleteCandidateObject(originalPath, worldcupId, mediaType);
 
-        await updateCandidateAction({ worldcupId, candidateId, path, mediaType });
+        await updateCandidateAction({ worldcupId, candidateId, path, mediaType: 'cdn_img' });
         toast.success('이미지를 수정했습니다!');
       } catch (error) {
         toast.error('오류가 발생했습니다.');
@@ -78,18 +78,16 @@ export default function EditImageButton({ originalPath, worldcupId, candidateId,
   });
 
   return (
-    <button
-      type="button"
-      className="relative rounded-md border bg-white px-4 py-2 text-base text-primary-500 transition-colors hover:bg-gray-100"
-      {...getRootProps()}
-    >
-      <input {...getInputProps()} />
-      {isLoading ? (
-        <div className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
-          <Spinner />
-        </div>
-      ) : null}
-      이미지 수정
-    </button>
+    <div {...getRootProps()}>
+      <Button type="button" size="sm" variant="outline">
+        <input {...getInputProps()} />
+        {isLoading ? (
+          <div className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
+            <Spinner />
+          </div>
+        ) : null}
+        이미지 수정
+      </Button>
+    </div>
   );
 }

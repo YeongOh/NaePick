@@ -30,12 +30,6 @@ export type MediaType = 'cdn_img' | 'cdn_video' | 'youtube' | 'chzzk';
 
 export type Publicity = 'public' | 'private' | 'unlisted';
 
-export const publicityText: { [key in Publicity]: string } = {
-  public: '모두에게 공개 됩니다.',
-  unlisted: '링크를 가지고 있는 사용자만 볼 수 있습니다.',
-  private: '만든 사용자만 볼 수 있습니다.',
-};
-
 export function translateCategory(categoryName: string): string {
   switch (categoryName) {
     case 'animations':

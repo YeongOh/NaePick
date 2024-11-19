@@ -11,6 +11,7 @@ import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
 import { extractYoutubeId } from '@/app/lib/videos/youtube';
 
 import { deleteCandidateObject, updateCandidateAction } from '../actions';
+import Button from '@/app/components/ui/Button';
 
 interface Props {
   originalPath: string;
@@ -142,10 +143,12 @@ export default function EditVideoButton({
   };
 
   return (
-    <>
-      <button
+    <div className="relative">
+      <Button
+        variant="outline"
         type="button"
-        className="relative rounded-md border bg-white px-4 py-2 text-base text-primary-500 transition-colors hover:bg-gray-100"
+        size="sm"
+        className="relative"
         onClick={() => onChangeVideoInputIndex(candidateIndex)}
       >
         {isLoading ? (
@@ -154,12 +157,12 @@ export default function EditVideoButton({
           </div>
         ) : null}
         동영상 수정
-      </button>
+      </Button>
       {showVideoURLInput && !isLoading ? (
         <>
           <div className="absolute bottom-0 right-28 z-40 flex w-[500px] translate-x-1/3 cursor-pointer items-center rounded-md border bg-gray-50 p-2 text-base">
             <input
-              className="block w-[75%] rounded-md border border-gray-200 py-1 pl-2 placeholder:text-gray-500 focus:outline-primary-500"
+              className="block w-[77%] rounded-md border border-gray-200 p-1.5 placeholder:text-gray-500 focus:outline-primary-500"
               id="videoURL"
               name="videoURL"
               type="url"
@@ -172,14 +175,10 @@ export default function EditVideoButton({
               autoComplete="off"
             />
             <div className="absolute right-2 flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => onChangeVideoInputIndex(null)}
-                className="right-[40px] rounded border bg-white px-3 py-1 text-gray-500 transition-colors hover:bg-gray-100"
-              >
+              <Button type="button" onClick={() => onChangeVideoInputIndex(null)} variant="outline" size="sm">
                 취소
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() =>
                   handleUpdateVideo({
@@ -189,10 +188,11 @@ export default function EditVideoButton({
                     mediaType,
                   })
                 }
-                className="right-2 rounded bg-primary-500 px-3 py-1 text-white transition-colors hover:bg-primary-600 active:bg-primary-700"
+                variant="primary"
+                size="sm"
               >
-                입력
-              </button>
+                추가
+              </Button>
             </div>
           </div>
           {showYoutubeTimeInput && (
@@ -229,6 +229,6 @@ export default function EditVideoButton({
           )}
         </>
       ) : null}
-    </>
+    </div>
   );
 }

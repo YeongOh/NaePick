@@ -11,8 +11,7 @@ export default async function Page() {
 
   return (
     <>
-      <Navbar />
-      <section className="m-auto mt-14 flex max-w-xl flex-col">
+      <section className="m-auto mt-14 flex max-w-2xl flex-col">
         <WorldcupForm categories={categories} />
       </section>
     </>

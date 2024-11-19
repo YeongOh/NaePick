@@ -76,7 +76,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
   return (
     <form
       onSubmit={handleEditUserFormSubmit(onEditUserFormSubmit)}
-      className="mb-20 flex w-full flex-col rounded-md"
+      className="absolute top-[7%] flex w-full flex-col"
       onKeyDown={handleFormKeyDown}
     >
       <Link href="/" className="mb-8 text-center text-5xl font-extrabold text-primary-500">

@@ -25,8 +25,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
-      <Navbar />
-      <div className="m-auto flex max-w-xl flex-col">
+      <div className="m-auto flex max-w-2xl flex-col">
         <WorldcupFormTab worldcupId={worldcupId} disabled={null} highlight="info" />
         <WorldcupForm worldcup={worldcup} categories={categories} />
       </div>

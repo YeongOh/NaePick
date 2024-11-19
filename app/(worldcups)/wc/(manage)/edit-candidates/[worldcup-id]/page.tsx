@@ -26,8 +26,7 @@ export default async function Page({ params, searchParams }: Props) {
 
   return (
     <>
-      <Navbar />
-      <div className="m-auto max-w-3xl">
+      <div className="m-auto max-w-2xl">
         <WorldcupFormTab worldcupId={worldcupId} disabled={null} highlight="candidates" />
         <EditCandidatesForm
           worldcupId={worldcupId}

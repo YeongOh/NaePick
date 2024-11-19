@@ -16,6 +16,7 @@ import { getSession } from '@/app/lib/session';
 import { deleteImage, deleteVideo, getSignedUrlForImage } from '@/app/lib/storage';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import { mp4toJpg } from '@/app/utils';
+import { CandidateDataSchema, TCandidateDataSchema } from '../../type';
 
 export async function getSignedUrlForCandidateImage(worldcupId: string, fileType: string, filePath: string) {
   const session = await getSession();
@@ -56,16 +57,45 @@ export async function createCandidateAction({
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
 }
 
-export async function updateCandidateNamesAction(worldcupId: string, formData: FormData) {
-  const session = await getSession();
-  if (!session?.userId) throw new Error('로그인을 해주세요.');
+export async function updateCandidateNamesAction(data: TCandidateDataSchema, worldcupId: string) {
+  try {
+    const session = await getSession();
+    if (!session?.userId) {
+      return {
+        errors: {
+          session: '로그인 세션이 만료되었습니다.',
+        },
+      };
+    }
 
-  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
-  if (!isVerified) throw new Error('잘못된 접근입니다.');
+    const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+    if (!isVerified) {
+      return {
+        errors: {
+          session: '잘못된 접근입니다.',
+        },
+      };
+    }
 
-  const formEntires = Object.fromEntries(formData);
-  const candidateNames = Object.entries(formEntires).map(([id, name]) => ({ id, name: String(name) }));
-  await updateCandidateNames(candidateNames);
+    const validatedFields = CandidateDataSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+      let parseError = {};
+      validatedFields.error.issues.forEach((issue) => {
+        parseError = { ...parseError, [issue.path[0]]: issue.message };
+      });
+      return {
+        errors: parseError,
+      };
+    }
+
+    await updateCandidateNames(data.candidates);
+  } catch (error) {
+    console.error(error);
+    return {
+      errors: { server: '서버 에러로 인해 저장에 실패했습니다.' },
+    };
+  }
   revalidatePath(`/wc/edit-candidates/${worldcupId}`);
 }
 

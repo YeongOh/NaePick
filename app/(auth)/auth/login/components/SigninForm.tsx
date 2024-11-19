@@ -37,7 +37,7 @@ export default function SigninForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mb-28 flex w-full flex-col rounded-md">
+    <form onSubmit={handleSubmit(onSubmit)} className="absolute top-1/4 flex w-full flex-col rounded-md">
       <Link href="/" className="m-4 text-center text-5xl font-extrabold text-primary-500">
         NaePick
       </Link>
@@ -50,7 +50,7 @@ export default function SigninForm() {
         type="text"
         className={`mb-2 p-4`}
         error={errors?.email}
-        placeholder={`이메일 주소`}
+        placeholder={`이메일`}
       />
       <FormError className="mb-2" error={errors?.email?.message} />
       <FormInput

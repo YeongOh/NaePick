@@ -12,7 +12,7 @@ export default async function Page() {
   }
 
   return (
-    <section className="m-auto flex min-h-screen max-w-xs flex-col items-center justify-center">
+    <section className="relative m-auto min-h-screen max-w-xs">
       <EditUserForm
         userId={session.userId}
         nickname={session.nickname}

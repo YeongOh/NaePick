@@ -1,20 +1,13 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
-import { ImageUp, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useDropzone, FileWithPath, FileRejection } from 'react-dropzone';
 import toast from 'react-hot-toast';
-import { IoLogoYoutube } from 'react-icons/io';
-import { SiImgur } from 'react-icons/si';
 
 import {
-  createCandidateAction,
   deleteCandidateAction,
   deleteCandidateObject,
-  getSignedUrlForCandidateImage,
   updateCandidateNamesAction,
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
 import Media from '@/app/components/media';
@@ -22,24 +15,32 @@ import DeleteModal from '@/app/components/NewModal/DeleteModal';
 import Pagination from '@/app/components/pagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 import LinkButton from '@/app/components/ui/link-button';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
 import Spinner from '@/app/components/ui/spinner';
-import { CANDIDATE_NAME_MAX_LENGTH, CHZZK_THUMBNAIL_URL, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
-import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
-import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
-import { extractYoutubeId, fetchYoutubeTitle } from '@/app/lib/videos/youtube';
-import { excludeFileExtension } from '@/app/utils';
+import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import dayjs from '@/app/utils/dayjs';
 
 import EditImageButton from './EditImageButton';
 import EditVideoButton from './EditVideoButton';
+import UploadImageZone from './UploadImageZone';
+import UploadVideoZone from './UploadVideoZone';
+import Button from '@/app/components/ui/Button';
+import { translateMediaType } from '../../../utils';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import FormError from '@/app/components/ui/FormError';
+import clsx from 'clsx';
+import { CandidateDataSchema, TCandidateDataSchema } from '../../../type';
 
 interface Candidate {
+  mediaType: string;
   id: string;
   name: string;
   path: string;
   thumbnailUrl: string | null;
-  mediaType: string;
+  worldcupId: string;
+  mediaTypeId: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface Props {
@@ -54,100 +55,44 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState<boolean>(false);
   const [selectedCandidateToPreviewIndex, setSelectedCandidateToPreviewIndex] = useState<number | null>(null);
   const [showUpdateVideoInputIndex, setShowVideoInputIndex] = useState<number | null>(null);
-  const [showYoutubeTimeInput, setShowYoutubeTimeInput] = useState(false);
-  const [youtubeStartTime, setShowYoutubeStartTime] = useState(0);
-  const [youtubeEndTime, setShowYoutubeEndTime] = useState(0);
-  const [videoURL, setVideoURL] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const totalPages = Math.ceil((count || 0) / 10);
 
-  const onDrop = useCallback(
-    async (acceptedFiles: FileWithPath[]) => {
-      const imageUploadPromises: Promise<void>[] = [];
-
-      if (isLoading) {
-        toast.error('이미지 업로드 처리 중입니다.');
-        return;
-      }
-      setIsLoading(true);
-      acceptedFiles.forEach(async (acceptedFile) => {
-        imageUploadPromises.push(uploadImage(acceptedFile, worldcupId));
-      });
-
-      try {
-        const results = await Promise.allSettled(imageUploadPromises);
-        const hasErrors = results.some((result) => result.status === 'rejected');
-
-        if (hasErrors) toast.error('일부 이미지 업로드에 실패했습니다.');
-        else toast.success('이미지 업로드에 성공했습니다!');
-      } catch (error) {
-        console.error(error);
-        toast.error('오류가 발생했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-
-      async function uploadImage(file: FileWithPath, worldcupId: string) {
-        const filenameWithoutExtension = excludeFileExtension(file.name);
-        const result = await getSignedUrlForCandidateImage(worldcupId, file.type, file.path as string);
-        const { url, path } = result;
-        if (!url) throw new Error('서버 에러');
-
-        const response = await fetch(url, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': file.type,
-          },
-          body: file,
-        });
-        if (!response.ok) {
-          throw new Error('업로드 실패');
-        }
-        await createCandidateAction({
-          name: filenameWithoutExtension,
-          mediaType: 'cdn_img',
-          worldcupId,
-          path,
-        });
-      }
-    },
-    [isLoading, worldcupId],
-  );
-
-  const onError = (error: Error) => {
-    toast.error('오류가 발생했습니다.');
-  };
-
-  const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
-    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 초과했습니다.');
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    maxSize: 10485760,
-    maxFiles: 10,
-    accept: {
-      'image/png': [],
-      'image/jpg': [],
-      'image/jpeg': [],
-      'image/webp': [],
-      'image/svg': [],
-      'image/tiff': [],
-    },
-    onDrop,
-    onDropRejected,
-    onError,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    control,
+  } = useForm<TCandidateDataSchema>({
+    resolver: zodResolver(CandidateDataSchema),
+    mode: 'onChange',
+  });
+  const { fields } = useFieldArray({
+    control,
+    name: 'candidates',
   });
 
-  const handleUpdateWorldcupCandidates = async (e: React.FormEvent<HTMLFormElement>) => {
-    try {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
+  const handleOnChangeUpdateVideoInputIndex = (index: number | null) => {
+    setShowVideoInputIndex(index);
+  };
 
-      await updateCandidateNamesAction(worldcupId, formData);
-      toast.success('저장 되었습니다.');
-    } catch (error) {
-      toast.error((error as Error).message);
+  const onSubmit = async (data: TCandidateDataSchema) => {
+    const result = await updateCandidateNamesAction(data, worldcupId);
+    if (!result?.errors) {
+      toast.success('저장되었습니다!');
+      return;
+    }
+
+    const errors = result.errors;
+    if ('id' in errors && typeof errors.id === 'string') {
+      toast.error('잘못된 데이터로 인해 저장할 수 없었습니다.');
+    } else if ('session' in errors && typeof errors.session === 'string') {
+      toast.error(errors.session);
+    } else if ('candidates' in errors && typeof errors.candidates === 'string') {
+      toast.error(errors.candidates);
+    } else {
+      toast.error('예기치 못한 문제로 저장할 수 없었습니다.');
     }
   };
 
@@ -167,104 +112,12 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
     }
   };
 
-  const handleYouTube = (text: string) => {
-    const trimText = text.trim();
-    if (
-      trimText.startsWith('https://youtube.com') ||
-      trimText.startsWith('https://youtu.be') ||
-      trimText.startsWith('https://www.youtube.com') ||
-      trimText.startsWith('https://www.youtu.be')
-    ) {
-      setShowYoutubeTimeInput(true);
-    } else {
-      setShowYoutubeTimeInput(false);
-    }
-  };
-
-  const handleVideoUpload = async () => {
-    try {
-      if (isLoading) {
-        toast.error('동영상을 업로드 처리 중입니다.');
-        return;
-      }
-      const UrlObject = new URL(videoURL);
-      if (UrlObject.protocol != 'https:') {
-        toast.error('https로 시작하는 주소를 입력해 주세요.');
-        return;
-      }
-      const hostname = UrlObject.hostname;
-      const cleanURL = UrlObject.toString();
-
-      setIsLoading(true);
-      if (hostname === 'imgur.com' || hostname === 'www.imgur.com') {
-        const videoPath = await downloadImgurUploadS3(cleanURL, worldcupId);
-        await createCandidateAction({
-          mediaType: 'cdn_video',
-          name: cleanURL,
-          path: videoPath,
-          worldcupId,
-        });
-      } else if (
-        hostname === 'youtube.com' ||
-        hostname === 'youtu.be' ||
-        hostname === 'www.youtube.com' ||
-        hostname === 'www.youtu.be'
-      ) {
-        const youtubeVideoId = extractYoutubeId(cleanURL);
-        if (youtubeVideoId === null) {
-          throw new Error('유튜브 주소가 올바른지 확인해 주세요.');
-        }
-        const youtubeVideoURL = `https://www.youtube.com/watch?v=${youtubeVideoId}`;
-        const youtubeVideoTitle = await fetchYoutubeTitle(youtubeVideoURL);
-        const youtubeVideoIdWithLoop =
-          youtubeStartTime === 0 && youtubeEndTime === 0
-            ? null
-            : youtubeVideoId + `?s=${youtubeStartTime}&e=${youtubeEndTime}`;
-
-        await createCandidateAction({
-          name: youtubeVideoTitle ?? '유튜브 동영상',
-          path: youtubeVideoIdWithLoop || youtubeVideoId,
-          mediaType: 'youtube',
-          worldcupId,
-        });
-        setShowYoutubeTimeInput(false);
-        setShowYoutubeStartTime(0);
-        setShowYoutubeEndTime(0);
-      } else if (
-        cleanURL.startsWith('https://chzzk.naver.com/clips') ||
-        cleanURL.startsWith('https://chzzk.naver.com/embed/clip')
-      ) {
-        const chzzkIdIndex = cleanURL.lastIndexOf('/') + 1;
-        const chzzkId = cleanURL.slice(chzzkIdIndex);
-        const data = await crawlChzzkThumbnailURL(chzzkId);
-
-        await createCandidateAction({
-          name: data?.chzzkClipTitle || '치지직 클립',
-          thumbnailUrl: data?.chzzkThumbnailURL || '',
-          path: chzzkId,
-          mediaType: 'chzzk',
-          worldcupId,
-        });
-      } else {
-        throw new Error('주소가 올바른지 확인해 주세요.');
-      }
-      setVideoURL('');
-    } catch (error) {
-      toast.error('잘못된 URL입니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handlePageNumberOnClick = async (page: number) => {
     router.push(`/wc/edit-candidates/${worldcupId}?page=${page}`, {
       scroll: false,
     });
   };
 
-  const handleOnChangeUpdateVideoInputIndex = (index: number | null) => {
-    setShowVideoInputIndex(index);
-  };
   const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === 'Enter') e.preventDefault();
   };
@@ -272,105 +125,12 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
   return (
     <>
       <form
-        onSubmit={handleUpdateWorldcupCandidates}
-        className="mb-20 rounded-md bg-gray-50 p-6"
+        onSubmit={handleSubmit(onSubmit)}
+        className="rounded-md bg-gray-50 p-6"
         onKeyDown={handleFormKeyDown}
       >
-        <h2 className="mb-2 text-base font-semibold text-slate-700">후보 이미지 추가</h2>
-        <div
-          className="relative mb-4 cursor-pointer rounded-md border bg-white p-4 text-base transition-colors hover:bg-gray-50"
-          {...getRootProps()}
-        >
-          <input {...getInputProps()} />
-          <div className="flex items-center justify-center gap-2">
-            <ImageUp color="#6d6d6d" size="1.2rem" />
-            <p className="text-slate-700">이미지 파일을 드롭하거나 클릭해서 업로드</p>
-          </div>
-        </div>
-        <div className="mb-6 text-base text-slate-500">
-          <h2 className="mb-2 flex items-center gap-1 font-semibold text-slate-500">
-            <Info size={'1rem'} />
-            이미지 업로드 안내
-          </h2>
-          <p className="ml-2">- 파일 크기 제한은 1MB입니다.</p>
-          <p className="ml-2">- 한 번에 업로드할 수 있는 파일 개수는 10개입니다.</p>
-        </div>
-        <h2 className="mb-2 text-base font-semibold text-slate-700">후보 동영상 추가</h2>
-
-        <div className="relative mb-4 flex cursor-pointer items-center rounded-md border bg-gray-100 p-2 text-base">
-          <input
-            id="videoURL"
-            className="block w-[91%] rounded-md border border-gray-200 p-2 placeholder:text-gray-500 focus:outline-primary-500"
-            type="url"
-            placeholder="https://(주소입력)"
-            value={videoURL}
-            onChange={(e) => {
-              setVideoURL(e.target.value);
-              handleYouTube(e.target.value);
-            }}
-            autoComplete="off"
-          />
-          <button
-            type="button"
-            onClick={handleVideoUpload}
-            className="absolute right-2 rounded bg-primary-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-primary-600 active:bg-primary-700"
-          >
-            추가
-          </button>
-        </div>
-        {showYoutubeTimeInput && (
-          <div className="mb-2 text-base text-slate-700">
-            <div>
-              <div className="mb-2 font-semibold">유튜브 구간 반복 설정</div>
-              <div className="flex items-center justify-center gap-1 rounded border bg-gray-100 p-2">
-                <IoLogoYoutube color="red" size={'1.2rem'} />
-                <label htmlFor="youtubeStartTime" className="text-gray-500">
-                  시작 시간 (초) :{' '}
-                </label>
-                <input
-                  className="block w-14 rounded-md border border-gray-200 px-2 py-1 text-right text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
-                  id="youtubeStartTime"
-                  type="number"
-                  value={youtubeStartTime}
-                  onChange={(e) => setShowYoutubeStartTime(Number(e.target.value))}
-                  min={0}
-                  placeholder="0"
-                />
-                <div className="text-gray-500">종료 시간 (초) : </div>
-                <input
-                  className="block w-14 rounded-md border border-gray-200 px-2 py-1 text-right text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
-                  id="youtubeEndTime"
-                  type="number"
-                  value={youtubeEndTime}
-                  onChange={(e) => setShowYoutubeEndTime(Number(e.target.value))}
-                  placeholder="0"
-                  min={0}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="mb-6 text-base text-slate-500">
-          <h2 className="mb-2 flex items-center gap-1 font-semibold text-slate-500">
-            <Info size={'1rem'} />
-            동영상 주소 형식
-          </h2>
-          <ul className="pl-2">
-            <li className="flex items-center gap-1">
-              <SiImgur color="green" size={'1.2rem'} /> Imgur: https://imgur.com/i6uyHNs
-            </li>
-            <li className="flex items-center gap-1">
-              <IoLogoYoutube color="red" size={'1.2rem'} />
-              YouTube: https://youtube.com/watch?v=LV3vxkZpUjk
-            </li>
-            <li className="flex items-center gap-1">
-              <img src={CHZZK_THUMBNAIL_URL} width={20} height={20} alt={'CHZZK logo'} />
-              치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
-            </li>
-            <li className="">- Imgur와 치지직의 썸네일 생성에는 최소 3~5초가 걸릴 수 있습니다.</li>
-            <li className="">- 유튜브 주소를 입력할 시 시작 및 종료 시간을 입력하는 설정이 팝업됩니다.</li>
-          </ul>
-        </div>
+        <UploadImageZone worldcupId={worldcupId} isLoading={isLoading} setIsLoading={setIsLoading} />
+        <UploadVideoZone worldcupId={worldcupId} isLoading={isLoading} setIsLoading={setIsLoading} />
         <h2 className="mb-2 text-base font-semibold text-slate-700">
           {count === 0 ? '아직 후보가 충분하지 않네요!' : `후보 ${count}명`}
         </h2>
@@ -387,8 +147,8 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
         <ul>
           {candidates.map((candidate, candidateIndex) => (
             <li key={`${candidate.id}/${candidate.path}`}>
-              <div className="mb-4 flex items-center border bg-gray-100">
-                <div className="relative h-16 w-16 cursor-pointer">
+              <div className="mb-4 flex items-center rounded-md border bg-gray-100 p-2">
+                <div className="relative h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-md">
                   <ThumbnailImage
                     path={candidate.path}
                     name={candidate.name}
@@ -402,19 +162,32 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                     size="small"
                   />
                 </div>
-                <div className="flex w-full">
+                <div className="relative flex w-full flex-col pl-2">
                   <input
-                    className="ml-2 mr-1 flex-1 rounded-md border pl-4 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500"
-                    id={candidate.name}
-                    name={candidate.id}
-                    type="text"
-                    defaultValue={candidate.name}
-                    placeholder={candidate.name}
-                    autoComplete="off"
-                    maxLength={CANDIDATE_NAME_MAX_LENGTH}
+                    type="hidden"
+                    {...register(`candidates.${candidateIndex}.id`)}
+                    defaultValue={candidate.id}
                   />
-                  <div className="flex items-center gap-1">
-                    <div className="relative">
+                  <input
+                    className={clsx(
+                      'flex-1 rounded-md border p-1 text-base text-slate-700 placeholder:text-gray-500 focus:outline-primary-500',
+                      errors.candidates?.[candidateIndex] && 'outline outline-2 outline-red-500',
+                    )}
+                    {...register(`candidates.${candidateIndex}.name`)}
+                    defaultValue={candidate.name}
+                    type="text"
+                    autoComplete="off"
+                  />
+                  <FormError
+                    className="absolute -top-9 rounded-md border bg-white p-1"
+                    error={errors.candidates?.[candidateIndex]?.name?.message}
+                  />
+                  <div className="mt-2 flex justify-between">
+                    <div className="mr-1 text-sm text-gray-500">
+                      <div className="mr-2">{translateMediaType(candidate.mediaType)}</div>
+                      <div>{dayjs(candidate.createdAt).format('YYYY-MM-DD')}</div>
+                    </div>
+                    <div className="flex gap-2">
                       <EditVideoButton
                         worldcupId={worldcupId}
                         candidateId={candidate.id}
@@ -424,23 +197,24 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                         onChangeVideoInputIndex={handleOnChangeUpdateVideoInputIndex}
                         showVideoURLInput={showUpdateVideoInputIndex === candidateIndex}
                       />
+                      <EditImageButton
+                        worldcupId={worldcupId}
+                        candidateId={candidate.id}
+                        originalPath={candidate.path}
+                        mediaType={candidate.mediaType}
+                      />
+                      <Button
+                        type="button"
+                        variant="delete"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCandidateToDelete(candidate);
+                          setShowDeleteConfirmModal(true);
+                        }}
+                      >
+                        삭제
+                      </Button>
                     </div>
-                    <EditImageButton
-                      worldcupId={worldcupId}
-                      candidateId={candidate.id}
-                      originalPath={candidate.path}
-                      mediaType={candidate.mediaType}
-                    />
-                    <button
-                      type="button"
-                      className="mr-2 rounded-md border bg-white px-4 py-2 text-base text-red-500 transition-colors hover:bg-gray-100"
-                      onClick={() => {
-                        setSelectedCandidateToDelete(candidate);
-                        setShowDeleteConfirmModal(true);
-                      }}
-                    >
-                      삭제
-                    </button>
                   </div>
                 </div>
               </div>
@@ -463,9 +237,9 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
             />
           </div>
         ) : null}
-        <OldButton className="mt-8" variant="primary">
+        <Button pending={isSubmitting} className="mt-8 w-full" variant="primary">
           이상형 월드컵 후보 이름 저장
-        </OldButton>
+        </Button>
         <div className="flex">
           <LinkButton href={`/wc/${worldcupId}`} className="mt-2" variant="outline">
             이상형 월드컵 확인하기

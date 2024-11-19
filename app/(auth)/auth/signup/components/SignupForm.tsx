@@ -47,7 +47,7 @@ export default function SignupForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mb-36 flex w-full flex-col rounded-md"
+      className="absolute top-[20%] flex w-full flex-col"
       onKeyDown={handleFormKeyDown}
     >
       <Link href="/" className="m-4 text-center text-5xl font-extrabold text-primary-500">
