@@ -2,22 +2,26 @@
 
 import { forwardRef, useState } from 'react';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
+import NewAvatar from '@/app/components/ui/Avatar';
+import Button from '@/app/components/ui/Button';
 import ExpandableText from '@/app/components/ui/ExpandableText';
-import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
+import FormError from '@/app/components/ui/FormError';
+import FormTextArea from '@/app/components/ui/FormTextArea';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
 import Spinner from '@/app/components/ui/oldSpinner';
 import TextArea from '@/app/components/ui/textarea';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
 import { useDropdown } from '@/hooks/useDropdown';
-
 import CommentDropdownMenu from './CommentDropdownMenu';
 import { getCommentReplies, replyCommentAction } from '../actions';
-import { WorldcupComment } from '../types';
+import useCommentMutation from '../hooks/useCommentMutation';
+import { CommentFormSchema, TCommentFormSchema, WorldcupComment } from '../types';
 
 interface Props {
   comment: WorldcupComment;
@@ -27,7 +31,7 @@ interface Props {
   worldcupId: string;
   onLikeComment: (id: string, like: boolean) => void;
   onUpdateCommentToggle: (id: string) => void;
-  onUpdateCommentSubmit: (id: string, newText: string) => void;
+  onUpdateCommentSubmit: () => void;
   onOpenDeleteCommentModal: (id: string) => void;
 }
 
@@ -46,7 +50,6 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
   ref,
 ) {
   const { dropdownId, toggleDropdown } = useDropdown();
-  const [newText, setNewText] = useState(comment.text);
   const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
@@ -56,21 +59,51 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     queryFn: () => getCommentReplies(comment.id, userId),
     enabled: !!showReplies || fetchForNewReplyComment,
   });
+  const { updateCommentMutation } = useCommentMutation({
+    worldcupId,
+  });
+  const {
+    getValues: getNewTextValues,
+    register: registerNewText,
+    handleSubmit: handleUpdateCommentSubmit,
+    setValue: setNewTextValue,
+    formState: { errors: newTextErrors },
+  } = useForm<TCommentFormSchema>({
+    resolver: zodResolver(CommentFormSchema),
+    defaultValues: {
+      text: comment.text,
+    },
+  });
+
+  const {
+    register: registerReplyText,
+    handleSubmit: handleReplyCommentSubmit,
+    setValue: setReplyTextValue,
+    formState: { errors: replyTextErrors },
+  } = useForm<TCommentFormSchema>({
+    resolver: zodResolver(CommentFormSchema),
+  });
+
+  const onSubmit = async (data: TCommentFormSchema) => {
+    updateCommentMutation.mutate({ commentId: comment.id, parentId: comment.parentId, data });
+    onUpdateCommentSubmit();
+  };
+
   const queryClient = useQueryClient();
   const replyCommentMutation = useMutation({
     mutationFn: ({
       parentId,
-      text,
+      data,
       worldcupId,
       votedCandidateId,
     }: {
-      text: string;
+      data: TCommentFormSchema;
       votedCandidateId?: string;
       parentId: string;
       worldcupId: string;
     }) => {
       return replyCommentAction({
-        text,
+        data,
         votedCandidateId,
         parentId,
         worldcupId,
@@ -94,30 +127,22 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     },
   });
 
-  const handleReplyCommentSubmit = (parentId: string, replyText: string) => {
-    if (replyText.length <= 0) {
-      toast.error('최소 0자 이상이어야 합니다.');
-      return;
-    }
-    if (replyText.length > COMMENT_TEXT_MAX_LENGTH) {
-      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-      return;
-    }
-
+  const onReplyCommentSubmit = (data: TCommentFormSchema) => {
     replyCommentMutation.mutate({
-      text: replyText,
+      data,
       votedCandidateId: finalWinnerCandidateId,
-      parentId,
+      parentId: comment.parentId ?? comment.id,
       worldcupId,
     });
     setIsReplying(false);
+    setReplyTextValue('text', '');
   };
 
   return (
     <li key={comment.id}>
       <div className="flex justify-between">
         <div className="pt-2">
-          <OldAvatar profilePath={comment.profilePath} size="small" alt={comment.nickname} />
+          <NewAvatar profilePath={comment.profilePath} size="sm" alt={comment.nickname} />
         </div>
         <div className="w-full pl-2">
           <div className="mb-1">
@@ -142,45 +167,38 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
             </span>
           </div>
           {updateCommentId === comment.id ? (
-            <>
-              <TextArea
-                id="editText"
-                name="editText"
-                value={newText}
+            <form onSubmit={handleUpdateCommentSubmit(onSubmit)}>
+              <FormTextArea
+                id="newText"
+                {...registerNewText('text')}
                 className={`mb-1 p-2`}
-                onChange={(e) => setNewText(e.target.value)}
                 autoFocus
                 onFocus={(e) => {
-                  const temp = newText;
+                  const temp = getNewTextValues('text');
                   e.target.value = '';
                   e.target.value = temp;
                 }}
+                error={newTextErrors.text}
                 rows={2}
               />
+              <FormError error={newTextErrors.text?.message} />
               <div className="flex w-full justify-end">
-                <div className="flex w-[40%] gap-2">
-                  <OldButton
-                    type="button"
-                    size="small"
-                    onClick={() => {
-                      onUpdateCommentToggle(comment.id);
-                      setNewText(comment.text);
-                    }}
-                    variant="ghost"
-                  >
-                    취소
-                  </OldButton>
-                  <OldButton
-                    type="button"
-                    size="small"
-                    variant="primary"
-                    onClick={() => onUpdateCommentSubmit(comment.id, newText)}
-                  >
-                    확인
-                  </OldButton>
-                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    onUpdateCommentToggle(comment.id);
+                    setNewTextValue('text', comment.text);
+                  }}
+                  variant="ghost"
+                >
+                  취소
+                </Button>
+                <Button type="submit" size="sm" variant="primary">
+                  확인
+                </Button>
               </div>
-            </>
+            </form>
           ) : null}
           {updateCommentId !== comment.id ? (
             <div>
@@ -216,43 +234,33 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
             </button>
           ) : null}
           {isReplying ? (
-            <>
-              <TextArea
+            <form onSubmit={handleReplyCommentSubmit(onReplyCommentSubmit)}>
+              <FormTextArea
                 id="replyText"
-                name="replyText"
-                value={replyText}
+                {...registerReplyText('text')}
                 className={`mb-1 p-2`}
-                onChange={(e) => setReplyText(e.target.value)}
+                error={replyTextErrors.text}
                 rows={1}
                 autoFocus
               />
+              <FormError error={replyTextErrors.text?.message} />
               <div className="flex w-full justify-end">
-                <div className="flex w-[40%] gap-2">
-                  <OldButton
-                    type="button"
-                    size="small"
-                    onClick={() => {
-                      setReplyText('');
-                      setIsReplying(false);
-                    }}
-                    variant="ghost"
-                  >
-                    취소
-                  </OldButton>
-                  <OldButton
-                    type="button"
-                    size="small"
-                    variant="primary"
-                    onClick={() => {
-                      handleReplyCommentSubmit(comment.parentId ?? comment.id, replyText);
-                      setReplyText('');
-                    }}
-                  >
-                    확인
-                  </OldButton>
-                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setReplyText('');
+                    setIsReplying(false);
+                  }}
+                  variant="ghost"
+                >
+                  취소
+                </Button>
+                <Button type="submit" size="sm" variant="primary">
+                  확인
+                </Button>
               </div>
-            </>
+            </form>
           ) : null}
         </div>
         {comment.userId === userId ? (
@@ -298,9 +306,9 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                 />
               ))
             : null}
-          {!showReplies && fetchForNewReplyComment && !isLoadingReplies && replies && (
+          {!showReplies && fetchForNewReplyComment && !isLoadingReplies && replies && replies.length > 0 && (
             <Comment
-              key={replies[replies.length - 1].id}
+              key={replies.at(-1)?.id}
               comment={replies[replies.length - 1]}
               userId={userId}
               worldcupId={worldcupId}

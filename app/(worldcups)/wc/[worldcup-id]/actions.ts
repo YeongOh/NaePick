@@ -31,32 +31,25 @@ import {
   removeWorldcupFavourite,
   unlikeWorldcup,
 } from '@/app/lib/worldcup/service';
-
-export type CreateCommentState = {
-  errors?: {
-    text?: string[];
-  };
-  message?: string | null;
-  newComment?: Comment | null;
-};
+import { CommentFormSchema, TCommentFormSchema } from './types';
 
 export async function createCommentAction({
-  text,
+  data,
   worldcupId,
   votedCandidateId,
 }: {
   worldcupId: string;
-  text: string;
+  data: TCommentFormSchema;
   votedCandidateId?: string;
 }) {
-  const trimText = text.trim();
-  if (trimText.length === 0) throw new Error('댓글은 공백 제외 한 자 이상이어야합니다.');
-  if (trimText.length > COMMENT_TEXT_MAX_LENGTH)
-    throw new Error(`댓글은 ${COMMENT_TEXT_MAX_LENGTH} 이하여야합니다.`);
+  const validatedFields = CommentFormSchema.safeParse(data);
+  if (!validatedFields.success) throw new Error(validatedFields.error.issues[0].message);
 
   const session = await getSession();
   const userId = session?.userId;
+  if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
 
+  const trimText = data.text.trim();
   await createComment({
     worldcupId,
     userId,
@@ -67,24 +60,24 @@ export async function createCommentAction({
 
 export async function replyCommentAction({
   parentId,
-  text,
+  data,
   worldcupId,
   votedCandidateId,
 }: {
   parentId: string;
   worldcupId: string;
-  text: string;
+  data: TCommentFormSchema;
   votedCandidateId?: string;
 }) {
-  const trimText = text.trim();
-  if (trimText.length === 0) throw new Error('댓글은 공백 제외 한 자 이상이어야합니다.');
-  if (trimText.length > COMMENT_TEXT_MAX_LENGTH)
-    throw new Error(`댓글은 ${COMMENT_TEXT_MAX_LENGTH} 이하여야합니다.`);
+  const validatedFields = CommentFormSchema.safeParse(data);
+  if (!validatedFields.success) throw new Error(validatedFields.error.issues[0].message);
 
   const session = await getSession();
   const userId = session?.userId;
+  if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
 
-  const commentId = await replyComment({
+  const trimText = data.text.trim();
+  await replyComment({
     parentId,
     worldcupId,
     userId,
@@ -226,7 +219,7 @@ export async function getCommentCount(worldcupId: string) {
   }
 }
 
-export async function updateCommentAction(commentId: string, text: string) {
+export async function updateCommentAction(commentId: string, data: TCommentFormSchema) {
   const session = await getSession();
   if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
 
@@ -234,11 +227,10 @@ export async function updateCommentAction(commentId: string, text: string) {
   const isVerified = verifyCommentOwner(commentId, userId);
   if (!isVerified) throw new Error('댓글을 수정할 수 없습니다.');
 
-  const trimText = text.trim();
-  if (trimText.length === 0) throw new Error('댓글은 공백 제외 한 자 이상이어야합니다.');
-  if (trimText.length > COMMENT_TEXT_MAX_LENGTH)
-    throw new Error(`댓글은 ${COMMENT_TEXT_MAX_LENGTH} 이하여야합니다.`);
+  const validatedFields = CommentFormSchema.safeParse(data);
+  if (!validatedFields.success) throw new Error(validatedFields.error.issues[0].message);
 
+  const trimText = data.text.trim();
   await updateComment(commentId, trimText);
 }
 

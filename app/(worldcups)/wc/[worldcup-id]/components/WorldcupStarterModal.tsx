@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
+import NewAvatar from '@/app/components/ui/Avatar';
 import ExpandableText from '@/app/components/ui/ExpandableText';
-import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
 import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
@@ -51,10 +51,10 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
             >
               <div className="relative">
                 <div className="mb-2 flex items-center">
-                  <OldAvatar
+                  <NewAvatar
                     profilePath={profilePath}
                     className="mr-2"
-                    size="small"
+                    size="sm"
                     alt={nickname ? nickname : '탈퇴한 회원'}
                   />
                   <div>

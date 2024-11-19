@@ -3,11 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Star, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
-
+import NewAvatar from '@/app/components/ui/Avatar';
 import ExpandableText from '@/app/components/ui/ExpandableText';
-import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
 import dayjs from '@/app/utils/dayjs';
-
 import { getWorldcupLikes, isWorldcupFavourite } from '../actions';
 import useWorldcupFavouriteMutation from '../hooks/useWorldcupFavouriteMutation';
 import useWorldcupLikeMutation from '../hooks/useWorldcupLikeMutation';
@@ -78,10 +76,10 @@ export default function WorldcupFold({
   return (
     <>
       <div className="mb-1 flex items-center">
-        <OldAvatar
+        <NewAvatar
           profilePath={profilePath}
           className="mr-2"
-          size="medium"
+          size="md"
           alt={nickname ? nickname : '탈퇴한 회원'}
         />
         <div>

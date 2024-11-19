@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 
 interface Props {
   text: string;
@@ -7,33 +8,36 @@ interface Props {
 }
 
 export default function ExpandableText({ text, numberOfLines, className }: Props) {
-  const [showMore, setShowMore] = useState<boolean | null>(null);
+  const [hide, setHide] = useState<boolean | null>(null);
   const ref = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     if (ref.current && ref.current.clientHeight > numberOfLines * 20) {
-      setShowMore(false);
+      setHide(true);
     }
-  }, []);
+  }, [numberOfLines]);
 
   return (
     <>
       <p
         ref={ref}
-        className={`whitespace-pre-line text-base ${showMore === true ? 'line-clamp-none' : ''} ${
-          showMore === false ? `line-clamp-${numberOfLines}` : ''
-        } ${className}`}
+        className={clsx(
+          'whitespace-pre-line text-base',
+          `line-clamp-${numberOfLines}`,
+          !hide && 'line-clamp-none',
+          className,
+        )}
       >
         {text}
       </p>
-      {showMore !== null ? (
+      {hide !== null && (
         <button
           className="text-base text-gray-500 hover:text-gray-700 hover:underline"
-          onClick={() => setShowMore((prev) => !prev)}
+          onClick={() => setHide((prev) => !prev)}
         >
-          {showMore ? '간략히' : '자세히 보기'}
+          {hide ? '자세히 보기' : '간략히'}
         </button>
-      ) : null}
+      )}
     </>
   );
 }

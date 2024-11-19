@@ -7,7 +7,7 @@ import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import DeleteModal from '@/app/components/NewModal/DeleteModal';
-import NewAvatar from '@/app/components/ui/NewAvatar';
+import NewAvatar from '@/app/components/ui/Avatar';
 
 import { deleteProfileImage, getSignedUrlForProfileImage, updateUserProfilePathAction } from '../actions';
 

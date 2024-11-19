@@ -8,7 +8,7 @@ import {
   likeCommentAction,
   updateCommentAction,
 } from '../actions';
-import { WorldcupComment } from '../types';
+import { TCommentFormSchema, WorldcupComment } from '../types';
 
 interface Props {
   worldcupId: string;
@@ -19,16 +19,16 @@ export default function useCommentMutation({ worldcupId }: Props) {
 
   const createCommentMutation = useMutation({
     mutationFn: ({
-      text,
+      data,
       worldcupId,
       votedCandidateId,
     }: {
       worldcupId: string;
-      text: string;
+      data: TCommentFormSchema;
       votedCandidateId?: string;
     }) => {
       return createCommentAction({
-        text,
+        data,
         worldcupId,
         votedCandidateId,
       });
@@ -47,22 +47,23 @@ export default function useCommentMutation({ worldcupId }: Props) {
   const updateCommentMutation = useMutation({
     mutationFn: ({
       commentId,
-      newText,
+      data,
       parentId,
     }: {
       commentId: string;
-      newText: string;
+      data: TCommentFormSchema;
       parentId: string | null;
     }) => {
-      return updateCommentAction(commentId, newText);
+      return updateCommentAction(commentId, data);
     },
-    onMutate: async ({ commentId, newText, parentId }) => {
+    onMutate: async ({ commentId, data, parentId }) => {
+      const text = data.text.trim();
       if (parentId) {
         await queryClient.cancelQueries({ queryKey: ['replies', { parentId }] });
         const snapshot = queryClient.getQueryData(['replies', { parentId }]);
         queryClient.setQueryData(['replies', { parentId }], (old: WorldcupComment[]) =>
           old.map((comment) =>
-            comment.id === commentId ? { ...comment, text: newText, updatedAt: String(new Date()) } : comment,
+            comment.id === commentId ? { ...comment, text, updatedAt: String(new Date()) } : comment,
           ),
         );
         return { snapshot };
@@ -75,9 +76,7 @@ export default function useCommentMutation({ worldcupId }: Props) {
         (previous: InfiniteData<{ data: WorldcupComment[]; nextCursor: string }>) => {
           const newPages = previous.pages.map((page) => {
             const newData = page.data.map((comment: any) =>
-              comment.id === commentId
-                ? { ...comment, text: newText, updatedAt: String(new Date()) }
-                : comment,
+              comment.id === commentId ? { ...comment, text, updatedAt: String(new Date()) } : comment,
             );
             return { ...page, data: newData };
           });

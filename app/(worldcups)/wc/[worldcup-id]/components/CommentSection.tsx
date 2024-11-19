@@ -1,34 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { InferSelectModel } from 'drizzle-orm';
 import { Pencil } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
-
 import DeleteModal from '@/app/components/NewModal/DeleteModal';
-import InputErrorMessage from '@/app/components/ui/input-error-message';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
+import Button from '@/app/components/ui/Button';
+import FormError from '@/app/components/ui/FormError';
+import FormTextArea from '@/app/components/ui/FormTextArea';
 import Spinner from '@/app/components/ui/oldSpinner';
-import TextArea from '@/app/components/ui/textarea';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { comments } from '@/app/lib/database/schema';
 import { useDropdown } from '@/hooks/useDropdown';
-
 import Comment from './Comment';
 import { getComments, getCommentCount } from '../actions';
 import useCommentMutation from '../hooks/useCommentMutation';
-
-export type CommentModel = InferSelectModel<typeof comments> & {
-  nickname: string | null;
-  profilePath: string | null;
-  voted: string | null;
-  likeCount: number;
-  replyCount?: number;
-  isLiked?: string | null;
-};
+import { CommentFormSchema, TCommentFormSchema } from '../types';
 
 interface Props {
   worldcupId: string;
@@ -48,12 +37,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     initialPageParam: '',
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
   });
-  const { createCommentMutation, updateCommentMutation, deleteCommentMutation, likeCommentMutation } =
-    useCommentMutation({
-      worldcupId,
-    });
+  const { createCommentMutation, deleteCommentMutation, likeCommentMutation } = useCommentMutation({
+    worldcupId,
+  });
   const { toggleDropdown } = useDropdown();
-  const [text, setText] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<{
     commentId: string;
     parentId: string | null;
@@ -61,6 +48,13 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const [updateCommentId, setUpdateCommentId] = useState<string | null>(null);
   const { ref, inView } = useInView({
     threshold: 0.5,
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<TCommentFormSchema>({
+    resolver: zodResolver(CommentFormSchema),
   });
   const comments = data?.pages.flatMap((page) => page?.data) || [];
 
@@ -70,19 +64,8 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     }
   }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
 
-  const handleCommentFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (text.trim().length <= 0) {
-      toast.error('최소 0자 이상이어야 합니다.');
-      return;
-    }
-    if (text.trim().length > COMMENT_TEXT_MAX_LENGTH) {
-      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-      return;
-    }
-
-    createCommentMutation.mutate({ text, worldcupId, votedCandidateId: finalWinnerCandidateId });
-    setText('');
+  const onCommentFormSubmit = async (data: TCommentFormSchema) => {
+    await createCommentMutation.mutate({ data, worldcupId, votedCandidateId: finalWinnerCandidateId });
   };
 
   const handleDeleteComment = async () => {
@@ -114,20 +97,6 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     }
   };
 
-  const handleUpdateCommentSubmit = async (id: string, newText: string, parentId: string | null) => {
-    if (newText.trim().length <= 0) {
-      toast.error('최소 0자 이상이어야 합니다.');
-      return;
-    }
-    if (newText.trim().length > COMMENT_TEXT_MAX_LENGTH) {
-      toast.error(`최소 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`);
-      return;
-    }
-
-    updateCommentMutation.mutate({ commentId: id, newText, parentId });
-    setUpdateCommentId(null);
-  };
-
   const handleLikeComment = async (commentId: string, like: boolean, parentId: string | null) => {
     if (!userId) {
       toast.error('로그인이 필요합니다!');
@@ -145,28 +114,25 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
             ? `댓글 ${commentCount}개`
             : `댓글을 남겨주세요.`}
       </div>
-      <form onSubmit={handleCommentFormSubmit}>
-        <TextArea
+      <form onSubmit={handleSubmit(onCommentFormSubmit)}>
+        <FormTextArea
           id="text"
-          name="text"
-          value={text}
-          error={createCommentMutation.isError}
+          {...register('text')}
+          error={errors?.text}
           className={`mb-1 p-2`}
-          onChange={(e) => setText(e.target.value)}
           placeholder="댓글 내용"
           rows={2}
         />
-        <InputErrorMessage
-          className="mb-1"
-          errors={createCommentMutation.error?.message ? [createCommentMutation.error?.message] : undefined}
-        />
-        <OldButton
+        <FormError className="mb-1" error={errors.text?.message || createCommentMutation.error?.message} />
+        <Button
+          className="mb-4 mt-1 flex w-full items-center justify-center gap-1 text-sm lg:text-base"
           variant="primary"
-          className="mb-4 mt-1 flex items-center justify-center gap-1 text-sm lg:text-base"
+          size="md"
+          pending={isSubmitting}
         >
           <Pencil color="#FFFFFF" size="1.2rem" />
           댓글 추가하기
-        </OldButton>
+        </Button>
       </form>
       {createCommentMutation.isPending ? (
         <div className="relative flex items-center justify-center">
@@ -185,9 +151,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
               finalWinnerCandidateId={finalWinnerCandidateId}
               onLikeComment={(id, like) => handleLikeComment(id, like, id === comment.id ? null : comment.id)}
               onUpdateCommentToggle={(id) => handleUpdateCommentToggle(id)}
-              onUpdateCommentSubmit={(id, newText) =>
-                handleUpdateCommentSubmit(id, newText, id === comment.id ? null : comment.id)
-              }
+              onUpdateCommentSubmit={() => setUpdateCommentId(null)}
               onOpenDeleteCommentModal={(id) =>
                 handleDeleteCommentModal({ commentId: id, parentId: id === comment.id ? null : comment.id })
               }

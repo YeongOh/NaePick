@@ -2,7 +2,7 @@
 
 import NavbarDropdownMenu from './navbar-dropdown-menu';
 import { useDropdown } from '../../../hooks/useDropdown';
-import OldAvatar from '../ui/OldAvatar/OldAvatar';
+import NewAvatar from '../ui/Avatar';
 
 interface Props {
   profilePath: string | null;
@@ -21,7 +21,7 @@ export default function NavbarProfileImage({ profilePath, nickname, userId, emai
         className="dropdown-menu-toggle rounded-full font-normal hover:outline hover:outline-primary-500 active:outline-primary-700"
         onClick={() => toggleDropdown('avatar-dropdown')}
       >
-        <OldAvatar profilePath={profilePath} alt={nickname} size="small" />
+        <NewAvatar profilePath={profilePath} alt={nickname} size="sm" />
       </button>
       <NavbarDropdownMenu
         open={dropdownId === 'avatar-dropdown'}

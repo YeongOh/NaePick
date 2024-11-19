@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { signout } from '@/app/(auth)/auth/signout/actions';
 
 import { useDropdown } from '../../../hooks/useDropdown';
-import OldAvatar from '../ui/OldAvatar/OldAvatar';
+import NewAvatar from '../ui/Avatar';
 
 interface Props {
   open: boolean;
@@ -31,7 +31,7 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
               className="dropdown-button group my-0.5 flex items-center gap-2 rounded border-b p-2 hover:bg-primary-100 active:bg-primary-200"
               onClick={handleToggleDropdown}
             >
-              <OldAvatar profilePath={profilePath} alt={nickname} size="small" />
+              <NewAvatar profilePath={profilePath} alt={nickname} size="sm" />
               <div className="flex flex-col gap-1 pl-1">
                 <div>{nickname}</div>
                 <div className="text-sm font-normal">{email}</div>
