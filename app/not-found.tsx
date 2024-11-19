@@ -1,4 +1,4 @@
-import Navbar from './components/navbar/navbar';
+import Navbar from './components/oldNavbar/navbar';
 import LinkButton from './components/ui/link-button';
 
 export default function NotFound() {

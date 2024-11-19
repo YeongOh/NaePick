@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 
-import CardGridPagination from '@/app/components/card/card-grid-pagination';
-import Navbar from '@/app/components/navbar/navbar';
+import CardGridPagination from '@/app/components/oldCard/card-grid-pagination';
+import Navbar from '@/app/components/oldNavbar/navbar';
 import LinkButton from '@/app/components/ui/link-button';
 import { getSession } from '@/app/lib/session';
 

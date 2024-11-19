@@ -7,8 +7,8 @@ import { ChevronLeft, ChevronRight, Globe, RotateCcw, Share } from 'lucide-react
 import { useRouter } from 'next/navigation';
 
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
-import Media from '@/app/components/media';
-import ShareWorldcupModal from '@/app/components/modal/share-worldcup-modal';
+import Media from '@/app/components/oldMedia';
+import ShareWorldcupModal from '@/app/components/oldModal/share-worldcup-modal';
 import Pagination from '@/app/components/pagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 import LinkButton from '@/app/components/ui/link-button';

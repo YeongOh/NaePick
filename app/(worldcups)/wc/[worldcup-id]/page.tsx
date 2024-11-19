@@ -2,7 +2,7 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 
 import WorldcupStarter from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupStarter';
-import Navbar from '@/app/components/navbar/navbar';
+import Navbar from '@/app/components/oldNavbar/navbar';
 import { getSession } from '@/app/lib/session';
 import { getWorldcup } from '@/app/lib/worldcup/service';
 

@@ -6,7 +6,7 @@ import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import Button from '@/app/components/ui/Button';
-import Spinner from '@/app/components/ui/spinner';
+import Spinner from '@/app/components/ui/oldSpinner';
 
 import { deleteCandidateObject, getSignedUrlForCandidateImage } from '../actions';
 import { updateCandidateAction } from '../actions';

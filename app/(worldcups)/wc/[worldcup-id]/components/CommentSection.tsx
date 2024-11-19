@@ -11,7 +11,7 @@ import { useInView } from 'react-intersection-observer';
 import DeleteModal from '@/app/components/NewModal/DeleteModal';
 import InputErrorMessage from '@/app/components/ui/input-error-message';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
-import Spinner from '@/app/components/ui/spinner';
+import Spinner from '@/app/components/ui/oldSpinner';
 import TextArea from '@/app/components/ui/textarea';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { comments } from '@/app/lib/database/schema';

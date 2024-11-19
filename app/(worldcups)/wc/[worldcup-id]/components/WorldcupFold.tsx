@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Star, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+import ExpandableText from '@/app/components/ui/ExpandableText';
 import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
-import ToggleableP from '@/app/components/ui/toggleable-p';
 import dayjs from '@/app/utils/dayjs';
 
 import { getWorldcupLikes, isWorldcupFavourite } from '../actions';
@@ -96,7 +96,7 @@ export default function WorldcupFold({
       </div>
 
       <div className="mb-5">
-        <ToggleableP
+        <ExpandableText
           className="w-full text-slate-700"
           numberOfLines={6}
           text={description ? description : ''}

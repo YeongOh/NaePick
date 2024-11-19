@@ -8,8 +8,8 @@ import { useInView } from 'react-intersection-observer';
 import { getPopularWorldcups } from '@/app/(search)/action';
 
 import MainNav from './main-nav';
-import CardGrid from '../card/card-grid';
-import CardGridEmpty from '../card/card-grid-empty';
+import CardGrid from '../oldCard/card-grid';
+import CardGridEmpty from '../oldCard/card-grid-empty';
 
 interface Cursor {
   matchCount: number;

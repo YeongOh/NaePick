@@ -1,17 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
-
+import ExpandableText from '@/app/components/ui/ExpandableText';
 import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
-import ToggleableP from '@/app/components/ui/toggleable-p';
 import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
-
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getNumberOfRoundsAvailable } from '../utils';
 
@@ -77,7 +74,7 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
                   <X size={'1.2rem'} />
                 </button>
                 <div className="mb-2">
-                  <ToggleableP
+                  <ExpandableText
                     className={'w-full text-slate-700'}
                     text={description ? description : ''}
                     numberOfLines={5}

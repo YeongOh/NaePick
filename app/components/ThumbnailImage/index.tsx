@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import MyImage from '@/app/components/ui/my-image';
+import MyImage from '@/app/components/ui/MyImage';
 import { getYoutubeThumbnailURL } from '@/app/lib/videos/youtube';
 import { mp4toJpg } from '@/app/utils';
 

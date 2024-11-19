@@ -6,7 +6,7 @@ interface Props {
   className?: string;
 }
 
-export default function ToggleableP({ text, numberOfLines, className }: Props) {
+export default function ExpandableText({ text, numberOfLines, className }: Props) {
   const [showMore, setShowMore] = useState<boolean | null>(null);
   const ref = useRef<HTMLParagraphElement>(null);
 

@@ -11,14 +11,14 @@ import {
   deleteCandidateObject,
   updateCandidateNamesAction,
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
-import Media from '@/app/components/media';
 import DeleteModal from '@/app/components/NewModal/DeleteModal';
+import Media from '@/app/components/oldMedia';
 import Pagination from '@/app/components/pagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 import Button from '@/app/components/ui/Button';
 import FormError from '@/app/components/ui/FormError';
 import LinkButton from '@/app/components/ui/link-button';
-import Spinner from '@/app/components/ui/spinner';
+import Spinner from '@/app/components/ui/oldSpinner';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
 import EditImageButton from './EditImageButton';

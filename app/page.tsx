@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 
 import { getPopularWorldcups } from './(search)/action';
-import Main from './components/main';
-import Navbar from './components/navbar/navbar';
+import Main from './components/oldMain';
+import Navbar from './components/oldNavbar/navbar';
 
 export default async function Home() {
   const result = await getPopularWorldcups({ cursor: null });

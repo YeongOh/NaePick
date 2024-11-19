@@ -37,7 +37,7 @@ export default function SigninForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="absolute top-1/4 flex w-full flex-col rounded-md">
+    <form onSubmit={handleSubmit(onSubmit)} className="absolute top-1/4 flex w-full flex-col">
       <Link href="/" className="m-4 text-center text-5xl font-extrabold text-primary-500">
         NaePick
       </Link>

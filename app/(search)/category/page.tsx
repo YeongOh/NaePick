@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import MyImage from '@/app/components/ui/my-image';
+import MyImage from '@/app/components/ui/MyImage';
 import { getCategoriesForSearch } from '@/app/lib/category/service';
 import { translateCategory } from '@/app/lib/types';
 

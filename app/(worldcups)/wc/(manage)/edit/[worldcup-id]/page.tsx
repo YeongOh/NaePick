@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 
-import Navbar from '@/app/components/navbar/navbar';
+import Navbar from '@/app/components/oldNavbar/navbar';
 import { getCategories } from '@/app/lib/category/service';
 import { getSession } from '@/app/lib/session';
 import { getWorldcupForm } from '@/app/lib/worldcup/service';

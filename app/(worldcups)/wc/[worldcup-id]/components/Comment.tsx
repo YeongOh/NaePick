@@ -6,11 +6,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+import ExpandableText from '@/app/components/ui/ExpandableText';
 import OldAvatar from '@/app/components/ui/OldAvatar/OldAvatar';
 import OldButton from '@/app/components/ui/OldButton/OldButton';
-import Spinner from '@/app/components/ui/spinner';
+import Spinner from '@/app/components/ui/oldSpinner';
 import TextArea from '@/app/components/ui/textarea';
-import ToggleableP from '@/app/components/ui/toggleable-p';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
 import { useDropdown } from '@/hooks/useDropdown';
@@ -184,7 +184,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           ) : null}
           {updateCommentId !== comment.id ? (
             <div>
-              <ToggleableP className={'text-slate-700 lg:mb-1'} text={comment.text} numberOfLines={3} />
+              <ExpandableText className={'text-slate-700 lg:mb-1'} text={comment.text} numberOfLines={3} />
               <div className="flex -translate-x-1.5 items-center gap-1">
                 <button
                   onClick={() => {
