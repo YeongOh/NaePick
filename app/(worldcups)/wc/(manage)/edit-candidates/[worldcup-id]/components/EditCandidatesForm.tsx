@@ -13,12 +13,12 @@ import {
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
 import DeleteModal from '@/app/components/NewModal/DeleteModal';
 import Media from '@/app/components/oldMedia';
-import Pagination from '@/app/components/pagination';
+import OldPagination from '@/app/components/oldPagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
 import Button from '@/app/components/ui/Button';
 import FormError from '@/app/components/ui/FormError';
-import LinkButton from '@/app/components/ui/link-button';
-import Spinner from '@/app/components/ui/oldSpinner';
+import LinkButton from '@/app/components/ui/LinkButton';
+import Spinner from '@/app/components/ui/Spinner';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
 import EditImageButton from './EditImageButton';
@@ -225,7 +225,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
         </ul>
         {totalPages > 0 ? (
           <div className="overflow-hidden rounded-bl rounded-br">
-            <Pagination
+            <OldPagination
               className="bg-gray-50"
               totalPages={totalPages}
               currentPageNumber={page}

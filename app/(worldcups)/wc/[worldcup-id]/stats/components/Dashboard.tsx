@@ -7,12 +7,12 @@ import { ChevronLeft, ChevronRight, Globe, RotateCcw, Share } from 'lucide-react
 import { useRouter } from 'next/navigation';
 
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
+import ShareWorldcupModal from '@/app/components/NewModal/ShareWorldcupModal';
 import Media from '@/app/components/oldMedia';
-import ShareWorldcupModal from '@/app/components/oldModal/share-worldcup-modal';
-import Pagination from '@/app/components/pagination';
+import OldPagination from '@/app/components/oldPagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
-import LinkButton from '@/app/components/ui/link-button';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
+import Button from '@/app/components/ui/Button';
+import LinkButton from '@/app/components/ui/LinkButton';
 import { worldcups } from '@/app/lib/database/schema';
 
 import DashboardRankingChart from './DashboardRankingChart';
@@ -63,7 +63,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             page={page}
           />
           <div className="overflow-hidden rounded-bl rounded-br">
-            <Pagination
+            <OldPagination
               className="bg-white"
               totalPages={totalPages}
               currentPageNumber={page}
@@ -160,23 +160,18 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
       </section>
       <section className="flex-col overflow-y-scroll bg-white p-3 lg:h-full lg:w-1/4 lg:flex-grow-0 lg:p-8">
         <div className="mb-4 flex gap-1">
-          <LinkButton
-            className="flex items-center justify-center gap-1 text-sm lg:text-base"
-            href={`/`}
-            variant="primary"
-            size="small"
-          >
+          <LinkButton className="w-full text-sm lg:text-base" href={`/`} variant="primary" size="sm">
             <Globe size="1.2rem" />새 월드컵 찾기
           </LinkButton>
-          <OldButton
-            className="flex items-center justify-center gap-1 text-sm lg:text-base"
+          <Button
+            className="w-full text-sm lg:text-base"
             variant="outline"
-            size="small"
+            size="sm"
             onClick={() => setShareWorldcupModal(true)}
           >
             <Share color="#000000" size="1.2rem" />
             공유 하기
-          </OldButton>
+          </Button>
           <ShareWorldcupModal
             open={shareWorldcupModal}
             onClose={() => setShareWorldcupModal(false)}
@@ -186,8 +181,8 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           <LinkButton
             href={`/wc/${worldcup.id}`}
             variant="ghost"
-            size="small"
-            className="flex items-center justify-center gap-1 text-sm lg:text-base"
+            size="sm"
+            className="w-full text-sm lg:text-base"
           >
             <RotateCcw color="#334155" size="1.2rem" />
             다시 하기

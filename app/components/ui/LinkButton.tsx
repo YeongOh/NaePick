@@ -1,20 +1,28 @@
 import clsx from 'clsx';
-import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  href: string;
   className?: string;
   variant: 'primary' | 'outline' | 'ghost' | 'delete';
   pending?: boolean;
-  onClick?: () => void;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'icon';
 }
 
-export default function Button({ className, variant, children, pending, size = 'md', ...props }: Props) {
+export default function LinkButton({
+  className = '',
+  variant,
+  children,
+  role,
+  href,
+  size = 'md',
+  ...props
+}: Props) {
   return (
-    <button
+    <Link
       {...props}
-      disabled={props.disabled || pending}
+      href={href}
       className={clsx(
         'inline-flex items-center justify-center gap-1 rounded text-base font-semibold',
 
@@ -31,17 +39,10 @@ export default function Button({ className, variant, children, pending, size = '
         variant === 'delete' &&
           'border bg-red-500 text-white transition-colors hover:bg-red-600 active:bg-red-700',
 
-        pending && 'opacity-50',
         className,
       )}
     >
-      {pending ? (
-        <>
-          <Loader2 className="animate-spin" /> 처리 중입니다
-        </>
-      ) : (
-        children
-      )}
-    </button>
+      {children}
+    </Link>
   );
 }

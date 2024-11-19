@@ -4,7 +4,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { IoLogoYoutube } from 'react-icons/io';
 import Button from '@/app/components/ui/Button';
-import Spinner from '@/app/components/ui/oldSpinner';
+import Spinner from '@/app/components/ui/Spinner';
 import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
 import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
 import { extractYoutubeId } from '@/app/lib/videos/youtube';

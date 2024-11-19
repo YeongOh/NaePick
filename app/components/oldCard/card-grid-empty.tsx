@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation';
 
-import LinkButton from '../ui/link-button';
-import OldButton from '../ui/OldButton/OldButton';
+import Button from '../ui/Button';
+import LinkButton from '../ui/LinkButton';
 
 export default function CardGridEmpty() {
   const router = useRouter();
@@ -14,12 +14,12 @@ export default function CardGridEmpty() {
         </p>
         <div className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">직접 만들어 보세요!</div>
         <div className="flex w-48 flex-col">
-          <LinkButton href="/wc/create" variant="primary" size="medium" className="mb-2">
+          <LinkButton href="/wc/create" variant="primary" size="md" className="mb-2 w-full">
             이상형 월드컵 만들기{' '}
           </LinkButton>
-          <OldButton onClick={() => router.back()} variant="outline" size="medium">
+          <Button onClick={() => router.back()} variant="outline" size="md" className="w-full">
             돌아가기
-          </OldButton>
+          </Button>
         </div>
       </div>
     </div>

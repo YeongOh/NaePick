@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import CardGridPagination from '@/app/components/oldCard/card-grid-pagination';
 import Navbar from '@/app/components/oldNavbar/navbar';
-import LinkButton from '@/app/components/ui/link-button';
+import LinkButton from '@/app/components/ui/LinkButton';
 import { getSession } from '@/app/lib/session';
 
 import { getMyWorldcups } from './actions';
@@ -47,10 +47,10 @@ export default async function Page({ params, searchParams }: Props) {
               이상형 월드컵을 만들어보세요.
             </div>
             <div className="flex w-36 flex-col items-center justify-center">
-              <LinkButton href="/wc/create" variant="primary" size="medium" className="my-2">
+              <LinkButton href="/wc/create" variant="primary" size="md" className="my-2">
                 만들기
               </LinkButton>
-              <LinkButton href="/" variant="outline" size="medium">
+              <LinkButton href="/" variant="outline" size="md">
                 돌아가기
               </LinkButton>
             </div>

@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { TCard } from '@/app/lib/types';
 
 import Card from './card';
-import Pagination from '../pagination';
+import OldPagination from '../oldPagination';
 
 interface Props {
   count: number;
@@ -48,7 +48,7 @@ export default function CardGridPagination({ worldcups, extended, page, userId, 
       </ul>
 
       <div className="mt-6">
-        <Pagination
+        <OldPagination
           totalPages={totalPages}
           currentPageNumber={page}
           range={2}

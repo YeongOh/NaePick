@@ -6,7 +6,7 @@ import { EllipsisVertical } from 'lucide-react';
 
 import CardDropdownMenu from './card-dropdown-menu';
 import { useDropdown } from '../../../hooks/useDropdown';
-import ShareWorldcupModal from '../oldModal/share-worldcup-modal';
+import ShareWorldcupModal from '../NewModal/ShareWorldcupModal';
 
 interface Props {
   worldcupId: string;

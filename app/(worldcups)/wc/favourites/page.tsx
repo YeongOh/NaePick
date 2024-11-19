@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import CardGridPagination from '@/app/components/oldCard/card-grid-pagination';
 import Navbar from '@/app/components/oldNavbar/navbar';
-import LinkButton from '@/app/components/ui/link-button';
+import LinkButton from '@/app/components/ui/LinkButton';
 import { getSession } from '@/app/lib/session';
 
 import { getMyWorldcupFavourites } from './actions';
@@ -37,7 +37,7 @@ export default async function Page({ searchParams }: Props) {
             </p>
             <div className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">둘러보세요!</div>
             <div className="flex w-36 flex-col items-center justify-center">
-              <LinkButton href="/" variant="primary" size="medium" className="my-2">
+              <LinkButton href="/" variant="primary" size="md" className="my-2">
                 둘러보기
               </LinkButton>
             </div>

@@ -1,5 +1,5 @@
 import Navbar from './components/oldNavbar/navbar';
-import LinkButton from './components/ui/link-button';
+import LinkButton from './components/ui/LinkButton';
 
 export default function NotFound() {
   return (
@@ -18,7 +18,7 @@ export default function NotFound() {
               홈으로 돌아가시겠습니까?
             </div>
             <div className="my-4 flex w-24 items-center justify-center">
-              <LinkButton href="/" variant="primary" size="large">
+              <LinkButton href="/" variant="primary" size="md">
                 돌아가기
               </LinkButton>
             </div>

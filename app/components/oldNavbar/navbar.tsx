@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { getSession } from '@/app/lib/session';
 
 import NavbarProfileImage from './navbar-profile-image';
-import LinkButton from '../ui/link-button';
+import LinkButton from '../ui/LinkButton';
 
 interface Props {
   screenMode?: boolean;
@@ -41,7 +41,7 @@ export default async function Navbar({ screenMode }: Props) {
               className={screenMode ? 'text-slate-300' : ''}
               href={`/wc/create`}
               variant={session?.userId ? 'primary' : 'ghost'}
-              size="small"
+              size="sm"
             >
               이상형 월드컵 만들기
             </LinkButton>
@@ -58,7 +58,7 @@ export default async function Navbar({ screenMode }: Props) {
           ) : (
             <>
               <div className="flex w-16 lg:w-24">
-                <LinkButton href={`/auth/login`} variant="primary" size="small">
+                <LinkButton href={`/auth/login`} variant="primary" size="sm">
                   로그인
                 </LinkButton>
               </div>

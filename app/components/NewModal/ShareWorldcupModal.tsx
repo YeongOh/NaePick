@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 
 import { DOMAIN } from '@/app/constants';
+import Button from '../ui/Button';
 
 interface Props {
   open: boolean;
@@ -53,12 +54,14 @@ export default function ShareWorldcupModal({ open, title, onClose, worldcupId }:
                     defaultValue={`${DOMAIN}/wc/${worldcupId}`}
                     readOnly
                   />
-                  <button
+                  <Button
                     onClick={handleCopyShareLInk}
-                    className="absolute right-2 top-2 rounded bg-primary-500 px-4 py-2 text-white transition-colors hover:bg-primary-600 active:bg-primary-700"
+                    variant="primary"
+                    size="sm"
+                    className="absolute right-2 top-2"
                   >
                     복사
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

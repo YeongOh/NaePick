@@ -9,7 +9,7 @@ import Button from '@/app/components/ui/Button';
 import FormError from '@/app/components/ui/FormError';
 import FormInput from '@/app/components/ui/FormInput';
 import FormTextArea from '@/app/components/ui/FormTextArea';
-import LinkButton from '@/app/components/ui/link-button';
+import LinkButton from '@/app/components/ui/LinkButton';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,

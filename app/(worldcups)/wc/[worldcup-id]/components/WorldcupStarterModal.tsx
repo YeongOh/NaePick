@@ -5,8 +5,8 @@ import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import NewAvatar from '@/app/components/ui/Avatar';
+import Button from '@/app/components/ui/Button';
 import ExpandableText from '@/app/components/ui/ExpandableText';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
 import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
@@ -106,17 +106,19 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
                   )}
                 </select>
                 {notEnoughCandidates ? (
-                  <OldButton variant="outline" aria-label="Go back" role="link" onClick={() => router.back()}>
-                    돌아가기
-                  </OldButton>
-                ) : (
-                  <OldButton
-                    variant="primary"
-                    onClick={handleRoundSubmit}
-                    className="flex items-center justify-center gap-1"
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    aria-label="Go back"
+                    role="link"
+                    onClick={() => router.back()}
                   >
+                    돌아가기
+                  </Button>
+                ) : (
+                  <Button variant="primary" className="w-full" onClick={handleRoundSubmit}>
                     시작
-                  </OldButton>
+                  </Button>
                 )}
               </div>
             </div>

@@ -6,9 +6,9 @@ import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
-import ShareWorldcupModal from '@/app/components/oldModal/share-worldcup-modal';
-import LinkButton from '@/app/components/ui/link-button';
-import OldButton from '@/app/components/ui/OldButton/OldButton';
+import ShareWorldcupModal from '@/app/components/NewModal/ShareWorldcupModal';
+import Button from '@/app/components/ui/Button';
+import LinkButton from '@/app/components/ui/LinkButton';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 
 import CommentSection from './CommentSection';
@@ -73,37 +73,31 @@ export default function WorldcupStarter() {
             <div className="mb-4 flex gap-1">
               <LinkButton
                 href={`/wc/${worldcup.id}/stats`}
-                className="flex items-center justify-center gap-1 text-sm lg:text-base"
+                className="w-full text-sm lg:text-base"
                 variant="primary"
-                size="small"
+                size="sm"
               >
                 <ChartNoAxesColumnDecreasing size="1.2rem" color="#FFFFFF" />
                 랭킹 보기
               </LinkButton>
-              <OldButton
-                className="flex items-center justify-center gap-1 text-sm lg:text-base"
+              <Button
+                className="w-full text-sm lg:text-base"
                 variant="outline"
-                size="small"
+                size="sm"
                 onClick={() => setShareWorldcupModal(true)}
               >
                 <Share color="#000000" size="1.2rem" />
                 공유 하기
-              </OldButton>
-              <ShareWorldcupModal
-                open={shareWorldcupModal}
-                onClose={() => setShareWorldcupModal(false)}
-                title={worldcup.title}
-                worldcupId={worldcup.id}
-              />
-              <OldButton
+              </Button>
+              <Button
                 onClick={handleWorldcupRestart}
                 variant="ghost"
-                size="small"
-                className="flex items-center justify-center gap-1 text-sm lg:text-base"
+                size="sm"
+                className="w-full text-sm lg:text-base"
               >
                 <RotateCcw color="#334155" size="1.2rem" />
                 다시 하기
-              </OldButton>
+              </Button>
             </div>
             <WorldcupFold
               nickname={worldcup.nickname}
@@ -122,6 +116,12 @@ export default function WorldcupStarter() {
           />
         </div>
       ) : null}
+      <ShareWorldcupModal
+        open={shareWorldcupModal}
+        onClose={() => setShareWorldcupModal(false)}
+        title={worldcup.title}
+        worldcupId={worldcup.id}
+      />
     </div>
   );
 }
