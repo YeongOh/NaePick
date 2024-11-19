@@ -1,7 +1,6 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { z } from 'zod';
 
 import { findUserWithEmail } from '@/app/lib/auth/service';
 import { verifyPassword } from '@/app/lib/auth/utils';

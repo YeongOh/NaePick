@@ -15,7 +15,7 @@ import FormInput from '@/app/components/ui/FormInput';
 
 import { deleteAccountAction, editUserAction } from '../actions';
 import { EditFormSchema, TEditFormSchema } from '../types';
-import EditAvatar from './EditProfile';
+import EditAvatar from './EditAvatar';
 import { signout } from '../../signout/actions';
 
 interface Props {
@@ -55,6 +55,8 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
       setError('nickname', { type: 'server', message: errors.nickname });
     } else if ('server' in errors) {
       toast.error(errors.server);
+    } else {
+      toast.error('예기치 못한 오류가 발생했습니다.');
     }
   };
 

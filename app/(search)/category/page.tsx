@@ -4,7 +4,7 @@ import MyImage from '@/app/components/ui/my-image';
 import { getCategoriesForSearch } from '@/app/lib/category/service';
 import { translateCategory } from '@/app/lib/types';
 
-import CategoryLink from './components/CategoryLinks';
+import CategoryLink from './components/CategoryLink';
 
 export default async function Page() {
   const categories = await getCategoriesForSearch();

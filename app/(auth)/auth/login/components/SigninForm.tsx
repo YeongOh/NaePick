@@ -31,6 +31,8 @@ export default function SigninForm() {
       setError('password', { type: 'server', message: errors.password });
     } else if ('server' in errors) {
       toast.error(errors.server);
+    } else {
+      toast.error('예기치 못한 오류가 발생했습니다.');
     }
   };
 

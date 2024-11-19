@@ -20,8 +20,8 @@ export default function Button({ className, variant, children, pending, size = '
       className={clsx(
         'inline-flex items-center justify-center gap-1 rounded text-base font-semibold',
 
-        size === 'sm' && 'h-9 px-1',
-        size === 'md' && 'h-10 px-2',
+        size === 'sm' && 'h-9 rounded-md px-3 py-2',
+        size === 'md' && 'h-10 rounded-md px-4 py-2',
         size === 'icon' && 'h-10 w-10',
 
         variant === 'primary' &&
