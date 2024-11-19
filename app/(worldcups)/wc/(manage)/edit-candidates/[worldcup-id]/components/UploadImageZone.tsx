@@ -1,15 +1,12 @@
 'use client';
 
 import { Dispatch, SetStateAction, useCallback } from 'react';
-
 import { ImageUp, Info } from 'lucide-react';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
-
-import { excludeFileExtension } from '@/app/utils';
-
-import { createCandidateAction, getSignedUrlForCandidateImage } from '../actions';
 import { CANDIDATE_NAME_MAX_LENGTH } from '@/app/constants';
+import { excludeFileExtension } from '@/app/utils';
+import { createCandidateAction, getSignedUrlForCandidateImage } from '../actions';
 
 interface Props {
   worldcupId: string;
@@ -69,7 +66,7 @@ export default function UploadImageZone({ worldcupId, isLoading, setIsLoading }:
         });
       }
     },
-    [isLoading, worldcupId],
+    [isLoading, worldcupId, setIsLoading],
   );
 
   const onError = (error: Error) => {

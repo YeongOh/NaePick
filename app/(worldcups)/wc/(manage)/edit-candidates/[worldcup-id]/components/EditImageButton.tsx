@@ -5,11 +5,11 @@ import { useCallback, useState } from 'react';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
+import Button from '@/app/components/ui/Button';
 import Spinner from '@/app/components/ui/spinner';
 
 import { deleteCandidateObject, getSignedUrlForCandidateImage } from '../actions';
 import { updateCandidateAction } from '../actions';
-import Button from '@/app/components/ui/Button';
 
 interface Props {
   originalPath: string;

@@ -1,14 +1,16 @@
-import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
+'use client';
+
 import { Dispatch, SetStateAction, useState } from 'react';
+import { Info } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { createCandidateAction } from '../actions';
-import { extractYoutubeId, fetchYoutubeTitle } from '@/app/lib/videos/youtube';
-import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
 import { IoLogoYoutube } from 'react-icons/io';
 import { SiImgur } from 'react-icons/si';
-import { Info } from 'lucide-react';
-import { CHZZK_THUMBNAIL_URL } from '@/app/constants';
 import Button from '@/app/components/ui/Button';
+import { CHZZK_THUMBNAIL_URL } from '@/app/constants';
+import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
+import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
+import { extractYoutubeId, fetchYoutubeTitle } from '@/app/lib/videos/youtube';
+import { createCandidateAction } from '../actions';
 
 interface Props {
   worldcupId: string;

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-
+import { zodResolver } from '@hookform/resolvers/zod';
+import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
+import { useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
 import {
   deleteCandidateAction,
   deleteCandidateObject,
@@ -14,22 +15,18 @@ import Media from '@/app/components/media';
 import DeleteModal from '@/app/components/NewModal/DeleteModal';
 import Pagination from '@/app/components/pagination';
 import ThumbnailImage from '@/app/components/ThumbnailImage';
+import Button from '@/app/components/ui/Button';
+import FormError from '@/app/components/ui/FormError';
 import LinkButton from '@/app/components/ui/link-button';
 import Spinner from '@/app/components/ui/spinner';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import dayjs from '@/app/utils/dayjs';
-
 import EditImageButton from './EditImageButton';
 import EditVideoButton from './EditVideoButton';
 import UploadImageZone from './UploadImageZone';
 import UploadVideoZone from './UploadVideoZone';
-import Button from '@/app/components/ui/Button';
-import { translateMediaType } from '../../../utils';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import FormError from '@/app/components/ui/FormError';
-import clsx from 'clsx';
 import { CandidateDataSchema, TCandidateDataSchema } from '../../../type';
+import { translateMediaType } from '../../../utils';
 
 interface Candidate {
   mediaType: string;
