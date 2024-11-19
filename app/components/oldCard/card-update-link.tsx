@@ -1,13 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-
 import { deleteWorldcupAction } from '@/app/(worldcups)/wc/users/[user-id]/actions';
-
-import DeleteModal from '../NewModal/DeleteModal';
+import DeleteConfirmModal from '../Modal/DeleteConfirmModal';
 
 interface Props {
   worldcupId: string;
@@ -43,7 +40,7 @@ export default function CardUpdateLink({ worldcupId }: Props) {
           </Link>
         </div>
       </div>
-      <DeleteModal
+      <DeleteConfirmModal
         open={showDeleteWorldcupConfirmModal}
         title={'해당 월드컵을 정말로 삭제하시겠습니까?'}
         description={'모든 데이터가 영구히 삭제되며 복원할 수 없습니다.'}

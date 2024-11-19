@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 import { signout } from '@/app/(auth)/auth/signout/actions';
 
-import { useDropdown } from '../../../hooks/useDropdown';
-import NewAvatar from '../ui/Avatar';
+import { useDropdown } from '../../hooks/useDropdown';
+import NewAvatar from '../../ui/Avatar';
 
 interface Props {
   open: boolean;

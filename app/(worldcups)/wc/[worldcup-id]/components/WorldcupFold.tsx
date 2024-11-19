@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { Star, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
-import NewAvatar from '@/app/components/ui/Avatar';
-import ExpandableText from '@/app/components/ui/ExpandableText';
+import NewAvatar from '@/app/ui/Avatar';
+import ExpandableText from '@/app/ui/ExpandableText';
 import dayjs from '@/app/utils/dayjs';
 import { getWorldcupLikes, isWorldcupFavourite } from '../actions';
 import useWorldcupFavouriteMutation from '../hooks/useWorldcupFavouriteMutation';
@@ -94,11 +94,7 @@ export default function WorldcupFold({
       </div>
 
       <div className="mb-5">
-        <ExpandableText
-          className="w-full text-slate-700"
-          numberOfLines={6}
-          text={description ? description : ''}
-        />
+        <ExpandableText className="w-full text-slate-700" size="md" text={description ? description : ''} />
       </div>
       <div className="flex w-full justify-center">
         <div className="flex w-1/3">

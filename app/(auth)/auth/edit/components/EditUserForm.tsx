@@ -8,10 +8,10 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import DeleteModal from '@/app/components/NewModal/DeleteModal';
-import Button from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import FormInput from '@/app/components/ui/FormInput';
+import DeleteConfirmModal from '@/app/components/Modal/DeleteConfirmModal';
+import Button from '@/app/ui/Button';
+import FormError from '@/app/ui/FormError';
+import FormInput from '@/app/ui/FormInput';
 
 import { deleteAccountAction, editUserAction } from '../actions';
 import { EditFormSchema, TEditFormSchema } from '../types';
@@ -167,7 +167,7 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
       >
         회원 탈퇴
       </button>
-      <DeleteModal
+      <DeleteConfirmModal
         open={openDeleteAccountModal}
         title={'정말로 회원을  탈퇴하시겠습니까?'}
         description="모든 회원 정보가 삭제됩니다. 탈퇴 후 닉네임은 '탈퇴한 회원'으로 표시되지만, 생성하신 월드컵과 댓글은 그대로 남게 됩니다."

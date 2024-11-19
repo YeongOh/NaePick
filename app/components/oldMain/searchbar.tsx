@@ -1,24 +1,15 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { Search } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import useQueryString from '@/app/hooks/useQueryString';
 
 export default function Searchbar() {
+  const { createQueryString } = useQueryString();
   const [query, setQuery] = useState('');
-  const searchParams = useSearchParams();
   const router = useRouter();
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams],
-  );
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

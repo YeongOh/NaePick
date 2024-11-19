@@ -7,12 +7,12 @@ import { Pencil } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useInView } from 'react-intersection-observer';
-import DeleteModal from '@/app/components/NewModal/DeleteModal';
-import Button from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import FormTextArea from '@/app/components/ui/FormTextArea';
-import Spinner from '@/app/components/ui/Spinner';
-import { useDropdown } from '@/hooks/useDropdown';
+import DeleteConfirmModal from '@/app/components/Modal/DeleteConfirmModal';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import Button from '@/app/ui/Button';
+import FormError from '@/app/ui/FormError';
+import FormTextArea from '@/app/ui/FormTextArea';
+import Spinner from '@/app/ui/Spinner';
 import Comment from './Comment';
 import { getComments, getCommentCount } from '../actions';
 import useCommentMutation from '../hooks/useCommentMutation';
@@ -167,7 +167,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       ) : (
         <div ref={ref} />
       )}
-      <DeleteModal
+      <DeleteConfirmModal
         title={'해당 댓글을 정말로 삭제하시겠습니까?'}
         description={''}
         open={deleteConfirmId !== null}

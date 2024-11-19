@@ -1,8 +1,8 @@
 'use client';
 
 import NavbarDropdownMenu from './navbar-dropdown-menu';
-import { useDropdown } from '../../../hooks/useDropdown';
-import NewAvatar from '../ui/Avatar';
+import { useDropdown } from '../../hooks/useDropdown';
+import NewAvatar from '../../ui/Avatar';
 
 interface Props {
   profilePath: string | null;

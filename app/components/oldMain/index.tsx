@@ -1,12 +1,9 @@
 'use client';
 
 import { Suspense, useEffect } from 'react';
-
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
-
 import { getPopularWorldcups } from '@/app/(search)/action';
-
 import MainNav from './main-nav';
 import CardGrid from '../oldCard/card-grid';
 import CardGridEmpty from '../oldCard/card-grid-empty';

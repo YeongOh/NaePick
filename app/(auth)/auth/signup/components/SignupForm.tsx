@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import Button from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import FormInput from '@/app/components/ui/FormInput';
 import { NICKNAME_MAX_LENGTH, NICKNAME_MIN_LENGTH } from '@/app/constants';
+import Button from '@/app/ui/Button';
+import FormError from '@/app/ui/FormError';
+import FormInput from '@/app/ui/FormInput';
 
 import { signupAction } from '../action';
 import { signupFormSchema, TSignupFormSchema } from '../types';

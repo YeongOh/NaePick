@@ -2,8 +2,8 @@ import { notFound, redirect } from 'next/navigation';
 
 import CardGridPagination from '@/app/components/oldCard/card-grid-pagination';
 import Navbar from '@/app/components/oldNavbar/navbar';
-import LinkButton from '@/app/components/ui/LinkButton';
 import { getSession } from '@/app/lib/session';
+import LinkButton from '@/app/ui/LinkButton';
 
 import { getMyWorldcupFavourites } from './actions';
 

@@ -4,19 +4,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-
-import Button from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import FormInput from '@/app/components/ui/FormInput';
-import FormTextArea from '@/app/components/ui/FormTextArea';
-import LinkButton from '@/app/components/ui/LinkButton';
 import {
   WORLDCUP_DESCRIPTION_MAX_LENGTH,
   WORLDCUP_TITLE_MAX_LENGTH,
   WORLDCUP_TITLE_MIN_LENGTH,
 } from '@/app/constants';
-import { Publicity, translateCategory } from '@/app/lib/types';
-
+import { Publicity } from '@/app/lib/types';
+import Button from '@/app/ui/Button';
+import FormError from '@/app/ui/FormError';
+import FormInput from '@/app/ui/FormInput';
+import FormTextArea from '@/app/ui/FormTextArea';
+import LinkButton from '@/app/ui/LinkButton';
+import { translateCategory } from '@/app/utils';
 import { createWorldcupAction } from '../create/actions';
 import { editWorldcupAction } from '../edit/[worldcup-id]/actions';
 import { Category, EditingWorldcup, TWorldcupFormSchema, WorldcupFormSchema } from '../type';

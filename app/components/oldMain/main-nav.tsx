@@ -1,37 +1,15 @@
 'use client';
 
-import { useCallback } from 'react';
-
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-
-import { translateCategory } from '@/app/lib/types';
-
+import useQueryString from '@/app/hooks/useQueryString';
+import { translateCategory } from '@/app/utils';
 import Searchbar from './searchbar';
 
 export default function MainNav() {
   const searchParams = useSearchParams();
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams],
-  );
-
-  const deleteQueryString = useCallback(
-    (name: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete(name);
-
-      return params.toString();
-    },
-    [searchParams],
-  );
+  const { createQueryString, deleteQueryString } = useQueryString();
 
   return (
     <nav className="m-2 flex items-center gap-2 p-2">

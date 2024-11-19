@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation';
 
-import Button from '../ui/Button';
-import LinkButton from '../ui/LinkButton';
+import Button from '../../ui/Button';
+import LinkButton from '../../ui/LinkButton';
 
 export default function CardGridEmpty() {
   const router = useRouter();

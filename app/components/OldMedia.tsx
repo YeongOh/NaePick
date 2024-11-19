@@ -2,7 +2,7 @@ import { forwardRef, useState } from 'react';
 
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 
-import MyImage from '@/app/components/ui/MyImage';
+import MyImage from '@/app/ui/MyImage';
 
 interface Props {
   screenMode?: boolean;

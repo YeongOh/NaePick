@@ -7,14 +7,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import NewAvatar from '@/app/components/ui/Avatar';
-import Button from '@/app/components/ui/Button';
-import ExpandableText from '@/app/components/ui/ExpandableText';
-import FormError from '@/app/components/ui/FormError';
-import FormTextArea from '@/app/components/ui/FormTextArea';
-import Spinner from '@/app/components/ui/Spinner';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import NewAvatar from '@/app/ui/Avatar';
+import Button from '@/app/ui/Button';
+import ExpandableText from '@/app/ui/ExpandableText';
+import FormError from '@/app/ui/FormError';
+import FormTextArea from '@/app/ui/FormTextArea';
+import Spinner from '@/app/ui/Spinner';
 import dayjs from '@/app/utils/dayjs';
-import { useDropdown } from '@/hooks/useDropdown';
 import CommentDropdownMenu from './CommentDropdownMenu';
 import { getCommentReplies, replyCommentAction } from '../actions';
 import useCommentMutation from '../hooks/useCommentMutation';
@@ -47,7 +47,6 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
   ref,
 ) {
   const { dropdownId, toggleDropdown } = useDropdown();
-  const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [fetchForNewReplyComment, setFetchForNewReplyComment] = useState(false);
@@ -199,7 +198,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
           ) : null}
           {updateCommentId !== comment.id ? (
             <div>
-              <ExpandableText className={'text-slate-700 lg:mb-1'} text={comment.text} numberOfLines={3} />
+              <ExpandableText className={'text-slate-700 lg:mb-1'} text={comment.text} size="md" />
               <div className="flex -translate-x-1.5 items-center gap-1">
                 <button
                   onClick={() => {
@@ -246,7 +245,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                   type="button"
                   size="sm"
                   onClick={() => {
-                    setReplyText('');
+                    setReplyTextValue('text', '');
                     setIsReplying(false);
                   }}
                   variant="ghost"

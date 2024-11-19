@@ -2,7 +2,7 @@
 
 import { createPortal } from 'react-dom';
 
-import Button from '../ui/Button';
+import Button from '../../ui/Button';
 
 interface Props {
   open: boolean;
@@ -12,7 +12,7 @@ interface Props {
   description: string;
 }
 
-export default function DeleteModal({ open, onClose, onConfirm, title, description }: Props) {
+export default function DeleteConfirmModal({ open, onClose, onConfirm, title, description }: Props) {
   return (
     <>
       {open &&

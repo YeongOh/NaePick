@@ -1,20 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-
 import { InferSelectModel } from 'drizzle-orm';
 import { ChevronLeft, ChevronRight, Globe, RotateCcw, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
-import ShareWorldcupModal from '@/app/components/NewModal/ShareWorldcupModal';
-import Media from '@/app/components/oldMedia';
-import OldPagination from '@/app/components/oldPagination';
-import ThumbnailImage from '@/app/components/ThumbnailImage';
-import Button from '@/app/components/ui/Button';
-import LinkButton from '@/app/components/ui/LinkButton';
+import ShareWorldcupModal from '@/app/components/Modal/ShareWorldcupModal';
+import Media from '@/app/components/OldMedia';
+import OldPagination from '@/app/components/OldPagination';
+import ThumbnailImage from '@/app/components/Thumbnail';
 import { worldcups } from '@/app/lib/database/schema';
-
+import Button from '@/app/ui/Button';
+import LinkButton from '@/app/ui/LinkButton';
 import DashboardRankingChart from './DashboardRankingChart';
 import CommentSection from '../../components/CommentSection';
 

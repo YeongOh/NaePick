@@ -1,5 +1,5 @@
 import Navbar from './components/oldNavbar/navbar';
-import LinkButton from './components/ui/LinkButton';
+import LinkButton from './ui/LinkButton';
 
 export default function NotFound() {
   return (

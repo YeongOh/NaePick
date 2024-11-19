@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { YouTubePlayer } from 'react-youtube';
 
-import Media from '@/app/components/oldMedia';
+import Media from '@/app/components/OldMedia';
 import { delay } from '@/app/utils';
 
 import { submitMatchResult as submitMatchResult } from '../actions';

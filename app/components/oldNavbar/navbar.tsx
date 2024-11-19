@@ -1,10 +1,8 @@
 import { Trophy } from 'lucide-react';
 import Link from 'next/link';
-
 import { getSession } from '@/app/lib/session';
-
 import NavbarProfileImage from './navbar-profile-image';
-import LinkButton from '../ui/LinkButton';
+import LinkButton from '../../ui/LinkButton';
 
 interface Props {
   screenMode?: boolean;

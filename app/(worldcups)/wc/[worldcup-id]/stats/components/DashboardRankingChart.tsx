@@ -1,4 +1,4 @@
-import ThumbnailImage from '@/app/components/ThumbnailImage';
+import ThumbnailImage from '@/app/components/Thumbnail';
 
 import { CandidateStatModel } from './Dashboard';
 

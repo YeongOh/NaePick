@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import Button from '@/app/components/ui/Button';
+import Button from '@/app/ui/Button';
 
 import { signout } from '../actions';
 

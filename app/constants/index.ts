@@ -1,5 +1,4 @@
 // URLS
-// TODO: env에 넣기 => 클라이언트에서 현재 안되는 문제
 export const DOMAIN = 'https://naepick.co.kr';
 export const IMG_ORIGIN = 'https://cdn.naepick.co.kr';
 export const VIDEO_ORIGIN = 'https://cdn.naepick.co.kr';
@@ -20,8 +19,6 @@ export const WORLDCUP_DESCRIPTION_MAX_LENGTH = 500;
 
 // File Name Limit
 export const FILE_NAME_MAX_LENGTH = 60;
-
-export const CATEGORIES = ['animations', 'athletes', 'celebrities', 'idols', 'other'];
 
 // signup
 export const USERNAME_MIN_LENGTH = 4;

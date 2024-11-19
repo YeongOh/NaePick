@@ -1,6 +1,6 @@
 import { TCard } from '@/app/lib/types';
 
-import ThumbnailImage from '../ThumbnailImage';
+import ThumbnailImage from '../Thumbnail';
 
 interface Props {
   worldcupCard: TCard;

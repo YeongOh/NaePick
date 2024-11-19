@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 
 import { DOMAIN } from '@/app/constants';
-import Button from '../ui/Button';
+import Button from '../../ui/Button';
 
 interface Props {
   open: boolean;

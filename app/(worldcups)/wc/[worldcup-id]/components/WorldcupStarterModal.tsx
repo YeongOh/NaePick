@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
-import NewAvatar from '@/app/components/ui/Avatar';
-import Button from '@/app/components/ui/Button';
-import ExpandableText from '@/app/components/ui/ExpandableText';
 import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import NewAvatar from '@/app/ui/Avatar';
+import Button from '@/app/ui/Button';
+import ExpandableText from '@/app/ui/ExpandableText';
 import dayjs from '@/app/utils/dayjs';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getNumberOfRoundsAvailable } from '../utils';
@@ -77,7 +77,7 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
                   <ExpandableText
                     className={'w-full text-slate-700'}
                     text={description ? description : ''}
-                    numberOfLines={5}
+                    size="md"
                   />
                 </div>
                 <p className="mb-2 text-sm text-gray-500">

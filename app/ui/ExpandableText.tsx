@@ -3,13 +3,14 @@ import clsx from 'clsx';
 
 interface Props {
   text: string;
-  numberOfLines: number;
+  size: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-export default function ExpandableText({ text, numberOfLines, className }: Props) {
+export default function ExpandableText({ text, size = 'md', className }: Props) {
   const [hide, setHide] = useState<boolean | null>(null);
   const ref = useRef<HTMLParagraphElement>(null);
+  const numberOfLines = size === 'sm' ? 3 : size === 'md' ? 5 : size === 'lg' ? 7 : 0;
 
   useEffect(() => {
     if (ref.current && ref.current.clientHeight > numberOfLines * 20) {
@@ -23,7 +24,9 @@ export default function ExpandableText({ text, numberOfLines, className }: Props
         ref={ref}
         className={clsx(
           'whitespace-pre-line text-base',
-          `line-clamp-${numberOfLines}`,
+          size === 'sm' && `line-clamp-3`,
+          size === 'md' && `line-clamp-5`,
+          size === 'lg' && `line-clamp-7`,
           !hide && 'line-clamp-none',
           className,
         )}

@@ -1,13 +1,10 @@
 'use client';
 
-import { useCallback } from 'react';
-
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-
+import { usePathname, useRouter } from 'next/navigation';
+import useQueryString from '@/app/hooks/useQueryString';
 import { TCard } from '@/app/lib/types';
-
 import Card from './card';
-import OldPagination from '../oldPagination';
+import OldPagination from '../OldPagination';
 
 interface Props {
   count: number;
@@ -20,18 +17,9 @@ interface Props {
 export default function CardGridPagination({ worldcups, extended, page, userId, count }: Props) {
   const totalPages = Math.ceil((count || 0) / 5);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const path = usePathname();
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams],
-  );
+  const { createQueryString } = useQueryString();
 
   const handlePageNumberClick = async (page: number) => {
     router.push(`${path}?${createQueryString('page', `${page}`)}`, {

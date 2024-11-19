@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 
-import Button from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import FormInput from '@/app/components/ui/FormInput';
+import Button from '@/app/ui/Button';
+import FormError from '@/app/ui/FormError';
+import FormInput from '@/app/ui/FormInput';
 
 import { loginAction } from '../actions';
 import { loginFormSchema, TLoginFormSchema } from '../types';

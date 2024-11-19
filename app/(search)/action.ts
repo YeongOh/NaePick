@@ -12,7 +12,7 @@ import {
   worldcups,
 } from '@/app/lib/database/schema';
 
-import { TCard } from '../lib/types';
+import { PopularNextCursor, TCard } from '../lib/types';
 
 export async function getWorldcups({
   sort,
@@ -22,12 +22,14 @@ export async function getWorldcups({
 }: {
   sort?: 'latest' | 'popular';
   category?: string;
-  cursor?: string;
+  cursor?: string | PopularNextCursor;
   query?: string;
 }) {
+  console.log(sort, category, cursor, query);
   if (!sort || sort === 'popular') {
     return await getPopularWorldcups({ category, cursor, query });
   }
+
   return await getLatestWorldcups({ category, cursor, query });
 }
 
@@ -37,10 +39,10 @@ export async function getLatestWorldcups({
   query,
 }: {
   category?: string;
-  cursor?: string;
+  cursor?: any;
   query?: string;
 }) {
-  const DATA_PER_PAGE = 20;
+  const DATA_PER_PAGE = 5;
 
   const sqlChunks: SQL[] = [];
   sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);
@@ -97,7 +99,7 @@ export async function getPopularWorldcups({
   cursor?: any;
   query?: string;
 }) {
-  const DATA_PER_PAGE = 20;
+  const DATA_PER_PAGE = 5;
 
   const sqlChunks: SQL[] = [];
   sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);

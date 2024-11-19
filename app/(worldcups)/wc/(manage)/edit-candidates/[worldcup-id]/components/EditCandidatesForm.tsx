@@ -11,15 +11,15 @@ import {
   deleteCandidateObject,
   updateCandidateNamesAction,
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
-import DeleteModal from '@/app/components/NewModal/DeleteModal';
-import Media from '@/app/components/oldMedia';
-import OldPagination from '@/app/components/oldPagination';
-import ThumbnailImage from '@/app/components/ThumbnailImage';
-import Button from '@/app/components/ui/Button';
-import FormError from '@/app/components/ui/FormError';
-import LinkButton from '@/app/components/ui/LinkButton';
-import Spinner from '@/app/components/ui/Spinner';
+import DeleteConfirmModal from '@/app/components/Modal/DeleteConfirmModal';
+import Media from '@/app/components/OldMedia';
+import OldPagination from '@/app/components/OldPagination';
+import ThumbnailImage from '@/app/components/Thumbnail';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import Button from '@/app/ui/Button';
+import FormError from '@/app/ui/FormError';
+import LinkButton from '@/app/ui/LinkButton';
+import Spinner from '@/app/ui/Spinner';
 import dayjs from '@/app/utils/dayjs';
 import EditImageButton from './EditImageButton';
 import EditVideoButton from './EditVideoButton';
@@ -243,7 +243,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
           </LinkButton>
         </div>
       </form>
-      <DeleteModal
+      <DeleteConfirmModal
         open={showDeleteConfirmModal}
         onClose={() => {
           setShowDeleteConfirmModal(false);

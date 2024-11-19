@@ -1,15 +1,13 @@
 import { forwardRef, useState } from 'react';
-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-import { TCard, translatePublicity } from '@/app/lib/types';
+import { TCard } from '@/app/lib/types';
+import { translatePublicity } from '@/app/utils';
 import dayjs from '@/app/utils/dayjs';
-
 import CardEllipsis from './card-ellipsis';
 import CardThumbnail from './card-thumbnail';
 import CardUpdateLink from './card-update-link';
-import NewAvatar from '../ui/Avatar';
+import NewAvatar from '../../ui/Avatar';
 
 export interface CardProps {
   worldcupCard: TCard;
@@ -47,7 +45,7 @@ const Card = forwardRef<HTMLLIElement, CardProps>(function Card({ worldcupCard, 
       }}
     >
       <div>
-        <Link tabIndex={-1} href={`/wc/${worldcupCard.id}`} onClick={(e) => e.stopPropagation()}>
+        <Link href={`/wc/${worldcupCard.id}`} onClick={(e) => e.stopPropagation()}>
           <CardThumbnail worldcupCard={worldcupCard} />
         </Link>
         <div className="flex items-end justify-between p-1 md:p-0">

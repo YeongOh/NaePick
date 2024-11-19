@@ -6,11 +6,11 @@ import { Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { IoLogoYoutube } from 'react-icons/io';
 import { SiImgur } from 'react-icons/si';
-import Button from '@/app/components/ui/Button';
 import { CHZZK_THUMBNAIL_URL } from '@/app/constants';
 import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
 import { downloadImgurUploadS3 } from '@/app/lib/videos/imgur';
 import { extractYoutubeId, fetchYoutubeTitle } from '@/app/lib/videos/youtube';
+import Button from '@/app/ui/Button';
 import { createCandidateAction } from '../actions';
 
 interface Props {

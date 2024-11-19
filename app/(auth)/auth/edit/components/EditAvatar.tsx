@@ -6,8 +6,8 @@ import { Info } from 'lucide-react';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
-import DeleteModal from '@/app/components/NewModal/DeleteModal';
-import NewAvatar from '@/app/components/ui/Avatar';
+import DeleteConfirmModal from '@/app/components/Modal/DeleteConfirmModal';
+import NewAvatar from '@/app/ui/Avatar';
 
 import { deleteProfileImage, getSignedUrlForProfileImage, updateUserProfilePathAction } from '../actions';
 
@@ -109,7 +109,7 @@ export default function EditAvatar({ userId, profilePath }: Props) {
           <Info size="1.1rem" className="mr-1" /> 이미지 크기는 80x80px를 추천합니다.
         </p>
       </div>
-      <DeleteModal
+      <DeleteConfirmModal
         open={openDeleteProfileModal}
         title={'프로필 이미지를 삭제하시겠습니까?'}
         description=""

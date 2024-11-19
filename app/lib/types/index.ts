@@ -16,7 +16,7 @@ export type TCard = InferSelectModel<typeof worldcups> & {
   categoryName: string;
 };
 
-interface PopularNextCursor {
+export interface PopularNextCursor {
   matchCount: number;
   createdAt: string;
 }
@@ -29,47 +29,3 @@ export interface InfiniteScrollData<T> {
 export type MediaType = 'cdn_img' | 'cdn_video' | 'youtube' | 'chzzk';
 
 export type Publicity = 'public' | 'private' | 'unlisted';
-
-export function translateCategory(categoryName: string): string {
-  switch (categoryName) {
-    case 'animations':
-      return '애니메이션';
-    case 'athletes':
-      return '운동선수';
-    case 'celebrities':
-      return '연예인';
-    case 'idols':
-      return '아이돌';
-    case 'other':
-      return '기타';
-    case 'actors':
-      return '배우';
-    case 'streamers':
-      return '스트리머';
-    case 'songs':
-      return '노래';
-    case 'manga':
-      return '만화';
-    case 'singers':
-      return '가수';
-    case 'webtoons':
-      return '웹툰';
-    case 'youtubers':
-      return '유튜버';
-    default:
-      return '잘못된 카테고리';
-  }
-}
-
-export function translatePublicity(publicity: string): string {
-  switch (publicity) {
-    case 'public':
-      return '전체 공개';
-    case 'unlisted':
-      return '미등록';
-    case 'private':
-      return '비공개';
-    default:
-      return '오류';
-  }
-}
