@@ -7,7 +7,7 @@ import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
 import DeleteConfirmModal from '@/app/components/Modal/DeleteConfirmModal';
-import NewAvatar from '@/app/ui/Avatar';
+import Avatar from '@/app/ui/Avatar';
 
 import { deleteProfileImage, getSignedUrlForProfileImage, updateUserProfilePathAction } from '../actions';
 
@@ -91,7 +91,7 @@ export default function EditAvatar({ userId, profilePath }: Props) {
   return (
     <>
       <div className="mb-4 flex flex-col items-center">
-        <NewAvatar alt={'내 프로필 이미지'} profilePath={profilePath} size="lg" className="mb-2" />
+        <Avatar alt={'내 프로필 이미지'} profilePath={profilePath} size="lg" className="mb-2" />
         <div {...getRootProps()}>
           <input {...getInputProps()} />
           <p className="cursor-pointer text-base text-blue-500 hover:underline">프로필 이미지 변경</p>

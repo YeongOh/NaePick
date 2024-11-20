@@ -1,24 +1,22 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import Pagination from '@/app/components/Pagination';
+import WorldcupCard from '@/app/components/WorldcupCard/WorldcupCard';
 import useQueryString from '@/app/hooks/useQueryString';
 import { TCard } from '@/app/lib/types';
-import Card from './card';
-import OldPagination from '../OldPagination';
+import Grid from '@/app/ui/Grid';
 
 interface Props {
   count: number;
   worldcups: TCard[];
-  extended?: boolean;
   page: number;
-  userId?: string;
 }
 
-export default function CardGridPagination({ worldcups, extended, page, userId, count }: Props) {
-  const totalPages = Math.ceil((count || 0) / 5);
+export default function UpdateContent({ worldcups, page, count }: Props) {
+  const totalPages = Math.ceil((count || 0) / 10);
   const router = useRouter();
   const path = usePathname();
-
   const { createQueryString } = useQueryString();
 
   const handlePageNumberClick = async (page: number) => {
@@ -29,14 +27,13 @@ export default function CardGridPagination({ worldcups, extended, page, userId, 
 
   return (
     <>
-      <ul className="mt-4 grid grid-cols-card-12rem justify-center gap-2 sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem">
-        {worldcups.map((worldcup, index: number) => (
-          <Card key={worldcup.id} worldcupCard={worldcup} extended={userId ? true : false} />
+      <Grid className="mt-12">
+        {worldcups.map((worldcupCard) => (
+          <WorldcupCard className="mb-4" key={worldcupCard.id} worldcupCard={worldcupCard} type="update" />
         ))}
-      </ul>
-
+      </Grid>
       <div className="mt-6">
-        <OldPagination
+        <Pagination
           totalPages={totalPages}
           currentPageNumber={page}
           range={2}

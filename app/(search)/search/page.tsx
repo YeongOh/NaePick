@@ -1,4 +1,4 @@
-import SearchMain from '../components/SearchMain';
+import SearchContent from './components/SearchContent';
 
 interface Props {
   searchParams: {
@@ -10,12 +10,12 @@ interface Props {
 
 export default async function Page({ searchParams }: Props) {
   return (
-    <>
-      <SearchMain
+    <section className="m-auto max-w-screen-2xl">
+      <SearchContent
         sort={searchParams.sort || 'popular'}
         query={searchParams.query}
         category={searchParams.category}
       />
-    </>
+    </section>
   );
 }

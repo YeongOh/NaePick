@@ -50,7 +50,7 @@ export const DropdownProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export const useDropdown = (): DropdownContextType => {
   const context = useContext(DropdownContext);
   if (!context) {
-    throw new Error('Out of provider');
+    throw new Error('Out of Dropdown provider');
   }
   return context;
 };

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { YouTubePlayer } from 'react-youtube';
 
-import Media from '@/app/components/OldMedia';
+import CandidateMedia from '@/app/components/CandidateMedia';
 import { delay } from '@/app/utils';
 
 import { submitMatchResult as submitMatchResult } from '../actions';
@@ -98,7 +98,7 @@ export default function WorldcupPickScreen({ className }: Props) {
               matchStatus === 'PICK_LEFT' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''
             } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileShrinkTop lg:animate-shrinkRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''}`}
           >
-            <Media
+            <CandidateMedia
               screenMode={matchStatus === 'END' ? false : true}
               path={leftCandidate.path}
               mediaType={leftCandidate.mediaType}
@@ -139,7 +139,7 @@ export default function WorldcupPickScreen({ className }: Props) {
               matchStatus === 'PICK_LEFT' ? 'animate-mobileShrinkBottom lg:animate-shrinkLeft' : ''
             } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''}`}
           >
-            <Media
+            <CandidateMedia
               screenMode={matchStatus === 'END' ? false : true}
               path={rightCandidate.path}
               mediaType={rightCandidate.mediaType}

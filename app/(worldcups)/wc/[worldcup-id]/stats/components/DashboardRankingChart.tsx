@@ -1,4 +1,4 @@
-import ThumbnailImage from '@/app/components/Thumbnail';
+import CandidateThumbnail from '@/app/components/CandidateThumbnail';
 
 import { CandidateStatModel } from './Dashboard';
 
@@ -30,7 +30,7 @@ export default function DashboardRankingChart({ onShowDetails, candidates, selec
           >
             <div className="w-12 text-center text-gray-500">{(page - 1) * 10 + i + 1}</div>
             <div className="h-16 w-16 overflow-hidden rounded">
-              <ThumbnailImage
+              <CandidateThumbnail
                 name={candidate.name}
                 mediaType={candidate.mediaType}
                 path={candidate.path}

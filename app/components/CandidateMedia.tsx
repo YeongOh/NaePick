@@ -14,7 +14,7 @@ interface Props {
   onYouTubeEnd?: (e: YouTubeEvent) => void;
 }
 
-const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
+const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
   { screenMode, path, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
   ref,
 ) {
@@ -117,4 +117,4 @@ const Media = forwardRef<YouTube, Props>(function ResponsiveMedia(
   );
 });
 
-export default Media;
+export default CandidateMedia;

@@ -1,5 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
-import CardGridPagination from '@/app/components/oldCard/card-grid-pagination';
+import UpdateContent from '@/app/(worldcups)/wc/users/[user-id]/components/UpdateContent';
 import Navbar from '@/app/components/oldNavbar/navbar';
 import { getSession } from '@/app/lib/session';
 import LinkButton from '@/app/ui/LinkButton';
@@ -29,13 +29,7 @@ export default async function Page({ params, searchParams }: Props) {
       <Navbar />
       <section className="m-auto max-w-screen-2xl">
         {result.data.length ? (
-          <CardGridPagination
-            count={result.count}
-            page={page}
-            worldcups={result.data as any}
-            userId={userId}
-            extended
-          />
+          <UpdateContent count={result.count} page={page} worldcups={result.data as any} />
         ) : (
           <div className="mx-auto flex max-w-screen-sm flex-col items-center justify-center text-center">
             <p className="mb-4 mt-10 text-xl font-bold tracking-tight text-gray-900 dark:text-white">

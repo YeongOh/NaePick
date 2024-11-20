@@ -25,7 +25,6 @@ export async function getWorldcups({
   cursor?: string | PopularNextCursor;
   query?: string;
 }) {
-  console.log(sort, category, cursor, query);
   if (!sort || sort === 'popular') {
     return await getPopularWorldcups({ category, cursor, query });
   }
@@ -99,7 +98,7 @@ export async function getPopularWorldcups({
   cursor?: any;
   query?: string;
 }) {
-  const DATA_PER_PAGE = 5;
+  const DATA_PER_PAGE = 10;
 
   const sqlChunks: SQL[] = [];
   sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);

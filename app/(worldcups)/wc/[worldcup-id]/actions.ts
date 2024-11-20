@@ -3,6 +3,7 @@
 import { and, asc, count, desc, eq, getTableColumns, isNull, lt, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
 
+import { revalidatePath } from 'next/cache';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { verifyCommentOwner } from '@/app/lib/comment/auth';
 import {
@@ -377,6 +378,8 @@ export async function addWorldcupFavouriteAction(worldcupId: string) {
   } catch (error) {
     console.error(error);
   }
+
+  revalidatePath('/wc/favourites');
 }
 
 export async function removeWorldcupFavouriteAction(worldcupId: string) {

@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Star, ThumbsUp } from 'lucide-react';
 import toast from 'react-hot-toast';
-import NewAvatar from '@/app/ui/Avatar';
+import Avatar from '@/app/ui/Avatar';
 import ExpandableText from '@/app/ui/ExpandableText';
 import dayjs from '@/app/utils/dayjs';
 import { getWorldcupLikes, isWorldcupFavourite } from '../actions';
@@ -76,7 +76,7 @@ export default function WorldcupFold({
   return (
     <>
       <div className="mb-1 flex items-center">
-        <NewAvatar
+        <Avatar
           profilePath={profilePath}
           className="mr-2"
           size="md"

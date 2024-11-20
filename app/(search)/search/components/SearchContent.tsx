@@ -3,31 +3,29 @@
 import { useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
-import CardGrid from '@/app/components/oldCard/card-grid';
-import CardGridEmpty from '@/app/components/oldCard/card-grid-empty';
-import MainNav from '@/app/components/oldMain/main-nav';
-import { PopularNextCursor } from '@/app/lib/types';
-import { getWorldcups } from '../action';
+import NavigationFilter from '@/app/components/NavigationFilter';
+import WorldcupCard from '@/app/components/WorldcupCard/WorldcupCard';
+import Grid from '@/app/ui/Grid';
+import Spinner from '@/app/ui/Spinner';
+import { getWorldcups } from '../../action';
 
 interface Props {
   sort?: 'latest' | 'popular';
   category?: string;
   query?: string;
-  worldcups?: any;
-  nextCursor?: any;
 }
 
-export default function SearchMain({ sort, category, query, worldcups = [], nextCursor }: Props) {
+export default function SearchContent({ sort, category, query }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
     queryKey: ['worldcups', { sort, category, query }],
     queryFn: ({ pageParam }) => getWorldcups({ sort, category, query, cursor: pageParam }),
-    initialPageParam: nextCursor || '',
+    initialPageParam: '',
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
   });
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
-  const newWorldcups = data?.pages.flatMap((page) => page?.data) || [];
+  const worldcupCards = data?.pages.flatMap((page) => page?.data) || [];
 
   useEffect(() => {
     if (inView && !isFetchingNextPage && hasNextPage) {
@@ -36,12 +34,19 @@ export default function SearchMain({ sort, category, query, worldcups = [], next
   }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
 
   return (
-    <section className="m-auto max-w-screen-2xl">
-      <>
-        <MainNav />
-        <CardGrid ref={ref} worldcupCards={[...worldcups, ...newWorldcups]} />
-      </>
+    <>
+      <NavigationFilter />
+      <Grid>
+        {[...worldcupCards].map((worldcupCard) => (
+          <WorldcupCard className="mb-4" key={worldcupCard.id} worldcupCard={worldcupCard} />
+        ))}
+      </Grid>
+      {hasNextPage && (
+        <div ref={ref} className="flex items-center justify-center">
+          {isFetching && <Spinner />}
+        </div>
+      )}
       <footer className="h-16"></footer>
-    </section>
+    </>
   );
 }

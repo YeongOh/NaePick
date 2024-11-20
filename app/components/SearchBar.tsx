@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import useQueryString from '@/app/hooks/useQueryString';

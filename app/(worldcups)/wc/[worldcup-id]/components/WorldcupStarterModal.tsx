@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
-import NewAvatar from '@/app/ui/Avatar';
+import Avatar from '@/app/ui/Avatar';
 import Button from '@/app/ui/Button';
 import ExpandableText from '@/app/ui/ExpandableText';
 import dayjs from '@/app/utils/dayjs';
@@ -51,7 +51,7 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
             >
               <div className="relative">
                 <div className="mb-2 flex items-center">
-                  <NewAvatar
+                  <Avatar
                     profilePath={profilePath}
                     className="mr-2"
                     size="sm"

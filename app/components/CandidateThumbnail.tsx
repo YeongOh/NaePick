@@ -12,7 +12,7 @@ interface Props {
   thumbnailURL: string | null;
 }
 
-export default function ThumbnailImage({ onClick, size, path, name, mediaType, thumbnailURL }: Props) {
+export default function CandidateThumbnail({ onClick, size, path, name, mediaType, thumbnailURL }: Props) {
   if (mediaType === 'cdn_img') {
     let params;
     if (size === 'small') params = 'w=128&h=128';

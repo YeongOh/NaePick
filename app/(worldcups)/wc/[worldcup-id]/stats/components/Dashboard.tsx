@@ -5,10 +5,10 @@ import { InferSelectModel } from 'drizzle-orm';
 import { ChevronLeft, ChevronRight, Globe, RotateCcw, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
+import CandidateMedia from '@/app/components/CandidateMedia';
+import CandidateThumbnail from '@/app/components/CandidateThumbnail';
 import ShareWorldcupModal from '@/app/components/Modal/ShareWorldcupModal';
-import Media from '@/app/components/OldMedia';
-import OldPagination from '@/app/components/OldPagination';
-import ThumbnailImage from '@/app/components/Thumbnail';
+import Pagination from '@/app/components/Pagination';
 import { worldcups } from '@/app/lib/database/schema';
 import Button from '@/app/ui/Button';
 import LinkButton from '@/app/ui/LinkButton';
@@ -60,7 +60,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             page={page}
           />
           <div className="overflow-hidden rounded-bl rounded-br">
-            <OldPagination
+            <Pagination
               className="bg-white"
               totalPages={totalPages}
               currentPageNumber={page}
@@ -85,7 +85,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
                 승률: {selectedCandidate.winRate === 0 ? '0' : (selectedCandidate.winRate * 100).toFixed(1)}%
               </span>
             </div>
-            <Media
+            <CandidateMedia
               path={selectedCandidate?.path as string}
               name={selectedCandidate?.name as string}
               mediaType={selectedCandidate?.mediaType!}
@@ -142,7 +142,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
                 onClick={() => setSelectedCandidateIndex(i)}
               >
                 <div className="relative flex h-10 max-w-10 overflow-hidden rounded">
-                  <ThumbnailImage
+                  <CandidateThumbnail
                     name={candidate.name}
                     mediaType={candidate.mediaType}
                     path={candidate.path}

@@ -11,10 +11,10 @@ import {
   deleteCandidateObject,
   updateCandidateNamesAction,
 } from '@/app/(worldcups)/wc/(manage)/edit-candidates/[worldcup-id]/actions';
+import CandidateMedia from '@/app/components/CandidateMedia';
+import CandidateThumbnail from '@/app/components/CandidateThumbnail';
 import DeleteConfirmModal from '@/app/components/Modal/DeleteConfirmModal';
-import Media from '@/app/components/OldMedia';
-import OldPagination from '@/app/components/OldPagination';
-import ThumbnailImage from '@/app/components/Thumbnail';
+import Pagination from '@/app/components/Pagination';
 import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import Button from '@/app/ui/Button';
 import FormError from '@/app/ui/FormError';
@@ -146,7 +146,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
             <li key={`${candidate.id}/${candidate.path}`}>
               <div className="mb-4 flex items-center rounded-md border bg-gray-100 p-2">
                 <div className="relative h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-md">
-                  <ThumbnailImage
+                  <CandidateThumbnail
                     path={candidate.path}
                     name={candidate.name}
                     mediaType={candidate.mediaType}
@@ -217,7 +217,11 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
               </div>
               {selectedCandidateToPreviewIndex === candidateIndex && (
                 <div className="my-8 flex h-[400px] w-full justify-center bg-black">
-                  <Media path={candidate.path} name={candidate.name} mediaType={candidate.mediaType} />
+                  <CandidateMedia
+                    path={candidate.path}
+                    name={candidate.name}
+                    mediaType={candidate.mediaType}
+                  />
                 </div>
               )}
             </li>
@@ -225,7 +229,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
         </ul>
         {totalPages > 0 ? (
           <div className="overflow-hidden rounded-bl rounded-br">
-            <OldPagination
+            <Pagination
               className="bg-gray-50"
               totalPages={totalPages}
               currentPageNumber={page}
@@ -238,7 +242,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
           이상형 월드컵 후보 이름 저장
         </Button>
         <div className="flex">
-          <LinkButton href={`/wc/${worldcupId}`} className="mt-2" variant="outline">
+          <LinkButton href={`/wc/${worldcupId}`} className="mt-2 w-full" variant="outline">
             이상형 월드컵 확인하기
           </LinkButton>
         </div>

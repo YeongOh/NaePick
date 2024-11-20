@@ -1,13 +1,10 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
-
 import Button from '@/app/ui/Button';
 import Spinner from '@/app/ui/Spinner';
-
 import { deleteCandidateObject, getSignedUrlForCandidateImage } from '../actions';
 import { updateCandidateAction } from '../actions';
 

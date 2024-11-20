@@ -1,10 +1,8 @@
 import { LogOut, SquarePlus, Star, Trophy } from 'lucide-react';
 import Link from 'next/link';
-
 import { signout } from '@/app/(auth)/auth/signout/actions';
-
 import { useDropdown } from '../../hooks/useDropdown';
-import NewAvatar from '../../ui/Avatar';
+import Avatar from '../../ui/Avatar';
 
 interface Props {
   open: boolean;
@@ -31,7 +29,7 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
               className="dropdown-button group my-0.5 flex items-center gap-2 rounded border-b p-2 hover:bg-primary-100 active:bg-primary-200"
               onClick={handleToggleDropdown}
             >
-              <NewAvatar profilePath={profilePath} alt={nickname} size="sm" />
+              <Avatar profilePath={profilePath} alt={nickname} size="sm" />
               <div className="flex flex-col gap-1 pl-1">
                 <div>{nickname}</div>
                 <div className="text-sm font-normal">{email}</div>

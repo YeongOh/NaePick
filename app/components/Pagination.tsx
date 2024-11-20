@@ -8,7 +8,7 @@ interface Props {
   className?: string;
 }
 
-export default function OldPagination({
+export default function Pagination({
   totalPages,
   currentPageNumber,
   range,

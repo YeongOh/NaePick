@@ -8,7 +8,7 @@ import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useDropdown } from '@/app/hooks/useDropdown';
-import NewAvatar from '@/app/ui/Avatar';
+import Avatar from '@/app/ui/Avatar';
 import Button from '@/app/ui/Button';
 import ExpandableText from '@/app/ui/ExpandableText';
 import FormError from '@/app/ui/FormError';
@@ -138,7 +138,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     <li key={comment.id}>
       <div className="flex justify-between">
         <div className="pt-2">
-          <NewAvatar profilePath={comment.profilePath} size="sm" alt={comment.nickname} />
+          <Avatar profilePath={comment.profilePath} size="sm" alt={comment.nickname} />
         </div>
         <div className="w-full pl-2">
           <div className="mb-1">

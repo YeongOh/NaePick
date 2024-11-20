@@ -1,13 +1,14 @@
 'use client';
 
+import clsx from 'clsx';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import useQueryString from '@/app/hooks/useQueryString';
 import { translateCategory } from '@/app/utils';
-import Searchbar from './searchbar';
+import Searchbar from './SearchBar';
 
-export default function MainNav() {
+export default function NavigationFilter() {
   const searchParams = useSearchParams();
   const { createQueryString, deleteQueryString } = useQueryString();
 
@@ -15,21 +16,23 @@ export default function MainNav() {
     <nav className="m-2 flex items-center gap-2 p-2">
       <Link
         href={'/search?' + createQueryString('sort', 'popular')}
-        className={`rounded px-3 py-2 text-base ${
+        className={clsx(
+          'rounded px-3 py-2 text-base',
           searchParams.get('sort') === 'popular' || !searchParams.has('sort')
             ? 'bg-primary-500 text-white'
-            : 'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100'
-        }`}
+            : 'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100',
+        )}
       >
         인기
       </Link>
       <Link
         href={'/search?' + createQueryString('sort', 'latest')}
-        className={`rounded px-3 py-2 text-base ${
+        className={clsx(
+          'rounded px-3 py-2 text-base',
           searchParams.get('sort') === 'latest'
             ? 'bg-primary-500 text-white'
-            : 'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100'
-        }`}
+            : 'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100',
+        )}
       >
         최신
       </Link>
@@ -43,8 +46,8 @@ export default function MainNav() {
         </Link>
       ) : (
         <Link
-          href={'/category'}
-          className={`rounded px-3 py-2 text-base ${'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100'}`}
+          href="/category"
+          className="rounded border bg-white px-3 py-2 text-base text-slate-700 hover:bg-gray-50 active:bg-gray-100"
         >
           카테고리
         </Link>
