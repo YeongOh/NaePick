@@ -1,5 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
-import Navbar from '@/app/components/oldNavbar/navbar';
+import Navbar from '@/app/components/Navbar/Navbar';
 import { getSession } from '@/app/lib/session';
 import LinkButton from '@/app/ui/LinkButton';
 import { getMyWorldcupFavourites } from './actions';

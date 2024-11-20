@@ -106,7 +106,7 @@ const config: Config = {
         mobileExpandBottom: 'mobileExpandBottom 0.3s ease-in-out forwards',
         mobileShrinkTop: 'mobileShrinkTop 0.3s ease-in-out forwards',
         mobileShrinkBottom: 'mobileShrinkBottom 0.3s ease-in-out forwards',
-        modalTransition: 'modalTransition 0.2s ease-in-out',
+        modalTransition: 'modalTransition 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
       },
     },
   },

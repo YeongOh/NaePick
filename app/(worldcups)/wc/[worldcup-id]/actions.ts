@@ -377,6 +377,8 @@ export async function addWorldcupFavouriteAction(worldcupId: string) {
     await addWorldcupFavourite(worldcupId, userId);
   } catch (error) {
     console.error(error);
+    // 중복 즐겨찾기 추가시 여기서 에러 던짐 => 더 쉬운 에러처리 방안?
+    throw error;
   }
 
   revalidatePath('/wc/favourites');
@@ -392,4 +394,6 @@ export async function removeWorldcupFavouriteAction(worldcupId: string) {
   } catch (error) {
     console.error(error);
   }
+
+  revalidatePath('/wc/favourites');
 }

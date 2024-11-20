@@ -129,7 +129,7 @@ export const commentLikes = table(
   },
   (table) => {
     return {
-      pk: [primaryKey({ columns: [table.commentId, table.userId] })],
+      pk: primaryKey({ columns: [table.commentId, table.userId] }),
     };
   },
 );
@@ -147,7 +147,7 @@ export const worldcupLikes = table(
   },
   (table) => {
     return {
-      pk: [primaryKey({ columns: [table.worldcupId, table.userId] })],
+      pk: primaryKey({ columns: [table.worldcupId, table.userId] }),
     };
   },
 );
@@ -165,7 +165,7 @@ export const worldcupFavourites = table(
   },
   (table) => {
     return {
-      pk: [primaryKey({ columns: [table.worldcupId, table.userId] })],
+      pk: primaryKey({ columns: [table.worldcupId, table.userId] }),
     };
   },
 );

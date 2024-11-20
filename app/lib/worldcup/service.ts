@@ -110,6 +110,7 @@ export async function likeWorldcup(worldcupId: string, userId: string) {
     await db.insert(worldcupLikes).values({ worldcupId, userId });
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -120,6 +121,7 @@ export async function unlikeWorldcup(worldcupId: string, userId: string) {
       .where(and(eq(worldcupLikes.worldcupId, worldcupId), eq(worldcupLikes.userId, userId)));
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -128,6 +130,7 @@ export async function addWorldcupFavourite(worldcupId: string, userId: string) {
     await db.insert(worldcupFavourites).values({ worldcupId, userId });
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -138,5 +141,6 @@ export async function removeWorldcupFavourite(worldcupId: string, userId: string
       .where(and(eq(worldcupFavourites.worldcupId, worldcupId), eq(worldcupFavourites.userId, userId)));
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }

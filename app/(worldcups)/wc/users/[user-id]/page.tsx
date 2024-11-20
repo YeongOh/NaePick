@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import UpdateContent from '@/app/(worldcups)/wc/users/[user-id]/components/UpdateContent';
-import Navbar from '@/app/components/oldNavbar/navbar';
+import Navbar from '@/app/components/Navbar/Navbar';
 import { getSession } from '@/app/lib/session';
 import LinkButton from '@/app/ui/LinkButton';
 import { getMyWorldcups } from './actions';

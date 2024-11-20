@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { ChartNoAxesColumnDecreasing, Settings, Share, Trash2 } from 'lucide-react';
+import { ChartNoAxesColumnDecreasing, Settings, Share, Star, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import {
+  addWorldcupFavouriteAction,
+  removeWorldcupFavouriteAction,
+} from '@/app/(worldcups)/wc/[worldcup-id]/actions';
 import { deleteWorldcupAction } from '@/app/(worldcups)/wc/users/[user-id]/actions';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { useWorldcupCard } from '@/app/hooks/useWorldcupCard';
@@ -35,9 +39,23 @@ export default function WorldcupCardDropdownMenu() {
             className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-primary-100 active:bg-primary-200"
             href={`/wc/${id}/stats`}
           >
-            <ChartNoAxesColumnDecreasing size="1.2rem" color="#334155" />
+            <ChartNoAxesColumnDecreasing size="1.2rem" />
             랭킹 보기
           </Link>
+          {type !== 'favourite' && (
+            <button
+              className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-primary-100 active:bg-primary-200"
+              onClick={() => {
+                toggleDropdown(dropdownId);
+                addWorldcupFavouriteAction(id)
+                  .then(() => toast.success('즐겨찾기에 추가되었습니다!'))
+                  .catch((error) => toast.error('이미 즐겨찾기를 했습니다.'));
+              }}
+            >
+              <Star size="1.2rem" />
+              즐겨찾기 추가
+            </button>
+          )}
           <button
             className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-primary-100 active:bg-primary-200"
             onClick={() => {
@@ -45,7 +63,7 @@ export default function WorldcupCardDropdownMenu() {
               toggleDropdown(dropdownId);
             }}
           >
-            <Share color="#334155" size="1.2rem" />
+            <Share size="1.2rem" />
             공유
           </button>
           {type === 'update' && (
@@ -66,6 +84,20 @@ export default function WorldcupCardDropdownMenu() {
               >
                 <Trash2 size="1.2rem" />
                 삭제하기
+              </button>
+            </>
+          )}
+          {type === 'favourite' && (
+            <>
+              <button
+                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-gray-500 hover:bg-primary-100 active:bg-primary-200"
+                onClick={() => {
+                  removeWorldcupFavouriteAction(id);
+                  toggleDropdown(dropdownId);
+                }}
+              >
+                <Star size="1.2rem" />
+                즐겨찾기 해제
               </button>
             </>
           )}

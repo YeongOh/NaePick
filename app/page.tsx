@@ -2,7 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { getPopularWorldcups } from './(search)/action';
 import MainContent from './components/MainContent';
-import Navbar from './components/oldNavbar/navbar';
+import Navbar from './components/Navbar/Navbar';
 
 export default async function Home() {
   const result = await getPopularWorldcups({ cursor: null });

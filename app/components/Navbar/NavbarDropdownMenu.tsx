@@ -1,8 +1,8 @@
 import { LogOut, SquarePlus, Star, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { signout } from '@/app/(auth)/auth/signout/actions';
-import { useDropdown } from '../../hooks/useDropdown';
-import Avatar from '../../ui/Avatar';
+import { useDropdown } from '@/app/hooks/useDropdown';
+import Avatar from '@/app/ui/Avatar';
 
 interface Props {
   open: boolean;
@@ -23,7 +23,7 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
     <>
       {open && (
         <div className="dropdown-menu z-50" onClick={(e) => e.stopPropagation()}>
-          <ul className="font-lg absolute right-0 z-50 flex w-60 animate-modalTransition cursor-pointer flex-col rounded-lg border bg-white p-2 text-left text-base font-semibold text-slate-700 shadow">
+          <ul className="font-lg absolute right-0 top-10 z-50 flex w-60 cursor-pointer flex-col rounded-lg border bg-white p-2 text-left text-base font-semibold text-slate-700 shadow">
             <Link
               href="/auth/edit"
               className="dropdown-button group my-0.5 flex items-center gap-2 rounded border-b p-2 hover:bg-primary-100 active:bg-primary-200"

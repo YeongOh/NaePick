@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 
 import WorldcupFormTab from '@/app/(worldcups)/wc/(manage)/components/WorldcupFormTab';
-import Navbar from '@/app/components/oldNavbar/navbar';
+import Navbar from '@/app/components/Navbar/Navbar';
 import { getCandidatesForUpdate } from '@/app/lib/candidate/service';
 import { getSession } from '@/app/lib/session';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
