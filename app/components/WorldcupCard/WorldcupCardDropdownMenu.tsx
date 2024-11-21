@@ -42,7 +42,7 @@ export default function WorldcupCardDropdownMenu() {
             <ChartNoAxesColumnDecreasing size="1.2rem" />
             랭킹 보기
           </Link>
-          {type !== 'favourite' && (
+          {/* {type !== 'favourite' && (
             <button
               className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-secondary-50 active:bg-secondary-100"
               onClick={() => {
@@ -55,7 +55,7 @@ export default function WorldcupCardDropdownMenu() {
               <Star size="1.2rem" />
               즐겨찾기 추가
             </button>
-          )}
+          )} */}
           <button
             className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-secondary-50 active:bg-secondary-100"
             onClick={() => {
