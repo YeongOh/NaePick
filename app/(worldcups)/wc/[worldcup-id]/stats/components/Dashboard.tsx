@@ -52,7 +52,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
 
   return (
     <div className="flex h-[calc(100svh-61px)] flex-grow flex-col lg:flex-row">
-      <section className="hidden w-1/5 bg-gray-200 p-2 lg:block">
+      <section className="hidden w-1/5 bg-gray-200 p-2 lg:block lg:max-w-[24rem] lg:flex-1">
         <div className="bg-gray-200 p-2">
           <DashboardRankingChart
             onShowDetails={setSelectedCandidateIndex}
@@ -71,7 +71,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </div>
         </div>
       </section>
-      <section className="relative flex min-h-[45svh] items-center justify-center bg-black/90 lg:h-auto lg:w-[55%]">
+      <section className="relative flex min-h-[45svh] items-center justify-center bg-black/90 lg:h-auto lg:min-w-[40%] lg:flex-1">
         <h1 className="absolute top-0 w-full bg-black/50 text-center text-3xl font-bold text-white lg:text-5xl">
           {worldcup.title}
         </h1>
@@ -156,13 +156,14 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           })}
         </ul>
       </section>
-      <section className="flex-col overflow-y-scroll bg-white p-3 lg:h-full lg:w-1/4 lg:flex-grow-0 lg:p-8">
+      <section className="flex-col overflow-y-scroll bg-white p-3 lg:h-full lg:max-w-[28rem] lg:flex-1 lg:p-8">
         <div className="mb-4 flex gap-1">
-          <LinkButton className="w-full text-sm lg:text-base" href={`/`} variant="primary" size="sm">
-            <Globe size="1.2rem" />새 월드컵 찾기
+          <LinkButton className="w-full text-sm lg:h-10 lg:text-base" href={`/`} variant="primary" size="sm">
+            <Globe size="1.2rem" />
+            월드컵 찾기
           </LinkButton>
           <Button
-            className="w-full text-sm lg:text-base"
+            className="w-full text-sm lg:h-10 lg:text-base"
             variant="outline"
             size="sm"
             onClick={() => setShareWorldcupModal(true)}
@@ -180,7 +181,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
             href={`/wc/${worldcup.id}`}
             variant="ghost"
             size="sm"
-            className="w-full text-sm lg:text-base"
+            className="w-full text-sm lg:h-10 lg:text-base"
           >
             <RotateCcw color="#334155" size="1.2rem" />
             다시 하기
