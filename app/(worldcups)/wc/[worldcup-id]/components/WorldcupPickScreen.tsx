@@ -99,6 +99,7 @@ export default function WorldcupPickScreen({ className }: Props) {
             } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileShrinkTop lg:animate-shrinkRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''}`}
           >
             <CandidateMedia
+              key={leftCandidate.id}
               screenMode={matchStatus === 'END' ? false : true}
               path={leftCandidate.path}
               mediaType={leftCandidate.mediaType}
@@ -140,6 +141,7 @@ export default function WorldcupPickScreen({ className }: Props) {
             } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''}`}
           >
             <CandidateMedia
+              key={rightCandidate.id}
               screenMode={matchStatus === 'END' ? false : true}
               path={rightCandidate.path}
               mediaType={rightCandidate.mediaType}
