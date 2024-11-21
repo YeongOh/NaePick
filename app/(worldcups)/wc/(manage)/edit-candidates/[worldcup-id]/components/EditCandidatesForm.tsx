@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
+import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -21,10 +22,10 @@ import FormError from '@/app/ui/FormError';
 import LinkButton from '@/app/ui/LinkButton';
 import Spinner from '@/app/ui/Spinner';
 import dayjs from '@/app/utils/dayjs';
-import EditImageButton from './EditImageButton';
-import EditVideoButton from './EditVideoButton';
-import UploadImageZone from './UploadImageZone';
-import UploadVideoZone from './UploadVideoZone';
+import EditFileButton from './EditFileButton';
+import EditLinkButton from './EditLinkButton';
+import UploadFileZone from './UploadFileZone';
+import UploadLinkZone from './UploadLinkZone';
 import { CandidateDataSchema, TCandidateDataSchema } from '../../../type';
 import { translateMediaType } from '../../../utils';
 
@@ -64,6 +65,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
   } = useForm<TCandidateDataSchema>({
     resolver: zodResolver(CandidateDataSchema),
     mode: 'onChange',
+    values: { candidates },
   });
   const { fields } = useFieldArray({
     control,
@@ -126,8 +128,8 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
         className="rounded-md bg-gray-50 p-6"
         onKeyDown={handleFormKeyDown}
       >
-        <UploadImageZone worldcupId={worldcupId} isLoading={isLoading} setIsLoading={setIsLoading} />
-        <UploadVideoZone worldcupId={worldcupId} isLoading={isLoading} setIsLoading={setIsLoading} />
+        <UploadFileZone worldcupId={worldcupId} isLoading={isLoading} setIsLoading={setIsLoading} />
+        <UploadLinkZone worldcupId={worldcupId} isLoading={isLoading} setIsLoading={setIsLoading} />
         <h2 className="mb-2 text-base font-semibold text-slate-700">
           {count === 0 ? '아직 후보가 충분하지 않네요!' : `후보 ${count}명`}
         </h2>
@@ -143,7 +145,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
         ) : null}
         <ul>
           {candidates.map((candidate, candidateIndex) => (
-            <li key={`${candidate.id}/${candidate.path}`}>
+            <li key={candidate.id}>
               <div className="mb-4 flex items-center rounded-md border bg-gray-100 p-2">
                 <div className="relative h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-md">
                   <CandidateThumbnail
@@ -185,7 +187,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                       <div>{dayjs(candidate.createdAt).format('YYYY-MM-DD')}</div>
                     </div>
                     <div className="flex gap-2">
-                      <EditVideoButton
+                      <EditLinkButton
                         worldcupId={worldcupId}
                         candidateId={candidate.id}
                         originalPath={candidate.path}
@@ -194,7 +196,7 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                         onChangeVideoInputIndex={handleOnChangeUpdateVideoInputIndex}
                         showVideoURLInput={showUpdateVideoInputIndex === candidateIndex}
                       />
-                      <EditImageButton
+                      <EditFileButton
                         worldcupId={worldcupId}
                         candidateId={candidate.id}
                         originalPath={candidate.path}
@@ -208,8 +210,12 @@ export default function EditCandidatesForm({ worldcupId, candidates, page, count
                           setSelectedCandidateToDelete(candidate);
                           setShowDeleteConfirmModal(true);
                         }}
+                        aria-label="후보 삭제"
                       >
-                        삭제
+                        <div className="sm:hidden">
+                          <Trash2 size="1.2rem" />
+                        </div>
+                        <div className="hidden sm:block">삭제</div>
                       </Button>
                     </div>
                   </div>

@@ -22,6 +22,24 @@ export async function getSignedUrlForImage(key: string, fileType: string) {
   }
 }
 
+export async function getSignedUrlForVideo(key: string, fileType: string) {
+  try {
+    const params = {
+      Bucket: videoBucket,
+      Key: key,
+      ContentType: fileType,
+    };
+    const command = new PutObjectCommand(params);
+    const url = await getSignedUrl(S3client, command, {
+      expiresIn: 300, // 5분
+    });
+
+    return url;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function listImageFiles(key: string) {
   try {
     const params = {

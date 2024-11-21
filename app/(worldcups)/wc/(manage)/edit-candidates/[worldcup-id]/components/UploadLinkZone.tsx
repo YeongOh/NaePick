@@ -19,7 +19,7 @@ interface Props {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function UploadVideoZone({ worldcupId, isLoading, setIsLoading }: Props) {
+export default function UploadLinkZone({ worldcupId, isLoading, setIsLoading }: Props) {
   const [showYoutubeTimeInput, setShowYoutubeTimeInput] = useState(false);
   const [youtubeStartTime, setShowYoutubeStartTime] = useState(0);
   const [youtubeEndTime, setShowYoutubeEndTime] = useState(0);
@@ -116,7 +116,7 @@ export default function UploadVideoZone({ worldcupId, isLoading, setIsLoading }:
 
   return (
     <>
-      <h2 className="mb-2 text-base font-semibold text-slate-700">후보 동영상 추가</h2>
+      <h2 className="mb-2 text-base font-semibold text-slate-700">후보 링크 업로드</h2>
       <div className="relative mb-4 flex cursor-pointer items-center rounded-md border bg-gray-100 p-2 text-base">
         <input
           id="videoURL"
@@ -175,7 +175,7 @@ export default function UploadVideoZone({ worldcupId, isLoading, setIsLoading }:
       <div className="mb-6 text-base text-slate-500">
         <h2 className="mb-2 flex items-center gap-1 font-semibold text-slate-500">
           <Info size={'1rem'} />
-          동영상 주소 형식
+          링크 업로드 안내
         </h2>
         <ul className="pl-2">
           <li className="flex items-center gap-1">
@@ -189,7 +189,7 @@ export default function UploadVideoZone({ worldcupId, isLoading, setIsLoading }:
             <img src={CHZZK_THUMBNAIL_URL} width={20} height={20} alt={'CHZZK logo'} />
             치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
           </li>
-          <li className="">- Imgur와 치지직의 썸네일 생성에는 최소 3~5초가 걸릴 수 있습니다.</li>
+          <li className="">- Imgur, 치지직 썸네일 생성 시간: 약 3~5초</li>
           <li className="">- 유튜브 주소를 입력할 시 시작 및 종료 시간을 입력하는 설정이 팝업됩니다.</li>
         </ul>
       </div>

@@ -1,12 +1,17 @@
 'use client';
 
 import { Dispatch, SetStateAction, useCallback } from 'react';
-import { ImageUp, Info } from 'lucide-react';
+import { extname } from 'path';
+import { Info, Upload } from 'lucide-react';
 import { FileRejection, FileWithPath, useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 import { CANDIDATE_NAME_MAX_LENGTH } from '@/app/constants';
 import { excludeFileExtension } from '@/app/utils';
-import { createCandidateAction, getSignedUrlForCandidateImage } from '../actions';
+import {
+  createCandidateAction,
+  getSignedUrlForCandidateImage,
+  getSignedUrlForCandidateVideo,
+} from '../actions';
 
 interface Props {
   worldcupId: string;
@@ -14,21 +19,19 @@ interface Props {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function UploadImageZone({ worldcupId, isLoading, setIsLoading }: Props) {
+export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: Props) {
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
-      const imageUploadPromises: Promise<void>[] = [];
-
       if (isLoading) {
-        toast.error('이미지 업로드 처리 중입니다.');
+        toast.error('파일 업로드 처리 중입니다.');
         return;
       }
       setIsLoading(true);
-      acceptedFiles.forEach(async (acceptedFile) => {
-        imageUploadPromises.push(uploadImage(acceptedFile, worldcupId));
-      });
 
       try {
+        const imageUploadPromises = acceptedFiles.map(async (acceptedFile) => {
+          uploadImage(acceptedFile, worldcupId);
+        });
         const results = await Promise.allSettled(imageUploadPromises);
       } catch (error) {
         console.error(error);
@@ -44,7 +47,16 @@ export default function UploadImageZone({ worldcupId, isLoading, setIsLoading }:
           return;
         }
 
-        const result = await getSignedUrlForCandidateImage(worldcupId, file.type, file.path as string);
+        const extension = extname(file.name);
+        let result;
+        let mediaType;
+        if (extension === '.mp4') {
+          result = await getSignedUrlForCandidateVideo(worldcupId, file.type, file.path as string);
+          mediaType = 'cdn_video';
+        } else {
+          result = await getSignedUrlForCandidateImage(worldcupId, file.type, file.path as string);
+          mediaType = 'cdn_img';
+        }
         const { url, path } = result;
         if (!url) throw new Error('서버 에러');
 
@@ -60,7 +72,7 @@ export default function UploadImageZone({ worldcupId, isLoading, setIsLoading }:
         }
         await createCandidateAction({
           name: filenameWithoutExtension,
-          mediaType: 'cdn_img',
+          mediaType,
           worldcupId,
           path,
         });
@@ -78,15 +90,14 @@ export default function UploadImageZone({ worldcupId, isLoading, setIsLoading }:
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    maxSize: 10485760,
+    maxSize: 10485760, // 10MB
     maxFiles: 10,
     accept: {
       'image/png': [],
       'image/jpg': [],
       'image/jpeg': [],
       'image/webp': [],
-      'image/svg': [],
-      'image/tiff': [],
+      'video/mp4': [],
     },
     onDrop,
     onDropRejected,
@@ -95,24 +106,26 @@ export default function UploadImageZone({ worldcupId, isLoading, setIsLoading }:
 
   return (
     <>
-      <h2 className="mb-2 text-base font-semibold text-slate-700">후보 이미지 추가</h2>
+      <h2 className="mb-2 text-base font-semibold text-slate-700">후보 파일 업로드</h2>
       <div
         className="relative mb-4 cursor-pointer rounded-md border bg-white p-4 text-base transition-colors hover:bg-gray-50"
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        <div className="flex items-center justify-center gap-2">
-          <ImageUp color="#6d6d6d" size="1.2rem" />
-          <p className="text-slate-700">이미지 파일을 드롭하거나 클릭해서 업로드</p>
+        <div className="flex items-center justify-center gap-2 text-slate-700">
+          <Upload size="1.2rem" />
+          <p>파일을 드롭하거나 클릭하여 업로드하세요.</p>
         </div>
       </div>
       <div className="mb-6 text-base text-slate-500">
         <h2 className="mb-2 flex items-center gap-1 font-semibold text-slate-500">
           <Info size={'1rem'} />
-          이미지 업로드 안내
+          파일 업로드 안내
         </h2>
-        <p className="ml-2">- 파일 크기 제한은 1MB입니다.</p>
-        <p className="ml-2">- 한 번에 업로드할 수 있는 파일 개수는 10개입니다.</p>
+        <p className="ml-2">- 지원되는 파일 형식: JPG, JPEG, WEBP, PNG, MP4</p>
+        <p className="ml-2">- 파일 크기 제한: 10MB</p>
+        <p className="ml-2">- 한 번에 업로드할 수 있는 파일 개수: 최대 10개</p>
+        <p className="ml-2">- MP4 파일의 썸네일 생성 시간: 약 3~5초 (새로고침 필요) </p>
       </div>
     </>
   );

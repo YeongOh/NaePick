@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Link } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { IoLogoYoutube } from 'react-icons/io';
 import { crawlChzzkThumbnailURL } from '@/app/lib/videos/chzzk';
@@ -27,7 +28,7 @@ interface UpdateVideoParams {
   mediaType: string;
 }
 
-export default function EditVideoButton({
+export default function EditLinkButton({
   originalPath,
   worldcupId,
   candidateId,
@@ -147,13 +148,17 @@ export default function EditVideoButton({
         size="sm"
         className="relative"
         onClick={() => onChangeVideoInputIndex(candidateIndex)}
+        aria-label="주소 수정"
       >
         {isLoading ? (
           <div className="absolute left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
             <Spinner />
           </div>
         ) : null}
-        동영상 수정
+        <div className="sm:hidden">
+          <Link size="1.2rem" />
+        </div>
+        <div className="hidden sm:block">주소 수정</div>
       </Button>
       {showVideoURLInput && !isLoading ? (
         <>

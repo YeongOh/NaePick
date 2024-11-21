@@ -1,10 +1,8 @@
 'use server';
 
 import path from 'path';
-
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
-
 import { OBJECT_ID_LENGTH } from '@/app/constants';
 import {
   createCandidate,
@@ -13,7 +11,7 @@ import {
   updateCandidateNames,
 } from '@/app/lib/candidate/service';
 import { getSession } from '@/app/lib/session';
-import { deleteImage, deleteVideo, getSignedUrlForImage } from '@/app/lib/storage';
+import { deleteImage, deleteVideo, getSignedUrlForImage, getSignedUrlForVideo } from '@/app/lib/storage';
 import { verifyWorldcupOwner } from '@/app/lib/worldcup/auth';
 import { mp4toJpg } from '@/app/utils';
 import { CandidateDataSchema, TCandidateDataSchema } from '../../type';
@@ -31,6 +29,22 @@ export async function getSignedUrlForCandidateImage(worldcupId: string, fileType
   const key = `worldcups/${worldcupId}/${objectId}${extname}`;
 
   const url = await getSignedUrlForImage(key, fileType);
+  return { url, path: key };
+}
+
+export async function getSignedUrlForCandidateVideo(worldcupId: string, fileType: string, filePath: string) {
+  const session = await getSession();
+  if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
+
+  const isVerified = await verifyWorldcupOwner(worldcupId, session.userId);
+  if (!isVerified) throw new Error('올바르지 않은 접근입니다.');
+
+  const extname = path.extname(filePath);
+
+  const objectId = nanoid(OBJECT_ID_LENGTH);
+  const key = `worldcups/${worldcupId}/${objectId}${extname}`;
+
+  const url = await getSignedUrlForVideo(key, fileType);
   return { url, path: key };
 }
 

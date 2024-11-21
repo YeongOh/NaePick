@@ -15,7 +15,7 @@ interface Props {
 }
 
 const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
-  { screenMode, path, name, mediaType, allowVideoControl, onYouTubePlay }: Props,
+  { screenMode, path, name, mediaType, onYouTubePlay }: Props,
   ref,
 ) {
   const [youTubePlayer, setYouTubePlayer] = useState<YouTubePlayer | null>(null);
@@ -45,8 +45,8 @@ const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
             autoPlay
             playsInline
             loop
-            muted
-            controls={allowVideoControl}
+            muted={screenMode}
+            controls={!screenMode}
           >
             <source src={`https://cdn.naepick.co.kr/${path}`} type="video/mp4" />
           </video>

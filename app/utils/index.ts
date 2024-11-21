@@ -9,6 +9,10 @@ export function formatBytes(bytes: number, decimals: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+export function extname(fileName: string): string {
+  return fileName.slice(fileName.lastIndexOf('.'));
+}
+
 export function excludeFileExtension(fileName: string): string {
   return fileName.slice(0, fileName.lastIndexOf('.'));
 }
