@@ -20,7 +20,7 @@ export default function WorldcupCard({ worldcupCard, className, type = 'default'
   return (
     <WorldcupCardContext.Provider value={{ worldcupCard, type }}>
       <li className={clsx('rounded-xl p-1 transition-colors', className)}>
-        <Link href={`/wc/${id}`} onClick={(e) => e.stopPropagation()}>
+        <Link href={`/wc/${id}`} onClick={(e) => e.stopPropagation()} tabIndex={-1}>
           <WorldcupCardThumbnail />
         </Link>
         <div className="w-full">

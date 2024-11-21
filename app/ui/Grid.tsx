@@ -9,7 +9,7 @@ export default function Grid({ children, className }: Props) {
   return (
     <ul
       className={clsx(
-        'grid grid-cols-card-12rem justify-center gap-2 sm:grid-cols-card-14rem md:grid-cols-card-16rem lg:grid-cols-card-18rem',
+        'grid-cols-card sm:grid-cols-card-sm md:grid-cols-card-md grid justify-center gap-x-2 gap-y-8 md:gap-y-14 lg:gap-x-3 lg:gap-y-20',
         className,
       )}
     >

@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
-  variant: 'primary' | 'outline' | 'ghost' | 'delete';
+  variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'delete';
   pending?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
@@ -24,6 +24,8 @@ export default function Button({ className, variant, children, pending, size = '
 
         variant === 'primary' &&
           'bg-primary-500 text-white transition-colors hover:bg-primary-600 active:bg-primary-700',
+        variant === 'secondary' &&
+          'bg-secondary-500 text-white transition-colors hover:bg-secondary-600 active:bg-secondary-700',
         variant === 'outline' &&
           'border bg-white text-slate-700 transition-colors hover:bg-gray-50 active:bg-gray-100',
         variant === 'ghost' &&

@@ -45,7 +45,7 @@ export default function MainContent({ worldcups, nextCursor }: Props) {
       </Suspense>
       <Grid>
         {[...worldcups, ...newWorldcups].map((worldcupCard) => (
-          <WorldcupCard className="mb-4" key={worldcupCard.id} worldcupCard={worldcupCard} />
+          <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
       </Grid>
       {hasNextPage && (

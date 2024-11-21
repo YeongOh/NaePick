@@ -23,7 +23,7 @@ export default function DashboardRankingChart({ onShowDetails, candidates, selec
         return (
           <li
             className={`flex cursor-pointer items-center border-b py-1 text-base transition-colors ${
-              isSelected ? 'bg-primary-200' : 'bg-white hover:bg-primary-50'
+              isSelected ? 'bg-secondary-100' : 'hover:bg-secondary-100 bg-white'
             }`}
             key={candidate.id + i}
             onClick={() => onShowDetails(i)}

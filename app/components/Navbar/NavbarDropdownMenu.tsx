@@ -26,19 +26,19 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
           <ul className="font-lg absolute right-0 top-10 z-50 flex w-60 cursor-pointer flex-col rounded-lg border bg-white p-2 text-left text-base font-semibold text-slate-700 shadow">
             <Link
               href="/auth/edit"
-              className="dropdown-button group my-0.5 flex items-center gap-2 rounded border-b p-2 hover:bg-primary-100 active:bg-primary-200"
+              className="dropdown-button hover:bg-secondary-50 active:bg-secondary-100 group my-0.5 flex items-center gap-2 rounded border-b p-2"
               onClick={handleToggleDropdown}
             >
               <Avatar profilePath={profilePath} alt={nickname} size="sm" />
               <div className="flex flex-col gap-1 pl-1">
                 <div>{nickname}</div>
                 <div className="text-sm font-normal">{email}</div>
-                <div className="font-normal text-blue-500 group-hover:underline">회원정보 관리</div>
+                <div className="text-secondary-500 font-normal group-hover:underline">회원정보 관리</div>
               </div>
             </Link>
             <Link
               href="/wc/create"
-              className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-primary-700 hover:bg-primary-100 active:bg-primary-200"
+              className="dropdown-button hover:bg-secondary-50 active:bg-secondary-100 my-0.5 flex items-center gap-2 rounded p-2 text-primary-700"
               onClick={handleToggleDropdown}
             >
               <SquarePlus />
@@ -46,7 +46,7 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
             </Link>
             <Link
               href={`/wc/users/${userId}`}
-              className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-primary-100 active:bg-primary-200"
+              className="dropdown-button hover:bg-secondary-50 active:bg-secondary-100 my-0.5 flex items-center gap-2 rounded p-2"
               onClick={handleToggleDropdown}
             >
               <Trophy size="1.5rem" />
@@ -54,7 +54,7 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
             </Link>
             <Link
               href={`/wc/favourites`}
-              className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-primary-100 active:bg-primary-200"
+              className="dropdown-button hover:bg-secondary-50 active:bg-secondary-100 my-0.5 flex items-center gap-2 rounded p-2"
               onClick={handleToggleDropdown}
             >
               <Star size="1.5rem" />
@@ -65,7 +65,7 @@ export default function NavbarDropdownMenu({ open, profilePath, nickname, userId
                 signout();
                 handleToggleDropdown();
               }}
-              className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-primary-100 active:bg-primary-200"
+              className="dropdown-button hover:bg-secondary-50 active:bg-secondary-100 flex items-center gap-2 rounded p-2 text-left"
             >
               <LogOut size="1.5rem" /> 로그아웃
             </button>

@@ -4,6 +4,7 @@ import { forwardRef, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -204,10 +205,13 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                   onClick={() => {
                     onLikeComment(comment.id, !comment.isLiked);
                   }}
-                  className="flex h-8 w-8 items-center justify-center"
+                  className={clsx(
+                    'flex h-8 w-8 items-center justify-center',
+                    comment.isLiked ? 'text-secondary-500' : 'text-slate-700',
+                  )}
                   type="button"
                 >
-                  <Heart color={comment.isLiked ? '#f87171' : '#6b7280'} size="1.2rem" />
+                  <Heart size="1.2rem" />
                 </button>
                 <span className="mr-2 text-base text-gray-500">{comment.likeCount}</span>
                 <button type="button" className="text-sm text-slate-700" onClick={() => setIsReplying(true)}>
@@ -224,7 +228,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
                 }
                 setShowReplies((prev) => !prev);
               }}
-              className="mb-1 flex gap-1 text-base text-blue-500 hover:text-blue-600 active:text-blue-700"
+              className="mb-1 flex gap-1 text-base text-secondary-500 hover:text-secondary-600 active:text-secondary-700"
             >
               {showReplies ? <ChevronUp /> : <ChevronDown />} 답글 {comment.replyCount}개
             </button>

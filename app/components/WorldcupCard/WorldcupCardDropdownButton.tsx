@@ -14,7 +14,7 @@ export default function WorldcupCardMenuButton() {
     <div className="relative">
       <button
         type="button"
-        className="dropdown-menu-toggle flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:border hover:bg-primary-50 active:bg-primary-200"
+        className="dropdown-menu-toggle hover:bg-secondary-50 active:bg-secondary-50 flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:border"
         onClick={() => toggleDropdown(id)}
       >
         <EllipsisVertical size="1.2rem" />

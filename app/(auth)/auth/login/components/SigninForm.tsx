@@ -66,7 +66,7 @@ export default function SigninForm() {
       <div className="mt-4 flex justify-center gap-2 text-center text-base text-gray-500">
         아직 회원이 아니신가요?
       </div>
-      <Link className="mt-1 text-center text-base text-blue-600 hover:underline" href={'/auth/signup'}>
+      <Link className="text-secondary-500 mt-1 text-center text-base hover:underline" href={'/auth/signup'}>
         회원가입하기
       </Link>
     </form>

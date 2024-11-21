@@ -13,14 +13,14 @@ export default function NavigationFilter() {
   const { createQueryString, deleteQueryString } = useQueryString();
 
   return (
-    <nav className="m-2 flex items-center gap-2 p-2">
+    <nav className="my-4 flex items-center gap-2 p-2">
       <Link
         href={'/search?' + createQueryString('sort', 'popular')}
         className={clsx(
-          'rounded px-3 py-2 text-base',
+          'rounded-md px-3 py-2 text-base font-semibold',
           searchParams.get('sort') === 'popular' || !searchParams.has('sort')
             ? 'bg-primary-500 text-white'
-            : 'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100',
+            : 'border bg-white text-slate-600 hover:bg-gray-50 active:bg-gray-100',
         )}
       >
         인기
@@ -28,17 +28,17 @@ export default function NavigationFilter() {
       <Link
         href={'/search?' + createQueryString('sort', 'latest')}
         className={clsx(
-          'rounded px-3 py-2 text-base',
+          'rounded-md px-3 py-2 text-base font-semibold',
           searchParams.get('sort') === 'latest'
             ? 'bg-primary-500 text-white'
-            : 'border bg-white text-slate-700 hover:bg-gray-50 active:bg-gray-100',
+            : 'border bg-white text-slate-600 hover:bg-gray-50 active:bg-gray-100',
         )}
       >
         최신
       </Link>
       {searchParams.get('category') ? (
         <Link
-          className="flex items-center justify-center rounded bg-primary-500 px-3 py-2 text-base text-white"
+          className="flex items-center justify-center rounded-md bg-primary-500 px-3 py-2 text-base font-semibold text-white"
           href={'/search?' + deleteQueryString('category')}
         >
           {translateCategory(searchParams.get('category') || '')}
@@ -47,7 +47,7 @@ export default function NavigationFilter() {
       ) : (
         <Link
           href="/category"
-          className="rounded border bg-white px-3 py-2 text-base text-slate-700 hover:bg-gray-50 active:bg-gray-100"
+          className="rounded-md border bg-white px-3 py-2 text-base font-semibold text-slate-600 hover:bg-gray-50 active:bg-gray-100"
         >
           카테고리
         </Link>

@@ -30,7 +30,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     queryKey: ['comment-count', { worldcupId }],
     queryFn: () => getCommentCount(worldcupId),
   });
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['comments', { worldcupId }],
     queryFn: ({ pageParam }) => getComments(worldcupId, userId, pageParam),
     initialPageParam: '',
@@ -158,14 +158,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           ))}
         </ul>
       ) : null}
-      {isLoading || isFetchingNextPage ? (
-        <div className="relative mt-10 flex items-center justify-center">
-          <div className="absolute">
-            <Spinner />
-          </div>
+      {hasNextPage && (
+        <div ref={ref} className="flex items-center justify-center">
+          {isFetching && <Spinner />}
         </div>
-      ) : (
-        <div ref={ref} />
       )}
       <DeleteConfirmModal
         title={'해당 댓글을 정말로 삭제하시겠습니까?'}

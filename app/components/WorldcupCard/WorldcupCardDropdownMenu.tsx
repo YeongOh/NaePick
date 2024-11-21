@@ -36,7 +36,7 @@ export default function WorldcupCardDropdownMenu() {
       {open && (
         <ul className="dropdown-menu absolute right-0 z-50 flex w-36 cursor-pointer flex-col rounded-lg border bg-white p-2 text-left text-base text-slate-700 shadow">
           <Link
-            className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-primary-100 active:bg-primary-200"
+            className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-secondary-50 active:bg-secondary-100"
             href={`/wc/${id}/stats`}
           >
             <ChartNoAxesColumnDecreasing size="1.2rem" />
@@ -44,7 +44,7 @@ export default function WorldcupCardDropdownMenu() {
           </Link>
           {type !== 'favourite' && (
             <button
-              className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-primary-100 active:bg-primary-200"
+              className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-secondary-50 active:bg-secondary-100"
               onClick={() => {
                 toggleDropdown(dropdownId);
                 addWorldcupFavouriteAction(id)
@@ -57,7 +57,7 @@ export default function WorldcupCardDropdownMenu() {
             </button>
           )}
           <button
-            className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-primary-100 active:bg-primary-200"
+            className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-secondary-50 active:bg-secondary-100"
             onClick={() => {
               setShowShareWorldcupModal(true);
               toggleDropdown(dropdownId);
@@ -69,7 +69,7 @@ export default function WorldcupCardDropdownMenu() {
           {type === 'update' && (
             <>
               <Link
-                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-primary-700 hover:bg-primary-100 active:bg-primary-200"
+                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-primary-700 hover:bg-secondary-50 active:bg-secondary-100"
                 href={`/wc/edit/${id}`}
               >
                 <Settings size="1.2rem" />
@@ -80,7 +80,7 @@ export default function WorldcupCardDropdownMenu() {
                   setShowDeleteWorldcupConfirmModal(true);
                   toggleDropdown(dropdownId);
                 }}
-                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-red-500 hover:bg-primary-100 active:bg-primary-200"
+                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-red-500 hover:bg-secondary-50 active:bg-secondary-100"
               >
                 <Trash2 size="1.2rem" />
                 삭제하기
@@ -90,7 +90,7 @@ export default function WorldcupCardDropdownMenu() {
           {type === 'favourite' && (
             <>
               <button
-                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-gray-500 hover:bg-primary-100 active:bg-primary-200"
+                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-gray-500 hover:bg-secondary-50 active:bg-secondary-100"
                 onClick={() => {
                   removeWorldcupFavouriteAction(id);
                   toggleDropdown(dropdownId);

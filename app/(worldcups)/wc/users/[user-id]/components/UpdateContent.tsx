@@ -27,9 +27,9 @@ export default function UpdateContent({ worldcups, page, count }: Props) {
 
   return (
     <>
-      <Grid className="mt-12">
+      <Grid className="mt-16">
         {worldcups.map((worldcupCard) => (
-          <WorldcupCard className="mb-4" key={worldcupCard.id} worldcupCard={worldcupCard} type="update" />
+          <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} type="update" />
         ))}
       </Grid>
       <div className="mt-6">

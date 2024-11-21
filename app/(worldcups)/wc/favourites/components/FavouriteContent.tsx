@@ -29,7 +29,7 @@ export default function FavouriteContent({ worldcups, page, count }: Props) {
     <>
       <Grid className="mt-12">
         {worldcups.map((worldcupCard) => (
-          <WorldcupCard className="mb-4" key={worldcupCard.id} worldcupCard={worldcupCard} type="favourite" />
+          <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} type="favourite" />
         ))}
       </Grid>
       <div className="mt-6">

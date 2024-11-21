@@ -38,7 +38,7 @@ export default function SearchContent({ sort, category, query }: Props) {
       <NavigationFilter />
       <Grid>
         {[...worldcupCards].map((worldcupCard) => (
-          <WorldcupCard className="mb-4" key={worldcupCard.id} worldcupCard={worldcupCard} />
+          <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
       </Grid>
       {hasNextPage && (

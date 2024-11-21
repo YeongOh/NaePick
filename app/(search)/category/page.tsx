@@ -3,6 +3,7 @@ import { getCategoriesForSearch } from '@/app/lib/category/service';
 import MyImage from '@/app/ui/MyImage';
 import { translateCategory } from '@/app/utils';
 import CategoryLink from './components/CategoryLink';
+import Grid from '@/app/ui/Grid';
 
 export default async function Page() {
   const categories = await getCategoriesForSearch();
@@ -14,10 +15,10 @@ export default async function Page() {
   return (
     <section className="m-auto max-w-screen-2xl">
       <h1 className="mt-6 text-xl font-semibold text-primary-500">카테고리</h1>
-      <ul className="grid grid-cols-category-12rem justify-center gap-4">
+      <Grid>
         {categories.map(({ id, name, categoryCount }) => (
           <CategoryLink key={name} id={id} name={name}>
-            <div className="h-64 w-full overflow-hidden rounded-xl">
+            <div className="h-48 w-full overflow-hidden rounded-xl">
               <MyImage
                 className="size-full object-cover"
                 src={`category/${name}.webp`}
@@ -32,7 +33,7 @@ export default async function Page() {
             </div>
           </CategoryLink>
         ))}
-      </ul>
+      </Grid>
     </section>
   );
 }
