@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import clsx from 'clsx';
-import { Fullscreen } from 'lucide-react';
+import { Fullscreen, Maximize, Minimize } from 'lucide-react';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { YouTubePlayer } from 'react-youtube';
 import CandidateMedia from '@/app/components/CandidateMedia';
@@ -196,11 +196,11 @@ export default function WorldcupPickScreen({ className }: Props) {
               fullScreenHandle.enter();
             }
           }}
-          className="absolute bottom-5 right-10 h-10 w-10 text-gray-300"
+          className="absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-white/30 lg:right-5"
           aria-label="전체화면"
           title="전체화면"
         >
-          <Fullscreen className="h-10 w-10 transition-transform hover:scale-110" />
+          {fullScreenHandle.active ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
         </button>
       </section>
     </FullScreen>
