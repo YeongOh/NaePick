@@ -47,6 +47,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
     router.push(`/wc/${worldcup.id}/stats?page=${page}`, {
       scroll: false,
     });
+    setSelectedCandidateIndex(0);
   };
 
   return (
