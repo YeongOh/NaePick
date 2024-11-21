@@ -69,7 +69,7 @@ export default function WorldcupPickScreen({ className }: Props) {
   return (
     <>
       <section className={`relative flex flex-col bg-black lg:flex-row ${className}`}>
-        <h2 className="pointer-events-none absolute z-40 w-full bg-black/50 text-center text-3xl font-bold leading-10 text-white lg:text-2clamp">
+        <h2 className="pointer-events-none absolute z-40 w-full bg-black/50 text-center text-xl font-bold text-white lg:text-5xl">
           {worldcup.title} {getRoundsDescription(round)}
         </h2>
         {matchStatus === 'IDLE' && (
@@ -82,7 +82,7 @@ export default function WorldcupPickScreen({ className }: Props) {
         )}
         {matchStatus === 'END' && finalWinner ? (
           <div className="pointer-events-none absolute bottom-1 left-1/2 z-40 h-fit w-full -translate-x-1/2 lg:bottom-1/4">
-            <h2 className="flex items-center justify-center text-2xl font-bold text-primary-500 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:text-clamp">
+            <h2 className="flex items-center justify-center text-xl font-bold text-primary-500 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:text-clamp">
               {finalWinner.name} 우승!
             </h2>
           </div>
@@ -121,7 +121,7 @@ export default function WorldcupPickScreen({ className }: Props) {
                 <figcaption
                   className={`${
                     matchStatus === 'PICK_LEFT' ? 'right-1/2 translate-x-1/2' : 'right-[20%]'
-                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-5xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
                 >
                   {leftCandidate.name}
                 </figcaption>
@@ -162,7 +162,7 @@ export default function WorldcupPickScreen({ className }: Props) {
                 <figcaption
                   className={`${
                     matchStatus === 'PICK_RIGHT' ? 'left-1/2 -translate-x-1/2' : 'left-[20%]'
-                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-3xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-5xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
                 >
                   {rightCandidate.name}
                 </figcaption>
