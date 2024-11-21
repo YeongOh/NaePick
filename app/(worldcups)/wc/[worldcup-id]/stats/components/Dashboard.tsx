@@ -86,10 +86,10 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
               </span>
             </div>
             <CandidateMedia
+              key={selectedCandidate.id}
               path={selectedCandidate?.path as string}
               name={selectedCandidate?.name as string}
               mediaType={selectedCandidate?.mediaType!}
-              allowVideoControl
             />
           </>
         ) : null}
