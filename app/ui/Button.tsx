@@ -28,8 +28,7 @@ export default function Button({ className, variant, children, pending, size = '
           'bg-secondary-500 text-white transition-colors hover:bg-secondary-600 active:bg-secondary-700',
         variant === 'outline' &&
           'border bg-white text-slate-700 transition-colors hover:bg-gray-50 active:bg-gray-100',
-        variant === 'ghost' &&
-          'bg-white text-slate-700 transition-colors hover:bg-gray-50 active:bg-gray-100',
+        variant === 'ghost' && 'text-slate-700 transition-colors hover:bg-gray-50 active:bg-gray-100',
         variant === 'delete' &&
           'border bg-red-500 text-white transition-colors hover:bg-red-600 active:bg-red-700',
 
