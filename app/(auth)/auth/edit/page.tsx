@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation';
-
 import { getSession } from '@/app/lib/session';
-
 import EditUserForm from './components/EditUserForm';
+
+export const metadata = {
+  title: '회원정보 관리',
+};
 
 export default async function Page() {
   const session = await getSession();

@@ -155,11 +155,14 @@ export default function EditUserForm({ nickname, userId, profilePath, email }: P
         type="button"
         onClick={() => router.back()}
         variant="outline"
-        className="mb-4 mt-2 w-full"
+        className="my-2 w-full"
         role="link"
       >
         돌아가기
       </Button>
+      <div className="my-2 flex justify-center gap-2 text-center text-base text-gray-500">
+        건의 및 문의: penny0723@naver.com
+      </div>
       <button
         type="button"
         onClick={() => setOpenDeleteAccountModal(true)}

@@ -11,8 +11,10 @@ const notoSansKr = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: '이상형 월드컵 NaePick, 내픽!',
-  description: '오픈 준비중입니다!',
+  title: {
+    template: '%s | 이상형 월드컵 NaePick, 내픽!',
+    default: '이상형 월드컵 NaePick, 내픽!',
+  },
 };
 
 export default function RootLayout({

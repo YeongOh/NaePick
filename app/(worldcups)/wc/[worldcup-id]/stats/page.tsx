@@ -1,6 +1,5 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-
 import Dashboard from '@/app/(worldcups)/wc/[worldcup-id]/stats/components/Dashboard';
 import Navbar from '@/app/components/Navbar/Navbar';
 import { getCandidatesForStat } from '@/app/lib/candidate/service';
@@ -18,7 +17,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   const worldcupId = params['worldcup-id'];
   const worldcup = await getWorldcup(worldcupId);
   return {
-    title: `${worldcup?.title} | 이상형 월드컵 NaePick`,
+    title: `${worldcup?.title} 랭크`,
     description: worldcup?.description || '',
   };
 }

@@ -5,6 +5,10 @@ import { getSession } from '@/app/lib/session';
 import LinkButton from '@/app/ui/LinkButton';
 import { getMyWorldcups } from './actions';
 
+export const metadata = {
+  title: '내 이상형 월드컵',
+};
+
 interface Props {
   params: { 'user-id': string };
   searchParams: {
@@ -39,10 +43,10 @@ export default async function Page({ params, searchParams }: Props) {
               이상형 월드컵을 만들어보세요.
             </div>
             <div className="flex w-36 flex-col items-center justify-center">
-              <LinkButton href="/wc/create" variant="primary" size="md" className="my-2">
+              <LinkButton href="/wc/create" variant="primary" size="md" className="my-2 w-full">
                 만들기
               </LinkButton>
-              <LinkButton href="/" variant="outline" size="md">
+              <LinkButton href="/" variant="outline" size="md" className="w-full">
                 돌아가기
               </LinkButton>
             </div>

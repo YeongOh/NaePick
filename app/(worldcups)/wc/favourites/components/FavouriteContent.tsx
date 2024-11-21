@@ -41,7 +41,6 @@ export default function FavouriteContent({ worldcups, page, count }: Props) {
           className=""
         />
       </div>
-      <footer className="h-16"></footer>
     </>
   );
 }

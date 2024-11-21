@@ -1,9 +1,13 @@
 import { notFound } from 'next/navigation';
 import { getCategoriesForSearch } from '@/app/lib/category/service';
+import Grid from '@/app/ui/Grid';
 import MyImage from '@/app/ui/MyImage';
 import { translateCategory } from '@/app/utils';
 import CategoryLink from './components/CategoryLink';
-import Grid from '@/app/ui/Grid';
+
+export const metadata = {
+  title: '카테고리',
+};
 
 export default async function Page() {
   const categories = await getCategoriesForSearch();
@@ -15,7 +19,7 @@ export default async function Page() {
   return (
     <section className="m-auto max-w-screen-2xl">
       <h1 className="mt-6 text-xl font-semibold text-primary-500">카테고리</h1>
-      <Grid>
+      <Grid noGap>
         {categories.map(({ id, name, categoryCount }) => (
           <CategoryLink key={name} id={id} name={name}>
             <div className="h-48 w-full overflow-hidden rounded-xl">

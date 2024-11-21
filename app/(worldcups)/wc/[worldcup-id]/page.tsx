@@ -1,11 +1,9 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-
 import WorldcupStarter from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupStarter';
 import Navbar from '@/app/components/Navbar/Navbar';
 import { getSession } from '@/app/lib/session';
 import { getWorldcup } from '@/app/lib/worldcup/service';
-
 import { WorldcupMatchProvider } from './hooks/useWorldcupMatch';
 
 interface Props {
@@ -16,7 +14,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   const worldcupId = params['worldcup-id'];
   const worldcup = await getWorldcup(worldcupId);
   return {
-    title: `${worldcup?.title} | 이상형 월드컵 NaePick`,
+    title: worldcup?.title,
     description: worldcup?.description || '',
   };
 }

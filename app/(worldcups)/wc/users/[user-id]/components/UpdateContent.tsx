@@ -41,7 +41,6 @@ export default function UpdateContent({ worldcups, page, count }: Props) {
           className=""
         />
       </div>
-      <footer className="h-16"></footer>
     </>
   );
 }

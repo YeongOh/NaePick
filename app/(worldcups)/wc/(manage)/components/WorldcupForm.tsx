@@ -37,10 +37,10 @@ export default function WorldcupForm({ categories, worldcup }: Props) {
   } = useForm<TWorldcupFormSchema>({
     resolver: zodResolver(WorldcupFormSchema),
     defaultValues: {
-      title: worldcup?.title ?? '',
+      title: worldcup?.title,
       description: worldcup?.description ?? '',
       publicity: worldcup?.publicity ?? 'public',
-      categoryId: worldcup?.categoryId ?? 0,
+      categoryId: worldcup?.categoryId,
     },
     mode: 'onChange',
   });
@@ -190,9 +190,7 @@ export default function WorldcupForm({ categories, worldcup }: Props) {
         )}
         aria-describedby="categoryId-error"
       >
-        <option value={0} disabled>
-          카테고리를 선택해주세요.
-        </option>
+        <option>카테고리를 선택해주세요.</option>
         {categories.map((category) => (
           <option key={`category ${category.id}`} value={category.id} className="text-base">
             {translateCategory(category.name)}

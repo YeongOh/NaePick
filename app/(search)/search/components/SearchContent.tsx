@@ -46,7 +46,6 @@ export default function SearchContent({ sort, category, query }: Props) {
           {isFetching && <Spinner />}
         </div>
       )}
-      <footer className="h-16"></footer>
     </>
   );
 }

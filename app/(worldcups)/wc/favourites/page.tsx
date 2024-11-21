@@ -5,6 +5,10 @@ import LinkButton from '@/app/ui/LinkButton';
 import { getMyWorldcupFavourites } from './actions';
 import FavouriteContent from './components/FavouriteContent';
 
+export const metadata = {
+  title: '즐겨찾기',
+};
+
 interface Props {
   searchParams: {
     page: string;

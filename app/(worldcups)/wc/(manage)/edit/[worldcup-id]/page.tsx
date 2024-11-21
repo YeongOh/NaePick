@@ -1,12 +1,19 @@
+import { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-
-import Navbar from '@/app/components/Navbar/Navbar';
 import { getCategories } from '@/app/lib/category/service';
 import { getSession } from '@/app/lib/session';
 import { getWorldcupForm } from '@/app/lib/worldcup/service';
-
 import WorldcupForm from '../../components/WorldcupForm';
 import WorldcupFormTab from '../../components/WorldcupFormTab';
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const worldcupId = params['worldcup-id'];
+  const worldcup = await getWorldcupForm(worldcupId);
+  return {
+    title: `${worldcup?.title} 정보 관리`,
+    description: worldcup?.description || '',
+  };
+}
 
 interface Props {
   params: { 'worldcup-id': string };
