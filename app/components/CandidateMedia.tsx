@@ -1,5 +1,6 @@
 import { forwardRef, useState } from 'react';
 
+import clsx from 'clsx';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 
 import MyImage from '@/app/ui/MyImage';
@@ -59,10 +60,13 @@ const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
       )}
       {mediaType === 'youtube' && (
         <div
-          className={`flex size-full justify-center ${screenMode ? 'items-start lg:pt-10' : 'items-center'}`}
+          className={clsx(
+            'flex size-full justify-center',
+            screenMode ? 'items-start lg:pt-10' : 'items-center',
+          )}
         >
           <YouTube
-            className={`max-h-full ${screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full'}`}
+            className={clsx('max-h-full', screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full')}
             opts={{
               height: '100%',
               width: '100%',
@@ -100,10 +104,13 @@ const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
       )}
       {mediaType === 'chzzk' && (
         <div
-          className={`flex size-full justify-center ${screenMode ? 'items-start lg:pt-10' : 'items-center'}`}
+          className={clsx(
+            'flex size-full justify-center',
+            screenMode ? 'items-start lg:pt-10' : 'items-center',
+          )}
         >
           <iframe
-            className={`max-h-full ${screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full'}`}
+            className={clsx('max-h-full', screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full')}
             onClick={(e) => e.stopPropagation()}
             src={`https://chzzk.naver.com/embed/clip/${path}`}
             title="CHZZK Player"

@@ -38,7 +38,7 @@ export default function WorldcupCardThumbnail() {
             />
             <div className="absolute bottom-0 h-auto w-full bg-black/30">
               <p
-                className="truncate px-1.5 text-center text-base font-semibold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                className="drop-shadow-text truncate px-1.5 text-center text-base font-semibold text-white"
                 title={leftName || ''}
               >
                 {leftName}
@@ -59,7 +59,7 @@ export default function WorldcupCardThumbnail() {
             />
             <div className="absolute bottom-0 h-auto w-full bg-black/30">
               <p
-                className="truncate px-1.5 text-center text-base font-semibold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]"
+                className="drop-shadow-text truncate px-1.5 text-center text-base font-semibold text-white"
                 title={rightName || ''}
               >
                 {rightName}

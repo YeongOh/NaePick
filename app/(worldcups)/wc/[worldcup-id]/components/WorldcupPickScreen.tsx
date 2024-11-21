@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-
+import clsx from 'clsx';
+import { Fullscreen } from 'lucide-react';
+import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { YouTubePlayer } from 'react-youtube';
-
 import CandidateMedia from '@/app/components/CandidateMedia';
+import Button from '@/app/ui/Button';
 import { delay } from '@/app/utils';
-
 import { submitMatchResult as submitMatchResult } from '../actions';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getRoundsDescription } from '../utils';
@@ -29,6 +30,7 @@ export default function WorldcupPickScreen({ className }: Props) {
   } = useWorldcupMatch();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
+  const fullScreenHandle = useFullScreenHandle();
 
   const [leftCandidate, rightCandidate] = [
     candidates[candidates.length - 2],
@@ -67,22 +69,27 @@ export default function WorldcupPickScreen({ className }: Props) {
   };
 
   return (
-    <>
-      <section className={`relative flex flex-col bg-black lg:flex-row ${className}`}>
-        <h2 className="pointer-events-none absolute z-40 w-full bg-black/50 text-center text-xl font-bold text-white lg:text-5xl">
+    <FullScreen handle={fullScreenHandle}>
+      <section className={clsx('relative flex flex-col bg-black lg:flex-row', className)}>
+        <h2
+          className={clsx(
+            'pointer-events-none absolute z-40 w-full bg-black/50 text-center text-xl font-bold text-white lg:text-5xl',
+            fullScreenHandle.active && 'top-8 lg:top-20',
+          )}
+        >
           {worldcup.title} {getRoundsDescription(round)}
         </h2>
         {matchStatus === 'IDLE' && (
           <div
             onClick={(e) => e.stopPropagation()}
-            className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]`}
+            className={`drop-shadow-text absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700`}
           >
             VS
           </div>
         )}
         {matchStatus === 'END' && finalWinner ? (
           <div className="pointer-events-none absolute bottom-1 left-1/2 z-40 h-fit w-full -translate-x-1/2 lg:bottom-1/4">
-            <h2 className="flex items-center justify-center text-xl font-bold text-primary-500 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:text-clamp">
+            <h2 className="drop-shadow-text flex items-center justify-center text-xl font-bold text-primary-500 lg:text-clamp">
               {finalWinner.name} 우승!
             </h2>
           </div>
@@ -94,9 +101,12 @@ export default function WorldcupPickScreen({ className }: Props) {
               if (matchStatus !== 'IDLE') return;
               handlePick('PICK_LEFT');
             }}
-            className={`group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end ${
-              matchStatus === 'PICK_LEFT' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''
-            } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileShrinkTop lg:animate-shrinkRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandTop lg:animate-expandLeft' : ''}`}
+            className={clsx(
+              'group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end',
+              matchStatus === 'PICK_LEFT' && 'animate-mobileExpandTop lg:animate-expandLeft',
+              matchStatus === 'PICK_RIGHT' && 'animate-mobileShrinkTop lg:animate-shrinkRight',
+              matchStatus === 'END' && 'animate-mobileExpandTop lg:animate-expandLeft',
+            )}
           >
             <CandidateMedia
               key={leftCandidate.id}
@@ -111,17 +121,19 @@ export default function WorldcupPickScreen({ className }: Props) {
               <>
                 {/* mobile */}
                 <figcaption
-                  className={`${
-                    matchStatus === 'PICK_LEFT' ? '' : 'bottom-6'
-                  } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+                  className={clsx(
+                    'drop-shadow-text pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white transition-colors group-active:text-primary-600 lg:hidden',
+                    matchStatus !== 'PICK_LEFT' && 'bottom-6',
+                  )}
                 >
                   {leftCandidate.name}
                 </figcaption>
                 {/* pc */}
                 <figcaption
-                  className={`${
-                    matchStatus === 'PICK_LEFT' ? 'right-1/2 translate-x-1/2' : 'right-[20%]'
-                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-5xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                  className={clsx(
+                    'drop-shadow-text pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-5xl text-clamp font-bold text-white transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block',
+                    matchStatus === 'PICK_LEFT' ? 'right-1/2 translate-x-1/2' : 'right-[20%]',
+                  )}
                 >
                   {leftCandidate.name}
                 </figcaption>
@@ -136,9 +148,12 @@ export default function WorldcupPickScreen({ className }: Props) {
               if (matchStatus !== 'IDLE') return;
               handlePick('PICK_RIGHT');
             }}
-            className={`group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start ${
-              matchStatus === 'PICK_LEFT' ? 'animate-mobileShrinkBottom lg:animate-shrinkLeft' : ''
-            } ${matchStatus === 'PICK_RIGHT' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''} ${matchStatus === 'END' ? 'animate-mobileExpandBottom lg:animate-expandRight' : ''}`}
+            className={clsx(
+              'group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start',
+              matchStatus === 'PICK_LEFT' && 'animate-mobileShrinkBottom lg:animate-shrinkLeft',
+              matchStatus === 'PICK_RIGHT' && 'animate-mobileExpandBottom lg:animate-expandRight',
+              matchStatus === 'END' && 'animate-mobileExpandBottom lg:animate-expandRight',
+            )}
           >
             <CandidateMedia
               key={rightCandidate.id}
@@ -152,17 +167,19 @@ export default function WorldcupPickScreen({ className }: Props) {
               <>
                 {/* mobile */}
                 <figcaption
-                  className={`${
-                    matchStatus === 'PICK_RIGHT' ? '' : 'top-6'
-                  } pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:hidden`}
+                  className={clsx(
+                    'drop-shadow-text pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white transition-colors group-active:text-primary-600 lg:hidden',
+                    matchStatus !== 'PICK_RIGHT' && 'top-6',
+                  )}
                 >
                   {rightCandidate.name}
                 </figcaption>
                 {/* pc */}
                 <figcaption
-                  className={`${
-                    matchStatus === 'PICK_RIGHT' ? 'left-1/2 -translate-x-1/2' : 'left-[20%]'
-                  } pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-5xl text-clamp font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block`}
+                  className={clsx(
+                    'drop-shadow-text pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-5xl text-clamp font-bold text-white transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block',
+                    matchStatus === 'PICK_RIGHT' ? 'left-1/2 -translate-x-1/2' : 'left-[20%]',
+                  )}
                 >
                   {rightCandidate.name}
                 </figcaption>
@@ -170,7 +187,22 @@ export default function WorldcupPickScreen({ className }: Props) {
             )}
           </figure>
         )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (fullScreenHandle.active) {
+              fullScreenHandle.exit();
+            } else {
+              fullScreenHandle.enter();
+            }
+          }}
+          className="absolute bottom-5 right-10 h-10 w-10 text-gray-300"
+          aria-label="전체화면"
+          title="전체화면"
+        >
+          <Fullscreen className="h-10 w-10 transition-transform hover:scale-110" />
+        </button>
       </section>
-    </>
+    </FullScreen>
   );
 }

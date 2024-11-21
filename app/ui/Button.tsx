@@ -5,7 +5,6 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
   variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'delete';
   pending?: boolean;
-  onClick?: () => void;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'icon';
 }

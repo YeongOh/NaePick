@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {
@@ -19,13 +20,14 @@ export default function Pagination({
   const higherEnd = currentPageNumber + range > totalPages ? totalPages : currentPageNumber + range;
 
   return (
-    <div className={`flex h-12 items-center justify-center gap-1 text-base text-slate-700 ${className}`}>
+    <div className={clsx('flex h-12 items-center justify-center gap-1 text-base text-slate-700', className)}>
       <button
         type="button"
         disabled={currentPageNumber === 1}
-        className={`flex h-10 w-14 items-center justify-center rounded ${
-          currentPageNumber === 1 ? '' : 'hover:bg-gray-50'
-        }`}
+        className={clsx(
+          'flex h-10 w-14 items-center justify-center rounded',
+          currentPageNumber !== 1 && 'hover:bg-gray-50',
+        )}
         onClick={() => onPageNumberClick(currentPageNumber - 1)}
       >
         <ChevronLeft color={currentPageNumber === 1 ? '#e5e7eb ' : undefined} />
@@ -37,11 +39,12 @@ export default function Pagination({
           <button
             type="button"
             key={`page-number ${pageNumber}`}
-            className={`h-10 w-10 rounded ${
+            className={clsx(
+              'h-10 w-10 rounded',
               isSelected
                 ? 'cursor-default bg-primary-500 font-semibold text-white'
-                : 'bg-white hover:bg-gray-50 active:bg-gray-100'
-            }`}
+                : 'bg-white hover:bg-gray-50 active:bg-gray-100',
+            )}
             onClick={() => onPageNumberClick(pageNumber)}
             tabIndex={isSelected ? -1 : 0}
           >
@@ -52,9 +55,10 @@ export default function Pagination({
       <button
         type="button"
         disabled={currentPageNumber === totalPages}
-        className={`flex h-10 w-14 items-center justify-center rounded ${
-          currentPageNumber === 1 ? '' : 'hover:bg-gray-50'
-        }`}
+        className={clsx(
+          'flex h-10 w-14 items-center justify-center rounded',
+          currentPageNumber !== 1 && 'hover:bg-gray-50',
+        )}
         onClick={() => onPageNumberClick(currentPageNumber + 1)}
       >
         <ChevronRight color={currentPageNumber === totalPages ? '#e5e7eb ' : undefined} />

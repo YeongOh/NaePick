@@ -29,11 +29,8 @@ const config: Config = {
         'card-sm': 'repeat(auto-fill, minmax(16rem, 1fr))',
         'card-16rem': 'repeat(auto-fill, minmax(18rem, 1fr))',
       },
-
-      extend: {
-        transitionProperty: {
-          width: 'width',
-        },
+      dropShadow: {
+        text: '0 1.2px 1.2px rgba(0, 0, 0, 0.8)',
       },
       colors: {
         primary: {
@@ -75,26 +72,8 @@ const config: Config = {
         shrinkLeft: {
           '100%': { width: '0%', transform: 'translateX(100%)' },
         },
-        mobileShrinkTop: {
-          '100%': { height: '0%', transform: 'translateY(100%)' },
-        },
-        mobileShrinkBottom: {
-          '100%': { height: '0%', transform: 'translateY(-100%)' },
-        },
         shrinkRight: {
           '100%': { width: '0%', transform: 'translateX(-100%)' },
-        },
-        expandRight: {
-          '0%': { width: '50%', 'justify-content': 'center' },
-          '100%': { width: '100%', 'justify-content': 'center' },
-        },
-        mobileExpandTop: {
-          '0%': { height: '50%', 'justify-content': 'center' },
-          '100%': { height: '100%', 'justify-content': 'center' },
-        },
-        mobileExpandBottom: {
-          '0%': { height: '50%', 'justify-content': 'center' },
-          '100%': { height: '100%', 'justify-content': 'center' },
         },
         expandLeft: {
           '0%': { width: '50%', 'justify-content': 'center' },
@@ -103,6 +82,26 @@ const config: Config = {
             'justify-content': 'center',
           },
         },
+        expandRight: {
+          '0%': { width: '50%', 'justify-content': 'center' },
+          '100%': { width: '100%', 'justify-content': 'center' },
+        },
+        mobileShrinkTop: {
+          '100%': { height: '0%', transform: 'translateY(100%)' },
+        },
+        mobileShrinkBottom: {
+          '100%': { height: '0%', transform: 'translateY(-100%)' },
+        },
+
+        mobileExpandTop: {
+          '0%': { height: '50%', 'justify-content': 'center' },
+          '100%': { height: '100%', 'justify-content': 'center' },
+        },
+        mobileExpandBottom: {
+          '0%': { height: '50%', 'justify-content': 'center' },
+          '100%': { height: '100%', 'justify-content': 'center' },
+        },
+
         modalTransition: {
           '0%': { opacity: '0' },
           '100%': { opacity: '100' },

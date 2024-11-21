@@ -77,7 +77,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
         </h1>
         {selectedCandidate ? (
           <>
-            <div className="absolute bottom-0 text-center text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:bottom-auto lg:top-20">
+            <div className="drop-shadow-text absolute bottom-0 text-center text-white lg:bottom-auto lg:top-20">
               <h2 className="text-xl font-bold lg:text-4xl">
                 {currentRank}등 {selectedCandidate.name} <br />
               </h2>
@@ -95,7 +95,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </>
         ) : null}
         {candidates.length === 0 ? (
-          <h2 className="absolute top-1/2 -translate-y-1/2 text-center text-3xl font-bold text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] lg:text-5xl">
+          <h2 className="drop-shadow-text absolute top-1/2 -translate-y-1/2 text-center text-3xl font-bold text-white lg:text-5xl">
             아직 후보가 존재하지 않습니다.
           </h2>
         ) : null}
