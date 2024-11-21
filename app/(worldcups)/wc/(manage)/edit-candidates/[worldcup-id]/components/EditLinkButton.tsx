@@ -133,8 +133,11 @@ export default function EditLinkButton({
       setVideoURL('');
       onChangeVideoInputIndex(null);
     } catch (error) {
-      console.error(error);
-      toast.error('잘못된 URL입니다.');
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('예상치 못한 오류로 인해 업로드를 할 수 없었습니다.');
+      }
     } finally {
       setIsLoading(false);
     }

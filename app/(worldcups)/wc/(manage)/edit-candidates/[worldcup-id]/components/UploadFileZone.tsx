@@ -90,7 +90,7 @@ export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: 
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    maxSize: 10485760, // 10MB
+    maxSize: 2097152, // 2MB
     maxFiles: 10,
     accept: {
       'image/png': [],
@@ -123,7 +123,7 @@ export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: 
           파일 업로드 안내
         </h2>
         <p className="ml-2">- 지원되는 파일 형식: JPG, JPEG, WEBP, PNG, MP4</p>
-        <p className="ml-2">- 파일 크기 제한: 10MB</p>
+        <p className="ml-2">- 파일 크기 제한: 2MB</p>
         <p className="ml-2">- 한 번에 업로드할 수 있는 파일 개수: 최대 10개</p>
         <p className="ml-2">- MP4 파일의 썸네일 생성 시간: 약 3~5초 (새로고침 필요) </p>
       </div>

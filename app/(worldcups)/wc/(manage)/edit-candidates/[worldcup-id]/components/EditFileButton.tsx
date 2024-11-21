@@ -74,7 +74,7 @@ export default function EditFileButton({ originalPath, worldcupId, candidateId, 
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
-    maxSize: 10485760, // 10MB
+    maxSize: 2097152, // 2MB
     accept: {
       'image/png': [],
       'image/jpg': [],

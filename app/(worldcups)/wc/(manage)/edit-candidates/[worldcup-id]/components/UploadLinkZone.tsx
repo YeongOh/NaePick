@@ -108,7 +108,11 @@ export default function UploadLinkZone({ worldcupId, isLoading, setIsLoading }: 
       }
       setVideoURL('');
     } catch (error) {
-      toast.error('잘못된 URL입니다.');
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('예상치 못한 오류로 인해 업로드를 할 수 없었습니다.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -190,6 +194,7 @@ export default function UploadLinkZone({ worldcupId, isLoading, setIsLoading }: 
             치지직: https://chzzk.naver.com/clips/v5xjPHhLjc
           </li>
           <li className="">- Imgur, 치지직 썸네일 생성 시간: 약 3~5초</li>
+          <li className="">- Imgur mp4 파일 용량 제한: 2MB</li>
           <li className="">- 유튜브 주소를 입력할 시 시작 및 종료 시간을 입력하는 설정이 팝업됩니다.</li>
         </ul>
       </div>

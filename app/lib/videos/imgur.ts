@@ -1,12 +1,9 @@
 'use server';
 
 import { PassThrough, Readable } from 'stream';
-
 import { Upload } from '@aws-sdk/lib-storage';
 import { nanoid } from 'nanoid';
-
 import { OBJECT_ID_LENGTH } from '@/app/constants';
-
 import { S3client, videoBucket } from '../storage/config';
 
 export async function downloadImgurUploadS3(imgurUrl: string, worldcupId: string) {
@@ -26,6 +23,10 @@ export async function downloadImgurUploadS3(imgurUrl: string, worldcupId: string
   nodeStream.pipe(passThrough);
   const contentType = response.headers.get('Content-Type') as string;
   const contentLength = response.headers.get('content-length');
+  if (Number(contentLength) >= 2097152) {
+    throw new Error('imgur은 동영상 파일의 크기는 2MB를 넘을 수 없습니다.');
+  }
+
   // mp4 upload => content type = video/mp4
   if (contentType !== 'video/mp4') {
     throw new Error('imgur은 mp4 동영상 파일만 지원합니다. 주소가 올바른지 확인해보세요.');
