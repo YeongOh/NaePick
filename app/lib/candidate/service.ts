@@ -1,9 +1,7 @@
 import 'server-only';
 import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
-
 import { CANDIDATE_ID_LENGTH } from '@/app/constants';
-
 import { db } from '../database';
 import { candidates, matchResults, mediaTypes } from '../database/schema';
 

@@ -41,7 +41,7 @@ export async function getLatestWorldcups({
   cursor?: any;
   query?: string;
 }) {
-  const DATA_PER_PAGE = 5;
+  const DATA_PER_PAGE = 20;
 
   const sqlChunks: SQL[] = [];
   sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);
@@ -98,7 +98,7 @@ export async function getPopularWorldcups({
   cursor?: any;
   query?: string;
 }) {
-  const DATA_PER_PAGE = 10;
+  const DATA_PER_PAGE = 20;
 
   const sqlChunks: SQL[] = [];
   sqlChunks.push(sql`WHERE ${worldcups.publicity} = 'public'`);
