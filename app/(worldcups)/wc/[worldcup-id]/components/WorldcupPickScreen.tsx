@@ -48,11 +48,12 @@ export default function WorldcupPickScreen({ className }: Props) {
 
     setMatchStatus(target);
     await delay(NEXT_ROUND_DELAY);
+
     const newCandidates = [winner, ...candidates.toSpliced(candidates.length - 2)];
     const newMatchResults = [...matchResult, { winnerId: winner.id, loserId: loser.id }];
-    console.log(newMatchResults);
     setCandidates(newCandidates);
     setBreakPoint(newCandidates, newMatchResults);
+
     if (round === 2) {
       setMatchStatus(MATCH_STATUS.END);
       setFinalWinnerCandidateId(winner.id);
