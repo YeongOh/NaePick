@@ -1,11 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import clsx from 'clsx';
 import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
 import ShareWorldcupModal from '@/app/components/Modal/ShareWorldcupModal';
-import { MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import { MATCH_STATUS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import Button from '@/app/ui/Button';
 import LinkButton from '@/app/ui/LinkButton';
 import CommentSection from './CommentSection';
@@ -27,14 +28,14 @@ export default function WorldcupStarter() {
   const handleRoundSumbit = async (selectedRound: number) => {
     const randomCandidates = await getRandomCandidates(worldcup.id, selectedRound);
     setCandidates(randomCandidates || []);
-    setMatchStatus('IDLE');
+    setMatchStatus(MATCH_STATUS.IDLE);
   };
 
   const handleWorldcupRestart = () => {
-    setMatchStatus('SELECTING_ROUNDS');
+    setMatchStatus(MATCH_STATUS.SELECTING_ROUNDS);
   };
 
-  if (matchStatus === 'SELECTING_ROUNDS') {
+  if (matchStatus === MATCH_STATUS.SELECTING_ROUNDS) {
     return (
       <>
         <section className="relative flex h-full flex-grow bg-black">
@@ -51,20 +52,24 @@ export default function WorldcupStarter() {
               </>
             )}
           </h1>
-          <WorldcupStarterModal open={matchStatus === 'SELECTING_ROUNDS'} onRoundSubmit={handleRoundSumbit} />
+          <WorldcupStarterModal
+            open={matchStatus === MATCH_STATUS.SELECTING_ROUNDS}
+            onRoundSubmit={handleRoundSumbit}
+          />
         </section>
       </>
     );
   }
 
   return (
-    <div className={`flex h-[calc(100svh-52px)] flex-col bg-black/95 lg:flex-grow lg:flex-row`}>
+    <div className="flex h-[calc(100svh-52px)] flex-col bg-black/95 lg:flex-grow lg:flex-row">
       <WorldcupPickScreen
-        className={`h-[calc(100svh-52px)] lg:flex-1 ${
-          matchStatus === 'END' ? 'h-[calc(30svh-52px)] lg:h-[calc(100svh-52px)]' : 'lg:h-full'
-        }`}
+        className={clsx(
+          'h-[calc(100svh-52px)] lg:flex-1',
+          matchStatus === MATCH_STATUS.END ? 'h-[calc(30svh-52px)] lg:h-[calc(100svh-52px)]' : 'lg:h-full',
+        )}
       />
-      {matchStatus === 'END' ? (
+      {matchStatus === MATCH_STATUS.END && (
         <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-full lg:w-[31rem] lg:p-8">
           <section>
             <div className="mb-4 flex gap-1">
@@ -112,7 +117,7 @@ export default function WorldcupStarter() {
             userId={userId}
           />
         </div>
-      ) : null}
+      )}
       <ShareWorldcupModal
         open={shareWorldcupModal}
         onClose={() => setShareWorldcupModal(false)}

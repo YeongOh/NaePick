@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import clsx from 'clsx';
 import { Pencil } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -105,7 +106,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   };
 
   return (
-    <section className={`${className} bg-white`}>
+    <section className={clsx('bg-white', className)}>
       <div className="my-4 text-base font-semibold text-slate-700">
         {commentCountLoading
           ? '...'

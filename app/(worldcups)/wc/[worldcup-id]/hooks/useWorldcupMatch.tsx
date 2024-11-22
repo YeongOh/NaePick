@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
+import React, { createContext, useContext, useState } from 'react';
+import { MATCH_STATUS, MatchStatus } from '@/app/constants';
 import { WorldcupMatchCandidate, WorldcupMatchResult, WorldcupMatchWorldcup } from '../types';
 
 interface WorldcupMatchContextType {
@@ -26,10 +26,8 @@ interface Props {
   children: React.ReactNode;
 }
 
-type MatchStatus = 'SELECTING_ROUNDS' | 'IDLE' | 'PICK_LEFT' | 'PICK_RIGHT' | 'END';
-
 export function WorldcupMatchProvider({ worldcup, userId, children }: Props) {
-  const [matchStatus, setMatchStatus] = useState<MatchStatus>('SELECTING_ROUNDS');
+  const [matchStatus, setMatchStatus] = useState<MatchStatus>(MATCH_STATUS.SELECTING_ROUNDS);
   const [candidates, setCandidates] = useState<WorldcupMatchCandidate[]>([]);
   const [matchResult, setMatchResult] = useState<WorldcupMatchResult[]>([]);
   const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<string>();

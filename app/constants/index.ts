@@ -40,3 +40,13 @@ export const DEFAULT_ROUNDS = 32;
 
 export const CHZZK_THUMBNAIL_URL =
   'https://nng-phinf.pstatic.net/MjAyMzEyMDZfMTU4/MDAxNzAxODM5NjIxMzUz.Ni9QdFjPNWRClkoo8bLmHEUojK9LQTo8H9Ngj7igRh8g.w9RX4vkKEYZuBj7Q8BKk4tdvh9fE7w8wlU7Z9aAV6Tgg.PNG/Android.png';
+
+export const enum MATCH_STATUS {
+  SELECTING_ROUNDS,
+  IDLE,
+  PICK_LEFT,
+  PICK_RIGHT,
+  END,
+}
+
+export type MatchStatus = (typeof MATCH_STATUS)[keyof typeof MATCH_STATUS];
