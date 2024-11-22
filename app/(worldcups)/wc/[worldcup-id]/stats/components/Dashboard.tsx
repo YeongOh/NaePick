@@ -77,7 +77,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
         </h1>
         {selectedCandidate ? (
           <>
-            <div className="drop-shadow-text absolute bottom-0 text-center text-white lg:bottom-auto lg:top-20">
+            <div className="absolute bottom-0 text-center text-white drop-shadow-text lg:bottom-auto lg:top-20">
               <h2 className="text-xl font-bold lg:text-4xl">
                 {currentRank}등 {selectedCandidate.name} <br />
               </h2>
@@ -95,7 +95,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           </>
         ) : null}
         {candidates.length === 0 ? (
-          <h2 className="drop-shadow-text absolute top-1/2 -translate-y-1/2 text-center text-3xl font-bold text-white lg:text-5xl">
+          <h2 className="absolute top-1/2 -translate-y-1/2 text-center text-3xl font-bold text-white drop-shadow-text lg:text-5xl">
             아직 후보가 존재하지 않습니다.
           </h2>
         ) : null}
@@ -103,6 +103,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           <button
             type="button"
             className="absolute left-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow"
+            aria-label="전 후보"
             onClick={() => {
               if (selectedCandidateIndex === 0) {
                 handlePageNumberOnClick(page - 1);
@@ -119,6 +120,7 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
           <button
             type="button"
             className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow"
+            aria-label="다음 후보"
             onClick={() => {
               if (selectedCandidateIndex === candidates.length - 1) {
                 handlePageNumberOnClick(page + 1);

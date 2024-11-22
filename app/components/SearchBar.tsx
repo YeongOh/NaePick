@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import clsx from 'clsx';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import useQueryString from '@/app/hooks/useQueryString';
-import clsx from 'clsx';
 import Button from '../ui/Button';
 
 export default function Searchbar() {
@@ -32,6 +32,7 @@ export default function Searchbar() {
             expanded ? 'visible' : 'invisible',
           )}
           type="text"
+          autoComplete="off"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="제목 혹은 이름으로 검색해보세요!"

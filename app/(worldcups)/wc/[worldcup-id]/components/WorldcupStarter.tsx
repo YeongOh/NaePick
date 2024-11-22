@@ -6,7 +6,7 @@ import { ChartNoAxesColumnDecreasing, RotateCcw, Share } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import WorldcupFold from '@/app/(worldcups)/wc/[worldcup-id]/components/WorldcupFold';
 import ShareWorldcupModal from '@/app/components/Modal/ShareWorldcupModal';
-import { MATCH_STATUS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import { MatchStatus, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import Button from '@/app/ui/Button';
 import LinkButton from '@/app/ui/LinkButton';
 import CommentSection from './CommentSection';
@@ -36,14 +36,14 @@ export default function WorldcupStarter() {
     const randomCandidates = await getRandomCandidates(worldcup.id, selectedRound);
     setCandidates(randomCandidates || []);
     setBreakPoint(randomCandidates || [], []);
-    setMatchStatus(MATCH_STATUS.IDLE);
+    setMatchStatus(MatchStatus.IDLE);
   };
 
   const handleWorldcupRestart = () => {
-    setMatchStatus(MATCH_STATUS.SELECTING_ROUNDS);
+    setMatchStatus(MatchStatus.SELECTING_ROUNDS);
   };
 
-  if (matchStatus === MATCH_STATUS.SELECTING_ROUNDS) {
+  if (matchStatus === MatchStatus.SELECTING_ROUNDS) {
     return (
       <>
         <section className="relative flex h-full flex-grow bg-black">
@@ -61,7 +61,7 @@ export default function WorldcupStarter() {
             )}
           </h1>
           <WorldcupStarterModal
-            open={matchStatus === MATCH_STATUS.SELECTING_ROUNDS}
+            open={matchStatus === MatchStatus.SELECTING_ROUNDS}
             onRoundSubmit={handleRoundSumbit}
           />
         </section>
@@ -74,10 +74,10 @@ export default function WorldcupStarter() {
       <WorldcupPickScreen
         className={clsx(
           'h-[calc(100svh-52px)] lg:flex-1',
-          matchStatus === MATCH_STATUS.END ? 'h-[calc(30svh-52px)] lg:h-[calc(100svh-52px)]' : 'lg:h-full',
+          matchStatus === MatchStatus.END ? 'h-[calc(30svh-52px)] lg:h-[calc(100svh-52px)]' : 'lg:h-full',
         )}
       />
-      {matchStatus === MATCH_STATUS.END && (
+      {matchStatus === MatchStatus.END && (
         <div className="h-[calc(70svh)] overflow-y-scroll bg-white p-3 lg:h-full lg:w-[31rem] lg:p-8">
           <section>
             <div className="mb-4 flex gap-1">

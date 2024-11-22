@@ -1,13 +1,11 @@
 'use client;';
 
 import { forwardRef, useState } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import Avatar from '@/app/ui/Avatar';
 import Button from '@/app/ui/Button';
@@ -17,7 +15,7 @@ import FormTextArea from '@/app/ui/FormTextArea';
 import Spinner from '@/app/ui/Spinner';
 import dayjs from '@/app/utils/dayjs';
 import CommentDropdownMenu from './CommentDropdownMenu';
-import { getCommentReplies, replyCommentAction } from '../actions';
+import { getCommentReplies } from '../actions';
 import useCommentMutation from '../hooks/useCommentMutation';
 import { CommentFormSchema, TCommentFormSchema, WorldcupComment } from '../types';
 
@@ -56,7 +54,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     queryFn: () => getCommentReplies(comment.id, userId),
     enabled: !!showReplies || fetchForNewReplyComment,
   });
-  const { updateCommentMutation } = useCommentMutation({
+  const { updateCommentMutation, replyCommentMutation } = useCommentMutation({
     worldcupId,
   });
   const {
@@ -86,53 +84,22 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     onUpdateCommentSubmit();
   };
 
-  const queryClient = useQueryClient();
-  const replyCommentMutation = useMutation({
-    mutationFn: ({
-      parentId,
-      data,
-      worldcupId,
-      votedCandidateId,
-    }: {
-      data: TCommentFormSchema;
-      votedCandidateId?: string;
-      parentId: string;
-      worldcupId: string;
-    }) => {
-      return replyCommentAction({
-        data,
-        votedCandidateId,
-        parentId,
-        worldcupId,
-      });
-    },
-
-    onSuccess: (data, { worldcupId, parentId }) => {
-      queryClient.setQueryData(['comment-count', { worldcupId }], (oldCount: number) => oldCount + 1);
-      queryClient.invalidateQueries({
-        queryKey: ['replies', { parentId }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['comments', { worldcupId }],
-      });
-      setFetchForNewReplyComment(true);
-    },
-
-    onError: (error, data, variables) => {
-      console.error(error);
-      toast.error(error.message);
-    },
-  });
-
   const onReplyCommentSubmit = (data: TCommentFormSchema) => {
-    replyCommentMutation.mutate({
-      data,
-      votedCandidateId: finalWinnerCandidateId,
-      parentId: comment.parentId ?? comment.id,
-      worldcupId,
-    });
-    setIsReplying(false);
-    setReplyTextValue('text', '');
+    replyCommentMutation.mutate(
+      {
+        data,
+        votedCandidateId: finalWinnerCandidateId,
+        parentId: comment.parentId ?? comment.id,
+        worldcupId,
+      },
+      {
+        onSuccess: () => {
+          setFetchForNewReplyComment(true);
+          setIsReplying(false);
+          setReplyTextValue('text', '');
+        },
+      },
+    );
   };
 
   return (
@@ -150,12 +117,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
             >
               {comment.isAnonymous ? '익명' : comment.nickname ? comment.nickname : '탈퇴한 회원'}
             </span>
-            {comment.voted ? (
-              <span className="text-sm text-gray-500">
-                {comment.voted}
-                {'  -  '}
-              </span>
-            ) : null}
+            {comment.voted ? <span className="text-sm text-gray-500">{comment.voted}</span> : null}
             <span
               className="text-sm text-gray-500"
               title={dayjs(comment.createdAt).format('YYYY년 MM월 DD일 HH시 MM분')}

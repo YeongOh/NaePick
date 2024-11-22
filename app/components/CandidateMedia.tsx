@@ -1,8 +1,6 @@
 import { forwardRef, useState } from 'react';
-
 import clsx from 'clsx';
 import YouTube, { YouTubeEvent, YouTubePlayer } from 'react-youtube';
-
 import MyImage from '@/app/ui/MyImage';
 
 interface Props {

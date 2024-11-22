@@ -6,6 +6,7 @@ import {
   createCommentAction,
   deleteCommentAction,
   likeCommentAction,
+  replyCommentAction,
   updateCommentAction,
 } from '../actions';
 import { TCommentFormSchema, WorldcupComment } from '../types';
@@ -192,5 +193,47 @@ export default function useCommentMutation({ worldcupId }: Props) {
     },
   });
 
-  return { createCommentMutation, updateCommentMutation, deleteCommentMutation, likeCommentMutation };
+  const replyCommentMutation = useMutation({
+    mutationFn: ({
+      parentId,
+      data,
+      worldcupId,
+      votedCandidateId,
+    }: {
+      data: TCommentFormSchema;
+      votedCandidateId?: string;
+      parentId: string;
+      worldcupId: string;
+    }) => {
+      return replyCommentAction({
+        data,
+        votedCandidateId,
+        parentId,
+        worldcupId,
+      });
+    },
+
+    onSuccess: (data, { worldcupId, parentId }) => {
+      queryClient.setQueryData(['comment-count', { worldcupId }], (oldCount: number) => oldCount + 1);
+      queryClient.invalidateQueries({
+        queryKey: ['replies', { parentId }],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['comments', { worldcupId }],
+      });
+    },
+
+    onError: (error, data, variables) => {
+      console.error(error);
+      toast.error(error.message);
+    },
+  });
+
+  return {
+    createCommentMutation,
+    updateCommentMutation,
+    deleteCommentMutation,
+    likeCommentMutation,
+    replyCommentMutation,
+  };
 }

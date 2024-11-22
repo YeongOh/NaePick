@@ -17,6 +17,7 @@ export default function NavbarAvatar({ profilePath, nickname, userId, email }: P
   return (
     <div className="relative flex items-center justify-center">
       <button
+        aria-label="프로필 메뉴 열기"
         type="button"
         className="dropdown-menu-toggle rounded-full font-normal hover:outline hover:outline-primary-500 active:outline-primary-700"
         onClick={() => toggleDropdown('avatar-dropdown')}

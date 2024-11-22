@@ -24,6 +24,7 @@ export default function Pagination({
       <button
         type="button"
         disabled={currentPageNumber === 1}
+        aria-label="이전 페이지"
         className={clsx(
           'flex h-10 w-14 items-center justify-center rounded',
           currentPageNumber !== 1 && 'hover:bg-gray-50',
@@ -55,6 +56,7 @@ export default function Pagination({
       <button
         type="button"
         disabled={currentPageNumber === totalPages}
+        aria-label="다음 페이지"
         className={clsx(
           'flex h-10 w-14 items-center justify-center rounded',
           currentPageNumber !== 1 && 'hover:bg-gray-50',

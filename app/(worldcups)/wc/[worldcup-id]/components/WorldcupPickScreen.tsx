@@ -6,7 +6,7 @@ import { ArrowLeftFromLine, Maximize, Minimize } from 'lucide-react';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { YouTubePlayer } from 'react-youtube';
 import CandidateMedia from '@/app/components/CandidateMedia';
-import { MATCH_STATUS } from '@/app/constants';
+import { MatchStatus } from '@/app/constants';
 import { delay } from '@/app/utils';
 import { submitMatchResult as submitMatchResult } from '../actions';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
@@ -42,9 +42,9 @@ export default function WorldcupPickScreen({ className }: Props) {
   const round = candidates.length;
   const NEXT_ROUND_DELAY = 2000;
 
-  const handlePick = async (target: MATCH_STATUS.PICK_LEFT | MATCH_STATUS.PICK_RIGHT) => {
-    const winner = target === MATCH_STATUS.PICK_LEFT ? leftCandidate : rightCandidate;
-    const loser = target === MATCH_STATUS.PICK_LEFT ? rightCandidate : leftCandidate;
+  const handlePick = async (target: MatchStatus.PICK_LEFT | MatchStatus.PICK_RIGHT) => {
+    const winner = target === MatchStatus.PICK_LEFT ? leftCandidate : rightCandidate;
+    const loser = target === MatchStatus.PICK_LEFT ? rightCandidate : leftCandidate;
 
     setMatchStatus(target);
     await delay(NEXT_ROUND_DELAY);
@@ -55,11 +55,11 @@ export default function WorldcupPickScreen({ className }: Props) {
     setBreakPoint(newCandidates, newMatchResults);
 
     if (round === 2) {
-      setMatchStatus(MATCH_STATUS.END);
+      setMatchStatus(MatchStatus.END);
       setFinalWinnerCandidateId(winner.id);
       submitMatchResult(newMatchResults, worldcup.id);
     } else {
-      setMatchStatus(MATCH_STATUS.IDLE);
+      setMatchStatus(MatchStatus.IDLE);
       setMatchResult(newMatchResults);
     }
   };
@@ -85,9 +85,9 @@ export default function WorldcupPickScreen({ className }: Props) {
           fullScreenHandle.active && 'top-8 lg:top-20',
         )}
       >
-        {worldcup.title} {matchStatus === MATCH_STATUS.END ? '종료!' : getRoundsDescription(round)}
+        {worldcup.title} {matchStatus === MatchStatus.END ? '종료!' : getRoundsDescription(round)}
       </h2>
-      {matchStatus === MATCH_STATUS.IDLE && (
+      {matchStatus === MatchStatus.IDLE && (
         <div
           onClick={(e) => e.stopPropagation()}
           className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700 drop-shadow-text`}
@@ -95,7 +95,7 @@ export default function WorldcupPickScreen({ className }: Props) {
           VS
         </div>
       )}
-      {matchStatus === MATCH_STATUS.END && finalWinner ? (
+      {matchStatus === MatchStatus.END && finalWinner ? (
         <div className="pointer-events-none absolute bottom-1 left-1/2 z-40 h-fit w-full -translate-x-1/2 lg:bottom-1/4">
           <h2 className="flex items-center justify-center text-xl font-bold text-primary-500 drop-shadow-text lg:text-clamp">
             {finalWinner.name} 우승!
@@ -106,32 +106,32 @@ export default function WorldcupPickScreen({ className }: Props) {
         <figure
           onMouseOver={handleOnMouseOverLeftYouTube}
           onClick={() => {
-            if (matchStatus !== MATCH_STATUS.IDLE) return;
-            handlePick(MATCH_STATUS.PICK_LEFT);
+            if (matchStatus !== MatchStatus.IDLE) return;
+            handlePick(MatchStatus.PICK_LEFT);
           }}
           className={clsx(
             'group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end',
-            matchStatus === MATCH_STATUS.PICK_LEFT && 'animate-mobileExpand lg:animate-expand',
-            matchStatus === MATCH_STATUS.PICK_RIGHT && 'animate-mobileShrink lg:animate-shrink invisible',
-            matchStatus === MATCH_STATUS.END && 'animate-mobileExpand lg:animate-expand',
+            matchStatus === MatchStatus.PICK_LEFT && 'animate-mobileExpand lg:animate-expand',
+            matchStatus === MatchStatus.PICK_RIGHT && 'invisible animate-mobileShrink lg:animate-shrink',
+            matchStatus === MatchStatus.END && 'animate-mobileExpand lg:animate-expand',
           )}
         >
           <CandidateMedia
             key={leftCandidate.id}
-            screenMode={matchStatus !== MATCH_STATUS.END}
+            screenMode={matchStatus !== MatchStatus.END}
             path={leftCandidate.path}
             mediaType={leftCandidate.mediaType}
             name={leftCandidate.name}
             onYouTubePlay={(e) => setLeftYouTubePlayer(e.target)}
           />
           \
-          {(matchStatus === MATCH_STATUS.IDLE || matchStatus === MATCH_STATUS.PICK_LEFT) && (
+          {(matchStatus === MatchStatus.IDLE || matchStatus === MatchStatus.PICK_LEFT) && (
             <>
               {/* mobile */}
               <figcaption
                 className={clsx(
                   'pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-text transition-colors group-active:text-primary-600 lg:hidden',
-                  matchStatus !== MATCH_STATUS.PICK_LEFT && 'bottom-6',
+                  matchStatus !== MatchStatus.PICK_LEFT && 'bottom-6',
                 )}
               >
                 {leftCandidate.name}
@@ -140,7 +140,7 @@ export default function WorldcupPickScreen({ className }: Props) {
               <figcaption
                 className={clsx(
                   'pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-right text-5xl text-clamp font-bold text-white drop-shadow-text transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block',
-                  matchStatus === MATCH_STATUS.PICK_LEFT ? 'right-1/2 translate-x-1/2' : 'right-[20%]',
+                  matchStatus === MatchStatus.PICK_LEFT ? 'right-1/2 translate-x-1/2' : 'right-[20%]',
                 )}
               >
                 {leftCandidate.name}
@@ -154,31 +154,31 @@ export default function WorldcupPickScreen({ className }: Props) {
         <figure
           onMouseOver={handleOnMouseOverRightYouTube}
           onClick={() => {
-            if (matchStatus !== MATCH_STATUS.IDLE) return;
-            handlePick(MATCH_STATUS.PICK_RIGHT);
+            if (matchStatus !== MatchStatus.IDLE) return;
+            handlePick(MatchStatus.PICK_RIGHT);
           }}
           className={clsx(
             'group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start',
-            matchStatus === MATCH_STATUS.PICK_LEFT && 'animate-mobileShrink lg:animate-shrink invisible',
-            matchStatus === MATCH_STATUS.PICK_RIGHT && 'animate-mobileExpand lg:animate-expand',
-            matchStatus === MATCH_STATUS.END && 'animate-mobileExpand lg:animate-expand',
+            matchStatus === MatchStatus.PICK_LEFT && 'invisible animate-mobileShrink lg:animate-shrink',
+            matchStatus === MatchStatus.PICK_RIGHT && 'animate-mobileExpand lg:animate-expand',
+            matchStatus === MatchStatus.END && 'animate-mobileExpand lg:animate-expand',
           )}
         >
           <CandidateMedia
             key={rightCandidate.id}
-            screenMode={matchStatus !== MATCH_STATUS.END}
+            screenMode={matchStatus !== MatchStatus.END}
             path={rightCandidate.path}
             mediaType={rightCandidate.mediaType}
             name={rightCandidate.name}
             onYouTubePlay={(e) => setRightYouTubePlayer(e.target)}
           />
-          {(matchStatus === MATCH_STATUS.IDLE || matchStatus === MATCH_STATUS.PICK_RIGHT) && (
+          {(matchStatus === MatchStatus.IDLE || matchStatus === MatchStatus.PICK_RIGHT) && (
             <>
               {/* mobile */}
               <figcaption
                 className={clsx(
                   'pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-text transition-colors group-active:text-primary-600 lg:hidden',
-                  matchStatus !== MATCH_STATUS.PICK_RIGHT && 'top-6',
+                  matchStatus !== MatchStatus.PICK_RIGHT && 'top-6',
                 )}
               >
                 {rightCandidate.name}
@@ -187,7 +187,7 @@ export default function WorldcupPickScreen({ className }: Props) {
               <figcaption
                 className={clsx(
                   'pointer-events-none absolute bottom-1/4 line-clamp-1 hidden text-5xl text-clamp font-bold text-white drop-shadow-text transition-colors group-hover:text-primary-500 group-active:text-primary-600 lg:block',
-                  matchStatus === MATCH_STATUS.PICK_RIGHT ? 'left-1/2 -translate-x-1/2' : 'left-[20%]',
+                  matchStatus === MatchStatus.PICK_RIGHT ? 'left-1/2 -translate-x-1/2' : 'left-[20%]',
                 )}
               >
                 {rightCandidate.name}
@@ -202,13 +202,13 @@ export default function WorldcupPickScreen({ className }: Props) {
           title="취소"
           className={clsx(
             'flex h-10 w-10 items-center justify-center rounded-full text-white/80',
-            canGoBack && matchStatus === MATCH_STATUS.IDLE
+            canGoBack && matchStatus === MatchStatus.IDLE
               ? 'transition-colors hover:bg-white/30'
               : 'opacity-20',
           )}
-          disabled={!canGoBack || matchStatus !== MATCH_STATUS.IDLE}
+          disabled={!canGoBack || matchStatus !== MatchStatus.IDLE}
           onClick={() => {
-            if (canGoBack && matchStatus === MATCH_STATUS.IDLE) goBack();
+            if (canGoBack && matchStatus === MatchStatus.IDLE) goBack();
           }}
         >
           <ArrowLeftFromLine className="h-6 w-6" />

@@ -4,16 +4,12 @@ import { useState } from 'react';
 import { ChartNoAxesColumnDecreasing, Settings, Share, Star, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import {
-  addWorldcupFavouriteAction,
-  removeWorldcupFavouriteAction,
-} from '@/app/(worldcups)/wc/[worldcup-id]/actions';
+import useWorldcupFavouriteMutation from '@/app/(worldcups)/wc/[worldcup-id]/hooks/useWorldcupFavouriteMutation';
 import { deleteWorldcupAction } from '@/app/(worldcups)/wc/users/[user-id]/actions';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import { useWorldcupCard } from '@/app/hooks/useWorldcupCard';
 import DeleteConfirmModal from '../Modal/DeleteConfirmModal';
 import ShareWorldcupModal from '../Modal/ShareWorldcupModal';
-import useWorldcupFavouriteMutation from '@/app/(worldcups)/wc/[worldcup-id]/hooks/useWorldcupFavouriteMutation';
 
 export default function WorldcupCardDropdownMenu() {
   const [showDeleteWorldcupConfirmModal, setShowDeleteWorldcupConfirmModal] = useState<boolean>(false);

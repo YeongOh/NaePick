@@ -1,14 +1,14 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
-import { MATCH_STATUS, MatchStatus } from '@/app/constants';
+import { MatchStatus, MatchStatusType } from '@/app/constants';
 import { WorldcupMatchCandidate, WorldcupMatchResult, WorldcupMatchWorldcup } from '../types';
 
 interface WorldcupMatchContextType {
   worldcup: WorldcupMatchWorldcup;
   userId?: string;
-  matchStatus: MatchStatus;
-  setMatchStatus: (matchStatus: MatchStatus) => void;
+  matchStatus: MatchStatusType;
+  setMatchStatus: (matchStatus: MatchStatusType) => void;
   candidates: WorldcupMatchCandidate[];
   setCandidates: (candidates: WorldcupMatchCandidate[]) => void;
   matchResult: WorldcupMatchResult[];
@@ -30,7 +30,7 @@ interface Props {
 }
 
 export function WorldcupMatchProvider({ worldcup, userId, children }: Props) {
-  const [matchStatus, setMatchStatus] = useState<MatchStatus>(MATCH_STATUS.SELECTING_ROUNDS);
+  const [matchStatus, setMatchStatus] = useState<MatchStatusType>(MatchStatus.SELECTING_ROUNDS);
   const [candidatesHistory, setCandidatesHistory] = useState<WorldcupMatchCandidate[][]>([]);
   const [matchResultHistory, setMatchResultHistory] = useState<WorldcupMatchResult[][]>([]);
   const [candidates, setCandidates] = useState<WorldcupMatchCandidate[]>([]);

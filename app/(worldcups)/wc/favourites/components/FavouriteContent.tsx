@@ -7,9 +7,9 @@ import WorldcupCard from '@/app/components/WorldcupCard/WorldcupCard';
 import useQueryString from '@/app/hooks/useQueryString';
 import { TCard } from '@/app/lib/types';
 import Grid from '@/app/ui/Grid';
+import LinkButton from '@/app/ui/LinkButton';
 import Spinner from '@/app/ui/Spinner';
 import { getMyWorldcupFavourites } from '../actions';
-import LinkButton from '@/app/ui/LinkButton';
 
 interface Props {
   page: number;
