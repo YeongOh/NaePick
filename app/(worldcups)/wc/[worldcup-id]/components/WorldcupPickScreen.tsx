@@ -148,6 +148,7 @@ export default function WorldcupPickScreen({ className }: Props) {
           )}
         </figure>
       )}
+
       {rightCandidate && (
         <figure
           onMouseOver={handleOnMouseOverRightYouTube}

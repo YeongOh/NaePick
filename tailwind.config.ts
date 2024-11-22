@@ -72,9 +72,6 @@ const config: Config = {
         shrink: {
           '100%': { width: '0%' },
         },
-        mobileShrink: {
-          '100%': { height: '0%' },
-        },
         expand: {
           '0%': { width: '50%', 'justify-content': 'center' },
           '100%': {
@@ -82,20 +79,27 @@ const config: Config = {
             'justify-content': 'center',
           },
         },
+
+        mobileShrink: {
+          '100%': { height: '0%' },
+        },
         mobileExpand: {
           '0%': { height: '50%', 'justify-content': 'center' },
           '100%': { height: '100%', 'justify-content': 'center' },
         },
+
         modalTransition: {
           '0%': { opacity: '0' },
           '100%': { opacity: '100' },
         },
       },
       animation: {
-        shrink: 'shrink 0.3s ease-in-out forwards',
-        mobileShrink: 'mobileShrink 0.3s ease-in-out forwards',
+        shrink: 'shrink 0.4s ease-in-out forwards',
         expand: 'expand 0.4s ease-in-out forwards',
+
+        mobileShrink: 'mobileShrink 0.4s ease-in-out forwards',
         mobileExpand: 'mobileExpand 0.4s ease-in-out forwards',
+
         modalTransition: 'modalTransition 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
       },
     },
