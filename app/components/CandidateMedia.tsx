@@ -62,11 +62,11 @@ const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
         <div
           className={clsx(
             'flex size-full justify-center',
-            screenMode ? 'items-start lg:pt-10' : 'items-center',
+            screenMode ? 'items-start py-10 lg:py-16' : 'items-center pt-5 lg:pt-10',
           )}
         >
           <YouTube
-            className={clsx('max-h-full', screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full')}
+            className="size-full max-h-full"
             opts={{
               height: '100%',
               width: '100%',
@@ -106,11 +106,11 @@ const CandidateMedia = forwardRef<YouTube, Props>(function CandidateMedia(
         <div
           className={clsx(
             'flex size-full justify-center',
-            screenMode ? 'items-start lg:pt-10' : 'items-center',
+            screenMode ? 'items-start py-10 lg:py-16' : 'items-center pt-5 lg:pt-10',
           )}
         >
           <iframe
-            className={clsx('max-h-full', screenMode ? 'h-full w-3/4 lg:h-[85%] lg:w-full' : 'h-full w-full')}
+            className="size-full max-h-full"
             onClick={(e) => e.stopPropagation()}
             src={`https://chzzk.naver.com/embed/clip/${path}`}
             title="CHZZK Player"

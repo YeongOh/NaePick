@@ -15,8 +15,15 @@ import { getRandomCandidates } from '../actions';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 
 export default function WorldcupStarter() {
-  const { worldcup, userId, matchStatus, setMatchStatus, setCandidates, finalWinnerCandidateId } =
-    useWorldcupMatch();
+  const {
+    worldcup,
+    userId,
+    matchStatus,
+    setMatchStatus,
+    setCandidates,
+    finalWinnerCandidateId,
+    setBreakPoint,
+  } = useWorldcupMatch();
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
   const WorldcupStarterModal = useMemo(
     () => dynamic(() => import('./WorldcupStarterModal'), { ssr: false }),
@@ -28,6 +35,7 @@ export default function WorldcupStarter() {
   const handleRoundSumbit = async (selectedRound: number) => {
     const randomCandidates = await getRandomCandidates(worldcup.id, selectedRound);
     setCandidates(randomCandidates || []);
+    setBreakPoint(randomCandidates || [], []);
     setMatchStatus(MATCH_STATUS.IDLE);
   };
 

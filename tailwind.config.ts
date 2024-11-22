@@ -69,53 +69,33 @@ const config: Config = {
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       keyframes: {
-        shrinkLeft: {
-          '100%': { width: '0%', transform: 'translateX(100%)' },
+        shrink: {
+          '100%': { width: '0%' },
         },
-        shrinkRight: {
-          '100%': { width: '0%', transform: 'translateX(-100%)' },
+        mobileShrink: {
+          '100%': { height: '0%' },
         },
-        expandLeft: {
+        expand: {
           '0%': { width: '50%', 'justify-content': 'center' },
           '100%': {
             width: '100%',
             'justify-content': 'center',
           },
         },
-        expandRight: {
-          '0%': { width: '50%', 'justify-content': 'center' },
-          '100%': { width: '100%', 'justify-content': 'center' },
-        },
-        mobileShrinkTop: {
-          '100%': { height: '0%', transform: 'translateY(100%)' },
-        },
-        mobileShrinkBottom: {
-          '100%': { height: '0%', transform: 'translateY(-100%)' },
-        },
-
-        mobileExpandTop: {
+        mobileExpand: {
           '0%': { height: '50%', 'justify-content': 'center' },
           '100%': { height: '100%', 'justify-content': 'center' },
         },
-        mobileExpandBottom: {
-          '0%': { height: '50%', 'justify-content': 'center' },
-          '100%': { height: '100%', 'justify-content': 'center' },
-        },
-
         modalTransition: {
           '0%': { opacity: '0' },
           '100%': { opacity: '100' },
         },
       },
       animation: {
-        shrinkLeft: 'shrinkLeft 0.4s ease-in-out forwards',
-        shrinkRight: 'shrinkRight 0.4s ease-in-out forwards',
-        expandLeft: 'expandLeft 0.5s ease-in-out forwards',
-        expandRight: 'expandRight 0.5s ease-in-out forwards',
-        mobileExpandTop: 'mobileExpandTop 0.3s ease-in-out forwards',
-        mobileExpandBottom: 'mobileExpandBottom 0.3s ease-in-out forwards',
-        mobileShrinkTop: 'mobileShrinkTop 0.3s ease-in-out forwards',
-        mobileShrinkBottom: 'mobileShrinkBottom 0.3s ease-in-out forwards',
+        shrink: 'shrink 0.3s ease-in-out forwards',
+        mobileShrink: 'mobileShrink 0.3s ease-in-out forwards',
+        expand: 'expand 0.4s ease-in-out forwards',
+        mobileExpand: 'mobileExpand 0.4s ease-in-out forwards',
         modalTransition: 'modalTransition 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
       },
     },

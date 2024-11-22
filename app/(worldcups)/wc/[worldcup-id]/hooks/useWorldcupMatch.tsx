@@ -16,6 +16,9 @@ interface WorldcupMatchContextType {
   finalWinnerCandidateId?: string;
   setFinalWinnerCandidateId: (finalWinnerCandidateId: string) => void;
   finalWinner?: WorldcupMatchCandidate;
+  setBreakPoint: (candidates: WorldcupMatchCandidate[], matchResult: WorldcupMatchResult[]) => void;
+  goBack: () => void;
+  canGoBack: boolean;
 }
 
 const WorldcupMatchContext = createContext<WorldcupMatchContextType | null>(null);
@@ -28,12 +31,31 @@ interface Props {
 
 export function WorldcupMatchProvider({ worldcup, userId, children }: Props) {
   const [matchStatus, setMatchStatus] = useState<MatchStatus>(MATCH_STATUS.SELECTING_ROUNDS);
+  const [candidatesHistory, setCandidatesHistory] = useState<WorldcupMatchCandidate[][]>([]);
+  const [matchResultHistory, setMatchResultHistory] = useState<WorldcupMatchResult[][]>([]);
   const [candidates, setCandidates] = useState<WorldcupMatchCandidate[]>([]);
   const [matchResult, setMatchResult] = useState<WorldcupMatchResult[]>([]);
   const [finalWinnerCandidateId, setFinalWinnerCandidateId] = useState<string>();
   const finalWinner = finalWinnerCandidateId
     ? candidates.find(({ id }) => id === finalWinnerCandidateId)
     : undefined;
+  const canGoBack = candidatesHistory.length > 1 && matchResultHistory.length > 1;
+
+  function setBreakPoint(candidates: WorldcupMatchCandidate[], matchResult: WorldcupMatchResult[]) {
+    const newCandidatesHistory = [...candidatesHistory, candidates];
+    const newMatchResultHistory = [...matchResultHistory, matchResult];
+    setCandidatesHistory(newCandidatesHistory.slice(-4));
+    setMatchResultHistory(newMatchResultHistory.slice(-4));
+  }
+
+  function goBack() {
+    if (canGoBack) {
+      setCandidates(candidatesHistory.at(-2) || []);
+      setMatchResult(matchResultHistory.at(-2) || []);
+      setCandidatesHistory(candidatesHistory.slice(0, -1));
+      setMatchResultHistory(matchResultHistory.slice(0, -1));
+    }
+  }
 
   return (
     <WorldcupMatchContext.Provider
@@ -49,6 +71,9 @@ export function WorldcupMatchProvider({ worldcup, userId, children }: Props) {
         finalWinnerCandidateId,
         setFinalWinnerCandidateId,
         finalWinner,
+        setBreakPoint,
+        goBack,
+        canGoBack,
       }}
     >
       {children}

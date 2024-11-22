@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import clsx from 'clsx';
-import { Maximize, Minimize } from 'lucide-react';
+import { ArrowLeftFromLine, Maximize, Minimize } from 'lucide-react';
 import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 import { YouTubePlayer } from 'react-youtube';
 import CandidateMedia from '@/app/components/CandidateMedia';
@@ -27,6 +27,9 @@ export default function WorldcupPickScreen({ className }: Props) {
     setMatchResult,
     setFinalWinnerCandidateId,
     finalWinner,
+    setBreakPoint,
+    goBack,
+    canGoBack,
   } = useWorldcupMatch();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
@@ -46,15 +49,17 @@ export default function WorldcupPickScreen({ className }: Props) {
     setMatchStatus(target);
     await delay(NEXT_ROUND_DELAY);
     const newCandidates = [winner, ...candidates.toSpliced(candidates.length - 2)];
+    const newMatchResults = [...matchResult, { winnerId: winner.id, loserId: loser.id }];
+    console.log(newMatchResults);
     setCandidates(newCandidates);
+    setBreakPoint(newCandidates, newMatchResults);
     if (round === 2) {
       setMatchStatus(MATCH_STATUS.END);
       setFinalWinnerCandidateId(winner.id);
-      const matchResults = [...matchResult, { winnerId: winner.id, loserId: loser.id }];
-      submitMatchResult(matchResults, worldcup.id);
+      submitMatchResult(newMatchResults, worldcup.id);
     } else {
       setMatchStatus(MATCH_STATUS.IDLE);
-      setMatchResult([...matchResult, { winnerId: winner.id, loserId: loser.id }]);
+      setMatchResult(newMatchResults);
     }
   };
 
@@ -79,7 +84,7 @@ export default function WorldcupPickScreen({ className }: Props) {
           fullScreenHandle.active && 'top-8 lg:top-20',
         )}
       >
-        {worldcup.title} {getRoundsDescription(round)}
+        {worldcup.title} {matchStatus === MATCH_STATUS.END ? '종료!' : getRoundsDescription(round)}
       </h2>
       {matchStatus === MATCH_STATUS.IDLE && (
         <div
@@ -105,14 +110,14 @@ export default function WorldcupPickScreen({ className }: Props) {
           }}
           className={clsx(
             'group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end',
-            matchStatus === MATCH_STATUS.PICK_LEFT && 'animate-mobileExpandTop lg:animate-expandLeft',
-            matchStatus === MATCH_STATUS.PICK_RIGHT && 'animate-mobileShrinkTop lg:animate-shrinkRight',
-            matchStatus === MATCH_STATUS.END && 'animate-mobileExpandTop lg:animate-expandLeft',
+            matchStatus === MATCH_STATUS.PICK_LEFT && 'animate-mobileExpand lg:animate-expand',
+            matchStatus === MATCH_STATUS.PICK_RIGHT && 'animate-mobileShrink lg:animate-shrink invisible',
+            matchStatus === MATCH_STATUS.END && 'animate-mobileExpand lg:animate-expand',
           )}
         >
           <CandidateMedia
             key={leftCandidate.id}
-            screenMode={matchStatus === MATCH_STATUS.END ? false : true}
+            screenMode={matchStatus !== MATCH_STATUS.END}
             path={leftCandidate.path}
             mediaType={leftCandidate.mediaType}
             name={leftCandidate.name}
@@ -152,14 +157,14 @@ export default function WorldcupPickScreen({ className }: Props) {
           }}
           className={clsx(
             'group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start',
-            matchStatus === MATCH_STATUS.PICK_LEFT && 'animate-mobileShrinkBottom lg:animate-shrinkLeft',
-            matchStatus === MATCH_STATUS.PICK_RIGHT && 'animate-mobileExpandBottom lg:animate-expandRight',
-            matchStatus === MATCH_STATUS.END && 'animate-mobileExpandBottom lg:animate-expandRight',
+            matchStatus === MATCH_STATUS.PICK_LEFT && 'animate-mobileShrink lg:animate-shrink invisible',
+            matchStatus === MATCH_STATUS.PICK_RIGHT && 'animate-mobileExpand lg:animate-expand',
+            matchStatus === MATCH_STATUS.END && 'animate-mobileExpand lg:animate-expand',
           )}
         >
           <CandidateMedia
             key={rightCandidate.id}
-            screenMode={matchStatus === MATCH_STATUS.END ? false : true}
+            screenMode={matchStatus !== MATCH_STATUS.END}
             path={rightCandidate.path}
             mediaType={rightCandidate.mediaType}
             name={rightCandidate.name}
@@ -189,21 +194,39 @@ export default function WorldcupPickScreen({ className }: Props) {
           )}
         </figure>
       )}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          if (fullScreenHandle.active) {
-            fullScreenHandle.exit();
-          } else {
-            fullScreenHandle.enter();
-          }
-        }}
-        className="absolute bottom-2 right-2 flex h-10 w-10 items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-white/30 lg:right-5"
-        aria-label="전체화면"
-        title="전체화면"
-      >
-        {fullScreenHandle.active ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
-      </button>
+      <div className="absolute bottom-2 right-2 flex items-center gap-2 lg:right-5">
+        <button
+          aria-label="취소"
+          title="취소"
+          className={clsx(
+            'flex h-10 w-10 items-center justify-center rounded-full text-white/80',
+            canGoBack && matchStatus === MATCH_STATUS.IDLE
+              ? 'transition-colors hover:bg-white/30'
+              : 'opacity-20',
+          )}
+          disabled={!canGoBack || matchStatus !== MATCH_STATUS.IDLE}
+          onClick={() => {
+            if (canGoBack && matchStatus === MATCH_STATUS.IDLE) goBack();
+          }}
+        >
+          <ArrowLeftFromLine className="h-6 w-6" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (fullScreenHandle.active) {
+              fullScreenHandle.exit();
+            } else {
+              fullScreenHandle.enter();
+            }
+          }}
+          className="flex h-10 w-10 items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/30"
+          aria-label="전체화면"
+          title="전체화면"
+        >
+          {fullScreenHandle.active ? <Minimize className="h-6 w-6" /> : <Maximize className="h-6 w-6" />}
+        </button>
+      </div>
     </FullScreen>
   );
 }
