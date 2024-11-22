@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     template: '%s | 이상형 월드컵 NaePick, 내픽!',
     default: '이상형 월드컵 NaePick, 내픽!',
   },
+  icons: {
+    icon: '/images/favicon.ico',
+  },
 };
 
 export default function RootLayout({

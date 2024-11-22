@@ -3,8 +3,6 @@
 import { and, asc, count, desc, eq, getTableColumns, isNull, lt, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/mysql-core';
 
-import { revalidatePath } from 'next/cache';
-import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
 import { verifyCommentOwner } from '@/app/lib/comment/auth';
 import {
   cancelLikeComment,
@@ -380,8 +378,6 @@ export async function addWorldcupFavouriteAction(worldcupId: string) {
     // 중복 즐겨찾기 추가시 여기서 에러 던짐 => 더 쉬운 에러처리 방안?
     throw error;
   }
-
-  revalidatePath('/wc/favourites');
 }
 
 export async function removeWorldcupFavouriteAction(worldcupId: string) {
@@ -394,6 +390,4 @@ export async function removeWorldcupFavouriteAction(worldcupId: string) {
   } catch (error) {
     console.error(error);
   }
-
-  revalidatePath('/wc/favourites');
 }

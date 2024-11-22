@@ -13,6 +13,7 @@ import { useDropdown } from '@/app/hooks/useDropdown';
 import { useWorldcupCard } from '@/app/hooks/useWorldcupCard';
 import DeleteConfirmModal from '../Modal/DeleteConfirmModal';
 import ShareWorldcupModal from '../Modal/ShareWorldcupModal';
+import useWorldcupFavouriteMutation from '@/app/(worldcups)/wc/[worldcup-id]/hooks/useWorldcupFavouriteMutation';
 
 export default function WorldcupCardDropdownMenu() {
   const [showDeleteWorldcupConfirmModal, setShowDeleteWorldcupConfirmModal] = useState<boolean>(false);
@@ -21,6 +22,7 @@ export default function WorldcupCardDropdownMenu() {
   const { worldcupCard, type } = useWorldcupCard();
   const { id, title } = worldcupCard;
   const open = dropdownId === id;
+  const { worldcupFavouriteMutation } = useWorldcupFavouriteMutation({ worldcupId: id });
 
   const handleDeleteConfirm = async () => {
     try {
@@ -92,7 +94,7 @@ export default function WorldcupCardDropdownMenu() {
               <button
                 className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-gray-500 hover:bg-secondary-50 active:bg-secondary-100"
                 onClick={() => {
-                  removeWorldcupFavouriteAction(id);
+                  worldcupFavouriteMutation.mutate({ worldcupId: id, favourite: false });
                   toggleDropdown(dropdownId);
                 }}
               >

@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-
 import { addWorldcupFavouriteAction, removeWorldcupFavouriteAction } from '../actions';
 
 interface Props {
@@ -31,6 +30,10 @@ export default function useWorldcupFavouriteMutation({ worldcupId }: Props) {
       console.error(error);
       queryClient.setQueryData(['worldcup-favourites', { worldcupId }], context?.snapshot);
       toast.error(error.message);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['worldcup-favourites', { worldcupId }] });
+      queryClient.invalidateQueries({ queryKey: ['my-worldcup-favourites'] });
     },
   });
 
