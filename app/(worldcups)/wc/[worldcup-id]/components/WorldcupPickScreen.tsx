@@ -9,6 +9,7 @@ import CandidateMedia from '@/app/components/CandidateMedia';
 import { MatchStatus } from '@/app/constants';
 import { delay } from '@/app/utils';
 import { submitMatchResult as submitMatchResult } from '../actions';
+import { useSavedWorldcupMatch } from '../hooks/useSavedWorldcupMatch';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getRoundsDescription } from '../utils';
 
@@ -31,6 +32,7 @@ export default function WorldcupPickScreen({ className }: Props) {
     goBack,
     canGoBack,
   } = useWorldcupMatch();
+  const { saveWorldcup } = useSavedWorldcupMatch();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const fullScreenHandle = useFullScreenHandle();
@@ -53,15 +55,21 @@ export default function WorldcupPickScreen({ className }: Props) {
     const newMatchResults = [...matchResult, { winnerId: winner.id, loserId: loser.id }];
     setCandidates(newCandidates);
     setBreakPoint(newCandidates, newMatchResults);
+    saveWorldcup(newCandidates, newMatchResults);
 
     if (round === 2) {
       setMatchStatus(MatchStatus.END);
       setFinalWinnerCandidateId(winner.id);
       submitMatchResult(newMatchResults, worldcup.id);
+      saveWorldcup([], []);
     } else {
       setMatchStatus(MatchStatus.IDLE);
       setMatchResult(newMatchResults);
     }
+  };
+
+  const handleGoBack = () => {
+    goBack();
   };
 
   const handleOnMouseOverLeftYouTube = () => {
@@ -208,7 +216,7 @@ export default function WorldcupPickScreen({ className }: Props) {
           )}
           disabled={!canGoBack || matchStatus !== MatchStatus.IDLE}
           onClick={() => {
-            if (canGoBack && matchStatus === MatchStatus.IDLE) goBack();
+            if (canGoBack && matchStatus === MatchStatus.IDLE) handleGoBack();
           }}
         >
           <ArrowLeftFromLine className="h-6 w-6" />

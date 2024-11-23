@@ -11,37 +11,16 @@ import Button from '@/app/ui/Button';
 import LinkButton from '@/app/ui/LinkButton';
 import CommentSection from './CommentSection';
 import WorldcupPickScreen from './WorldcupPickScreen';
-import { getRandomCandidates } from '../actions';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 
 export default function WorldcupStarter() {
-  const {
-    worldcup,
-    userId,
-    matchStatus,
-    setMatchStatus,
-    setCandidates,
-    finalWinnerCandidateId,
-    setBreakPoint,
-  } = useWorldcupMatch();
+  const { worldcup, userId, matchStatus, setMatchStatus, finalWinnerCandidateId } = useWorldcupMatch();
   const [shareWorldcupModal, setShareWorldcupModal] = useState(false);
   const WorldcupStarterModal = useMemo(
     () => dynamic(() => import('./WorldcupStarterModal'), { ssr: false }),
     [],
   );
-
   const notEnoughCandidates = worldcup.candidatesCount < MIN_NUMBER_OF_CANDIDATES;
-
-  const handleRoundSumbit = async (selectedRound: number) => {
-    const randomCandidates = await getRandomCandidates(worldcup.id, selectedRound);
-    setCandidates(randomCandidates || []);
-    setBreakPoint(randomCandidates || [], []);
-    setMatchStatus(MatchStatus.IDLE);
-  };
-
-  const handleWorldcupRestart = () => {
-    setMatchStatus(MatchStatus.SELECTING_ROUNDS);
-  };
 
   if (matchStatus === MatchStatus.SELECTING_ROUNDS) {
     return (
@@ -60,14 +39,15 @@ export default function WorldcupStarter() {
               </>
             )}
           </h1>
-          <WorldcupStarterModal
-            open={matchStatus === MatchStatus.SELECTING_ROUNDS}
-            onRoundSubmit={handleRoundSumbit}
-          />
+          <WorldcupStarterModal open={matchStatus === MatchStatus.SELECTING_ROUNDS} />
         </section>
       </>
     );
   }
+
+  const handleWorldcupRestart = () => {
+    setMatchStatus(MatchStatus.SELECTING_ROUNDS);
+  };
 
   return (
     <div className="flex h-[calc(100svh-52px)] flex-col bg-black/95 lg:flex-grow lg:flex-row">

@@ -4,40 +4,56 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
-import { DEFAULT_ROUNDS, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
+import { DEFAULT_ROUNDS, MatchStatus, MIN_NUMBER_OF_CANDIDATES } from '@/app/constants';
 import Avatar from '@/app/ui/Avatar';
 import Button from '@/app/ui/Button';
 import ExpandableText from '@/app/ui/ExpandableText';
 import dayjs from '@/app/utils/dayjs';
+import { getRandomCandidates } from '../actions';
+import { useSavedWorldcupMatch } from '../hooks/useSavedWorldcupMatch';
 import { useWorldcupMatch } from '../hooks/useWorldcupMatch';
 import { getNumberOfRoundsAvailable } from '../utils';
 
 interface Props {
   open: boolean;
-  onRoundSubmit: (round: number) => void;
 }
 
-export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
-  const { worldcup } = useWorldcupMatch();
+export default function WorldcupStarterModal({ open }: Props) {
+  const { worldcup, setCandidates, setBreakPoint, setMatchStatus, setMatchResult } = useWorldcupMatch();
   const { candidatesCount, title, description, createdAt, updatedAt, nickname, profilePath } = worldcup;
-  const router = useRouter();
   const availableRounds = getNumberOfRoundsAvailable(candidatesCount);
   const [round, setRound] = useState<number>(
     candidatesCount >= DEFAULT_ROUNDS ? DEFAULT_ROUNDS : Math.max(...availableRounds),
   );
-  const notEnoughCandidates = candidatesCount < MIN_NUMBER_OF_CANDIDATES;
+  const { savedWorldcup } = useSavedWorldcupMatch();
+  const router = useRouter();
 
+  const notEnoughCandidates = candidatesCount < MIN_NUMBER_OF_CANDIDATES;
+  const isSavedWorldcup = savedWorldcup?.id === worldcup.id;
   const createdDate = dayjs(createdAt);
   const updatedDate = dayjs(updatedAt);
   const isUpdated = createdDate.diff(updatedDate);
 
-  const handleRoundSubmit = () => {
-    onRoundSubmit(round);
+  const handleRoundSubmit = async () => {
+    const randomCandidates = await getRandomCandidates(worldcup.id, round);
+    setCandidates(randomCandidates || []);
+    setBreakPoint(randomCandidates || [], []);
+    setMatchStatus(MatchStatus.IDLE);
   };
 
   const handleRoundChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const targetRound = Number(e.target.value);
     setRound(targetRound);
+  };
+
+  const handleLoadSavedWorldcup = () => {
+    if (!savedWorldcup) {
+      return;
+    }
+    setCandidates(savedWorldcup.candidates);
+    setMatchResult(savedWorldcup.matchResult);
+    setBreakPoint(savedWorldcup.candidates, savedWorldcup.matchResult);
+    setMatchStatus(MatchStatus.IDLE);
   };
 
   return (
@@ -116,9 +132,16 @@ export default function WorldcupStarterModal({ open, onRoundSubmit }: Props) {
                     돌아가기
                   </Button>
                 ) : (
-                  <Button variant="primary" className="w-full" onClick={handleRoundSubmit}>
-                    시작
-                  </Button>
+                  <>
+                    <Button variant="primary" className="w-full" onClick={handleRoundSubmit}>
+                      시작
+                    </Button>
+                    {isSavedWorldcup && (
+                      <Button variant="outline" className="mt-1 w-full" onClick={handleLoadSavedWorldcup}>
+                        저장된 이상형 월드컵 이어 하기
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

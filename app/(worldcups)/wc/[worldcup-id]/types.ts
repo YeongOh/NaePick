@@ -1,20 +1,14 @@
-import { InferSelectModel } from 'drizzle-orm';
-
 import { z } from 'zod';
 import { COMMENT_TEXT_MAX_LENGTH } from '@/app/constants';
-import { candidates, comments, worldcups } from '@/app/lib/database/schema';
+import { Candidate, Comment, Worldcup } from '@/app/lib/database/model';
 
-export type WorldcupMatchCandidate = InferSelectModel<typeof candidates> & { mediaType: string };
-
-export type WorldcupMatchWorldcup = InferSelectModel<typeof worldcups> & {
+export type WorldcupMatchCandidate = Candidate & { mediaType: string };
+export type WorldcupMatchWorldcup = Worldcup & {
   candidatesCount: number;
   profilePath: string | null;
   nickname: string | null;
 };
-
-export type WorldcupMatchResult = { winnerId: string; loserId: string };
-
-export type WorldcupComment = InferSelectModel<typeof comments> & {
+export type WorldcupComment = Comment & {
   nickname: string | null;
   profilePath: string | null;
   voted: string | null;
@@ -22,6 +16,8 @@ export type WorldcupComment = InferSelectModel<typeof comments> & {
   replyCount?: number;
   isLiked?: string | null;
 };
+export type WorldcupMatchResult = { winnerId: string; loserId: string };
+export type TCommentFormSchema = z.infer<typeof CommentFormSchema>;
 
 export const CommentFormSchema = z.object({
   text: z
@@ -34,5 +30,3 @@ export const CommentFormSchema = z.object({
       message: `내용은 ${COMMENT_TEXT_MAX_LENGTH}자 이하여야 합니다.`,
     }),
 });
-
-export type TCommentFormSchema = z.infer<typeof CommentFormSchema>;
