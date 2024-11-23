@@ -40,6 +40,7 @@ export default function Pagination({
           <button
             type="button"
             key={`page-number ${pageNumber}`}
+            aria-label={isSelected ? `현재 페이지 ${pageNumber}` : `페이지 ${pageNumber} 가기`}
             className={clsx(
               'h-10 w-10 rounded',
               isSelected

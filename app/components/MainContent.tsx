@@ -30,7 +30,7 @@ export default function MainContent({ worldcups, nextCursor }: Props) {
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
-  const newWorldcups = data?.pages?.flatMap((page) => page?.data) || [];
+  const newWorldcups = data?.pages.flatMap((page) => page?.data) || [];
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
@@ -48,6 +48,7 @@ export default function MainContent({ worldcups, nextCursor }: Props) {
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
         {!isLoading &&
+          Array.isArray(newWorldcups) &&
           newWorldcups.map((worldcupCard) => (
             <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
           ))}

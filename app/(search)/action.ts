@@ -152,5 +152,5 @@ export async function getPopularWorldcups({
     Array.isArray(result) && result.length
       ? { matchCount: result.at(-1)?.matchCount as number, createdAt: result.at(-1)?.createdAt as string }
       : null;
-  return { data: (result as TCard[]) || [], nextCursor };
+  return { data: result as TCard[], nextCursor };
 }
