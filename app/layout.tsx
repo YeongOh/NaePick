@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import { Noto_Sans_KR } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import GlobalError from './global-error';
 import { DropdownProvider } from './hooks/useDropdown';
 import GoogleAnalyticsComponent from './lib/analytics/google';
 import { ReactQueryClientProvider } from './lib/react-query';
@@ -28,11 +30,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={notoSansKr.className}>
-        <DropdownProvider>
-          <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
-        </DropdownProvider>
-        <Toaster />
-        <GoogleAnalyticsComponent />
+        <ErrorBoundary errorComponent={GlobalError}>
+          <DropdownProvider>
+            <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+          </DropdownProvider>
+          <Toaster />
+          <GoogleAnalyticsComponent />
+        </ErrorBoundary>
       </body>
     </html>
   );

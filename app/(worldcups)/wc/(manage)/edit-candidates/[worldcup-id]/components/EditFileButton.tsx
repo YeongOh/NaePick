@@ -55,10 +55,11 @@ export default function EditFileButton({ originalPath, worldcupId, candidateId, 
         });
         if (!response.ok) throw new Error('업로드 실패');
 
+        await updateCandidateAction({ worldcupId, candidateId, path, mediaType: newMdiaType });
+
         if (mediaType === 'cdn_img' || mediaType === 'cdn_video')
           await deleteCandidateObject(originalPath, worldcupId, mediaType);
 
-        await updateCandidateAction({ worldcupId, candidateId, path, mediaType: newMdiaType });
         toast.success('파일을 수정했습니다!');
       } catch (error) {
         toast.error('오류가 발생했습니다.');

@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function MainContent({ worldcups, nextCursor }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetching, isLoading } = useInfiniteQuery({
     queryKey: ['worldcups', { main: 'main' }],
     queryFn: ({ pageParam }) => getPopularWorldcups({ cursor: pageParam }),
     initialPageParam: nextCursor,
@@ -30,7 +30,7 @@ export default function MainContent({ worldcups, nextCursor }: Props) {
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
-  const newWorldcups = data?.pages.flatMap((page) => page?.data) || [];
+  const newWorldcups = data?.pages?.flatMap((page) => page?.data) || [];
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
@@ -44,9 +44,13 @@ export default function MainContent({ worldcups, nextCursor }: Props) {
         <NavigationFilter />
       </Suspense>
       <Grid>
-        {[...worldcups, ...newWorldcups].map((worldcupCard) => (
+        {worldcups.map((worldcupCard) => (
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
+        {!isLoading &&
+          newWorldcups.map((worldcupCard) => (
+            <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
+          ))}
       </Grid>
       {hasNextPage && (
         <div ref={ref} className="flex items-center justify-center">
