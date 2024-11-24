@@ -138,7 +138,7 @@ export default function WorldcupStarterModal({ open }: Props) {
                     </Button>
                     {isSavedWorldcup && (
                       <Button variant="outline" className="mt-1 w-full" onClick={handleLoadSavedWorldcup}>
-                        저장된 이상형 월드컵 이어 하기
+                        저장된 이상형 월드컵 이어하기
                       </Button>
                     )}
                   </>
