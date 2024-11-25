@@ -26,7 +26,7 @@ export default function WorldcupStarter() {
     return (
       <>
         <section className="relative flex h-full flex-grow bg-black">
-          <h1 className="absolute z-50 w-full bg-black/50 text-center text-3xl font-bold leading-10 text-white lg:text-5xl">
+          <h1 className="pointer-events-none absolute z-40 w-full bg-black/50 text-center text-xl font-bold text-white lg:text-5xl">
             {worldcup.title}{' '}
             {notEnoughCandidates ? (
               <>
