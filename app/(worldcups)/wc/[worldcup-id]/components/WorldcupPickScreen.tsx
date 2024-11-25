@@ -98,7 +98,7 @@ export default function WorldcupPickScreen({ className }: Props) {
       {matchStatus === MatchStatus.IDLE && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-3clamp font-bold text-primary-700 drop-shadow-text`}
+          className={`absolute inset-0 z-40 m-auto h-fit w-fit cursor-default text-2xl font-bold text-primary-700 drop-shadow-text lg:text-2clamp`}
         >
           VS
         </div>
@@ -138,7 +138,7 @@ export default function WorldcupPickScreen({ className }: Props) {
               {/* mobile */}
               <figcaption
                 className={clsx(
-                  'pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-text transition-colors group-active:text-primary-600 lg:hidden',
+                  'pointer-events-none absolute line-clamp-1 text-xl font-bold text-white drop-shadow-text transition-colors group-active:text-primary-600 lg:hidden',
                   matchStatus !== MatchStatus.PICK_LEFT && 'bottom-6',
                 )}
               >
@@ -185,7 +185,7 @@ export default function WorldcupPickScreen({ className }: Props) {
               {/* mobile */}
               <figcaption
                 className={clsx(
-                  'pointer-events-none absolute line-clamp-1 text-3xl font-bold text-white drop-shadow-text transition-colors group-active:text-primary-600 lg:hidden',
+                  'pointer-events-none absolute line-clamp-1 text-xl font-bold text-white drop-shadow-text transition-colors group-active:text-primary-600 lg:hidden',
                   matchStatus !== MatchStatus.PICK_RIGHT && 'top-6',
                 )}
               >
