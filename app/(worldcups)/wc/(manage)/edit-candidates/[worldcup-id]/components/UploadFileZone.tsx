@@ -81,15 +81,11 @@ export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: 
     [isLoading, worldcupId, setIsLoading],
   );
 
-  const onError = (error: Error) => {
-    toast.error('오류가 발생했습니다.');
-  };
-
   const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
     toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 초과했습니다.');
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     maxSize: 2097152, // 2MB
     maxFiles: 10,
     accept: {
@@ -101,7 +97,6 @@ export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: 
     },
     onDrop,
     onDropRejected,
-    onError,
   });
 
   return (
