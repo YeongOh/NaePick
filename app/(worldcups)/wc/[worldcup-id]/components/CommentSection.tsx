@@ -52,6 +52,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<TCommentFormSchema>({
     resolver: zodResolver(CommentFormSchema),
@@ -65,17 +66,39 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
 
   const onCommentFormSubmit = async (data: TCommentFormSchema) => {
-    await createCommentMutation.mutate({ data, worldcupId, votedCandidateId: finalWinnerCandidateId });
+    const result = await createCommentMutation.mutateAsync({
+      data,
+      worldcupId,
+      votedCandidateId: finalWinnerCandidateId,
+    });
+    const errors = result?.errors;
+    if (!errors) return;
+
+    if ('text' in errors && typeof errors.text === 'string') {
+      setError('text', { type: 'server', message: errors.text });
+    } else if ('session' in errors && typeof errors.session === 'string') {
+      toast.error(errors.session);
+    }
   };
 
   const handleDeleteComment = async () => {
     if (deleteConfirmId === null) return;
-    deleteCommentMutation.mutate({
+
+    const result = await deleteCommentMutation.mutateAsync({
       commentId: deleteConfirmId.commentId,
       parentId: deleteConfirmId.parentId,
     });
-    setDeleteConfirmId(null);
-    toggleDropdown(null);
+    if (result?.errors) {
+      const errors = result?.errors;
+      if (errors) {
+        if ('session' in errors && typeof errors.session === 'string') {
+          toast.error(errors.session);
+        }
+      }
+    } else {
+      setDeleteConfirmId(null);
+      toggleDropdown(null);
+    }
   };
 
   const handleDeleteCommentModal = ({
@@ -99,10 +122,18 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
 
   const handleLikeComment = async (commentId: string, like: boolean, parentId: string | null) => {
     if (!userId) {
-      toast.error('로그인이 필요합니다!');
+      toast.error('로그인이 필요한 기능입니다.');
       return;
     }
-    likeCommentMutation.mutate({ commentId, userId, like, parentId });
+    const result = await likeCommentMutation.mutateAsync({ commentId, userId, like, parentId });
+    if (result?.errors) {
+      const errors = result?.errors;
+      if (errors) {
+        if ('session' in errors && typeof errors.session === 'string') {
+          toast.error(errors.session);
+        }
+      }
+    }
   };
 
   return (

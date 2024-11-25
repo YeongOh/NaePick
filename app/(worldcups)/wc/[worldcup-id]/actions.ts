@@ -42,11 +42,24 @@ export async function createCommentAction({
   votedCandidateId?: string;
 }) {
   const validatedFields = CommentFormSchema.safeParse(data);
-  if (!validatedFields.success) throw new Error(validatedFields.error.issues[0].message);
+  if (!validatedFields.success) {
+    let parseError = {};
+    validatedFields.error.issues.forEach((issue) => {
+      parseError = { ...parseError, [issue.path[0]]: issue.message };
+    });
+    return {
+      errors: parseError,
+    };
+  }
 
   const session = await getSession();
   const userId = session?.userId;
-  if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+  if (!userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   const trimText = data.text.trim();
   await createComment({
@@ -69,11 +82,24 @@ export async function replyCommentAction({
   votedCandidateId?: string;
 }) {
   const validatedFields = CommentFormSchema.safeParse(data);
-  if (!validatedFields.success) throw new Error(validatedFields.error.issues[0].message);
+  if (!validatedFields.success) {
+    let parseError = {};
+    validatedFields.error.issues.forEach((issue) => {
+      parseError = { ...parseError, [issue.path[0]]: issue.message };
+    });
+    return {
+      errors: parseError,
+    };
+  }
 
   const session = await getSession();
   const userId = session?.userId;
-  if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+  if (!userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   const trimText = data.text.trim();
   await replyComment({
@@ -220,14 +246,32 @@ export async function getCommentCount(worldcupId: string) {
 
 export async function updateCommentAction(commentId: string, data: TCommentFormSchema) {
   const session = await getSession();
-  if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
+  if (!session?.userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   const userId = session.userId;
-  const isVerified = verifyCommentOwner(commentId, userId);
-  if (!isVerified) throw new Error('댓글을 수정할 수 없습니다.');
+  const isVerified = await verifyCommentOwner(commentId, userId);
+  if (!isVerified)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   const validatedFields = CommentFormSchema.safeParse(data);
-  if (!validatedFields.success) throw new Error(validatedFields.error.issues[0].message);
+  if (!validatedFields.success) {
+    let parseError = {};
+    validatedFields.error.issues.forEach((issue) => {
+      parseError = { ...parseError, [issue.path[0]]: issue.message };
+    });
+    return {
+      errors: parseError,
+    };
+  }
 
   const trimText = data.text.trim();
   await updateComment(commentId, trimText);
@@ -235,25 +279,46 @@ export async function updateCommentAction(commentId: string, data: TCommentFormS
 
 export async function deleteCommentAction(commentId: string) {
   const session = await getSession();
-  if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
+  if (!session?.userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   const userId = session.userId;
-  const isVerified = verifyCommentOwner(commentId, userId);
-  if (!isVerified) throw new Error('댓글을 삭제할 수 없습니다.');
+  const isVerified = await verifyCommentOwner(commentId, userId);
+  if (!isVerified)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   return await deleteComment(commentId);
 }
 
 export async function likeCommentAction(commentId: string, userId: string) {
   const session = await getSession();
-  if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
+  if (!session?.userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
   await likeComment(commentId, userId);
 }
 
 export async function cancelLikeCommentAction(commentId: string, userId: string) {
   const session = await getSession();
-  if (!session?.userId) throw new Error('로그인 세션이 만료되었습니다.');
+  if (!session?.userId)
+    if (!session?.userId)
+      return {
+        errors: {
+          session: '로그인 세션이 만료되었습니다.',
+        },
+      };
 
   await cancelLikeComment(commentId, userId);
 }

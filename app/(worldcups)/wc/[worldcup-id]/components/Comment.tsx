@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { ChevronDown, ChevronUp, EllipsisVertical, Heart } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useDropdown } from '@/app/hooks/useDropdown';
 import Avatar from '@/app/ui/Avatar';
 import Button from '@/app/ui/Button';
@@ -62,6 +63,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     register: registerNewText,
     handleSubmit: handleUpdateCommentSubmit,
     setValue: setNewTextValue,
+    setError: setNewTextError,
     formState: { errors: newTextErrors },
   } = useForm<TCommentFormSchema>({
     resolver: zodResolver(CommentFormSchema),
@@ -74,32 +76,56 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
     register: registerReplyText,
     handleSubmit: handleReplyCommentSubmit,
     setValue: setReplyTextValue,
+    setError: setReplyTextError,
     formState: { errors: replyTextErrors },
   } = useForm<TCommentFormSchema>({
     resolver: zodResolver(CommentFormSchema),
   });
 
   const onSubmit = async (data: TCommentFormSchema) => {
-    updateCommentMutation.mutate({ commentId: comment.id, parentId: comment.parentId, data });
-    onUpdateCommentSubmit();
+    const result = await updateCommentMutation.mutateAsync({
+      commentId: comment.id,
+      parentId: comment.parentId,
+      data,
+    });
+    if (!result?.errors) {
+      onUpdateCommentSubmit();
+      return;
+    }
+
+    const errors = result?.errors;
+    if (!errors) return;
+
+    if ('text' in errors && typeof errors.text === 'string') {
+      setNewTextError('text', { type: 'server', message: errors.text });
+    } else if ('session' in errors && typeof errors.session === 'string') {
+      toast.error(errors.session);
+    }
   };
 
-  const onReplyCommentSubmit = (data: TCommentFormSchema) => {
-    replyCommentMutation.mutate(
-      {
-        data,
-        votedCandidateId: finalWinnerCandidateId,
-        parentId: comment.parentId ?? comment.id,
-        worldcupId,
-      },
-      {
-        onSuccess: () => {
-          setFetchForNewReplyComment(true);
-          setIsReplying(false);
-          setReplyTextValue('text', '');
-        },
-      },
-    );
+  const onReplyCommentSubmit = async (data: TCommentFormSchema) => {
+    const result = await replyCommentMutation.mutateAsync({
+      data,
+      votedCandidateId: finalWinnerCandidateId,
+      parentId: comment.parentId ?? comment.id,
+      worldcupId,
+    });
+
+    if (!result?.errors) {
+      setFetchForNewReplyComment(true);
+      setIsReplying(false);
+      setReplyTextValue('text', '');
+      return;
+    }
+
+    const errors = result?.errors;
+    if (!errors) return;
+
+    if ('text' in errors && typeof errors.text === 'string') {
+      setReplyTextError('text', { type: 'server', message: errors.text });
+    } else if ('session' in errors && typeof errors.session === 'string') {
+      toast.error(errors.session);
+    }
   };
 
   return (

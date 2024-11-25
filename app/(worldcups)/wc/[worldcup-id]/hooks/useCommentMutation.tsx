@@ -35,6 +35,10 @@ export default function useCommentMutation({ worldcupId }: Props) {
       });
     },
     onSuccess: (data, variables, context) => {
+      if (data?.errors) {
+        return data;
+      }
+
       queryClient.setQueryData(['comment-count', { worldcupId }], (oldCount: number) => oldCount + 1);
       queryClient.invalidateQueries({
         queryKey: ['comments', { worldcupId }],
@@ -89,7 +93,11 @@ export default function useCommentMutation({ worldcupId }: Props) {
       );
       return { snapshot };
     },
-
+    onSuccess: (data, variables, context) => {
+      if (data?.errors) {
+        return data;
+      }
+    },
     onError: (error, { parentId }, context) => {
       console.error(error);
       if (parentId) {
@@ -97,7 +105,6 @@ export default function useCommentMutation({ worldcupId }: Props) {
       } else {
         queryClient.setQueryData(['comments', { worldcupId }], context?.snapshot);
       }
-      toast.error(error.message);
     },
   });
 
@@ -106,6 +113,10 @@ export default function useCommentMutation({ worldcupId }: Props) {
       return deleteCommentAction(commentId);
     },
     onSuccess: (data, { parentId }) => {
+      if (data?.errors) {
+        return data;
+      }
+
       queryClient.invalidateQueries({
         queryKey: ['comments', { worldcupId }],
       });
@@ -120,7 +131,6 @@ export default function useCommentMutation({ worldcupId }: Props) {
     },
     onError: (error, data, variables) => {
       console.error(error);
-      toast.error(error.message);
     },
   });
 
@@ -182,6 +192,12 @@ export default function useCommentMutation({ worldcupId }: Props) {
       );
       return { snapshot };
     },
+    onSuccess: (data) => {
+      if (data?.errors) {
+        return data;
+      }
+    },
+
     onError: (error, { parentId }, context) => {
       console.error(error);
       if (parentId) {
@@ -214,6 +230,10 @@ export default function useCommentMutation({ worldcupId }: Props) {
     },
 
     onSuccess: (data, { worldcupId, parentId }) => {
+      if (data?.errors) {
+        return data;
+      }
+
       queryClient.setQueryData(['comment-count', { worldcupId }], (oldCount: number) => oldCount + 1);
       queryClient.invalidateQueries({
         queryKey: ['replies', { parentId }],
@@ -225,7 +245,6 @@ export default function useCommentMutation({ worldcupId }: Props) {
 
     onError: (error, data, variables) => {
       console.error(error);
-      toast.error(error.message);
     },
   });
 
