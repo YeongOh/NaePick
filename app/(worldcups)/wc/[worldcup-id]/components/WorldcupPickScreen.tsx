@@ -112,13 +112,20 @@ export default function WorldcupPickScreen({ className }: Props) {
       ) : null}
       {leftCandidate && (
         <figure
+          tabIndex={0}
+          aria-label={`${leftCandidate.name}을 승자로 선택`}
           onMouseOver={handleOnMouseOverLeftYouTube}
           onClick={() => {
-            if (matchStatus !== MatchStatus.IDLE) return;
-            handlePick(MatchStatus.PICK_LEFT);
+            if (matchStatus === MatchStatus.IDLE) handlePick(MatchStatus.PICK_LEFT);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              if (matchStatus === MatchStatus.IDLE) handlePick(MatchStatus.PICK_LEFT);
+            }
           }}
           className={clsx(
-            'group relative flex h-1/2 flex-col items-center justify-end lg:h-full lg:w-1/2 lg:flex-row lg:justify-end',
+            'group relative flex h-1/2 flex-col items-center justify-end focus:outline-2 focus:outline-primary-500 lg:h-full lg:w-1/2 lg:flex-row lg:justify-end',
             matchStatus === MatchStatus.PICK_LEFT && 'animate-mobileExpand lg:animate-expand',
             matchStatus === MatchStatus.PICK_RIGHT && 'invisible animate-mobileShrink lg:animate-shrink',
             matchStatus === MatchStatus.END && 'animate-mobileExpand lg:animate-expand',
@@ -160,13 +167,20 @@ export default function WorldcupPickScreen({ className }: Props) {
 
       {rightCandidate && (
         <figure
+          tabIndex={0}
+          aria-label={`${rightCandidate.name}을 승자로 선택`}
           onMouseOver={handleOnMouseOverRightYouTube}
           onClick={() => {
-            if (matchStatus !== MatchStatus.IDLE) return;
-            handlePick(MatchStatus.PICK_RIGHT);
+            if (matchStatus === MatchStatus.IDLE) handlePick(MatchStatus.PICK_RIGHT);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              if (matchStatus === MatchStatus.IDLE) handlePick(MatchStatus.PICK_RIGHT);
+            }
           }}
           className={clsx(
-            'group relative flex h-1/2 flex-col items-center justify-start lg:h-full lg:w-1/2 lg:flex-row lg:justify-start',
+            'group relative flex h-1/2 flex-col items-center justify-start focus:outline-2 focus:outline-primary-500 lg:h-full lg:w-1/2 lg:flex-row lg:justify-start',
             matchStatus === MatchStatus.PICK_LEFT && 'invisible animate-mobileShrink lg:animate-shrink',
             matchStatus === MatchStatus.PICK_RIGHT && 'animate-mobileExpand lg:animate-expand',
             matchStatus === MatchStatus.END && 'animate-mobileExpand lg:animate-expand',
