@@ -32,7 +32,7 @@ export default function WorldcupPickScreen({ className }: Props) {
     goBack,
     canGoBack,
   } = useWorldcupMatch();
-  const { saveWorldcup } = useSavedWorldcupMatch();
+  const { saveWorldcup, clearSavedWorldcup } = useSavedWorldcupMatch();
   const [leftYouTubePlayer, setLeftYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const [rightYouTubePlayer, setRightYouTubePlayer] = useState<YouTubePlayer | null>(null);
   const fullScreenHandle = useFullScreenHandle();
@@ -61,7 +61,7 @@ export default function WorldcupPickScreen({ className }: Props) {
       setMatchStatus(MatchStatus.END);
       setFinalWinnerCandidateId(winner.id);
       submitMatchResult(newMatchResults, worldcup.id);
-      saveWorldcup([], []);
+      clearSavedWorldcup();
     } else {
       setMatchStatus(MatchStatus.IDLE);
       setMatchResult(newMatchResults);

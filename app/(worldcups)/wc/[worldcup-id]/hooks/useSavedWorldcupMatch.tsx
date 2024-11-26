@@ -12,6 +12,7 @@ interface WorldcupSave {
 interface SavedWorldcupMatchContextType {
   savedWorldcup: WorldcupSave | null;
   saveWorldcup: (candidates: WorldcupMatchCandidate[], matchResult: WorldcupMatchResult[]) => void;
+  clearSavedWorldcup: () => void;
 }
 
 const SavedWorldcupMatchContext = createContext<SavedWorldcupMatchContextType | null>(null);
@@ -35,11 +36,16 @@ export function SavedWorldcupMatchProvider({ worldcupId, children }: Props) {
     localStorage.setItem('saved-worldcup', JSON.stringify({ id: worldcupId, candidates, matchResult }));
   }
 
+  function clearSavedWorldcup() {
+    localStorage.removeItem('saved-worldcup');
+  }
+
   return (
     <SavedWorldcupMatchContext.Provider
       value={{
         savedWorldcup,
         saveWorldcup,
+        clearSavedWorldcup,
       }}
     >
       {children}
