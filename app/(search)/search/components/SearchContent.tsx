@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import NavigationFilter from '@/app/components/NavigationFilter';
 import WorldcupCard from '@/app/components/WorldcupCard/WorldcupCard';
 import Grid from '@/app/ui/Grid';
+import LinkButton from '@/app/ui/LinkButton';
 import Spinner from '@/app/ui/Spinner';
 import { getWorldcups } from '../../action';
 
@@ -36,6 +37,14 @@ export default function SearchContent({ sort, category, query }: Props) {
   return (
     <>
       <NavigationFilter />
+      {worldcupCards.length === 0 && !isFetching && (
+        <div className="mt-20 flex flex-col items-center justify-center gap-10 text-lg font-semibold text-slate-700">
+          조건에 해당하는 이상형 월드컵을 찾지 못했습니다.
+          <LinkButton href="/" variant="outline">
+            홈으로
+          </LinkButton>
+        </div>
+      )}
       <Grid>
         {worldcupCards.map((worldcupCard) => (
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
