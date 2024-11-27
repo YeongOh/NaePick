@@ -20,6 +20,8 @@ interface Props {
 }
 
 export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: Props) {
+  const MAX_FILE_LENGTH = 10;
+
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
       if (isLoading) {
@@ -82,12 +84,24 @@ export default function UploadFileZone({ worldcupId, isLoading, setIsLoading }: 
   );
 
   const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
-    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 초과했습니다.');
+    if (rejectedFiles.length > MAX_FILE_LENGTH) {
+      toast.error(`한번에 업로드할 수 있는 파일은 최대 ${MAX_FILE_LENGTH}개 입니다.`);
+      return;
+    }
+    rejectedFiles.forEach((rejectedFile) => {
+      if (rejectedFile.errors[0].code === 'file-invalid-type') {
+        toast.error(`${rejectedFile.file.name}\n지원되지 않는 파일 형식입니다.`);
+      } else if (rejectedFile.errors[0].code === 'file-too-large') {
+        toast.error(`${rejectedFile.file.name}\n파일의 용량은 최대 2MB까지 가능합니다.`);
+      } else {
+        toast.error(`${rejectedFile.file.name}\n파일을 업로드하지 못했습니다.`);
+      }
+    });
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     maxSize: 2097152, // 2MB
-    maxFiles: 10,
+    maxFiles: MAX_FILE_LENGTH,
     accept: {
       'image/png': [],
       'image/jpg': [],

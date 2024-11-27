@@ -26,13 +26,16 @@ export default function EditFileButton({ originalPath, worldcupId, candidateId, 
 
   const onDrop = useCallback(
     async (acceptedFiles: FileWithPath[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
+
       try {
         if (isLoading) {
           toast.error('파일을 수정 중입니다.');
           return;
         }
         setIsLoading(true);
-        const file = acceptedFiles[0];
+
         const extension = extname(file.name);
         let result;
         let newMdiaType;
@@ -71,12 +74,20 @@ export default function EditFileButton({ originalPath, worldcupId, candidateId, 
   );
 
   const onDropRejected = useCallback((rejectedFiles: FileRejection[]) => {
-    toast.error('지원하지 않는 파일 형식이거나 파일 크기 제한을 초과했습니다.');
+    rejectedFiles.forEach((rejectedFile) => {
+      if (rejectedFile.errors[0].code === 'file-invalid-type') {
+        toast.error(`${rejectedFile.file.name}\n지원되지 않는 파일 형식입니다.`);
+      } else if (rejectedFile.errors[0].code === 'file-too-large') {
+        toast.error(`${rejectedFile.file.name}\n파일의 용량은 최대 2MB까지 가능합니다.`);
+      } else {
+        toast.error(`${rejectedFile.file.name}\n파일을 업로드하지 못했습니다.`);
+      }
+    });
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     maxSize: 2097152, // 2MB
-    maxFiles: 1,
+    multiple: false,
     accept: {
       'image/png': [],
       'image/jpg': [],
