@@ -29,6 +29,36 @@ export default function WorldcupCardDropdownMenu() {
     }
   };
 
+  const handleAddWorldcupFavourite = async () => {
+    toggleDropdown(dropdownId);
+    const result = await worldcupFavouriteMutation.mutateAsync({ worldcupId: id, favourite: true });
+    if (result?.errors) {
+      const errors = result.errors;
+      if (errors.session && typeof errors.session === 'string') {
+        toast.error(errors.session);
+      } else if (errors.duplicate && typeof errors.duplicate === 'string') {
+        toast.error(errors.duplicate);
+      }
+    } else {
+      toast.success('즐겨찾기 되었습니다.');
+    }
+  };
+
+  const handleRemoveWorldcupFavourite = async () => {
+    toggleDropdown(dropdownId);
+    const result = await worldcupFavouriteMutation.mutateAsync({ worldcupId: id, favourite: false });
+    if (result?.errors) {
+      const errors = result.errors;
+      if (errors.session && typeof errors.session === 'string') {
+        toast.error(errors.session);
+      } else if (errors.duplicate && typeof errors.duplicate === 'string') {
+        toast.error(errors.duplicate);
+      }
+    } else {
+      toast.success('즐겨찾기 취소되었습니다.');
+    }
+  };
+
   return (
     <>
       {open && (
@@ -40,20 +70,26 @@ export default function WorldcupCardDropdownMenu() {
             <ChartNoAxesColumnDecreasing size="1.2rem" />
             랭킹 보기
           </Link>
-          {/* {type !== 'favourite' && (
+          {type !== 'favourite' && (
             <button
               className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-secondary-50 active:bg-secondary-100"
-              onClick={() => {
-                toggleDropdown(dropdownId);
-                addWorldcupFavouriteAction(id)
-                  .then(() => toast.success('즐겨찾기에 추가되었습니다!'))
-                  .catch((error) => toast.error('이미 즐겨찾기를 했습니다.'));
-              }}
+              onClick={handleAddWorldcupFavourite}
             >
               <Star size="1.2rem" />
-              즐겨찾기 추가
+              즐겨찾기
             </button>
-          )} */}
+          )}
+          {type === 'favourite' && (
+            <>
+              <button
+                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-gray-500 hover:bg-secondary-50 active:bg-secondary-100"
+                onClick={handleRemoveWorldcupFavourite}
+              >
+                <Star size="1.2rem" />
+                즐겨찾기 취소
+              </button>
+            </>
+          )}
           <button
             className="dropdown-button flex items-center gap-2 rounded p-2 text-left hover:bg-secondary-50 active:bg-secondary-100"
             onClick={() => {
@@ -82,20 +118,6 @@ export default function WorldcupCardDropdownMenu() {
               >
                 <Trash2 size="1.2rem" />
                 삭제하기
-              </button>
-            </>
-          )}
-          {type === 'favourite' && (
-            <>
-              <button
-                className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 text-gray-500 hover:bg-secondary-50 active:bg-secondary-100"
-                onClick={() => {
-                  worldcupFavouriteMutation.mutate({ worldcupId: id, favourite: false });
-                  toggleDropdown(dropdownId);
-                }}
-              >
-                <Star size="1.2rem" />
-                즐겨찾기 해제
               </button>
             </>
           )}

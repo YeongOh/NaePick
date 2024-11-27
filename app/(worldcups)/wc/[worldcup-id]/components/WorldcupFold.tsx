@@ -59,17 +59,29 @@ export default function WorldcupFold({
     }
   }
 
-  function handleAddWorldcupFavourite() {
+  async function handleAddWorldcupFavourite() {
     if (!userId) {
       toast.error('로그인이 필요한 서비스입니다.');
       return;
     }
     if (isFavouriteLoading) return;
 
+    let result;
     if (isFavourite) {
-      worldcupFavouriteMutation.mutate({ worldcupId, favourite: false });
+      result = await worldcupFavouriteMutation.mutateAsync({ worldcupId, favourite: false });
     } else {
-      worldcupFavouriteMutation.mutate({ worldcupId, favourite: true });
+      result = await worldcupFavouriteMutation.mutateAsync({ worldcupId, favourite: true });
+    }
+
+    if (result?.errors) {
+      const errors = result.errors;
+      if (errors.session && typeof errors.session === 'string') {
+        toast.error(errors.session);
+      } else if (errors.duplicate && typeof errors.duplicate === 'string') {
+        toast.error(errors.duplicate);
+      }
+    } else {
+      toast.success('즐겨찾기 되었습니다.');
     }
   }
 

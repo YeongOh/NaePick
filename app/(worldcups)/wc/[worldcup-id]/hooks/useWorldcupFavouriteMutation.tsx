@@ -15,8 +15,6 @@ export default function useWorldcupFavouriteMutation({ worldcupId }: Props) {
       return removeWorldcupFavouriteAction(worldcupId);
     },
     onMutate: async ({ worldcupId, favourite }) => {
-      await queryClient.cancelQueries({ queryKey: ['worldcup-favourites', { worldcupId }] });
-      const snapshot = queryClient.getQueryData(['worldcup-favourites', { worldcupId }]);
       queryClient.setQueryData(['worldcup-favourites', { worldcupId }], (previous: boolean) => {
         if (favourite) {
           return true;
@@ -24,12 +22,14 @@ export default function useWorldcupFavouriteMutation({ worldcupId }: Props) {
           return false;
         }
       });
-      return { snapshot };
     },
-    onError: (error, { worldcupId }, context) => {
+    onSuccess: (data) => {
+      if (data?.errors) {
+        return data;
+      }
+    },
+    onError: (error, variables, context) => {
       console.error(error);
-      queryClient.setQueryData(['worldcup-favourites', { worldcupId }], context?.snapshot);
-      toast.error(error.message);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['worldcup-favourites', { worldcupId }] });

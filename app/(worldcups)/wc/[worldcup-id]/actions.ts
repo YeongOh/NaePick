@@ -30,6 +30,7 @@ import {
   removeWorldcupFavourite,
   unlikeWorldcup,
 } from '@/app/lib/worldcup/service';
+import { isWorldcupFavouriteDuplicate } from '@/app/lib/worldcup/validation';
 import { CommentFormSchema, TCommentFormSchema } from './types';
 
 export async function createCommentAction({
@@ -432,27 +433,35 @@ export async function isWorldcupFavourite(worldcupId: string) {
 }
 
 export async function addWorldcupFavouriteAction(worldcupId: string) {
-  try {
-    const session = await getSession();
-    const userId = session?.userId;
-    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+  const session = await getSession();
+  const userId = session?.userId;
+  if (!userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
-    await addWorldcupFavourite(worldcupId, userId);
-  } catch (error) {
-    console.error(error);
-    // 중복 즐겨찾기 추가시 여기서 에러 던짐 => 더 쉬운 에러처리 방안?
-    throw error;
-  }
+  const isDuplicate = await isWorldcupFavouriteDuplicate(worldcupId, userId);
+  if (isDuplicate)
+    return {
+      errors: {
+        duplicate: '이미 즐겨찾기한 월드컵입니다.',
+      },
+    };
+
+  await addWorldcupFavourite(worldcupId, userId);
 }
 
 export async function removeWorldcupFavouriteAction(worldcupId: string) {
-  try {
-    const session = await getSession();
-    const userId = session?.userId;
-    if (!userId) throw new Error('로그인 세션이 만료되었습니다.');
+  const session = await getSession();
+  const userId = session?.userId;
+  if (!userId)
+    return {
+      errors: {
+        session: '로그인 세션이 만료되었습니다.',
+      },
+    };
 
-    await removeWorldcupFavourite(worldcupId, userId);
-  } catch (error) {
-    console.error(error);
-  }
+  await removeWorldcupFavourite(worldcupId, userId);
 }
