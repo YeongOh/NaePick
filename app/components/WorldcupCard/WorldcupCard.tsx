@@ -24,12 +24,12 @@ export default function WorldcupCard({ worldcupCard, className, type = 'default'
           <WorldcupCardThumbnail />
         </Link>
         <div className="w-full">
-          <div className="mt-2 flex">
+          <div className="flex sm:mt-2">
             <Avatar alt={nickname} profilePath={profilePath} size="sm" className="mr-2 mt-1" />
             <div className="flex-1">
               <Link href={`/wc/${id}`}>
                 <h2
-                  className="mb-1 line-clamp-2 cursor-pointer text-base font-bold text-slate-700 hover:underline"
+                  className="line-clamp-2 cursor-pointer text-base font-bold text-slate-700 hover:underline sm:mb-1"
                   title={title}
                 >
                   {title}
