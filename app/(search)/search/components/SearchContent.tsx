@@ -37,15 +37,13 @@ export default function SearchContent({ sort, category, query }: Props) {
     <>
       <NavigationFilter />
       <Grid>
-        {[...worldcupCards].map((worldcupCard) => (
+        {worldcupCards.map((worldcupCard) => (
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
       </Grid>
-      {hasNextPage && (
-        <div ref={ref} className="flex items-center justify-center">
-          {isFetching && <Spinner />}
-        </div>
-      )}
+      <div ref={ref} className="flex h-12 items-center justify-center">
+        {isFetching && <Spinner />}
+      </div>
     </>
   );
 }

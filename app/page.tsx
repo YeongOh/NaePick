@@ -13,7 +13,7 @@ export default async function Home() {
     <React.Fragment>
       <Navbar />
       <section className="m-auto max-w-screen-2xl">
-        <MainContent worldcups={result.data} nextCursor={result.nextCursor} />
+        <MainContent initialData={result} />
       </section>
     </React.Fragment>
   );
