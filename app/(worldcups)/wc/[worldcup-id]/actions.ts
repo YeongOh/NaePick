@@ -438,7 +438,7 @@ export async function addWorldcupFavouriteAction(worldcupId: string) {
   if (!userId)
     return {
       errors: {
-        session: '로그인 세션이 만료되었습니다.',
+        session: '로그인이 필요한 서비스입니다.',
       },
     };
 
