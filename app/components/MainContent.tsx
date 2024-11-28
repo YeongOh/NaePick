@@ -33,6 +33,7 @@ export default function MainContent({ initialData }: Props) {
     initialPageParam: initialData.nextCursor,
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
     initialData: transformedInitialData,
+    staleTime: Infinity,
   });
   const worldcupCards = data?.pages.flatMap((page) => page?.data) || [];
 

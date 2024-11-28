@@ -7,7 +7,7 @@ export const ReactQueryClientProvider = ({ children }: { children: React.ReactNo
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000,
+        staleTime: 5 * 60 * 1000,
       },
     },
   });
