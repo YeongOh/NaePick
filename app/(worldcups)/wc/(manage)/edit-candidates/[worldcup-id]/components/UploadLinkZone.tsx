@@ -41,15 +41,15 @@ export default function UploadLinkZone({ worldcupId, isLoading, setIsLoading }: 
 
   const handleVideoUpload = async () => {
     try {
+      if (!videoURL.startsWith('https')) {
+        toast.error('https로 시작하는 올바른 주소를 입력해 주세요.');
+        return;
+      }
       if (isLoading) {
         toast.error('동영상을 업로드 처리 중입니다.');
         return;
       }
       const UrlObject = new URL(videoURL);
-      if (UrlObject.protocol != 'https:') {
-        toast.error('https로 시작하는 주소를 입력해 주세요.');
-        return;
-      }
       const hostname = UrlObject.hostname;
       const cleanURL = UrlObject.toString();
 
