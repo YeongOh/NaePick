@@ -31,7 +31,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     queryKey: ['comment-count', { worldcupId }],
     queryFn: () => getCommentCount(worldcupId),
   });
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage } = useInfiniteQuery({
+  const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['comments', { worldcupId }],
     queryFn: ({ pageParam }) => getComments(worldcupId, userId, pageParam),
     initialPageParam: '',
@@ -53,6 +53,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<TCommentFormSchema>({
     resolver: zodResolver(CommentFormSchema),
@@ -60,10 +61,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
   const comments = data?.pages.flatMap((page) => page?.data) || [];
 
   useEffect(() => {
-    if (inView && !isFetchingNextPage && hasNextPage) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
+  }, [inView, fetchNextPage]);
 
   const onCommentFormSubmit = async (data: TCommentFormSchema) => {
     const result = await createCommentMutation.mutateAsync({
@@ -72,7 +73,10 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
       votedCandidateId: finalWinnerCandidateId,
     });
     const errors = result?.errors;
-    if (!errors) return;
+    if (!errors) {
+      reset();
+      return;
+    }
 
     if ('text' in errors && typeof errors.text === 'string') {
       setError('text', { type: 'server', message: errors.text });
@@ -190,11 +194,7 @@ export default function CommentSection({ worldcupId, className, userId, finalWin
           ))}
         </ul>
       ) : null}
-      {hasNextPage && (
-        <div ref={ref} className="flex items-center justify-center">
-          {isFetching && <Spinner />}
-        </div>
-      )}
+      {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>}
       <DeleteConfirmModal
         title={'해당 댓글을 정말로 삭제하시겠습니까?'}
         description={''}

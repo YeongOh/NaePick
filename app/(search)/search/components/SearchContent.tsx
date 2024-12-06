@@ -28,11 +28,11 @@ export default function SearchContent({ sort, category, query }: Props) {
   });
   const worldcupCards = data?.pages.flatMap((page) => page?.data) || [];
 
-  useEffect(() => {
-    if (inView && !isFetchingNextPage && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, fetchNextPage, isFetchingNextPage, hasNextPage]);
+  // useEffect(() => {
+  //   if (inView) {
+  //     fetchNextPage();
+  //   }
+  // }, [inView, fetchNextPage]);
 
   return (
     <>
@@ -50,9 +50,11 @@ export default function SearchContent({ sort, category, query }: Props) {
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
       </Grid>
-      <div ref={ref} className="flex h-12 items-center justify-center">
+      <button onClick={() => fetchNextPage()}>load more</button>
+      {/* {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>} */}
+      {/* <div ref={ref} className="flex h-12 items-center justify-center">
         {isFetching && <Spinner />}
-      </div>
+      </div> */}
     </>
   );
 }
