@@ -50,7 +50,9 @@ export default function SearchContent({ sort, category, query }: Props) {
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
       </Grid>
-      {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>}
+      <div ref={ref} className="flex h-12 items-center justify-center">
+        {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>}
+      </div>
     </>
   );
 }
