@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function SearchContent({ sort, category, query }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
     queryKey: ['worldcups', { sort, category, query }],
     queryFn: ({ pageParam }) => getWorldcups({ sort, category, query, cursor: pageParam }),
     initialPageParam: '',
@@ -28,11 +28,11 @@ export default function SearchContent({ sort, category, query }: Props) {
   });
   const worldcupCards = data?.pages.flatMap((page) => page?.data) || [];
 
-  // useEffect(() => {
-  //   if (inView) {
-  //     fetchNextPage();
-  //   }
-  // }, [inView, fetchNextPage]);
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage]);
 
   return (
     <>
@@ -50,11 +50,7 @@ export default function SearchContent({ sort, category, query }: Props) {
           <WorldcupCard key={worldcupCard.id} worldcupCard={worldcupCard} />
         ))}
       </Grid>
-      <button onClick={() => fetchNextPage()}>load more</button>
-      {/* {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>} */}
-      {/* <div ref={ref} className="flex h-12 items-center justify-center">
-        {isFetching && <Spinner />}
-      </div> */}
+      {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>}
     </>
   );
 }

@@ -27,7 +27,7 @@ export default function MainContent({ initialData }: Props) {
   const { ref, inView } = useInView({
     threshold: 0.5,
   });
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['worldcups', { main: 'main' }],
     queryFn: ({ pageParam }) => getPopularWorldcups({ cursor: pageParam }),
     initialPageParam: initialData.nextCursor,
@@ -38,10 +38,10 @@ export default function MainContent({ initialData }: Props) {
   const worldcupCards = data?.pages.flatMap((page) => page?.data) || [];
 
   useEffect(() => {
-    if (inView && !isFetching && hasNextPage) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage, isFetching, hasNextPage]);
+  }, [inView, fetchNextPage]);
 
   return (
     <React.Fragment>
@@ -54,7 +54,7 @@ export default function MainContent({ initialData }: Props) {
         ))}
       </Grid>
       <div ref={ref} className="flex h-12 items-center justify-center">
-        {isFetching && <Spinner />}
+        {isFetchingNextPage ? <Spinner /> : <div ref={ref}></div>}
       </div>
     </React.Fragment>
   );
