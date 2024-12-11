@@ -90,7 +90,8 @@ export async function getLatestWorldcups({
         LIMIT ${DATA_PER_PAGE}
         `);
 
-  const nextCursor = Array.isArray(result) && result.length ? result.at(-1)?.createdAt : null;
+  const nextCursor =
+    Array.isArray(result) && result.length === DATA_PER_PAGE ? result.at(-1)?.createdAt : null;
   return { data: (result as TCard[]) || [], nextCursor };
 }
 
@@ -155,7 +156,7 @@ export async function getPopularWorldcups({
         `);
 
   const nextCursor =
-    Array.isArray(result) && result.length
+    Array.isArray(result) && result.length === DATA_PER_PAGE
       ? { matchCount: result.at(-1)?.matchCount as number, createdAt: result.at(-1)?.createdAt as string }
       : null;
   return { data: result as TCard[], nextCursor };
