@@ -20,7 +20,7 @@ export default function SearchContent({ sort, category, query }: Props) {
   const { data, fetchNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
     queryKey: ['worldcups', { sort, category, query }],
     queryFn: ({ pageParam }) => getWorldcups({ sort, category, query, cursor: pageParam }),
-    initialPageParam: '',
+    initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage?.nextCursor,
   });
   const { ref, inView } = useInView({

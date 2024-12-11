@@ -22,14 +22,19 @@ export async function getWorldcups({
 }: {
   sort?: 'latest' | 'popular';
   category?: string;
-  cursor?: string | PopularNextCursor;
+  cursor: string | PopularNextCursor | null;
   query?: string;
 }) {
-  if (!sort || sort === 'popular') {
+  if (
+    sort === 'popular' &&
+    (cursor === null || (typeof cursor === 'object' && 'matchCount' in cursor && 'createdAt' in cursor))
+  ) {
     return await getPopularWorldcups({ category, cursor, query });
+  } else if (sort === 'latest' && (cursor === null || typeof cursor === 'string')) {
+    return await getLatestWorldcups({ category, cursor, query });
+  } else {
+    throw new Error('wrong query for worldcups');
   }
-
-  return await getLatestWorldcups({ category, cursor, query });
 }
 
 export async function getLatestWorldcups({
@@ -38,7 +43,7 @@ export async function getLatestWorldcups({
   query,
 }: {
   category?: string;
-  cursor?: any;
+  cursor: string | null;
   query?: string;
 }) {
   const DATA_PER_PAGE = 15;
@@ -101,7 +106,7 @@ export async function getPopularWorldcups({
   query,
 }: {
   category?: string;
-  cursor?: any;
+  cursor?: PopularNextCursor | null;
   query?: string;
 }) {
   const DATA_PER_PAGE = 15;
