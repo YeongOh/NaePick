@@ -24,6 +24,7 @@ export interface CandidateStatModel {
   winCount: number;
   lossCount: number;
   winRate: number;
+  trophyCount: number;
 }
 
 interface Props {
@@ -72,18 +73,20 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
         </div>
       </section>
       <section className="relative flex min-h-[45svh] items-center justify-center bg-black/90 lg:h-auto lg:min-w-[40%] lg:flex-1">
-        <h1 className="absolute top-0 w-full bg-black/50 text-center text-3xl font-bold text-white lg:text-5xl">
+        <h1 className="absolute top-0 w-full bg-black/50 text-center text-xl font-bold text-white lg:text-5xl">
           {worldcup.title}
         </h1>
         {selectedCandidate ? (
           <>
             <div className="absolute bottom-0 text-center text-white drop-shadow-text lg:bottom-auto lg:top-20">
-              <h2 className="text-xl font-bold lg:text-4xl">
+              <h2 className="text-xl font-bold lg:text-5xl">
                 {currentRank}등 {selectedCandidate.name} <br />
               </h2>
-              <span className="text-lg font-bold lg:text-2xl">
+              <span className="text-xl font-bold lg:text-5xl">
                 {' '}
                 승률: {selectedCandidate.winRate === 0 ? '0' : (selectedCandidate.winRate * 100).toFixed(1)}%
+                ({selectedCandidate.trophyCount}회 우승 - {selectedCandidate.winCount}승{' '}
+                {selectedCandidate.lossCount}패)
               </span>
             </div>
             <CandidateMedia

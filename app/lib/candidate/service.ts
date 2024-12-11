@@ -66,6 +66,7 @@ export async function getCandidatesForStat(worldcupId: string, page: number) {
         mediaType: stat.mediaType,
         winCount: stat.winCount,
         lossCount: stat.lossCount,
+        trophyCount: stat.trophyCount,
         winRate: sql<number>` CASE WHEN winCount + lossCount = 0 THEN 0 
                       ELSE CAST(winCount AS FLOAT) / (winCount + lossCount) END`.as('winRate'),
       })
