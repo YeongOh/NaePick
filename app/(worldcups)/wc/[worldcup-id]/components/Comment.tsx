@@ -143,7 +143,7 @@ const Comment = forwardRef<HTMLLIElement, Props>(function Comment(
             >
               {comment.isAnonymous ? '익명' : comment.nickname ? comment.nickname : '탈퇴한 회원'}
             </span>
-            {comment.voted ? <span className="text-sm text-gray-500">{comment.voted}</span> : null}
+            {comment.voted ? <span className="text-sm text-gray-500">{comment.voted} - </span> : null}
             <span
               className="text-sm text-gray-500"
               title={dayjs(comment.createdAt).format('YYYY년 MM월 DD일 HH시 MM분')}
