@@ -40,7 +40,7 @@ export default async function Navbar({ screenMode }: Props) {
             <LinkButton
               className={clsx(screenMode && 'text-white/80 hover:bg-transparent active:bg-transparent')}
               href={`/wc/create`}
-              variant={session?.userId ? 'primary' : 'ghost'}
+              variant={'ghost'}
               size="sm"
             >
               이상형 월드컵 만들기
