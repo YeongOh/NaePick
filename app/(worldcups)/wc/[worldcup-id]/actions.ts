@@ -55,17 +55,11 @@ export async function createCommentAction({
 
   const session = await getSession();
   const userId = session?.userId;
-  if (!userId)
-    return {
-      errors: {
-        session: '로그인 세션이 만료되었습니다.',
-      },
-    };
 
   const trimText = data.text.trim();
   await createComment({
     worldcupId,
-    userId,
+    userId, // 익명 허용
     votedCandidateId,
     text: trimText,
   });
