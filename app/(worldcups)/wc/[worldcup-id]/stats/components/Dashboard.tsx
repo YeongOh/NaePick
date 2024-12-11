@@ -82,10 +82,10 @@ export default function Dashboard({ candidates, worldcup, page, userId, statCoun
               <h2 className="text-xl font-bold lg:text-5xl">
                 {currentRank}등 {selectedCandidate.name} <br />
               </h2>
-              <span className="text-xl font-bold lg:text-5xl">
+              <span className="text-lg font-bold lg:text-4xl">
                 {' '}
                 승률: {selectedCandidate.winRate === 0 ? '0' : (selectedCandidate.winRate * 100).toFixed(1)}%
-                ({selectedCandidate.trophyCount}회 우승 - {selectedCandidate.winCount}승{' '}
+                ({selectedCandidate.trophyCount}우승 | {selectedCandidate.winCount}승{' '}
                 {selectedCandidate.lossCount}패)
               </span>
             </div>
