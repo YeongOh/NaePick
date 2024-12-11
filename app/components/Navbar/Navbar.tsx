@@ -38,7 +38,7 @@ export default async function Navbar({ screenMode }: Props) {
         >
           <div className="hidden w-36 lg:flex">
             <LinkButton
-              className={clsx(screenMode && 'text-white/80 hover:bg-transparent')}
+              className={clsx(screenMode && 'text-white/80 hover:bg-transparent active:bg-transparent')}
               href={`/wc/create`}
               variant={session?.userId ? 'primary' : 'ghost'}
               size="sm"
