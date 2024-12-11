@@ -14,7 +14,7 @@ export interface Props {
 }
 
 export default function WorldcupCard({ worldcupCard, className, type = 'default' }: Props) {
-  const { createdAt, id, nickname, profilePath, title } = worldcupCard;
+  const { createdAt, id, nickname, profilePath, title, matchCount } = worldcupCard;
   const createdAtDayJs = dayjs(createdAt);
 
   return (
@@ -35,11 +35,15 @@ export default function WorldcupCard({ worldcupCard, className, type = 'default'
                   {title}
                 </h2>
               </Link>
-              <div className="flex items-center text-md text-gray-500">
-                <span>{nickname || '탈퇴한 회원'}</span>
-                <span className="ml-2" title={createdAtDayJs.format('YYYY년 MM월 DD일')}>
-                  {createdAtDayJs.fromNow()}
-                </span>
+              <div className="text-md text-gray-500">
+                <div>{nickname || '탈퇴한 회원'}</div>
+                <div className="flex">
+                  <div>투표수 {matchCount}회</div>
+                  <span className="mx-1"> • </span>
+                  <span className="" title={createdAtDayJs.format('YYYY년 MM월 DD일')}>
+                    {createdAtDayJs.fromNow()}
+                  </span>
+                </div>
               </div>
             </div>
             <WorldcupCardMenuButton />

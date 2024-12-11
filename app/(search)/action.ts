@@ -58,10 +58,14 @@ export async function getLatestWorldcups({
                ${users.nickname}, ${users.profilePath} AS profilePath,
                lc.name AS leftName, lc.path AS leftPath, lc.thumbnail_url AS leftThumbnailUrl, lm.name as leftMediaType,
                rc.name AS rightName, rc.path AS rightPath, rc.thumbnail_url AS rightThumbnailUrl, rm.name as rightMediaType,
-               ${categories.name} AS categoryName
+               ${categories.name} AS categoryName,
+               COALESCE(m.match_count, 0) AS matchCount
         FROM ${worldcups}
         LEFT JOIN ${users} ON ${users.id} = ${worldcups.userId}
         LEFT JOIN ${categories} ON ${categories.id} = ${worldcups.categoryId}
+        LEFT JOIN 
+          (SELECT ${matchResults.worldcupId}, COUNT(${matchResults.worldcupId}) AS match_count FROM ${matchResults}
+            GROUP BY ${matchResults.worldcupId}) AS m ON ${worldcups.id} = m.worldcup_id
         LEFT JOIN LATERAL (
           SELECT ${matchResults.winnerId} AS id
           FROM ${matchResults}

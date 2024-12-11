@@ -14,6 +14,7 @@ export type TCard = InferSelectModel<typeof worldcups> & {
   rightThumbnailUrl: string | null;
   rightMediaType: string | null;
   categoryName: string;
+  matchCount: number;
 };
 
 export interface PopularNextCursor {
