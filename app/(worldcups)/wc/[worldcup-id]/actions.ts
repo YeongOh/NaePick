@@ -143,7 +143,7 @@ export async function getCommentsWithUserId(worldcupId: string, userId: string, 
     .orderBy(desc(comments.createdAt))
     .limit(DATA_PER_PAGE);
 
-  const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
+  const nextCursor = result.length === DATA_PER_PAGE ? result.at(-1)?.createdAt : undefined;
   return { data: result, nextCursor };
 }
 
@@ -177,7 +177,7 @@ export async function getCommentsWithoutUserId(worldcupId: string, cursor?: stri
     .orderBy(desc(comments.createdAt))
     .limit(DATA_PER_PAGE);
 
-  const nextCursor = result.length ? result.at(-1)?.createdAt : undefined;
+  const nextCursor = result.length === DATA_PER_PAGE ? result.at(-1)?.createdAt : undefined;
   return { data: result, nextCursor };
 }
 
