@@ -138,9 +138,10 @@ export async function getPopularWorldcups({
           SELECT ${matchResults.winnerId} AS id
           FROM ${matchResults}
           WHERE ${matchResults.worldcupId} = ${worldcups.id}
+            AND ${matchResults.winnerId} != lw.id
           GROUP BY ${matchResults.winnerId}
           ORDER BY COUNT(*) DESC
-          LIMIT 1 OFFSET 1) AS rw ON TRUE
+          LIMIT 1) AS rw ON TRUE
         LEFT JOIN ${candidates} AS rc ON rc.id = rw.id
         LEFT JOIN ${mediaTypes} AS rm ON rm.id = rc.media_type_id
         ${filter}
