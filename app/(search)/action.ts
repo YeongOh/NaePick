@@ -72,22 +72,32 @@ export async function getLatestWorldcups({
           (SELECT ${matchResults.worldcupId}, COUNT(${matchResults.worldcupId}) AS match_count FROM ${matchResults}
             GROUP BY ${matchResults.worldcupId}) AS m ON ${worldcups.id} = m.worldcup_id
         LEFT JOIN LATERAL (
-          SELECT ${matchResults.winnerId} AS id
-          FROM ${matchResults}
+          SELECT c.id, 
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END) /
+          (COUNT(CASE WHEN ${matchResults.loserId} = c.id THEN 1 END) +
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END)) as win_rate
+          FROM ${candidates} c
+          LEFT JOIN ${matchResults} ON c.id IN (${matchResults.winnerId}, ${matchResults.loserId})
           WHERE ${matchResults.worldcupId} = ${worldcups.id}
-          GROUP BY ${matchResults.winnerId}
-          ORDER BY COUNT(*) DESC
-          LIMIT 1) AS lw ON TRUE
+          GROUP BY c.id
+          ORDER BY win_rate DESC
+          LIMIT 1
+        ) AS lw ON TRUE
         LEFT JOIN ${candidates} AS lc ON lc.id = lw.id
         LEFT JOIN ${mediaTypes} AS lm ON lm.id = lc.media_type_id
         LEFT JOIN LATERAL (
-          SELECT ${matchResults.winnerId} AS id
-          FROM ${matchResults}
-          WHERE ${matchResults.worldcupId} = ${worldcups.id}
-            AND ${matchResults.winnerId} != lw.id
-          GROUP BY ${matchResults.winnerId}
-          ORDER BY COUNT(*) DESC
-          LIMIT 1) AS rw ON TRUE
+          SELECT c.id, 
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END) /
+          (COUNT(CASE WHEN ${matchResults.loserId} = c.id THEN 1 END) +
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END)) as win_rate
+          FROM ${candidates} c
+          LEFT JOIN ${matchResults} ON c.id IN (${matchResults.winnerId}, ${matchResults.loserId})
+          WHERE ${matchResults.worldcupId} = ${worldcups.id} 
+            AND c.id != lw.id
+          GROUP BY c.id
+          ORDER BY win_rate DESC
+          LIMIT 1
+        ) AS rw ON TRUE
         LEFT JOIN ${candidates} AS rc ON rc.id = rw.id
         LEFT JOIN ${mediaTypes} AS rm ON rm.id = rc.media_type_id
         ${filter}
@@ -137,22 +147,32 @@ export async function getPopularWorldcups({
           (SELECT ${matchResults.worldcupId}, COUNT(${matchResults.worldcupId}) AS match_count FROM ${matchResults}
             GROUP BY ${matchResults.worldcupId}) AS m ON ${worldcups.id} = m.worldcup_id
         LEFT JOIN LATERAL (
-          SELECT ${matchResults.winnerId} AS id
-          FROM ${matchResults}
+          SELECT c.id, 
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END) /
+          (COUNT(CASE WHEN ${matchResults.loserId} = c.id THEN 1 END) +
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END)) as win_rate
+          FROM ${candidates} c
+          LEFT JOIN ${matchResults} ON c.id IN (${matchResults.winnerId}, ${matchResults.loserId})
           WHERE ${matchResults.worldcupId} = ${worldcups.id}
-          GROUP BY ${matchResults.winnerId}
-          ORDER BY COUNT(*) DESC
-          LIMIT 1) AS lw ON TRUE
+          GROUP BY c.id
+          ORDER BY win_rate DESC
+          LIMIT 1
+        ) AS lw ON TRUE
         LEFT JOIN ${candidates} AS lc ON lc.id = lw.id
         LEFT JOIN ${mediaTypes} AS lm ON lm.id = lc.media_type_id
         LEFT JOIN LATERAL (
-          SELECT ${matchResults.winnerId} AS id
-          FROM ${matchResults}
-          WHERE ${matchResults.worldcupId} = ${worldcups.id}
-            AND ${matchResults.winnerId} != lw.id
-          GROUP BY ${matchResults.winnerId}
-          ORDER BY COUNT(*) DESC
-          LIMIT 1) AS rw ON TRUE
+          SELECT c.id, 
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END) /
+          (COUNT(CASE WHEN ${matchResults.loserId} = c.id THEN 1 END) +
+          COUNT(CASE WHEN ${matchResults.winnerId} = c.id THEN 1 END)) as win_rate
+          FROM ${candidates} c
+          LEFT JOIN ${matchResults} ON c.id IN (${matchResults.winnerId}, ${matchResults.loserId})
+          WHERE ${matchResults.worldcupId} = ${worldcups.id} 
+            AND c.id != lw.id
+          GROUP BY c.id
+          ORDER BY win_rate DESC
+          LIMIT 1
+        ) AS rw ON TRUE
         LEFT JOIN ${candidates} AS rc ON rc.id = rw.id
         LEFT JOIN ${mediaTypes} AS rm ON rm.id = rc.media_type_id
         ${filter}

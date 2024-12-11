@@ -33,7 +33,7 @@ export default async function Page({ params, searchParams }: Props) {
       <Navbar />
       <section className="m-auto max-w-screen-2xl">
         {result.data.length ? (
-          <UpdateContent count={result.count} page={page} worldcups={result.data as any} />
+          <UpdateContent count={result.count} page={page} worldcups={result.data} />
         ) : (
           <div className="mx-auto flex max-w-screen-sm flex-col items-center justify-center text-center">
             <p className="mb-4 mt-10 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
