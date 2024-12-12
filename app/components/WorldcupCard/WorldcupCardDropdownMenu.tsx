@@ -66,6 +66,7 @@ export default function WorldcupCardDropdownMenu() {
           <Link
             className="dropdown-button my-0.5 flex items-center gap-2 rounded p-2 hover:bg-secondary-50 active:bg-secondary-100"
             href={`/wc/${id}/stats`}
+            onClick={() => toggleDropdown(dropdownId)}
           >
             <ChartNoAxesColumnDecreasing size="1.2rem" />
             랭킹 보기
