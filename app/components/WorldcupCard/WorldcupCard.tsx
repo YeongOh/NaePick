@@ -29,7 +29,7 @@ export default function WorldcupCard({ worldcupCard, className, type = 'default'
             <div className="flex-1">
               <Link href={`/wc/${id}`}>
                 <h2
-                  className="mb-0.5 line-clamp-2 cursor-pointer text-base font-bold text-slate-700 hover:underline"
+                  className="mb-0.5 line-clamp-2 cursor-pointer text-lg font-semibold text-slate-700 hover:underline"
                   title={title}
                 >
                   {title}
